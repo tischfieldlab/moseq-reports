@@ -17,45 +17,44 @@ jscript = r'templates\javascript'
 output_path = r'html-report'
 
 def main():
-	print('Hello, World!')
-	create_structure(".")
-	get_results_dataframe_as_json(['+/+_female', '+/CT_female', 'CT/CT_female'], '.')
+    print('Hello, World!')
+    create_structure(".")
+    get_results_dataframe_as_json(['+/+_female', '+/CT_female', 'CT/CT_female'], '.')
 #end main()
 
 def create_structure(output):
-	outdir = os.path.join(output, output_path)
-	if not os.path.exists(outdir):
-		os.mkdir(outdir, 7777)
+    outdir = os.path.join(output, output_path)
+    if not os.path.exists(outdir):
+        os.mkdir(outdir, 7777)
 
-	if os.path.exists(os.path.join(outdir, 'templates')):
-		shutil.rmtree(os.path.join(outdir, 'templates'))
+    if os.path.exists(os.path.join(outdir, 'templates')):
+        shutil.rmtree(os.path.join(outdir, 'templates'))
 
-	shutil.copytree(templates, os.path.join(outdir, 'templates'))
+    shutil.copytree(templates, os.path.join(outdir, 'templates'))
 #end create_structure()
 
 def get_results_dataframe_as_json(groups, output):
-	_, sorted_index = parse_index(r'C:\Users\chester\Documents\GitHub\vue-reports\data\moseq2-index-genotype-sex.yaml')
-	model_res = parse_model_results(r'C:\Users\chester\Documents\GitHub\vue-reports\data\first_model.p')
+    _, sorted_index = parse_index(r'C:\Users\chester\Documents\GitHub\vue-reports\data\moseq2-index-genotype-sex.yaml')
+    model_res = parse_model_results(r'C:\Users\chester\Documents\GitHub\vue-reports\data\first_model.p')
 
     # Create the results dataframe
-	df, _ = results_to_dataframe(model_res, sorted_index, max_syllable=100, sort=True, count='usage')
-	df_filt = df.loc[df['group'].isin(groups)]
-	df_filt_summary = df_filt.pivot_table("usage", "syllable", "group", aggfunc=np.mean)
-	print(df_filt_summary)
+    df, _ = results_to_dataframe(model_res, sorted_index, max_syllable=100, sort=True, count='usage')
+    df_filt = df.loc[df['group'].isin(groups)]
+    df_filt_summary = df_filt.pivot_table("usage", "syllable", "group", aggfunc=np.mean)
+    print(df_filt_summary)
   #  df_filt_summary = df_filt_summary[groups] #reorder groups!
 
   #  df_json = df_filt_summary.to_json(orient='split')
-	df_json = df.to_json(orient='split')
+    df_json = df.to_json(orient='split')
 
-	metadata_path = os.path.join(output, output_path, jscript, 'metadata.js')
+    metadata_path = os.path.join(output, output_path, jscript, 'metadata.js')
     # Write it in the metadata.js file
-	with open(metadata_path, 'r') as f:
-		conts = f.read()
-	conts = conts.replace('$dataframeJson', df_json)
-	with open(metadata_path, 'w') as f:
-		f.write(conts)
-
+    with open(metadata_path, 'r') as f:
+        conts = f.read()
+    conts = conts.replace('$dataframeJson', df_json)
+    with open(metadata_path, 'w') as f:
+        f.write(conts)
 #end create_heatmap()
 
 if __name__ == '__main__':
-	main()
+    main()
