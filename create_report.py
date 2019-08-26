@@ -10,12 +10,16 @@ templates = r'templates'
 def main():
     # Adding parser arguments
     parser = argparse.ArgumentParser()
+
     parser.add_argument('-i', help='Index file to be used to create groups.',
             dest='index_file')
+
     parser.add_argument('-m', help='Model file to be used to create figures.',
             dest='model_file')
+
     parser.add_argument('--output', help='Output destination path for everything to be'
             + 'saved to.', dest='output_path')
+
     parser.set_defaults(index_file=None, model_file=None, output_path=os.getcwd())
     args = parser.parse_args()
 
@@ -30,13 +34,25 @@ def main():
     df_json = get_results_dataframe_as_json(args)
     groups_str = get_groups_from_dataframe_json(df_json)
 
-    # Edit metadata file
+    # Write out the data to the metadata_path file for use when loading
+    # the index.html page.
     replace_expression_in_file(metadata_path, '$dataframeGroups', groups_str)
     replace_expression_in_file(metadata_path, '$dataframeJson', df_json)
-
 #end main()
 
 def get_groups_from_dataframe_json(df_json):
+    ''' Takes in the dataframe json string and creates a string
+    containing the unique groups from within the dataframe.
+
+    Parameters:
+    df_json (json string): Json string form of the pandas
+    dataframe created from the model file.
+
+    Returns:
+    groups (string): String containing the list of unique
+    groups gathered from the model dataframe json string.
+    '''
+
     json_obj = json.loads(df_json)
 
     groups = set()
@@ -59,6 +75,7 @@ def replace_expression_in_file(file_path, target, replacing_string):
     target (string): Target to string to parse for and replace.
     replacing_string (string): String to replace the target string with.
     '''
+
     with open(file_path, 'r') as f:
         conts = f.read()
 
@@ -80,6 +97,7 @@ def get_results_dataframe_as_json(args):
     df_json (json object): A json object containing the dataframe created
     from the model file converted to json.
     '''
+
     _, sorted_index = parse_index(args.index_file)
     model_res = parse_model_results(args.model_file)
 
@@ -99,8 +117,8 @@ def create_directory(output):
 
     Parameters:
     output (string path): String path of desired output path.
-
     '''
+
     outdir = os.path.join(output, 'html-report')
     if not os.path.exists(outdir):
         os.mkdir(outdir, 7777)

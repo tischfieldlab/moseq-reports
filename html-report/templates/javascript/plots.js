@@ -7,19 +7,24 @@ var data = dataframe_json.data;
 
 const df = new DataFrame(data, columns);
 
+df.show()
+
 // This creates the dataframe used in creating the heatmap
 heatmap_df = df.groupBy('syllable', 'group').aggregate(g => g.stat.mean('usage'))
         .rename('aggregation', 'usage');
 
+heatmap_df.show()
+
 // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
-var cohortGroups = heatmap_df.filter(row => !row.get('group').includes('unk')).distinct('group');
-var sylUsage = heatmap_df.select('usage');
+var cohortGroups = heatmap_df.filter(row =>
+    !row.get('group').includes('unk')).distinct('group'); var sylUsage =
+        heatmap_df.select('usage');
 var sylsNum = heatmap_df.select('syllable');
 
 // set the dimensions and margins of the graph
 var margin = {top: 30, right: 30, bottom: 30, left: 30},
     width = 720 - margin.left - margin.right,
-    height = 720 - margin.top - margin.bottom;
+    height = 800 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#tester")
@@ -32,7 +37,7 @@ var svg = d3.select("#tester")
 // Build X scales and axis:
 var x = d3.scaleBand()
     .range([ 0, width ])
-    .domain(cohortGroups.toArray())
+    .domain(cohortGroups)
     .padding(0.01);
     svg.append("g")
     .attr("transform", "translate(0," + height + ")")
@@ -42,7 +47,7 @@ var x = d3.scaleBand()
 var y = d3.scaleBand()
     .range([ height, 0 ])
     .domain(sylsNum.toArray())
-    .padding(0.11);
+    .padding(.5);
     svg.append("g")
     .call(d3.axisLeft(y));
 

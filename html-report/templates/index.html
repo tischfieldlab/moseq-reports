@@ -14,10 +14,10 @@
    <link rel="stylesheet" href="css/style.css">
 
    <!-- Navigation Bar -->
-   <div id="navigationBar">
-	   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		   <a class="navbar-brand" href="/">MoSeq2 Results</a>
-		   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <div id="navigationBar">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		    <a class="navbar-brand" href="/">MoSeq2 Results</a>
+		    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 		   <span class="navbar-toggler-icon"></span>
 		   </button>
 		   <div class="collapse navbar-collapse" id="navbarText">
@@ -30,12 +30,20 @@
 	   </nav>
    </div>
 
-   <!-- Sample Plotly Plot -->
-   <div id="tester" style="display: flex;">
-	   <svg width="600" height="500"></svg>
-   </div>
-   
-   
+    <!-- Check boxes for the names of the groups -->
+    <div id="checkbox_container" class="container-fluid" style="padding:0px;">
+        <h4 id="checkbox_title">Group Selection</h4>
+        <ul id="group_box" class='form-check-input' style="list-style-type:none;">
+            <Div id="checkbox">
+        </ul>
+
+        <!-- Sample Plotly Plot -->
+        <div id="tester" style="padding:0px;">
+            <svg width="600" height="500"></svg>
+        </div>
+    </div>
+
    <script type='text/javascript' src='javascript/metadata.js'></script>
+   <script type='text/javascript' src='javascript/checkbox.js'></script>
    <script type='text/javascript' src='javascript/plots.js'></script>
 </html>
