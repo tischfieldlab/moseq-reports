@@ -8,7 +8,6 @@ from moseq2_viz.model.util import parse_model_results, \
 templates = r'templates'
 
 def main():
-    # Adding parser arguments
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-i', help='Index file to be used to create groups.',
