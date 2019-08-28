@@ -1,12 +1,12 @@
 <template>
-    <div class="navigation-bar">
-        <div>
-            <b-navbar type="dark" variant="dark">
-                <b-navbar-nav>
-                <b-navbar-brand href="#">Data Report</b-navbar-brand>
-                <b-nav-item href="#" right>Home</b-nav-item>
-                <b-nav-item href="#" right>Data</b-nav-item>
-                <b-nav-item href="#" left>Options</b-nav-item>
+    <div id="navigation-bar">
+        <div class="contianer">
+            <b-navbar toggleable="lg" type="dark" variant="dark">
+                <b-navbar-nav class="nav-text">
+                    <b-navbar-brand href="#">Data Report</b-navbar-brand>
+                    <b-nav-item href="#" right active>Home</b-nav-item>
+                    <b-nav-item href="#" right>Data</b-nav-item>
+                    <b-nav-item href="#" left>Options</b-nav-item>
                 </b-navbar-nav>
             </b-navbar>
         </div>
@@ -20,7 +20,4 @@ export default {
 </script>
 
 <style scoped>
-.b-nav-item {
-    color: white;
-}
 </style>
