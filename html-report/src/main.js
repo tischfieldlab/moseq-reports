@@ -14,7 +14,7 @@ Vue.use(BootstrapVue)
 
 var store = {
   state: {
-    cohort_groups: [
+    cohortGroups: [
       'M_+/+',
       'M_+/CT',
       'M_CT/CT',
@@ -22,7 +22,7 @@ var store = {
       'F_+/CT',
       'F_CT/CT'
     ],
-    selected_groups: []
+    debug: true
   }
 }
 
@@ -34,10 +34,5 @@ new Vue({
   template: '<App/>',
   data: {
     sharedState: store.state
-  },
-  methods: {
-    updateSelectedGroups: function (groups) {
-      this.sharedState.selected_groups = groups
-    }
   }
 })

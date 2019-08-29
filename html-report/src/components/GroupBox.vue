@@ -1,14 +1,18 @@
 <template>
-    <div id="groupbox-container" style="padding-top: 15px; padding-bottom: 15px;">
-        <b-card class="group-selection-box" border-variant="dark" header="Group Selection" align="center">
-            <b-card-text class="groupbox-contents">
-                <ul>
-                    <b-form-checkbox :value="group" unchecked-value="not_accepted" v-model="selected" v-on:update="sendGroupsToParent(this.selected)"
-                        v-for="group in this.$root.$data.sharedState.cohort_groups" :key="group.name">{{ group }}</b-form-checkbox>
-                </ul>
-                <div>Selected: <strong style="font-size: 13px;">{{ selected }}</strong></div>
+    <div id="groupbox-container" style="padding-top: 15px;">
+      <b-card title="Group Selection">
+          <b-form-group style="text-align: left;">
+            <b-card-text>
+              <b-form-checkbox-group v-model="selected" @change="onChange($event)"
+                :options="this.$root.$data.sharedState.cohortGroups" plain stacked>
+              </b-form-checkbox-group>
             </b-card-text>
-        </b-card>
+          </b-form-group>
+
+          <div style="text-align: left;">
+            Selected: <strong> {{ selected }} </strong>
+          </div>
+      </b-card>
     </div>
 </template>
 
@@ -17,19 +21,19 @@ export default {
   name: 'group-checkbox',
   data () {
     return {
-      selected: []
+      selected: this.$root.$data.sharedState.cohortGroups
     }
   },
   methods: {
-    sendGroupsToParent: function () {
-      this.$emit('updateSelectedGroups', this.selected)
+    onChange (event) {
+      if (this.$root.$data.sharedState.debug) {
+        console.log(event)
+      }
+      this.$emit('updateGroups', event)
     }
   }
 }
 </script>
 
 <style scoped>
-#groupbox-container .groupbox-contents {
-    text-align: left;
-}
 </style>

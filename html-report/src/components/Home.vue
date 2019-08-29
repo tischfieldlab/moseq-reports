@@ -1,14 +1,14 @@
 <template>
-  <div class="home">
+  <div class="home" style="align-content: left; left: 0;">
     <b-container id="grid-container">
       <b-row>
         <b-col cols="3">
-          <!-- This is where we populate the view with the
-            groups -->
-          <group-selection></group-selection>
+          <!-- This is where we populate the view with the groups -->
+          <group-selection @updateGroups="selected_groups=$event"></group-selection>
         </b-col>
         <b-col cols="8">This is where the heatmap will go. This is a separate component.</b-col>
       </b-row>
+      <div> {{ selected_groups }} </div>
     </b-container>
   </div>
 </template>
@@ -20,13 +20,21 @@ export default {
   name: 'home',
   components: {
     'group-selection': GroupBox
+  },
+  data () {
+    return {
+      selected_groups: []
+    }
   }
 }
 </script>
 
 <style scoped>
 .col {
-  height: 100px;
+  height: 100%;
   margin-top: 15px;
+}
+html, body {
+  height: 100%;
 }
 </style>
