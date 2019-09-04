@@ -13,6 +13,9 @@
   "dependencies": {
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.28",
+    "d3": "^5.11.0",
+    "dataframe-js": "^1.4.3",
+    "plotly.js-dist": "^1.49.4",
     "vue": "^2.6.10",
     "vue-router": "^3.0.1"
   },
