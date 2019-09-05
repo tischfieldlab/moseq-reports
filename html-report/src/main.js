@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import * as meta from './metadata/metadata'
 
 // Bootstrap Stuff
 import BootstrapVue from 'bootstrap-vue'
@@ -14,14 +15,7 @@ Vue.use(BootstrapVue)
 
 var store = {
   state: {
-    cohortGroups: [
-      'M_+/+',
-      'M_+/CT',
-      'M_CT/CT',
-      'F_+/+',
-      'F_+/CT',
-      'F_CT/CT'
-    ],
+    cohortGroups: meta.cohortGroups,
     debug: true
   }
 }

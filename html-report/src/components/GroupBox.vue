@@ -8,10 +8,6 @@
               </b-form-checkbox-group>
             </b-card-text>
           </b-form-group>
-
-          <div style="text-align: left;">
-            Selected: <strong> {{ selected }} </strong>
-          </div>
       </b-card>
     </div>
 </template>

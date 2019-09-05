@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from '@/views/Home'
-import Data from '@/views/Data'
-import Options from '@/views/Options'
+import Home from '@/views/HomePage'
+import Data from '@/views/DataPage'
+import Options from '@/views/OptionsPage'
 
 Vue.use(Router)
 
@@ -17,7 +17,7 @@ export default new Router({
     },
     {
       path: '/data',
-      name: 'data',
+      name: 'dataview',
       component: Data
     },
     {
