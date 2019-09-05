@@ -42,7 +42,7 @@ export default {
     background-color: #3c3d41;
     color: white;
     padding-top: 10px;
-    position: absolute;
+    position: bottom;
     bottom: 0;
     width: 100%;
 }

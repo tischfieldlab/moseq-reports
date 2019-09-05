@@ -1,18 +1,9 @@
 <template>
-  <div class="home" style="align-content: left; left: 0;">
-    <b-container id="grid-container">
-      <b-row>
-        <b-col cols="3">
-          <!-- This is where we populate the view with the groups -->
-          <group-selection @updateGroups="updateSelectedGroups($event)"></group-selection>
-        </b-col>
-        <b-col cols="8">
-          <!-- This is where the heatmap view will be -->
-          <heatmap-module :dataframe="this.dataframe"></heatmap-module>
-        </b-col>
-      </b-row>
-      <div> {{ selected_groups }} </div>
-    </b-container>
+  <div class="home" style="align-content: left; padding-left: 20px;">
+    <!-- This is where we populate the view with the groups -->
+    <group-selection @updateGroups="updateSelectedGroups($event)"></group-selection>
+    <!-- This is where the heatmap view will be -->
+    <heatmap-module :dataframe="this.dataframe"></heatmap-module>
   </div>
 </template>
 
