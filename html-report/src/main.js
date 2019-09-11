@@ -17,6 +17,11 @@ var store = {
   state: {
     cohortGroups: meta.cohortGroups,
     debug: true
+  },
+  load () {
+    // See if the metadata file exists
+    // Dynamically append script element to app body with
+    // path to the metadata file.
   }
 }
 
@@ -27,6 +32,6 @@ new Vue({
   components: { App },
   template: '<App/>',
   data: {
-    sharedState: store.state
+    sharedState: store.state // DataObject
   }
 })
