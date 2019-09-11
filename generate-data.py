@@ -30,7 +30,7 @@ def writeMetadataFile(df, dfGroups, outputPath):
     outputPath = os.path.join(outputPath, 'metadata.js')
     with open(outputPath, 'w') as f:
         f.write('export let dataframe_json = {}\n'.format(df))
-        f.write('export let dataframe_groups = {}'.format(dfGroups))
+        f.write('export let cohortGroups = {}'.format(dfGroups))
 #end writeMetadataFile
 
 def getGroupsFromDataframe(df):
