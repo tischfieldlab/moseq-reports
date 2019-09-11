@@ -18,8 +18,8 @@ def main():
     parser.set_defaults(indexFile=None, modelFile=None, outputPath=metadataPath)
     args = parser.parse_args()
 
-    # df = convertModelToJson(args)
-    # dfGroups = getGroupsFromDataframe(df)
+    df = convertModelToJson(args)
+    dfGroups = getGroupsFromDataframe(df)
 
     writeMetadataFile('fasdfasd', 'dfasdfgsadfasdf', args.outputPath)
 #end main()
