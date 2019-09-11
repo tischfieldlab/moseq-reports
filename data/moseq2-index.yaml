@@ -1,0 +1,2570 @@
+files:
+- path:
+  - _aggregate-results/2019-08-01_10-29-24_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-37_results_00.h5
+  - _aggregate-results/2019-08-01_10-29-24_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-37_results_00.yaml
+  uuid: 903c32a5-d31a-47cb-bf9a-abc868d36c46
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T10:29:24.5434758-04:00'
+    SubjectName: 190531-Celsr3-L3-M-37
+- path:
+  - _aggregate-results/2019-08-02_15-39-05_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-70_results_00.h5
+  - _aggregate-results/2019-08-02_15-39-05_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-70_results_00.yaml
+  uuid: b78c9b2e-b62f-4604-af62-146301157ad7
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190603
+    StartTime: '2019-08-02T15:39:05.2691563-04:00'
+    SubjectName: 190603-Celsr3-L3-M-70
+- path:
+  - _aggregate-results/2019-03-08_15-14-44_r774_h_1-mo_en#23_f_results_00.h5
+  - _aggregate-results/2019-03-08_15-14-44_r774_h_1-mo_en#23_f_results_00.yaml
+  uuid: 3da20c11-a678-46f5-95df-8e8d3ddc3f14
+  group: default
+  metadata:
+    ApparatusName: CHI-moseq1
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-08T15:14:44.5493915-05:00'
+    SubjectName: EN#23_f
+- path:
+  - _aggregate-results/2019-08-02_15-38-47_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-69_results_00.h5
+  - _aggregate-results/2019-08-02_15-38-47_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-69_results_00.yaml
+  uuid: f32d7d38-2db5-42b0-bb58-22a62579c9a5
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190603
+    StartTime: '2019-08-02T15:38:47.4268639-04:00'
+    SubjectName: 190603-Celsr3-L3-M-69
+- path:
+  - _aggregate-results/2019-07-04_12-25-29_190704-_celsr3-r774_h-l3-m-coh190503_celsr3-l3-m-15_results_00.h5
+  - _aggregate-results/2019-07-04_12-25-29_190704-_celsr3-r774_h-l3-m-coh190503_celsr3-l3-m-15_results_00.yaml
+  uuid: 85a63e9c-1001-4027-aaf5-d5dee6dbda1f
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190704-Celsr3 R774H L3-M-coh190503
+    StartTime: '2019-07-04T12:25:29.5055579-04:00'
+    SubjectName: Celsr3-L3-M-15
+- path:
+  - _aggregate-results/2019-03-08_14-21-19_r774_h_1-mo_en#21_m_results_00.h5
+  - _aggregate-results/2019-03-08_14-21-19_r774_h_1-mo_en#21_m_results_00.yaml
+  uuid: 4ea59ba3-b9e9-4a6b-b5c4-baf627f08e46
+  group: default
+  metadata:
+    ApparatusName: CHI-moseq1
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-08T14:21:19.2812416-05:00'
+    SubjectName: EN#21_m
+- path:
+  - _aggregate-results/2019-08-01_15-58-16_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-58_results_00.h5
+  - _aggregate-results/2019-08-01_15-58-16_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-58_results_00.yaml
+  uuid: 2d42a4ed-a1a9-473b-b628-0d465f169359
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T15:58:16.7677501-04:00'
+    SubjectName: 190531-Celsr3-L3-F-58
+- path:
+  - _aggregate-results/2018-10-12_12-48-49_2018-10-12__celsr3_rh-m_cohort0817_rh-77_results_00.h5
+  - _aggregate-results/2018-10-12_12-48-49_2018-10-12__celsr3_rh-m_cohort0817_rh-77_results_00.yaml
+  uuid: c96654cd-5033-439b-8d30-968f4305bc4a
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-M_cohort0817
+    StartTime: '2018-10-12T12:48:49.645599-04:00'
+    SubjectName: RH-77
+- path:
+  - _aggregate-results/2019-07-25_12-33-50_190725-_celsr3-l3-f-coh190526_celsr3-r774_h-l3-f-27_results_00.h5
+  - _aggregate-results/2019-07-25_12-33-50_190725-_celsr3-l3-f-coh190526_celsr3-r774_h-l3-f-27_results_00.yaml
+  uuid: 708d264d-c312-437e-908c-fe063b3e7261
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-F-coh190526
+    StartTime: '2019-07-25T12:33:50.9083869-04:00'
+    SubjectName: Celsr3-R774H-L3-F-27
+- path:
+  - _aggregate-results/2018-11-02_15-32-45_2018-10-12__celsr3_rh-m_cohort0817_rh-88_results_00.h5
+  - _aggregate-results/2018-11-02_15-32-45_2018-10-12__celsr3_rh-m_cohort0817_rh-88_results_00.yaml
+  uuid: df7f6d71-889e-42b6-962c-f8cc0ce3ae6a
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-M_cohort0817
+    StartTime: '2018-11-02T15:32:45.7937717-04:00'
+    SubjectName: RH-88
+- path:
+  - _aggregate-results/2019-03-08_16-08-32_r774_h_1-mo_en#25_f_results_00.h5
+  - _aggregate-results/2019-03-08_16-08-32_r774_h_1-mo_en#25_f_results_00.yaml
+  uuid: 96e1dcd1-fcc7-42cc-b0b9-1a95be766b86
+  group: default
+  metadata:
+    ApparatusName: CHI-moseq1
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-08T16:08:32.7279707-05:00'
+    SubjectName: EN#25_f
+- path:
+  - _aggregate-results/2019-08-01_11-30-40_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-40_results_00.h5
+  - _aggregate-results/2019-08-01_11-30-40_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-40_results_00.yaml
+  uuid: 39c1ee85-5859-472b-9394-3b1e0877c859
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T11:30:40.9382166-04:00'
+    SubjectName: 190531-Celsr3-L3-M-40
+- path:
+  - _aggregate-results/2019-08-01_11-58-00_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-42_results_00.h5
+  - _aggregate-results/2019-08-01_11-58-00_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-42_results_00.yaml
+  uuid: f2534d42-d157-4374-b2ba-c80a98802a54
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T11:58:00.4668497-04:00'
+    SubjectName: 190531-Celsr3-L3-M-42
+- path:
+  - _aggregate-results/2019-08-02_14-11-04_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-64_results_00.h5
+  - _aggregate-results/2019-08-02_14-11-04_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-64_results_00.yaml
+  uuid: 5fff0f3e-3d2f-40e4-9884-00b025f93f5d
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190602
+    StartTime: '2019-08-02T14:11:04.969326-04:00'
+    SubjectName: 190602-Celsr3-L3-M-64
+- path:
+  - _aggregate-results/2019-08-01_14-35-07_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-52_results_00.h5
+  - _aggregate-results/2019-08-01_14-35-07_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-52_results_00.yaml
+  uuid: 0d61751a-d8e2-4d43-b177-7774f85964f1
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T14:35:07.5716451-04:00'
+    SubjectName: 190531-Celsr3-L3-F-52
+- path:
+  - _aggregate-results/2018-11-02_15-56-51_2018-10-12__celsr3_rh-f_cohort0817_rh-89_results_00.h5
+  - _aggregate-results/2018-11-02_15-56-51_2018-10-12__celsr3_rh-f_cohort0817_rh-89_results_00.yaml
+  uuid: 8c5c27d7-57ec-4b26-90a2-407f2b95329b
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-f_cohort0817
+    StartTime: '2018-11-02T15:56:51.1848652-04:00'
+    SubjectName: RH-89
+- path:
+  - _aggregate-results/2018-10-05_14-26-52_2018-10-05__celsr3_rh-m_cohort0805_rh-66_m_results_00.h5
+  - _aggregate-results/2018-10-05_14-26-52_2018-10-05__celsr3_rh-m_cohort0805_rh-66_m_results_00.yaml
+  uuid: 78980f68-40fc-4790-8e84-0f18077ee46e
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-05_Celsr3RH-m_cohort0805
+    StartTime: '2018-10-05T14:26:52.5963238-04:00'
+    SubjectName: RH-66M
+- path:
+  - _aggregate-results/2019-08-15_10-45-24_190815-_celsr3-r774_h-l3-m-coh190612_190612-_celsr3-l3-m-88_results_00.h5
+  - _aggregate-results/2019-08-15_10-45-24_190815-_celsr3-r774_h-l3-m-coh190612_190612-_celsr3-l3-m-88_results_00.yaml
+  uuid: b8ad5299-896d-49d1-a750-a7aa6f8fdd4f
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-M-coh190612
+    StartTime: '2019-08-15T10:45:24.5337815-04:00'
+    SubjectName: 190612-Celsr3-L3-M-88
+- path:
+  - _aggregate-results/2019-08-15_10-47-11_190815-_celsr3-r774_h-l3-f-coh190611_190611-_celsr3-l3-f-89_results_00.h5
+  - _aggregate-results/2019-08-15_10-47-11_190815-_celsr3-r774_h-l3-f-coh190611_190611-_celsr3-l3-f-89_results_00.yaml
+  uuid: c8c9db46-daba-4c87-ad87-d344f4636278
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190611
+    StartTime: '2019-08-15T10:47:11.3879519-04:00'
+    SubjectName: 190611-Celsr3-L3-F-89
+- path:
+  - _aggregate-results/2019-06-14_11-11-39_190614-_celsr3-r774_h-l3-f-190412_celsr3-l3-f-3_results_00.h5
+  - _aggregate-results/2019-06-14_11-11-39_190614-_celsr3-r774_h-l3-f-190412_celsr3-l3-f-3_results_00.yaml
+  uuid: ecdfae70-98f3-4c31-9659-617e974ba7e9
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190614-Celsr3 R774H L3-F-190412
+    StartTime: '2019-06-14T11:11:39.319647-04:00'
+    SubjectName: Celsr3-L3-F-3
+- path:
+  - _aggregate-results/2019-06-24_11-05-14_190624-_celsr3-r774_h-l3-f-190425_celsr3-l3-f-9_results_00.h5
+  - _aggregate-results/2019-06-24_11-05-14_190624-_celsr3-r774_h-l3-f-190425_celsr3-l3-f-9_results_00.yaml
+  uuid: fbc9ba7c-a3d2-46fb-863d-f280ea93dd91
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190624-Celsr3 R774H L3-F-190425
+    StartTime: '2019-06-24T11:05:14.8327375-04:00'
+    SubjectName: Celsr3-L3-F-9
+- path:
+  - _aggregate-results/2019-08-01_12-27-50_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-44_results_00.h5
+  - _aggregate-results/2019-08-01_12-27-50_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-44_results_00.yaml
+  uuid: 268c10ed-563c-439b-a7de-d585e59ab715
+  group: M_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T12:27:50.3400306-04:00'
+    SubjectName: 190531-Celsr3-L3-M-44
+- path:
+  - _aggregate-results/2019-08-01_10-58-04_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-39_results_00.h5
+  - _aggregate-results/2019-08-01_10-58-04_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-39_results_00.yaml
+  uuid: 46959256-9389-402d-a27d-ac4f67f1bac1
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T10:58:04.7945708-04:00'
+    SubjectName: 190531-Celsr3-L3-M-39
+- path:
+  - _aggregate-results/2019-07-04_13-23-09_190704-_celsr3-r774_h-l3-m-190503_celsr3-l3-m-18_results_00.h5
+  - _aggregate-results/2019-07-04_13-23-09_190704-_celsr3-r774_h-l3-m-190503_celsr3-l3-m-18_results_00.yaml
+  uuid: c7257a68-e18c-4315-96b5-8d12415a7fa4
+  group: M_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190704-Celsr3 R774H L3-M-190503
+    StartTime: '2019-07-04T13:23:09.7383037-04:00'
+    SubjectName: Celsr3-L3-M-18
+- path:
+  - _aggregate-results/2018-10-05_13-07-07_2018-10-05__celsr3_rh-f_cohort0805_rh-60_f_results_00.h5
+  - _aggregate-results/2018-10-05_13-07-07_2018-10-05__celsr3_rh-f_cohort0805_rh-60_f_results_00.yaml
+  uuid: 1e02529c-59f7-4582-bad4-f849f8ce0530
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-05_Celsr3RH-f_cohort0805
+    StartTime: '2018-10-05T13:07:07.6722814-04:00'
+    SubjectName: RH-60F
+- path:
+  - _aggregate-results/2019-07-04_12-55-55_190704-_celsr3-r774_h-l3-m-coh190503_celsr3-l3-m-17_results_00.h5
+  - _aggregate-results/2019-07-04_12-55-55_190704-_celsr3-r774_h-l3-m-coh190503_celsr3-l3-m-17_results_00.yaml
+  uuid: 523ed5af-6d2f-470b-8ac2-f34b3c1bb884
+  group: M_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190704-Celsr3 R774H L3-M-coh190503
+    StartTime: '2019-07-04T12:55:55.2164563-04:00'
+    SubjectName: Celsr3-L3-M-17
+- path:
+  - _aggregate-results/2019-03-07_14-03-07_r774_h_1-mo_et#434_f_results_00.h5
+  - _aggregate-results/2019-03-07_14-03-07_r774_h_1-mo_et#434_f_results_00.yaml
+  uuid: d2838a76-ee1c-4423-9a28-8ca10d7ab4ea
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-07T14:03:07.9567481-05:00'
+    SubjectName: ET#434_f
+- path:
+  - _aggregate-results/2019-08-15_13-27-10_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-98_results_00.h5
+  - _aggregate-results/2019-08-15_13-27-10_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-98_results_00.yaml
+  uuid: 056d223f-12c0-4216-827e-9c5a454efc4f
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190612
+    StartTime: '2019-08-15T13:27:10.7419435-04:00'
+    SubjectName: 190612-Celsr3-L3-F-98
+- path:
+  - _aggregate-results/2018-11-02_15-08-35_2018-10-12__celsr3_rh-m_cohort0817_rh-86_results_00.h5
+  - _aggregate-results/2018-11-02_15-08-35_2018-10-12__celsr3_rh-m_cohort0817_rh-86_results_00.yaml
+  uuid: b23901af-5b10-4c01-8a2f-d851d2e84a36
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-M_cohort0817
+    StartTime: '2018-11-02T15:08:35.2447012-04:00'
+    SubjectName: RH-86
+- path:
+  - _aggregate-results/2019-07-25_14-09-16_190725-_celsr3-l3-f-coh190526_celsr3-r774_h-l3-f-33_results_00.h5
+  - _aggregate-results/2019-07-25_14-09-16_190725-_celsr3-l3-f-coh190526_celsr3-r774_h-l3-f-33_results_00.yaml
+  uuid: b0c3a448-0d30-4f5e-b1fc-d4f399e63645
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-F-coh190526
+    StartTime: '2019-07-25T14:09:16.0828979-04:00'
+    SubjectName: Celsr3-R774H-L3-F-33
+- path:
+  - _aggregate-results/2019-07-25_13-41-20_190725-_celsr3-l3-f-coh190526_celsr3-r774_h-l3-f-31_results_00.h5
+  - _aggregate-results/2019-07-25_13-41-20_190725-_celsr3-l3-f-coh190526_celsr3-r774_h-l3-f-31_results_00.yaml
+  uuid: 166734fa-61be-4e80-94c7-cf0bc094915d
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-F-coh190526
+    StartTime: '2019-07-25T13:41:20.2121053-04:00'
+    SubjectName: Celsr3-R774H-L3-F-31
+- path:
+  - _aggregate-results/2019-08-01_11-30-51_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-41_results_00.h5
+  - _aggregate-results/2019-08-01_11-30-51_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-41_results_00.yaml
+  uuid: 6711610b-4679-472d-a256-87ccf7789a7f
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T11:30:51.5574951-04:00'
+    SubjectName: 190531-Celsr3-L3-M-41
+- path:
+  - _aggregate-results/2019-07-25_10-50-58_190725-_celsr3-l3-m-coh190526_celsr3-r774_h-l3-m-21_results_00.h5
+  - _aggregate-results/2019-07-25_10-50-58_190725-_celsr3-l3-m-coh190526_celsr3-r774_h-l3-m-21_results_00.yaml
+  uuid: 127e289a-6bfb-4371-ab90-dafcf5affc4c
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-M-coh190526
+    StartTime: '2019-07-25T10:50:58.6118362-04:00'
+    SubjectName: Celsr3-R774H-L3-M-21
+- path:
+  - _aggregate-results/2019-07-25_13-07-59_190725-_celsr3-l3-f-coh190526_celsr3-r774-l3-f-30_results_00.h5
+  - _aggregate-results/2019-07-25_13-07-59_190725-_celsr3-l3-f-coh190526_celsr3-r774-l3-f-30_results_00.yaml
+  uuid: 43ba4625-15a1-4006-b4a6-7bd170ec6365
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-F-coh190526
+    StartTime: '2019-07-25T13:07:59.4956466-04:00'
+    SubjectName: Celsr3-R774-L3-F-30
+- path:
+  - _aggregate-results/2019-08-09_11-37-10_190809-_celsr3-r774_h-l3-m-coh190607_190607-_celsr3-l3-m-78_results_00.h5
+  - _aggregate-results/2019-08-09_11-37-10_190809-_celsr3-r774_h-l3-m-coh190607_190607-_celsr3-l3-m-78_results_00.yaml
+  uuid: c0edb8aa-2eeb-47c7-946a-2dee004e281d
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-M-coh190607
+    StartTime: '2019-08-09T11:37:10.4819732-04:00'
+    SubjectName: 190607-Celsr3-L3-M-78
+- path:
+  - _aggregate-results/2018-12-04_12-44-36_2018-12-04__celsr3_r774_h-m_cohort0925_r774_h-99_results_00.h5
+  - _aggregate-results/2018-12-04_12-44-36_2018-12-04__celsr3_r774_h-m_cohort0925_r774_h-99_results_00.yaml
+  uuid: 4c23c2be-7a84-4ca4-9661-b4f5a160e126
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-12-04_Celsr3R774H-M_cohort0925
+    StartTime: '2018-12-04T12:44:36.7330985-05:00'
+    SubjectName: R774H-99
+- path:
+  - _aggregate-results/2019-08-02_15-12-36_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-67_results_00.h5
+  - _aggregate-results/2019-08-02_15-12-36_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-67_results_00.yaml
+  uuid: db9a27d1-b2a9-443f-89dd-c14a836fc79c
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190603
+    StartTime: '2019-08-02T15:12:36.8888901-04:00'
+    SubjectName: 190603-Celsr3-L3-M-67
+- path:
+  - _aggregate-results/2019-03-07_13-35-53_r774_h_1-mo_et#433_f_results_00.h5
+  - _aggregate-results/2019-03-07_13-35-53_r774_h_1-mo_et#433_f_results_00.yaml
+  uuid: ceb1c59c-53a4-4cba-8b99-174590735501
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-07T13:35:53.3867095-05:00'
+    SubjectName: ET#433_f
+- path:
+  - _aggregate-results/2019-07-25_12-34-37_190725-_celsr3-l3-f-coh190526_celsr3-r774-l3-f-28_results_00.h5
+  - _aggregate-results/2019-07-25_12-34-37_190725-_celsr3-l3-f-coh190526_celsr3-r774-l3-f-28_results_00.yaml
+  uuid: c728615c-2fe4-45dc-b7b1-55254911656d
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-F-coh190526
+    StartTime: '2019-07-25T12:34:37.1570384-04:00'
+    SubjectName: Celsr3-R774-L3-F-28
+- path:
+  - _aggregate-results/2019-08-01_14-35-17_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-53_results_00.h5
+  - _aggregate-results/2019-08-01_14-35-17_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-53_results_00.yaml
+  uuid: e4282bed-b970-4769-9ee7-5735b83afe6d
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T14:35:17.6989396-04:00'
+    SubjectName: 190531-Celsr3-L3-F-53
+- path:
+  - _aggregate-results/2019-08-01_15-30-12_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-56_results_00.h5
+  - _aggregate-results/2019-08-01_15-30-12_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-56_results_00.yaml
+  uuid: b1b9f226-8ad3-4429-87cd-9626c2be864a
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T15:30:12.605768-04:00'
+    SubjectName: 190531-Celsr3-L3-F-56
+- path:
+  - _aggregate-results/2018-11-02_16-21-19_2018-10-12__celsr3_rh-f_cohort0817_rh-91_results_00.h5
+  - _aggregate-results/2018-11-02_16-21-19_2018-10-12__celsr3_rh-f_cohort0817_rh-91_results_00.yaml
+  uuid: 55013288-45e6-4191-ab6d-af6bd6dd70c0
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-f_cohort0817
+    StartTime: '2018-11-02T16:21:19.1205207-04:00'
+    SubjectName: RH-91
+- path:
+  - _aggregate-results/2019-07-25_11-59-44_190725-_celsr3-l3-m-coh190526_celsr3-r774_h-l3-m-25_results_00.h5
+  - _aggregate-results/2019-07-25_11-59-44_190725-_celsr3-l3-m-coh190526_celsr3-r774_h-l3-m-25_results_00.yaml
+  uuid: 54fd215a-be6f-40ff-b08b-fafef5e4f80e
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-M-coh190526
+    StartTime: '2019-07-25T11:59:44.093076-04:00'
+    SubjectName: Celsr3-R774H-L3-M-25
+- path:
+  - _aggregate-results/2019-08-02_16-09-06_190802-_celsr3-r774_h-l3-f-coh190603_190603-_celsr3-l3-f-72_results_00.h5
+  - _aggregate-results/2019-08-02_16-09-06_190802-_celsr3-r774_h-l3-f-coh190603_190603-_celsr3-l3-f-72_results_00.yaml
+  uuid: 8e7fe14f-f66c-4309-9a0b-104073d8ad52
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-F-coh190603
+    StartTime: '2019-08-02T16:09:06.3911201-04:00'
+    SubjectName: 190603-Celsr3-L3-F-72
+- path:
+  - _aggregate-results/2018-10-05_13-57-24_2018-10-05__celsr3_rh-m_cohort0805_rh-64_m_results_00.h5
+  - _aggregate-results/2018-10-05_13-57-24_2018-10-05__celsr3_rh-m_cohort0805_rh-64_m_results_00.yaml
+  uuid: 6e1d357b-e274-4ba3-88b6-7cc1840b2c4e
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-05_Celsr3RH-m_cohort0805
+    StartTime: '2018-10-05T13:57:24.0023457-04:00'
+    SubjectName: RH-64M
+- path:
+  - _aggregate-results/2019-08-02_16-08-59_190802-_celsr3-r774_h-l3-f-coh190603_190603-_celsr3-l3-f-71_results_00.h5
+  - _aggregate-results/2019-08-02_16-08-59_190802-_celsr3-r774_h-l3-f-coh190603_190603-_celsr3-l3-f-71_results_00.yaml
+  uuid: 9d1ae443-bbc1-4fdf-a87c-9ebdd09677c8
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-F-coh190603
+    StartTime: '2019-08-02T16:08:59.2601105-04:00'
+    SubjectName: 190603-Celsr3-L3-F-71
+- path:
+  - _aggregate-results/2019-07-25_10-18-04_190725-_celsr3-l3-m-coh190526_celsr3-r774-l3-m-20_results_00.h5
+  - _aggregate-results/2019-07-25_10-18-04_190725-_celsr3-l3-m-coh190526_celsr3-r774-l3-m-20_results_00.yaml
+  uuid: 2fd943ee-5701-4231-ab1e-f4b9d8e1c59c
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-M-coh190526
+    StartTime: '2019-07-25T10:18:04.1466387-04:00'
+    SubjectName: Celsr3-R774-L3-M-20
+- path:
+  - _aggregate-results/2019-08-15_09-41-21_190815-_celsr3-r774_h-l3-m-coh190611_190611-_celsr3-l3-m-85_results_00.h5
+  - _aggregate-results/2019-08-15_09-41-21_190815-_celsr3-r774_h-l3-m-coh190611_190611-_celsr3-l3-m-85_results_00.yaml
+  uuid: 8d22578d-d6f4-40ec-9499-00954c33d18c
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-M-coh190611
+    StartTime: '2019-08-15T09:41:21.0000767-04:00'
+    SubjectName: 190611-Celsr3-L3-M-85
+- path:
+  - _aggregate-results/2019-07-04_11-16-42_190704-_celsr3-r774_h-l3-f-190503_celsr3-l3-f-10_results_00.h5
+  - _aggregate-results/2019-07-04_11-16-42_190704-_celsr3-r774_h-l3-f-190503_celsr3-l3-f-10_results_00.yaml
+  uuid: 89958792-7c1d-4303-927f-4e123e76bf36
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190704-Celsr3 R774H L3-F-190503
+    StartTime: '2019-07-04T11:16:42.6008297-04:00'
+    SubjectName: Celsr3-L3-F-10
+- path:
+  - _aggregate-results/2019-03-08_13-53-04_r774_h_1-mo_en#20_m_results_00.h5
+  - _aggregate-results/2019-03-08_13-53-04_r774_h_1-mo_en#20_m_results_00.yaml
+  uuid: 975e9a70-a822-46bc-a45e-ccb2d30c96b0
+  group: default
+  metadata:
+    ApparatusName: CHI-moseq1
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-08T13:53:04.4893476-05:00'
+    SubjectName: EN#20_m
+- path:
+  - _aggregate-results/2019-08-01_13-01-54_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-46_results_00.h5
+  - _aggregate-results/2019-08-01_13-01-54_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-46_results_00.yaml
+  uuid: 6691d21d-912a-4854-924a-5862dca41f16
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T13:01:54.5797842-04:00'
+    SubjectName: 190531-Celsr3-L3-F-46
+- path:
+  - _aggregate-results/2019-07-25_13-41-48_190725-_celsr3-l3-f-coh190526_celsr3-r774-l3-f-32_results_00.h5
+  - _aggregate-results/2019-07-25_13-41-48_190725-_celsr3-l3-f-coh190526_celsr3-r774-l3-f-32_results_00.yaml
+  uuid: 3804752a-77e8-4eb0-aa96-ccdee1685996
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-F-coh190526
+    StartTime: '2019-07-25T13:41:48.0488699-04:00'
+    SubjectName: Celsr3-R774-L3-F-32
+- path:
+  - _aggregate-results/2019-08-15_11-54-00_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-92_results_00.h5
+  - _aggregate-results/2019-08-15_11-54-00_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-92_results_00.yaml
+  uuid: d9831b25-dbad-436e-af1f-89fe0f98b3d3
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190612
+    StartTime: '2019-08-15T11:54:00.8316799-04:00'
+    SubjectName: 190612-Celsr3-L3-F-92
+- path:
+  - _aggregate-results/2019-08-01_13-31-00_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-49_results_00.h5
+  - _aggregate-results/2019-08-01_13-31-00_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-49_results_00.yaml
+  uuid: 0554c5c7-b019-4ffd-8854-3a3bdbcbcfb0
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T13:31:00.084193-04:00'
+    SubjectName: 190531-Celsr3-L3-F-49
+- path:
+  - _aggregate-results/2019-08-01_10-29-07_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-36_results_00.h5
+  - _aggregate-results/2019-08-01_10-29-07_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-36_results_00.yaml
+  uuid: 4bfbee3c-6ea4-4173-98dc-a6dcfa7e6817
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T10:29:07.8470014-04:00'
+    SubjectName: 190531-Celsr3-L3-M-36
+- path:
+  - _aggregate-results/2018-10-05_13-32-00_2018-10-05__celsr3_rh-f_cohort0805_rh-62_f_results_00.h5
+  - _aggregate-results/2018-10-05_13-32-00_2018-10-05__celsr3_rh-f_cohort0805_rh-62_f_results_00.yaml
+  uuid: de1e545e-fc9e-43d2-84e9-8158d69f344b
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-05_Celsr3RH-f_cohort0805
+    StartTime: '2018-10-05T13:32:00.6700566-04:00'
+    SubjectName: RH-62F
+- path:
+  - _aggregate-results/2019-08-15_10-12-06_190815-_celsr3-r774_h-l3-m-coh190611_190611-_celsr3-l3-m-86_results_00.h5
+  - _aggregate-results/2019-08-15_10-12-06_190815-_celsr3-r774_h-l3-m-coh190611_190611-_celsr3-l3-m-86_results_00.yaml
+  uuid: df932888-3e6f-4f10-b407-4cd63bc0ce9e
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-M-coh190611
+    StartTime: '2019-08-15T10:12:06.0916742-04:00'
+    SubjectName: 190611-Celsr3-L3-M-86
+- path:
+  - _aggregate-results/2019-08-15_09-40-44_190815-_celsr3-r774_h-l3-m-coh190611_190611-_celsr3-l3-m-84_results_00.h5
+  - _aggregate-results/2019-08-15_09-40-44_190815-_celsr3-r774_h-l3-m-coh190611_190611-_celsr3-l3-m-84_results_00.yaml
+  uuid: d2f21767-e8a9-43f3-af58-1a369ba0551c
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-M-coh190611
+    StartTime: '2019-08-15T09:40:44.8822558-04:00'
+    SubjectName: 190611-Celsr3-L3-M-84
+- path:
+  - _aggregate-results/2019-06-14_10-34-37_190614-_celsr3-r774_h-l3-m-190412_celsr3-l3-m-1_results_00.h5
+  - _aggregate-results/2019-06-14_10-34-37_190614-_celsr3-r774_h-l3-m-190412_celsr3-l3-m-1_results_00.yaml
+  uuid: 6c6bade4-47f8-43b5-a97f-409283fca3cb
+  group: M_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190614-Celsr3 R774H L3-M-190412
+    StartTime: '2019-06-14T10:34:37.5034591-04:00'
+    SubjectName: Celsr3-L3-M-1
+- path:
+  - _aggregate-results/2019-06-14_11-45-40_190614-_celsr3-r774_h-l3-f-coh190412_celsr3-l3-f-6_results_00.h5
+  - _aggregate-results/2019-06-14_11-45-40_190614-_celsr3-r774_h-l3-f-coh190412_celsr3-l3-f-6_results_00.yaml
+  uuid: d4550249-f42c-490d-a9e8-af2c9183aed0
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190614-Celsr3 R774H L3-F-coh190412
+    StartTime: '2019-06-14T11:45:40.9267254-04:00'
+    SubjectName: Celsr3-L3-F-6
+- path:
+  - _aggregate-results/2019-08-02_13-42-22_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-61_results_00.h5
+  - _aggregate-results/2019-08-02_13-42-22_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-61_results_00.yaml
+  uuid: 7bb9bc16-8120-4855-b6e9-54389e71c1a3
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190602
+    StartTime: '2019-08-02T13:42:22.1867689-04:00'
+    SubjectName: 190602-Celsr3-L3-M-61
+- path:
+  - _aggregate-results/2019-08-01_13-30-30_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-48_results_00.h5
+  - _aggregate-results/2019-08-01_13-30-30_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-48_results_00.yaml
+  uuid: 10025119-a944-429d-8359-2c4ac893b77c
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T13:30:30.8412802-04:00'
+    SubjectName: 190531-Celsr3-L3-F-48
+- path:
+  - _aggregate-results/2019-08-01_14-07-45_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-51_results_00.h5
+  - _aggregate-results/2019-08-01_14-07-45_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-51_results_00.yaml
+  uuid: ffcd1ba1-e2d8-4bb8-b75e-1969e98fa155
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T14:07:45.5930136-04:00'
+    SubjectName: 190531-Celsr3-L3-F-51
+- path:
+  - _aggregate-results/2019-08-09_10-40-12_190809-_celsr3-r774_h-l3-m-coh190604_190604-_celsr3-l3-m-74_results_00.h5
+  - _aggregate-results/2019-08-09_10-40-12_190809-_celsr3-r774_h-l3-m-coh190604_190604-_celsr3-l3-m-74_results_00.yaml
+  uuid: 69aa81f9-080a-4664-85d5-17e7740565f6
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-M-coh190604
+    StartTime: '2019-08-09T10:40:12.2844366-04:00'
+    SubjectName: 190604-Celsr3-L3-M-74
+- path:
+  - _aggregate-results/2019-08-01_09-59-20_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-35_results_00.h5
+  - _aggregate-results/2019-08-01_09-59-20_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-35_results_00.yaml
+  uuid: c066aa18-2a43-4318-85d0-027142779096
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T09:59:20.6093198-04:00'
+    SubjectName: 190531-Celsr3-L3-M-35
+- path:
+  - _aggregate-results/2019-08-09_12-09-56_190809-_celsr3-r774_h-l3-f-coh190607_190607-_celsr3-l3-f-81_results_00.h5
+  - _aggregate-results/2019-08-09_12-09-56_190809-_celsr3-r774_h-l3-f-coh190607_190607-_celsr3-l3-f-81_results_00.yaml
+  uuid: 6dd8ef41-abed-4d13-aca4-4379f862c571
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-F-coh190607
+    StartTime: '2019-08-09T12:09:56.1349765-04:00'
+    SubjectName: 190607-Celsr3-L3-F-81
+- path:
+  - _aggregate-results/2019-07-25_12-00-20_190725-_celsr3-l3-m-coh190526_celsr3-r774-l3-m-26_results_00.h5
+  - _aggregate-results/2019-07-25_12-00-20_190725-_celsr3-l3-m-coh190526_celsr3-r774-l3-m-26_results_00.yaml
+  uuid: 34b8ed91-65b2-4bb3-8745-9d0176f60dfd
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-M-coh190526
+    StartTime: '2019-07-25T12:00:20.6424514-04:00'
+    SubjectName: Celsr3-R774-L3-M-26
+- path:
+  - _aggregate-results/2019-06-14_11-44-56_190614-_celsr3-r774_h-l3-f-190412_celsr3-l3-f-5_results_00.h5
+  - _aggregate-results/2019-06-14_11-44-56_190614-_celsr3-r774_h-l3-f-190412_celsr3-l3-f-5_results_00.yaml
+  uuid: f956e690-c654-422e-8773-ef26bffbdccc
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190614-Celsr3 R774H L3-F-190412
+    StartTime: '2019-06-14T11:44:56.9905626-04:00'
+    SubjectName: Celsr3-L3-F-5
+- path:
+  - _aggregate-results/2019-07-04_12-55-39_190704-_celsr3-r774_h-l3-m-190503_celsr3-l3-m-16_results_00.h5
+  - _aggregate-results/2019-07-04_12-55-39_190704-_celsr3-r774_h-l3-m-190503_celsr3-l3-m-16_results_00.yaml
+  uuid: a0c3bcc3-5b2f-4df3-b802-80604e8037fa
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190704-Celsr3 R774H L3-M-190503
+    StartTime: '2019-07-04T12:55:39.3836125-04:00'
+    SubjectName: Celsr3-L3-M-16
+- path:
+  - _aggregate-results/2019-07-25_13-07-31_190725-_celsr3-l3-f-coh190526_celsr3-r774_h-l3-f-29_results_00.h5
+  - _aggregate-results/2019-07-25_13-07-31_190725-_celsr3-l3-f-coh190526_celsr3-r774_h-l3-f-29_results_00.yaml
+  uuid: e33bbebd-2678-47d6-a8e8-d8167ffeeef4
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-F-coh190526
+    StartTime: '2019-07-25T13:07:31.9583356-04:00'
+    SubjectName: Celsr3-R774H-L3-F-29
+- path:
+  - _aggregate-results/2019-08-02_13-42-31_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-62_results_00.h5
+  - _aggregate-results/2019-08-02_13-42-31_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-62_results_00.yaml
+  uuid: a2105f5a-2ad4-455f-9c16-838cd1daf66e
+  group: M_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190602
+    StartTime: '2019-08-02T13:42:31.2726118-04:00'
+    SubjectName: 190602-Celsr3-L3-M-62
+- path:
+  - _aggregate-results/2018-10-12_12-23-31_2018-10-12__celsr3_rh-m_cohort0817_rh-75_results_00.h5
+  - _aggregate-results/2018-10-12_12-23-31_2018-10-12__celsr3_rh-m_cohort0817_rh-75_results_00.yaml
+  uuid: 7a0f4931-f2aa-49d3-9456-8f9390c42f39
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-M_cohort0817
+    StartTime: '2018-10-12T12:23:31.9225813-04:00'
+    SubjectName: RH-75
+- path:
+  - _aggregate-results/2019-08-02_13-13-39_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-59_results_00.h5
+  - _aggregate-results/2019-08-02_13-13-39_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-59_results_00.yaml
+  uuid: c8a43098-d41d-4a78-8402-9f3e396accd0
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190602
+    StartTime: '2019-08-02T13:13:39.6172424-04:00'
+    SubjectName: 190602-Celsr3-L3-M-59
+- path:
+  - _aggregate-results/2019-08-01_11-58-09_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-43_results_00.h5
+  - _aggregate-results/2019-08-01_11-58-09_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-43_results_00.yaml
+  uuid: 2225baaf-8388-47aa-a99e-b95e4cb262ce
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T11:58:09.007031-04:00'
+    SubjectName: 190531-Celsr3-L3-M-43
+- path:
+  - _aggregate-results/2019-08-15_12-52-30_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-97_results_00.h5
+  - _aggregate-results/2019-08-15_12-52-30_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-97_results_00.yaml
+  uuid: 55a238de-5bb4-4574-bdc2-f178293ca08a
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190612
+    StartTime: '2019-08-15T12:52:30.6302268-04:00'
+    SubjectName: 190612-Celsr3-L3-F-97
+- path:
+  - _aggregate-results/2019-07-25_11-27-06_190725-_celsr3-l3-m-coh190526_celsr3-r774_h-l3-m-23_results_00.h5
+  - _aggregate-results/2019-07-25_11-27-06_190725-_celsr3-l3-m-coh190526_celsr3-r774_h-l3-m-23_results_00.yaml
+  uuid: 53b6aa74-8321-44f3-bc4b-5c909c28dabd
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-M-coh190526
+    StartTime: '2019-07-25T11:27:06.7656719-04:00'
+    SubjectName: Celsr3-R774H-L3-M-23
+- path:
+  - _aggregate-results/2019-08-15_12-23-12_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-95_results_00.h5
+  - _aggregate-results/2019-08-15_12-23-12_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-95_results_00.yaml
+  uuid: cd4d2f45-8baa-4393-8d05-a505e4eda401
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190612
+    StartTime: '2019-08-15T12:23:12.0200083-04:00'
+    SubjectName: 190612-Celsr3-L3-F-95
+- path:
+  - _aggregate-results/2019-08-15_11-19-24_190815-_celsr3-r774_h-l3-f-coh190611_190611-_celsr3-l3-f-90_results_00.h5
+  - _aggregate-results/2019-08-15_11-19-24_190815-_celsr3-r774_h-l3-f-coh190611_190611-_celsr3-l3-f-90_results_00.yaml
+  uuid: 5b9bdbcd-ddad-43ed-a646-67de8ca36227
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190611
+    StartTime: '2019-08-15T11:19:24.256753-04:00'
+    SubjectName: 190611-Celsr3-L3-F-90
+- path:
+  - _aggregate-results/2019-08-01_15-30-23_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-57_results_00.h5
+  - _aggregate-results/2019-08-01_15-30-23_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-57_results_00.yaml
+  uuid: 3c8f008c-dc60-486e-b654-4266bece6719
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T15:30:23.251324-04:00'
+    SubjectName: 190531-Celsr3-L3-F-57
+- path:
+  - _aggregate-results/2019-07-25_11-27-38_190725-_celsr3-l3-m-coh190526_celsr3-r774-l3-m-24_results_00.h5
+  - _aggregate-results/2019-07-25_11-27-38_190725-_celsr3-l3-m-coh190526_celsr3-r774-l3-m-24_results_00.yaml
+  uuid: 07a79e36-73ff-45e1-9a51-63ef4f70ffb2
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-M-coh190526
+    StartTime: '2019-07-25T11:27:38.6679778-04:00'
+    SubjectName: Celsr3-R774-L3-M-24
+- path:
+  - _aggregate-results/2019-01-17_11-04-42_2018-11-09__celsr3_r774_h-f_cohort190117_r774_h-101_results_00.h5
+  - _aggregate-results/2019-01-17_11-04-42_2018-11-09__celsr3_r774_h-f_cohort190117_r774_h-101_results_00.yaml
+  uuid: 21274557-0f85-4f05-be47-30c8fd1d24ac
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-11-09_Celsr3R774H-F_cohort190117
+    StartTime: '2019-01-17T11:04:42.9395242-05:00'
+    SubjectName: R774H-101
+- path:
+  - _aggregate-results/2019-08-02_13-13-52_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-60_results_00.h5
+  - _aggregate-results/2019-08-02_13-13-52_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-60_results_00.yaml
+  uuid: 7f7fe291-8c68-4fec-a4f5-3aebf2903fb4
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190602
+    StartTime: '2019-08-02T13:13:52.3849849-04:00'
+    SubjectName: 190602-Celsr3-L3-M-60
+- path:
+  - _aggregate-results/2019-08-02_16-34-24_190802-_celsr3-r774_h-l3-f-coh190603_190603-_celsr3-l3-f-73_results_00.h5
+  - _aggregate-results/2019-08-02_16-34-24_190802-_celsr3-r774_h-l3-f-coh190603_190603-_celsr3-l3-f-73_results_00.yaml
+  uuid: 5b914eb2-ee70-4836-9b11-620f6e544a53
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-F-coh190603
+    StartTime: '2019-08-02T16:34:24.2903092-04:00'
+    SubjectName: 190603-Celsr3-L3-F-73
+- path:
+  - _aggregate-results/2019-06-24_10-36-27_190624-_celsr3-r774_h-l3-f-coh190425_celsr3-l3-f-8_results_00.h5
+  - _aggregate-results/2019-06-24_10-36-27_190624-_celsr3-r774_h-l3-f-coh190425_celsr3-l3-f-8_results_00.yaml
+  uuid: cf1b405d-ffd0-425f-864a-fd72999d5baa
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190624-Celsr3 R774H L3-F-coh190425
+    StartTime: '2019-06-24T10:36:27.661033-04:00'
+    SubjectName: Celsr3-L3-F-8
+- path:
+  - _aggregate-results/2019-08-09_10-40-25_190809-_celsr3-r774_h-l3-m-coh190604_190604-_celsr3-l3-m-75_results_00.h5
+  - _aggregate-results/2019-08-09_10-40-25_190809-_celsr3-r774_h-l3-m-coh190604_190604-_celsr3-l3-m-75_results_00.yaml
+  uuid: f46d1fd1-5e14-4138-a50f-497d3a3f749e
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-M-coh190604
+    StartTime: '2019-08-09T10:40:25.7483347-04:00'
+    SubjectName: 190604-Celsr3-L3-M-75
+- path:
+  - _aggregate-results/2018-10-12_13-38-51_2018-10-12__celsr3_rh-m_cohort0817_rh-81_results_00.h5
+  - _aggregate-results/2018-10-12_13-38-51_2018-10-12__celsr3_rh-m_cohort0817_rh-81_results_00.yaml
+  uuid: ab79d407-fb87-4666-b2f3-20af8643cb53
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-M_cohort0817
+    StartTime: '2018-10-12T13:38:51.0113973-04:00'
+    SubjectName: RH-81
+- path:
+  - _aggregate-results/2019-07-25_10-51-04_190725-_celsr3-l3-m-coh190526_celsr3-r774-l3-m-22_results_00.h5
+  - _aggregate-results/2019-07-25_10-51-04_190725-_celsr3-l3-m-coh190526_celsr3-r774-l3-m-22_results_00.yaml
+  uuid: 78e63ed4-9703-4e51-881e-603cf4971291
+  group: M_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-M-coh190526
+    StartTime: '2019-07-25T10:51:04.0885226-04:00'
+    SubjectName: Celsr3-R774-L3-M-22
+- path:
+  - _aggregate-results/2019-06-14_11-11-58_190614-_celsr3-r774_h-l3-f-coh190412_celsr3-l3-f-4_results_00.h5
+  - _aggregate-results/2019-06-14_11-11-58_190614-_celsr3-r774_h-l3-f-coh190412_celsr3-l3-f-4_results_00.yaml
+  uuid: 29edd3e2-4bf6-40ea-bbbe-fbad6ac86e1f
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190614-Celsr3 R774H L3-F-coh190412
+    StartTime: '2019-06-14T11:11:58.2555676-04:00'
+    SubjectName: Celsr3-L3-F-4
+- path:
+  - _aggregate-results/2019-08-01_12-31-15_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-45_results_00.h5
+  - _aggregate-results/2019-08-01_12-31-15_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-45_results_00.yaml
+  uuid: d76cc96c-179c-44d4-911d-b023dc468c19
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T12:31:15.3070441-04:00'
+    SubjectName: 190531-Celsr3-L3-F-45
+- path:
+  - _aggregate-results/2019-08-15_12-52-08_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-96_results_00.h5
+  - _aggregate-results/2019-08-15_12-52-08_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-96_results_00.yaml
+  uuid: 3a8f321a-4d4d-4220-b925-67a9e5c1ab40
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190612
+    StartTime: '2019-08-15T12:52:08.7631576-04:00'
+    SubjectName: 190612-Celsr3-L3-F-96
+- path:
+  - _aggregate-results/2019-03-07_14-28-49_r774_h_1-mo_et#435_f_results_00.h5
+  - _aggregate-results/2019-03-07_14-28-49_r774_h_1-mo_et#435_f_results_00.yaml
+  uuid: aefd6613-9c4e-457e-8b25-a464dfae3c8d
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-07T14:28:49.5081291-05:00'
+    SubjectName: ET#435_f
+- path:
+  - _aggregate-results/2019-08-15_11-54-18_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-93_results_00.h5
+  - _aggregate-results/2019-08-15_11-54-18_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-93_results_00.yaml
+  uuid: 1515ec16-5b37-4512-8bdc-435ed6353de9
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190612
+    StartTime: '2019-08-15T11:54:18.6180148-04:00'
+    SubjectName: 190612-Celsr3-L3-F-93
+- path:
+  - _aggregate-results/2019-08-02_15-12-45_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-68_results_00.h5
+  - _aggregate-results/2019-08-02_15-12-45_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-68_results_00.yaml
+  uuid: bed5eba5-b88f-43e9-a6c8-52094fe8f30a
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190603
+    StartTime: '2019-08-02T15:12:45.4501447-04:00'
+    SubjectName: 190603-Celsr3-L3-M-68
+- path:
+  - _aggregate-results/2019-08-09_11-08-48_190809-_celsr3-r774_h-l3-m-coh190607_190607-_celsr3-l3-m-77_results_00.h5
+  - _aggregate-results/2019-08-09_11-08-48_190809-_celsr3-r774_h-l3-m-coh190607_190607-_celsr3-l3-m-77_results_00.yaml
+  uuid: d3bad971-ab91-435c-abfe-9379af82d45a
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-M-coh190607
+    StartTime: '2019-08-09T11:08:48.8193705-04:00'
+    SubjectName: 190607-Celsr3-L3-M-77
+- path:
+  - _aggregate-results/2019-06-14_10-35-30_190614-_celsr3-r774_h-l3-m-coh190412_celsr3-l3-m-2_results_00.h5
+  - _aggregate-results/2019-06-14_10-35-30_190614-_celsr3-r774_h-l3-m-coh190412_celsr3-l3-m-2_results_00.yaml
+  uuid: 7479c33d-f9d0-4c76-b285-12a7089cb08d
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190614-Celsr3 R774H L3-M-coh190412
+    StartTime: '2019-06-14T10:35:30.2123239-04:00'
+    SubjectName: Celsr3-L3-M-2
+- path:
+  - _aggregate-results/2018-10-12_14-03-07_2018-10-12__celsr3_rh-m_cohort0817_rh-83_results_00.h5
+  - _aggregate-results/2018-10-12_14-03-07_2018-10-12__celsr3_rh-m_cohort0817_rh-83_results_00.yaml
+  uuid: b714338a-b4cc-4ea1-8656-95d21ff56504
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-M_cohort0817
+    StartTime: '2018-10-12T14:03:07.9417437-04:00'
+    SubjectName: RH-83
+- path:
+  - _aggregate-results/2019-03-08_14-48-12_r774_h_1-mo_en#22_m_results_00.h5
+  - _aggregate-results/2019-03-08_14-48-12_r774_h_1-mo_en#22_m_results_00.yaml
+  uuid: 98112fa0-0391-450b-b1b5-49bc2867a4b4
+  group: default
+  metadata:
+    ApparatusName: CHI-moseq1
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-08T14:48:12.5803282-05:00'
+    SubjectName: EN#22_m
+- path:
+  - _aggregate-results/2019-08-09_12-37-33_190809-_celsr3-r774_h-l3-f-coh190607_190607-_celsr3-l3-f-82_results_00.h5
+  - _aggregate-results/2019-08-09_12-37-33_190809-_celsr3-r774_h-l3-f-coh190607_190607-_celsr3-l3-f-82_results_00.yaml
+  uuid: 498666be-2cf8-4d4f-ac48-f6b1ecbb1745
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-F-coh190607
+    StartTime: '2019-08-09T12:37:33.8593828-04:00'
+    SubjectName: 190607-Celsr3-L3-F-82
+- path:
+  - _aggregate-results/2019-08-15_12-58-51_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-97_results_00.h5
+  - _aggregate-results/2019-08-15_12-58-51_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-97_results_00.yaml
+  uuid: 3550dfb1-2f24-4f68-9d55-aa424e14a27d
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190612
+    StartTime: '2019-08-15T12:58:51.3227372-04:00'
+    SubjectName: 190612-Celsr3-L3-F-97
+- path:
+  - _aggregate-results/2019-08-02_14-10-58_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-63_results_00.h5
+  - _aggregate-results/2019-08-02_14-10-58_190802-_celsr3-r774_h-l3-m-coh190602_190602-_celsr3-l3-m-63_results_00.yaml
+  uuid: e38c64bf-652f-4ff7-9898-f7ae3ae793cb
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190602
+    StartTime: '2019-08-02T14:10:58.9423173-04:00'
+    SubjectName: 190602-Celsr3-L3-M-63
+- path:
+  - _aggregate-results/2018-11-02_14-43-54_2018-10-12__celsr3_rh-m_cohort0817_rh-84_results_00.h5
+  - _aggregate-results/2018-11-02_14-43-54_2018-10-12__celsr3_rh-m_cohort0817_rh-84_results_00.yaml
+  uuid: 90350ede-dd30-473d-aa39-29e9ae036d59
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-M_cohort0817
+    StartTime: '2018-11-02T14:43:54.6304658-04:00'
+    SubjectName: RH-84
+- path:
+  - _aggregate-results/2019-01-17_11-30-24_2018-11-09__celsr3_r774_h-f_cohort190117_r774_h-102_results_00.h5
+  - _aggregate-results/2019-01-17_11-30-24_2018-11-09__celsr3_r774_h-f_cohort190117_r774_h-102_results_00.yaml
+  uuid: 5ba57cf4-0ef9-4f77-accd-bc4752a75677
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-11-09_Celsr3R774H-F_cohort190117
+    StartTime: '2019-01-17T11:30:24.1020029-05:00'
+    SubjectName: R774H-102
+- path:
+  - _aggregate-results/2019-07-25_10-17-56_190725-_celsr3-l3-m-coh190526_celsr3-r774_h-l3-m-19_results_00.h5
+  - _aggregate-results/2019-07-25_10-17-56_190725-_celsr3-l3-m-coh190526_celsr3-r774_h-l3-m-19_results_00.yaml
+  uuid: 1d218875-6112-4525-86a8-bafc0cf36315
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190725-Celsr3-L3-M-coh190526
+    StartTime: '2019-07-25T10:17:56.9726102-04:00'
+    SubjectName: Celsr3-R774H-L3-M-19
+- path:
+  - _aggregate-results/2019-08-09_11-08-26_190809-_celsr3-r774_h-l3-m-coh190607_190607-_celsr3-l3-m-76_results_00.h5
+  - _aggregate-results/2019-08-09_11-08-26_190809-_celsr3-r774_h-l3-m-coh190607_190607-_celsr3-l3-m-76_results_00.yaml
+  uuid: 19ef340e-6c04-456a-ae24-1ebdff45cc7e
+  group: M_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-M-coh190607
+    StartTime: '2019-08-09T11:08:26.4646991-04:00'
+    SubjectName: 190607-Celsr3-L3-M-76
+- path:
+  - _aggregate-results/2019-08-01_14-07-39_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-50_results_00.h5
+  - _aggregate-results/2019-08-01_14-07-39_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-50_results_00.yaml
+  uuid: 9f8eeb34-dd9f-4db3-b0c8-6e600af1812a
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T14:07:39.322229-04:00'
+    SubjectName: 190531-Celsr3-L3-F-50
+- path:
+  - _aggregate-results/2018-10-12_13-13-53_2018-10-12__celsr3_rh-m_cohort0817_rh-79_results_00.h5
+  - _aggregate-results/2018-10-12_13-13-53_2018-10-12__celsr3_rh-m_cohort0817_rh-79_results_00.yaml
+  uuid: 5a993b56-054c-4bce-8040-01c182ad01ae
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_Celsr3RH-M_cohort0817
+    StartTime: '2018-10-12T13:13:53.8487245-04:00'
+    SubjectName: RH-79
+- path:
+  - _aggregate-results/2019-08-09_12-37-45_190809-_celsr3-r774_h-l3-f-coh190607_190607-_celsr3-l3-f-83_results_00.h5
+  - _aggregate-results/2019-08-09_12-37-45_190809-_celsr3-r774_h-l3-f-coh190607_190607-_celsr3-l3-f-83_results_00.yaml
+  uuid: b64f3c0c-83a2-4a50-81cf-b24bd692ddfa
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-F-coh190607
+    StartTime: '2019-08-09T12:37:45.3278589-04:00'
+    SubjectName: 190607-Celsr3-L3-F-83
+- path:
+  - _aggregate-results/2019-07-04_11-17-58_190704-_celsr3-r774_h-l3-f-coh190503_celsr3-l3-f-11_results_00.h5
+  - _aggregate-results/2019-07-04_11-17-58_190704-_celsr3-r774_h-l3-f-coh190503_celsr3-l3-f-11_results_00.yaml
+  uuid: 99d4fdd9-388e-4789-a712-0088974b2321
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190704-Celsr3 R774H L3-F-coh190503
+    StartTime: '2019-07-04T11:17:58.2530375-04:00'
+    SubjectName: Celsr3-L3-F-11
+- path:
+  - _aggregate-results/2019-08-15_10-12-32_190815-_celsr3-r774_h-l3-m-coh190612_190612-_celsr3-l3-m-87_results_00.h5
+  - _aggregate-results/2019-08-15_10-12-32_190815-_celsr3-r774_h-l3-m-coh190612_190612-_celsr3-l3-m-87_results_00.yaml
+  uuid: b7474ee6-8055-424c-8ba4-876fe5725e34
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-M-coh190612
+    StartTime: '2019-08-15T10:12:32.9213877-04:00'
+    SubjectName: 190612-Celsr3-L3-M-87
+- path:
+  - _aggregate-results/2019-08-02_14-40-58_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-66_results_00.h5
+  - _aggregate-results/2019-08-02_14-40-58_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-66_results_00.yaml
+  uuid: 8038f6ad-eec6-40f7-b1ed-29f0a66127f9
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190603
+    StartTime: '2019-08-02T14:40:58.0327092-04:00'
+    SubjectName: 190603-Celsr3-L3-M-66
+- path:
+  - _aggregate-results/2019-08-09_11-37-33_190809-_celsr3-r774_h-l3-f-coh190604_190604-_celsr3-l3-f-79_results_00.h5
+  - _aggregate-results/2019-08-09_11-37-33_190809-_celsr3-r774_h-l3-f-coh190604_190604-_celsr3-l3-f-79_results_00.yaml
+  uuid: 72a2a35f-abe4-49e7-9811-5b32afab2ebd
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-F-coh190604
+    StartTime: '2019-08-09T11:37:33.0781869-04:00'
+    SubjectName: 190604-Celsr3-L3-F-79
+- path:
+  - _aggregate-results/2019-08-01_10-57-58_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-38_results_00.h5
+  - _aggregate-results/2019-08-01_10-57-58_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-38_results_00.yaml
+  uuid: a85d2e7b-1280-45ed-abcb-33092b7dd718
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T10:57:58.4267548-04:00'
+    SubjectName: 190531-Celsr3-L3-M-38
+- path:
+  - _aggregate-results/2019-08-15_11-20-00_190815-_celsr3-r774_h-l3-f-coh190611_190611-_celsr3-l3-f-91_results_00.h5
+  - _aggregate-results/2019-08-15_11-20-00_190815-_celsr3-r774_h-l3-f-coh190611_190611-_celsr3-l3-f-91_results_00.yaml
+  uuid: 6c162254-07af-4b40-bfe2-618a943f452c
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190611
+    StartTime: '2019-08-15T11:20:00.6350269-04:00'
+    SubjectName: 190611-Celsr3-L3-F-91
+- path:
+  - _aggregate-results/2019-08-01_15-03-38_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-55_results_00.h5
+  - _aggregate-results/2019-08-01_15-03-38_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-55_results_00.yaml
+  uuid: 2c825852-364e-4387-bdc7-733d15908c33
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T15:03:38.8864069-04:00'
+    SubjectName: 190531-Celsr3-L3-F-55
+- path:
+  - _aggregate-results/2018-10-05_14-51-55_2018-10-05__celsr3_rh-m_cohort0805_rh-68_m_results_00.h5
+  - _aggregate-results/2018-10-05_14-51-55_2018-10-05__celsr3_rh-m_cohort0805_rh-68_m_results_00.yaml
+  uuid: fdb2ea76-9ea1-458a-b79f-dbae5a97fb52
+  group: default
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-05_Celsr3RH-m_cohort0805
+    StartTime: '2018-10-05T14:51:55.4468977-04:00'
+    SubjectName: RH-68M
+- path:
+  - _aggregate-results/2019-08-15_12-22-51_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-94_results_00.h5
+  - _aggregate-results/2019-08-15_12-22-51_190815-_celsr3-r774_h-l3-f-coh190612_190612-_celsr3-l3-f-94_results_00.yaml
+  uuid: 9fcb0359-4ac2-4291-be56-e5385b4f6bd8
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190815-Celsr3-R774H-L3-F-coh190612
+    StartTime: '2019-08-15T12:22:51.8415512-04:00'
+    SubjectName: 190612-Celsr3-L3-F-94
+- path:
+  - _aggregate-results/2019-08-01_09-59-06_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-34_results_00.h5
+  - _aggregate-results/2019-08-01_09-59-06_190801-_celsr3-r774_h-l3-m-coh190531_190531-_celsr3-l3-m-34_results_00.yaml
+  uuid: b49c150a-5e46-4886-bb16-4c7532e9d115
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-M-coh190531
+    StartTime: '2019-08-01T09:59:06.5350434-04:00'
+    SubjectName: 190531-Celsr3-L3-M-34
+- path:
+  - _aggregate-results/2019-07-04_11-46-06_190704-_celsr3-r774_h-l3-f-190503_celsr3-l3-f-12_results_00.h5
+  - _aggregate-results/2019-07-04_11-46-06_190704-_celsr3-r774_h-l3-f-190503_celsr3-l3-f-12_results_00.yaml
+  uuid: dc378b24-ead4-4214-b2e5-b2d9cbb1ba32
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190704-Celsr3 R774H L3-F-190503
+    StartTime: '2019-07-04T11:46:06.4442122-04:00'
+    SubjectName: Celsr3-L3-F-12
+- path:
+  - _aggregate-results/2019-08-02_14-40-50_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-65_results_00.h5
+  - _aggregate-results/2019-08-02_14-40-50_190802-_celsr3-r774_h-l3-m-coh190603_190603-_celsr3-l3-m-65_results_00.yaml
+  uuid: 2c1aa95a-d3ad-4127-80d4-d4b4a115a229
+  group: M_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190802-Celsr3-R774H-L3-M-coh190603
+    StartTime: '2019-08-02T14:40:50.8494227-04:00'
+    SubjectName: 190603-Celsr3-L3-M-65
+- path:
+  - _aggregate-results/2019-03-08_15-43-57_r774_h_1-mo_en#24_f_results_00.h5
+  - _aggregate-results/2019-03-08_15-43-57_r774_h_1-mo_en#24_f_results_00.yaml
+  uuid: 76a317cb-8dfb-4b51-9449-c8ede789663f
+  group: default
+  metadata:
+    ApparatusName: CHI-moseq1
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-08T15:43:57.149293-05:00'
+    SubjectName: EN#24_f
+- path:
+  - _aggregate-results/2019-08-01_15-03-32_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-54_results_00.h5
+  - _aggregate-results/2019-08-01_15-03-32_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-54_results_00.yaml
+  uuid: a58cb9f0-bfd3-400e-b651-5009c7d2444d
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T15:03:32.0175386-04:00'
+    SubjectName: 190531-Celsr3-L3-F-54
+- path:
+  - _aggregate-results/2019-07-04_11-46-22_190704-_celsr3-r774_h-l3-f-coh190503_celsr3-l3-f-13_results_00.h5
+  - _aggregate-results/2019-07-04_11-46-22_190704-_celsr3-r774_h-l3-f-coh190503_celsr3-l3-f-13_results_00.yaml
+  uuid: 17947b42-c9bc-4f63-ae37-8a4e2ed6cc5f
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190704-Celsr3 R774H L3-F-coh190503
+    StartTime: '2019-07-04T11:46:22.6778525-04:00'
+    SubjectName: Celsr3-L3-F-13
+- path:
+  - _aggregate-results/2019-08-01_13-02-06_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-47_results_00.h5
+  - _aggregate-results/2019-08-01_13-02-06_190801-_celsr3-r774_h-l3-f-coh190531_190531-_celsr3-l3-f-47_results_00.yaml
+  uuid: 01a498bf-31ca-4f88-865a-bdd4670b7219
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190801-Celsr3-R774H-L3-F-coh190531
+    StartTime: '2019-08-01T13:02:06.0088593-04:00'
+    SubjectName: 190531-Celsr3-L3-F-47
+- path:
+  - _aggregate-results/2019-03-08_16-58-40_r774_h_1-mo_en#27_f_results_00.h5
+  - _aggregate-results/2019-03-08_16-58-40_r774_h_1-mo_en#27_f_results_00.yaml
+  uuid: b275d1f1-6bd1-490f-a25e-44d157a6f08c
+  group: default
+  metadata:
+    ApparatusName: CHI-moseq1
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-08T16:58:40.3373582-05:00'
+    SubjectName: EN#27_f
+- path:
+  - _aggregate-results/2019-07-04_12-25-13_190704-_celsr3-r774_h-l3-m-190503_celsr3-l3-m-14_results_00.h5
+  - _aggregate-results/2019-07-04_12-25-13_190704-_celsr3-r774_h-l3-m-190503_celsr3-l3-m-14_results_00.yaml
+  uuid: bdc92db8-f450-4402-9957-c8d843860ed2
+  group: M_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190704-Celsr3 R774H L3-M-190503
+    StartTime: '2019-07-04T12:25:13.1181103-04:00'
+    SubjectName: Celsr3-L3-M-14
+- path:
+  - _aggregate-results/2019-06-24_10-36-06_190624-_celsr3-r774_h-l3-f-190425_celsr3-l3-f-7_results_00.h5
+  - _aggregate-results/2019-06-24_10-36-06_190624-_celsr3-r774_h-l3-f-190425_celsr3-l3-f-7_results_00.yaml
+  uuid: 7e4a7410-776c-4916-a637-6e50bc9041fd
+  group: F_RH/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190624-Celsr3 R774H L3-F-190425
+    StartTime: '2019-06-24T10:36:06.3397881-04:00'
+    SubjectName: Celsr3-L3-F-7
+- path:
+  - _aggregate-results/2019-03-08_16-33-28_r774_h_1-mo_en#26_f_results_00.h5
+  - _aggregate-results/2019-03-08_16-33-28_r774_h_1-mo_en#26_f_results_00.yaml
+  uuid: fb59c1ba-a52d-47c2-b6c4-1c7e53be2604
+  group: default
+  metadata:
+    ApparatusName: CHI-moseq1
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: R774H_1-mo
+    StartTime: '2019-03-08T16:33:28.1361554-05:00'
+    SubjectName: EN#26_f
+- path:
+  - _aggregate-results/2019-08-09_12-09-36_190809-_celsr3-r774_h-l3-f-coh190604_190604-_celsr3-l3-f-80_results_00.h5
+  - _aggregate-results/2019-08-09_12-09-36_190809-_celsr3-r774_h-l3-f-coh190604_190604-_celsr3-l3-f-80_results_00.yaml
+  uuid: 3488ff30-a1d7-4319-9eb6-6a618c44c493
+  group: F_+/RH
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190809-Celsr3-R774H-L3-F-coh190604
+    StartTime: '2019-08-09T12:09:36.9444555-04:00'
+    SubjectName: 190604-Celsr3-L3-F-80
+pca_path: _pca/pca_scores.h5

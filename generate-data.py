@@ -1,0 +1,63 @@
+import os, argparse, json
+
+from moseq2_extras.util import ensure_dir
+from moseq2_viz.util import parse_index
+from moseq2_viz.model.util import parse_model_results, \
+        results_to_dataframe
+
+metadataPath = os.path.join('.', 'html-report', 'src', 'metadata')
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', help='Index file to be used to create groups.',
+            dest='indexFile')
+    parser.add_argument('-m', help='Model file to be used to create figures.',
+            dest='modelFile')
+    parser.add_argument('--output', help='The output directory for the metadata.json file to be saved to.',
+            dest='outputPath')
+    parser.set_defaults(indexFile=None, modelFile=None, outputPath=metadataPath)
+    args = parser.parse_args()
+
+    # df = convertModelToJson(args)
+    # dfGroups = getGroupsFromDataframe(df)
+
+    writeMetadataFile('fasdfasd', 'dfasdfgsadfasdf', args.outputPath)
+#end main()
+
+def writeMetadataFile(df, dfGroups, outputPath):
+    ensure_dir(outputPath)
+
+    outputPath = os.path.join(outputPath, 'metadata.js')
+    with open(outputPath, 'w') as f:
+        f.write('export let dataframe_json = {}\n'.format(df))
+        f.write('export let dataframe_groups = {}'.format(dfGroups))
+#end writeMetadataFile
+
+def getGroupsFromDataframe(df):
+    jsonObj = json.loads(df)
+
+    groups = set()
+    for arr in jsonObj['data']:
+        groups.add(arr[1])
+
+    groups = list(groups)
+    groups = ', '.join("'" + str(e) + "'" for e in groups)
+    groups = '[' + groups + ']'
+
+    return groups
+#end getGroupsFromDataframe()
+
+def convertModelToJson(args):
+  _, sortedIndex = parse_index(args.indexFile)
+  modelRes = parse_model_results(args.modelFile)
+
+  df, _ = results_to_dataframe(modelRes, sortedIndex, max_syllable=100,
+          sort=True, count='usage')
+
+  dfJson = df.to_json(orient='split')
+
+  return dfJson
+#end createMetadataFile()
+
+if __name__ == '__main__':
+    main()
