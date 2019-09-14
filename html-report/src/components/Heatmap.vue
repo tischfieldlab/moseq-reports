@@ -1,5 +1,5 @@
 <template>
-    <div id='heatmap-container'>
+    <div id="heatmap-container">
         <b-container>
             <b-row>
                 <b-col>
@@ -15,26 +15,38 @@
 
 <script>
 import * as Plotly from 'plotly.js-dist'
+
 import HeatmapOptions from '@/components/HeatmapOptions'
+import DataModel from '@/models/DataModel'
+import EventBus from '@/events/EventBus'
 
 export default {
   name: 'heatmap',
-  props: {
-    viewDf: Object
+  data () {
+    return {
+      dataModel: DataModel
+    }
   },
   components: {
     'heatmap-options': HeatmapOptions
   },
-  watch: {
-    viewDf (newVal, oldVal) {
+  mounted () {
+    this.createHeatmap()
+
+    // Register events here
+    EventBus.$on('updateSelectedGroups', (event) => {
       this.createHeatmap()
-    }
+    })
+    EventBus.$on('updateHeatmapColorscale', (event) => {
+      this.updateColorscale(event)
+    })
   },
   methods: {
+    updateColorscale (colorscale) {
+      Plotly.restyle('heatmap-graph', colorscale)
+    },
     createHeatmap () {
-      // let veiwDf = this.dataModel.getView()
-
-      let df = this.viewDf.groupBy('syllable', 'group').aggregate(g => g.stat.mean('usage')).rename('aggregation', 'usage')
+      let df = DataModel.getView()
 
       var groups = df.filter(row => row.get('group')).distinct('group').toArray().flat()
       var sylNum = df.select('syllable').distinct('syllable').toArray().flat()
@@ -49,7 +61,6 @@ export default {
         }
         sylUsage.push(temp)
       }
-
       var data = [
         {
           x: groups,
@@ -93,12 +104,10 @@ export default {
       }
       Plotly.react('heatmap-graph', data, layout)
     }
-  },
-  mounted () {
-    this.createHeatmap()
   }
 }
 </script>
 
 <style scoped>
+
 </style>

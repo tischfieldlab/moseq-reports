@@ -13,25 +13,30 @@
 </template>
 
 <script>
+import DataModel from '@/models/DataModel'
+import EventBus from '@/events/EventBus'
+
 export default {
   name: 'groupbox',
-  props: {
-    dataModel: null
-  },
   data () {
     return {
-      selected: this.dataModel.getSelectedGroups(),
-      availableGroups: this.dataModel.getAvailableGroups()
+      selected: [],
+      availableGroups: []
     }
+  },
+  mounted () {
+    this.selected = DataModel.getSelectedGroups()
+    this.availableGroups = DataModel.getAvailableGroups()
   },
   methods: {
     onChange (event) {
-      this.dataModel.updateSelectedGroups(event)
-      this.$emit('updateGroupSelection', event)
+      DataModel.updateSelectedGroups(event)
+      EventBus.$emit('updateSelectedGroups', event)
     }
   }
 }
 </script>
 
 <style scoped>
+
 </style>

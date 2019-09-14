@@ -14,7 +14,8 @@
 </template>
 
 <script>
-import * as Plotly from 'plotly.js-dist'
+import EventBus from '@/events/EventBus'
+
 export default {
   data () {
     return {
@@ -24,8 +25,6 @@ export default {
         { text: 'Electric', value: 'Electric' },
         { text: 'Earth', value: 'Earth' },
         { text: 'Bluered', value: 'Bluered' },
-        { text: 'YIOrRd', value: 'YIOrRd' },
-        { text: 'YIGnBu', value: 'YIGnBu' },
         { text: 'RdBu', value: 'RdBu' },
         { text: 'Portland', value: 'Portland' },
         { text: 'Picnic', value: 'Picnic' },
@@ -38,7 +37,8 @@ export default {
       var update = {
         colorscale: scale
       }
-      Plotly.restyle('heatmap-graph', update)
+
+      EventBus.$emit('updateHeatmapColorscale', update)
     }
   }
 }
