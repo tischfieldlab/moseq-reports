@@ -3,27 +3,17 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import * as meta from './metadata/metadata'
 
 // Bootstrap Stuff
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+// DataModel
+import DataModel from '@/models/DataModel'
+
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
-
-var store = {
-  state: {
-    cohortGroups: meta.cohortGroups,
-    debug: true
-  },
-  load () {
-    // See if the metadata file exists
-    // Dynamically append script element to app body with
-    // path to the metadata file.
-  }
-}
 
 /* eslint-disable no-new */
 new Vue({
@@ -32,6 +22,6 @@ new Vue({
   components: { App },
   template: '<App/>',
   data: {
-    sharedState: store.state // DataObject
+    dataModel: DataModel
   }
 })

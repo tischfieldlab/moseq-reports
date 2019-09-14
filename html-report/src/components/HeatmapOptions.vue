@@ -15,7 +15,6 @@
 
 <script>
 import * as Plotly from 'plotly.js-dist'
-
 export default {
   data () {
     return {
@@ -39,7 +38,6 @@ export default {
       var update = {
         colorscale: scale
       }
-
       Plotly.restyle('heatmap-graph', update)
     }
   }
