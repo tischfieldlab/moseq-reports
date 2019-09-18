@@ -14,7 +14,7 @@ export default {
   components: {
     'groupbox-component': GroupBox,
     'heatmap-component': Heatmap
-  },
+  }
 }
 </script>
 

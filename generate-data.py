@@ -5,7 +5,7 @@ from moseq2_viz.util import parse_index
 from moseq2_viz.model.util import parse_model_results, \
         results_to_dataframe
 
-metadataPath = os.path.join('.', 'html-report', 'src', 'metadata')
+METADATAPATH = os.getcwd()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -15,13 +15,15 @@ def main():
             dest='modelFile')
     parser.add_argument('--output', help='The output directory for the metadata.json file to be saved to.',
             dest='outputPath')
-    parser.set_defaults(indexFile=None, modelFile=None, outputPath=metadataPath)
+    parser.add_argument('--filter', nargs='+', dest='filterGroups',
+            help='The list of groups that are desired to be in the report.')
+    parser.set_defaults(indexFile=None, modelFile=None, outputPath=METADATAPATH, filterGroups=[])
     args = parser.parse_args()
 
     df = convertModelToJson(args)
     dfGroups = getGroupsFromDataframe(df)
 
-    writeMetadataFile('fasdfasd', 'dfasdfgsadfasdf', args.outputPath)
+    writeMetadataFile(df, dfGroups, args.outputPath)
 #end main()
 
 def writeMetadataFile(df, dfGroups, outputPath):
@@ -29,7 +31,7 @@ def writeMetadataFile(df, dfGroups, outputPath):
 
     outputPath = os.path.join(outputPath, 'metadata.js')
     with open(outputPath, 'w') as f:
-        f.write('export let dataframe_json = {}\n'.format(df))
+        f.write('export let dataframeJson = {}\n'.format(df))
         f.write('export let cohortGroups = {}'.format(dfGroups))
 #end writeMetadataFile
 
@@ -53,6 +55,9 @@ def convertModelToJson(args):
 
   df, _ = results_to_dataframe(modelRes, sortedIndex, max_syllable=100,
           sort=True, count='usage')
+
+  if (args.filterGroups):
+    df = df.loc[df['group'].isin(args.filterGroups)]
 
   dfJson = df.to_json(orient='split')
 
