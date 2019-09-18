@@ -1,6 +1,5 @@
 <template>
-    <div class="options">
-        Options baby!
+    <div id="options-container">
     </div>
 </template>
 
@@ -11,5 +10,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

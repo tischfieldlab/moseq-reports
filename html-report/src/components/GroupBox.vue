@@ -1,10 +1,10 @@
 <template>
-    <div id="groupbox-container" style="padding-top: 15px; float: left;">
+    <div id='groupbox-container' style='padding-top: 15px; float: left;'>
       <b-card class="card-header" title="Group Selection">
           <b-form-group style="text-align: left;">
             <b-card-text>
-              <b-form-checkbox-group v-model="selected" @change="onChange($event)"
-                :options="this.$root.$data.sharedState.cohortGroups" stacked>
+              <b-form-checkbox-group v-model='selected' :options='availableGroups'
+                @change='onChange($event)' stacked>
               </b-form-checkbox-group>
             </b-card-text>
           </b-form-group>
@@ -13,23 +13,30 @@
 </template>
 
 <script>
+import DataModel from '@/models/DataModel'
+import EventBus from '@/events/EventBus'
+
 export default {
-  name: 'group-checkbox',
+  name: 'groupbox',
   data () {
     return {
-      selected: this.$root.$data.sharedState.cohortGroups
+      selected: [],
+      availableGroups: []
     }
+  },
+  mounted () {
+    this.selected = DataModel.getSelectedGroups()
+    this.availableGroups = DataModel.getAvailableGroups()
   },
   methods: {
     onChange (event) {
-      if (this.$root.$data.sharedState.debug) {
-        console.log(event)
-      }
-      this.$emit('updateGroups', event)
+      DataModel.updateSelectedGroups(event)
+      EventBus.$emit('updateSelectedGroups', event)
     }
   }
 }
 </script>
 
 <style scoped>
+
 </style>

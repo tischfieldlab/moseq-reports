@@ -3,22 +3,17 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import * as meta from './metadata/metadata'
 
 // Bootstrap Stuff
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+// DataModel
+import DataModel from '@/models/DataModel'
+
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
-
-var store = {
-  state: {
-    cohortGroups: meta.cohortGroups,
-    debug: true
-  }
-}
 
 /* eslint-disable no-new */
 new Vue({
@@ -27,6 +22,6 @@ new Vue({
   components: { App },
   template: '<App/>',
   data: {
-    sharedState: store.state
+    dataModel: DataModel
   }
 })

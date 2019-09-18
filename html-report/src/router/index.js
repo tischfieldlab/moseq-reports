@@ -2,13 +2,12 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '@/views/HomePage'
-import Data from '@/views/DataPage'
 import Options from '@/views/OptionsPage'
+import Data from '@/views/DataPage'
 
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
   routes: [
     {
       path: '/',
@@ -16,14 +15,14 @@ export default new Router({
       component: Home
     },
     {
-      path: '/data',
-      name: 'dataview',
-      component: Data
-    },
-    {
-      path: '/options',
+      path: '/options#/',
       name: 'options',
       component: Options
+    },
+    {
+      path: '/data#/',
+      name: 'data',
+      component: Data
     }
   ]
 })

@@ -1,51 +1,58 @@
 <template>
-    <div class='heatmap-outer'>
-      <b-container>
-        <b-row>
-          <b-col>
-            <div id='heatmap-graph' style="display: flex"></div>
-          </b-col>
-          <b-col>
-            <heatmap-options></heatmap-options>
-          </b-col>
-        </b-row>
-      </b-container>
+    <div id="heatmap-container">
+        <b-container>
+            <b-row>
+                <b-col>
+                    <div id='heatmap-graph' style="display: flex"></div>
+                </b-col>
+                <b-col>
+                    <heatmap-options></heatmap-options>
+                </b-col>
+            </b-row>
+        </b-container>
     </div>
 </template>
 
 <script>
-import HeatmapOptions from './HeatmapOptions'
-
-import DataFrame from 'dataframe-js'
 import * as Plotly from 'plotly.js-dist'
+
+import HeatmapOptions from '@/components/HeatmapOptions'
+import DataModel from '@/models/DataModel'
+import EventBus from '@/events/EventBus'
 
 export default {
   name: 'heatmap',
+  data () {
+    return {
+      dataModel: DataModel
+    }
+  },
   components: {
     'heatmap-options': HeatmapOptions
   },
-  props: {
-    dataframe: DataFrame
-  },
   mounted () {
-    this.createGraph()
-  },
-  watch: {
-    dataframe (newVal, oldVal) {
-      // This is where we will redraw the heatmap
-      this.createGraph()
-    }
+    this.createHeatmap()
+
+    // Register events here
+    EventBus.$on('updateSelectedGroups', (event) => {
+      this.createHeatmap()
+    })
+    EventBus.$on('updateHeatmapColorscale', (event) => {
+      this.updateColorscale(event)
+    })
   },
   methods: {
-    createGraph () {
-      // Get the groups
-      var groups = this.dataframe.filter(row => row.get('group')).distinct('group').toArray().flat()
-      var sylNum = this.dataframe.select('syllable').distinct('syllable').toArray().flat()
+    updateColorscale (colorscale) {
+      Plotly.restyle('heatmap-graph', colorscale)
+    },
+    createHeatmap () {
+      let df = DataModel.getView()
 
-      // Need to format usages into groups. ie. first x amount of syllables need to be in an array; repeat for
-      // number of groups. [ [...], [...] ... ]
+      var groups = df.filter(row => row.get('group')).distinct('group').toArray().flat()
+      var sylNum = df.select('syllable').distinct('syllable').toArray().flat()
+
       var sylUsage = []
-      var usg = this.dataframe.select('usage').toArray()
+      var usg = df.select('usage').toArray()
       var index = 0
       for (var i = 0; i < sylNum.length; i++) {
         var temp = []
@@ -54,7 +61,6 @@ export default {
         }
         sylUsage.push(temp)
       }
-
       var data = [
         {
           x: groups,
@@ -64,7 +70,6 @@ export default {
           colorscale: 'Portland'
         }
       ]
-
       var layout = {
         title: 'Syllable Usage Heatmap',
         margin: {
@@ -97,7 +102,6 @@ export default {
           autosize: true
         }
       }
-
       Plotly.react('heatmap-graph', data, layout)
     }
   }
@@ -105,4 +109,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>
