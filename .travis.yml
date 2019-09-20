@@ -4,3 +4,4 @@ node_js:
 
 before_install:
     - cd html-report && npm install
+    - npm run build
