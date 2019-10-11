@@ -35,6 +35,8 @@
     "bootstrap-vue": "^2.0.3",
     "chai": "^4.1.2",
     "dataframe-js": "^1.4.3",
+    "lodash": "^4.17.15",
+    "lodash.defaultsdeep": "^4.6.1",
     "plotly.js": "^1.50.0",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",

@@ -51,11 +51,12 @@ export default Vue.extend({
 
             var sylUsage = [];
             var usg = df.select('usage').toArray();
+            console.log(usg);
             var index = 0;
             for (let i = 0; i < sylNum.length; i++) {
                 var temp = [];
                 for (let j = 0; j < groups.length; j++) {
-                    temp.push(usg[index++][0]);
+                    temp.push(usg[(j*sylNum.length)+i][0]);
                 }
                 sylUsage.push(temp);
             }
