@@ -16,7 +16,7 @@
 import Vue from 'vue';
 
 import DataModel from '../DataModel';
-import EventBus from '@/events/EventBus.ts';
+import EventBus from '../events/EventBus';
 
 export default Vue.extend({
     name: 'groupbox',

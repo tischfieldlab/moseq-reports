@@ -9,6 +9,7 @@ class DataModel {
     private availableGroups = [];
     private selectedGroups = [];
     private baseDataframe : any = null;
+    private usageDataframe : any = null;
 
     public view : any = null;
 
@@ -43,8 +44,8 @@ class DataModel {
             dfClone = dfClone.filter((row : any) => row.get('group') !== excludeGroups[i]);
         }
 
-        dfClone = dfClone.groupBy('syllable', 'group').aggregate((g: any) => g.stat.mean('usage'))
-            .rename('aggregation', 'usage');
+        this.usageDataframe = dfClone.groupBy('syllable', 'group').aggregate((g: any) => g.stat.mean('usage'))
+                .rename('aggregation', 'usage');
 
         this.view = dfClone;
     }
@@ -64,6 +65,10 @@ class DataModel {
 
     public getView() {
         return this.view;
+    }
+
+    public getUsageDataframe() {
+        return this.usageDataframe;
     }
 }
 

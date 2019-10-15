@@ -16,7 +16,7 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 
-import EventBus from '@/events/EventBus.ts';
+import EventBus from '../events/EventBus';
 
 export default Vue.extend({
     name: 'heatmap-options',

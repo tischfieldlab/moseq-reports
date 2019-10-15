@@ -18,7 +18,7 @@ import Vue from 'vue';
 import * as Plotly from 'plotly.js';
 
 import DataModel from '../DataModel';
-import EventBus from '@/events/EventBus.ts';
+import EventBus from '../events/EventBus';
 import HeatmapOptions from '@/components/HeatmapOptions.vue';
 
 /* tslint:disable */
@@ -43,15 +43,15 @@ export default Vue.extend({
             Plotly.restyle('heatmap-graph', scale);
         },
         createHeatmap() {
-            let df = DataModel.getView();
-            df.show();
+            let df = DataModel.getUsageDataframe();
+
+            //df.show();
 
             var groups = df.filter((row: any) => row.get('group')).distinct('group').toArray().flat();
             var sylNum = df.select('syllable').distinct('syllable').toArray().flat();
 
             var sylUsage = [];
             var usg = df.select('usage').toArray();
-            console.log(usg);
             var index = 0;
             for (let i = 0; i < sylNum.length; i++) {
                 var temp = [];
