@@ -1,15 +1,12 @@
 <template>
-    <div id="heatmap-container">
-        <b-container>
-            <b-row>
-                <b-col>
-                    <div id='heatmap-graph' style="display: flex"></div>
-                </b-col>
-                    <heatmap-options></heatmap-options>
-                <b-col>
-                </b-col>
-            </b-row>
-        </b-container>
+    <div id="heatmap-container" style="display: flex; justify-content: space-between;">
+        <div id='heatmap-graph'></div>
+
+        <div id="heatmap-settings">
+            <input type="image" name="heatmap-wheel" @click="showSettingsModal = true"
+                src="https://static.thenounproject.com/png/333746-200.png">
+            <heatmap-settings-modal v-if="showSettingsModal" @close="showSettingsModal = false"></heatmap-settings-modal>     
+        </div>
     </div>
 </template>
 
@@ -17,15 +14,15 @@
 import Vue from 'vue';
 import * as Plotly from 'plotly.js';
 
-import DataModel from '../DataModel';
-import EventBus from '../events/EventBus';
-import HeatmapOptions from '@/components/HeatmapOptions.vue';
+import DataModel from '../../DataModel';
+import EventBus from '../../events/EventBus';
+import SettingsModal from '@/components/Heatmap/SettingsModal.vue';
 
 /* tslint:disable */
 export default Vue.extend({
     name: 'heatmap',
     components: {
-        'heatmap-options': HeatmapOptions,
+        'heatmap-settings-modal': SettingsModal, 
     },
     mounted() {
         this.createHeatmap();
@@ -37,6 +34,11 @@ export default Vue.extend({
         EventBus.$on('updateHeatmapColorscale', ((event: any) => {
             this.updateColorscale(event);
         }));
+    },
+    data() {
+            return {
+                showSettingsModal: false,
+            };
     },
     methods: {
         updateColorscale(scale: any) {
@@ -107,5 +109,15 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
+input {
+    width: 35px;
+    height: 35px;
+    margin-top: 40px;
+    margin-left: -35px;
+    position: absolute;
+}    
 
+input:hover {
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
 </style>
