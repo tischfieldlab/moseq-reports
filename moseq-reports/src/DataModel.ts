@@ -10,6 +10,7 @@ class DataModel {
     private selectedGroups = [];
     private baseDataframe : any = null;
     private usageDataframe : any = null;
+    private selectedSyallable : number = -1;
 
     public view : any = null;
 
@@ -48,6 +49,14 @@ class DataModel {
                 .rename('aggregation', 'usage');
 
         this.view = dfClone;
+    }
+
+    public updateSelectedSyllable(syllable : number) {
+        this.selectedSyallable = syllable;
+    }
+
+    public getSelectedSyllable() {
+        return this.selectedSyallable;
     }
 
     public updateSelectedGroups(groups : any) {

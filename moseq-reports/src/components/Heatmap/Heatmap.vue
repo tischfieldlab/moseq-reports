@@ -47,8 +47,6 @@ export default Vue.extend({
         createHeatmap() {
             let df = DataModel.getUsageDataframe();
 
-            //df.show();
-
             var groups = df.filter((row: any) => row.get('group')).distinct('group').toArray().flat();
             var sylNum = df.select('syllable').distinct('syllable').toArray().flat();
 
@@ -102,7 +100,22 @@ export default Vue.extend({
                 }
             } as Plotly.Layout
             
+            var myPlot: any = document.getElementById('heatmap-graph'),
+            d3 = Plotly.d3;
+
             Plotly.react('heatmap-graph', [data], layout);
+
+            var syllable : number = -1;
+            myPlot.on('plotly_click', function(data : any){
+                var pts = '';
+                for(var i=0; i < data.points.length; i++){
+                    pts = 'x = '+data.points[i].x +'\ny = '+
+                        data.points[i].y + '\nz = ' + 
+                        data.points[i].z.toPrecision(4) + '\n\n';
+                    syllable = data.points[i].y;
+                }
+                DataModel.updateSelectedSyllable(syllable);
+            });
         },
     },
 });
