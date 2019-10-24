@@ -41,7 +41,7 @@ export default Vue.extend({
         getOptions() {
             const max = DataModel.getMaxSyllable();
 
-            for (let i = 0; i < max; i++) {
+            for (let i = 0; i < max + 1; i++) {
                 const val = '' + i;
                 const temp = { value: val, text: val };
                 this.options.push(temp);
