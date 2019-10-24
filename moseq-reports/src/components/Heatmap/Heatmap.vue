@@ -14,8 +14,7 @@
 import Vue from 'vue';
 import * as Plotly from 'plotly.js';
 
-import DataModel from '../../DataModel';
-import EventBus from '../../events/EventBus';
+import DataModel, { EventType } from '../../DataModel';
 import SettingsModal from '@/components/Heatmap/SettingsModal.vue';
 
 /* tslint:disable */
@@ -27,13 +26,10 @@ export default Vue.extend({
     mounted() {
         this.createHeatmap();
 
-        EventBus.$on('updateSelectedGroups', ((event: any) => {
-            this.createHeatmap();
-        }));
-
-        EventBus.$on('updateHeatmapColorscale', ((event: any) => {
-            this.updateColorscale(event);
-        }));
+        // EventBus.$on('updateHeatmapColorscale', ((event: any) => {
+        //     this.updateColorscale(event);
+        // }));
+        DataModel.subscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
     },
     data() {
             return {
@@ -103,7 +99,7 @@ export default Vue.extend({
             var myPlot: any = document.getElementById('heatmap-graph'),
             d3 = Plotly.d3;
 
-            Plotly.react('heatmap-graph', [data], layout);
+            Plotly.newPlot('heatmap-graph', [data], layout);
 
             var syllable : number = -1;
             myPlot.on('plotly_click', function(data : any){
@@ -114,6 +110,7 @@ export default Vue.extend({
                         data.points[i].z.toPrecision(4) + '\n\n';
                     syllable = data.points[i].y;
                 }
+
                 DataModel.updateSelectedSyllable(syllable);
             });
         },

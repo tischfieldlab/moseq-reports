@@ -33,7 +33,6 @@
 import Vue from 'vue';
 
 import HeatmapColorSelection from '@/components/Heatmap/HeatmapColorSelection.vue';
-import EventBus from '../../events/EventBus';
 
 export default Vue.extend({
     name: 'settings-modal',

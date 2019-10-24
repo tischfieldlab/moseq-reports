@@ -12,7 +12,8 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 
-import EventBus from '../../events/EventBus';
+import DataModel from '../../DataModel';
+import * as Plotly from 'plotly.js';
 
 export default Vue.extend({
     name: 'heatmap-options',
@@ -37,7 +38,7 @@ export default Vue.extend({
                 colorscale: scale,
             };
 
-            EventBus.$emit('updateHeatmapColorscale', update);
+            Plotly.restyle('heatmap-graph', update);
         },
     },
 });
