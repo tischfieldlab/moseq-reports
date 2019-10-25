@@ -1,6 +1,6 @@
 <template>
     <div class='home'>
-        <b-container style="margin-top: 10px;" class="bv-example-row">
+        <b-container fluid style="margin-top: 10px;" class="bv-example-row">
             <b-row>
                 <b-col>
                     <group-box></group-box>
