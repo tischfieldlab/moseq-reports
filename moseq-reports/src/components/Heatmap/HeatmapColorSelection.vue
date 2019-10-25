@@ -1,28 +1,23 @@
 <template>
-    <div id="colorscale-container" style="padding-top: 15px;">
-      <b-card class="card-header" title="Heatmap Options">
-          <b-form-group style='text-align: left;'>
-            <b-card-text>
-              <p class="card-title" style="margin-top: 7px;"><b>Heatmap Color Scale</b></p>
-              <b-form-radio-group v-model="selected" :options='options'
-                name='colorscale' style="font-size: 12px;" @change="updateColorscale($event)">
-              </b-form-radio-group>
-            </b-card-text>
-          </b-form-group>
-      </b-card>
+    <div id="colorscale-container">
+        <p style="text-align: left; font-size: 16px; margin-top: -20px;"> <b>Heatmap Colorscale</b></p>
+        <b-form-select v-model="selectedColor" :options="options" 
+            @change="updateColorscale(selectedColor)" class="mb-3">
+        </b-form-select>
     </div>
 </template>
 
 <script scoped lang="ts">
 import Vue from 'vue';
 
-import EventBus from '../events/EventBus';
+import DataModel from '../../DataModel';
+import * as Plotly from 'plotly.js';
 
 export default Vue.extend({
     name: 'heatmap-options',
     data() {
         return {
-            selected: 'Portland',
+            selectedColor: 'Portland',
             options: [
                 { text: 'Blackbody', value: 'Blackbody' },
                 { text: 'Electric', value: 'Electric' },
@@ -37,12 +32,32 @@ export default Vue.extend({
     },
     methods: {
         updateColorscale(scale: any) {
+            this.selectedColor = scale;
             const update = {
                 colorscale: scale,
             };
 
-            EventBus.$emit('updateHeatmapColorscale', update);
+            Plotly.restyle('heatmap-graph', update);
         },
     },
 });
 </script>
+
+<style lang="scss" scoped>
+select {
+    background: dodgerblue;
+    color: white;
+    float: left;
+    margin-left: 15px;
+    padding-left: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: -11px;
+    text-align: left; 
+    
+}
+
+option {
+    text-align: left;
+}
+</style>

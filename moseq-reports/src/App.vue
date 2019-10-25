@@ -2,7 +2,9 @@
   <div id="app">
     <nav-bar></nav-bar>
     <router-view/>
-    <!-- <footer-bar></footer-bar> -->
+    <div id="bottom" style="bottom: 0;">
+      <footer-bar></footer-bar>
+    </div>
   </div>
 </template>
 

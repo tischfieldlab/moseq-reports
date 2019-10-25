@@ -1,15 +1,12 @@
 <template>
-    <div id="heatmap-container">
-        <b-container>
-            <b-row>
-                <b-col>
-                    <div id='heatmap-graph' style="display: flex"></div>
-                </b-col>
-                    <heatmap-options></heatmap-options>
-                <b-col>
-                </b-col>
-            </b-row>
-        </b-container>
+    <div id="heatmap-container" style="display: flex; justify-content: space-between;">
+        <div id='heatmap-graph'></div>
+
+        <div id="heatmap-settings">
+            <input type="image" name="heatmap-wheel" @click="showSettingsModal = true"
+                src="https://static.thenounproject.com/png/333746-200.png">
+            <heatmap-settings-modal v-if="showSettingsModal" @close="showSettingsModal = false"></heatmap-settings-modal>     
+        </div>
     </div>
 </template>
 
@@ -17,26 +14,27 @@
 import Vue from 'vue';
 import * as Plotly from 'plotly.js';
 
-import DataModel from '../DataModel';
-import EventBus from '../events/EventBus';
-import HeatmapOptions from '@/components/HeatmapOptions.vue';
+import DataModel, { EventType } from '../../DataModel';
+import SettingsModal from '@/components/Heatmap/SettingsModal.vue';
 
 /* tslint:disable */
 export default Vue.extend({
     name: 'heatmap',
     components: {
-        'heatmap-options': HeatmapOptions,
+        'heatmap-settings-modal': SettingsModal, 
     },
     mounted() {
         this.createHeatmap();
 
-        EventBus.$on('updateSelectedGroups', ((event: any) => {
-            this.createHeatmap();
-        }));
-
-        EventBus.$on('updateHeatmapColorscale', ((event: any) => {
-            this.updateColorscale(event);
-        }));
+        // EventBus.$on('updateHeatmapColorscale', ((event: any) => {
+        //     this.updateColorscale(event);
+        // }));
+        DataModel.subscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
+    },
+    data() {
+            return {
+                showSettingsModal: false,
+            };
     },
     methods: {
         updateColorscale(scale: any) {
@@ -44,8 +42,6 @@ export default Vue.extend({
         },
         createHeatmap() {
             let df = DataModel.getUsageDataframe();
-
-            //df.show();
 
             var groups = df.filter((row: any) => row.get('group')).distinct('group').toArray().flat();
             var sylNum = df.select('syllable').distinct('syllable').toArray().flat();
@@ -100,12 +96,38 @@ export default Vue.extend({
                 }
             } as Plotly.Layout
             
-            Plotly.react('heatmap-graph', [data], layout);
+            var myPlot: any = document.getElementById('heatmap-graph'),
+            d3 = Plotly.d3;
+
+            Plotly.newPlot('heatmap-graph', [data], layout);
+
+            var syllable : number = -1;
+            myPlot.on('plotly_click', function(data : any){
+                var pts = '';
+                for(var i=0; i < data.points.length; i++){
+                    pts = 'x = '+data.points[i].x +'\ny = '+
+                        data.points[i].y + '\nz = ' + 
+                        data.points[i].z.toPrecision(4) + '\n\n';
+                    syllable = data.points[i].y;
+                }
+
+                DataModel.updateSelectedSyllable(syllable);
+            });
         },
     },
 });
 </script>
 
 <style scoped lang="scss">
+input {
+    width: 35px;
+    height: 35px;
+    margin-top: 40px;
+    margin-left: -35px;
+    position: absolute;
+}    
 
+input:hover {
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
 </style>
