@@ -1,11 +1,9 @@
 <template>
     <div id="colorscale-container">
         <p style="text-align: left; font-size: 16px; margin-top: -20px;"> <b>Heatmap Colorscale</b></p>
-        <select style="right: 0;" v-model="selectedColor" @change="updateColorscale(selectedColor)">
-            <option v-for="op in options" v-bind:value="op.value">
-                {{op.text}}
-            </option>
-        </select>
+        <b-form-select v-model="selectedColor" :options="options" 
+            @change="updateColorscale(selectedColor)" class="mb-3">
+        </b-form-select>
     </div>
 </template>
 
@@ -34,6 +32,7 @@ export default Vue.extend({
     },
     methods: {
         updateColorscale(scale: any) {
+            this.selectedColor = scale;
             const update = {
                 colorscale: scale,
             };
