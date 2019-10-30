@@ -8,7 +8,10 @@
                 <b-col>
                     <heat-map></heat-map>
                 </b-col>
-                <b-col><test-syllable></test-syllable></b-col>
+                <b-col>
+                    <test-syllable></test-syllable>
+                    <detailed-usage></detailed-usage>
+                </b-col>
             </b-row>
         </b-container>
     </div>
@@ -20,6 +23,7 @@ import Vue from 'vue';
 import GroupBox from '@/components/GroupBox.vue';
 import Heatmap from '@/components/Heatmap/Heatmap.vue';
 import TestSyllable from '@/components/TestSyllable.vue';
+import DetailedUsage from '../components/DetailedUsage/DetailedUsage.vue';
 
 export default Vue.extend({
     name: 'homepage',
@@ -27,6 +31,7 @@ export default Vue.extend({
         'group-box': GroupBox,
         'heat-map': Heatmap,
         'test-syllable': TestSyllable,
+        'detailed-usage': DetailedUsage,
     },
 });
 </script>
