@@ -1,5 +1,5 @@
 <template>
-    <div id='syllablebox-container' style="padding-top: 15px; float: left;">
+    <div id='syllablebox-container' style="padding-top: 15px; float: left; padding-left: 25px;">
         <b-card class="syllables-header" title="Syllable Selection">
             <b-form-group style="text-aling: left;">
                 <b-card-text>
