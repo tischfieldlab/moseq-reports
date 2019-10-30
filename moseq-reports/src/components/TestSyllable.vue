@@ -1,5 +1,5 @@
 <template>
-    <div id="testsyllable-container">
+    <div id="testsyllable-container" style="float: right;">
         <b-card class="test-header" title="Current Syllable">
           <b-form-group style="text-align: left;">
             <b-card-text>
