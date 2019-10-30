@@ -4,7 +4,6 @@
             <b-row>
                 <b-col>
                     <group-box></group-box>
-                    <syllable-box></syllable-box>
                 </b-col>
                 <b-col>
                     <heat-map></heat-map>
@@ -20,7 +19,6 @@ import Vue from 'vue';
 
 import GroupBox from '@/components/GroupBox.vue';
 import Heatmap from '@/components/Heatmap/Heatmap.vue';
-import SyllableBox from '@/components/SyllableBox.vue';
 import TestSyllable from '@/components/TestSyllable.vue';
 
 export default Vue.extend({
@@ -28,7 +26,6 @@ export default Vue.extend({
     components: {
         'group-box': GroupBox,
         'heat-map': Heatmap,
-        'syllable-box': SyllableBox,
         'test-syllable': TestSyllable,
     },
 });
