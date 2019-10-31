@@ -4,17 +4,17 @@
           <b-form-group style="text-align: left;">
             <h4>Group Selection</h4>
             <b-card-text>
-              <b-form-checkbox-group v-model="selectedGroups" stacked @change="onGroupSelectionChange($event)">
-                <draggable :list="availableGroups" @change="onGroupOrderChange($event)">
-                  <b-card v-for="option in availableGroups" :key="option" class="chk-card">
+              <draggable v-model="groups" @change="updateGroups()">
+                  <b-card v-for="option in groups" :key="option.name" class="chk-card">
                     <b-form-checkbox
-                      :value="option"
-                      :name="option">
-                      {{ option }}
+                      switch
+                      @input="updateGroups()"
+                      v-model="option.selected"
+                      :name="option.name">
+                      {{ option.name }}
                     </b-form-checkbox>
                   </b-card>
                 </draggable>
-              </b-form-checkbox-group>
             </b-card-text>
           </b-form-group>
           <br>
@@ -37,6 +37,16 @@ import Vue from 'vue';
 import draggable from 'vuedraggable';
 import DataModel, { EventType } from '../DataModel';
 
+
+class SelectableGroupItem{
+  name: string;
+  selected: boolean;
+  constructor(name:string, selected:boolean = true){
+    this.name = name;
+    this.selected = selected;
+  }
+}
+
 export default Vue.extend({
     name: 'groupbox',
     components: {
@@ -44,23 +54,25 @@ export default Vue.extend({
     },
     data() {
         return {
-            selectedGroups: DataModel.getSelectedGroups(),
-            availableGroups: DataModel.getAvailableGroups(),
+            groups: [] as Array<SelectableGroupItem>,
             syllable: DataModel.getSelectedSyllable(),
             syllableIdOptions: [] as any,
         };
     },
     mounted() {
       DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.updateSyllable);
+      this.buildGroups()
       this.getsyllableIdOptions();
     },
     methods: {
-      onGroupSelectionChange(event: any) {
-        DataModel.updateSelectedGroups(event);
+      buildGroups(){
+        const selectedGroups = DataModel.getSelectedGroups();
+        DataModel.getAvailableGroups().map(g => this.groups.push(new SelectableGroupItem(g, selectedGroups.includes(g))));
       },
-      onGroupOrderChange(event: any){
-        DataModel.updateSelectedGroups(this.selectedGroups);
-        console.log("in onGroupOrderChange", this.selectedGroups);
+      updateGroups(){
+        const newGroups = this.groups.filter(g => g.selected).map(g => g.name);
+        console.log("in updateGroups", newGroups);
+        DataModel.updateSelectedGroups(newGroups);
       },
       updateSyllable(event: any) {
         this.syllable = DataModel.getSelectedSyllable();
@@ -85,7 +97,7 @@ export default Vue.extend({
 .chk-card .card-body{
   padding:0.25rem;
 }
-.custom-checkbox::after{
+.custom-switch::after{
   content:"\22EE";
   float:right;
   margin-right: 5px;
