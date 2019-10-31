@@ -2,14 +2,13 @@
     <div class='home'>
         <b-container fluid style="margin-top: 10px;" class="bv-example-row">
             <b-row>
-                <b-col>
+                <b-col md="auto">
                     <group-box></group-box>
                 </b-col>
                 <b-col>
                     <JqxDocking orientation="horizontal" width="100%" mode="floating">
                         <div>
                             <UiCard>
-                                Heatmap
                                 <heat-map slot="body"></heat-map>
                             </UiCard>
                             <UiCard>
