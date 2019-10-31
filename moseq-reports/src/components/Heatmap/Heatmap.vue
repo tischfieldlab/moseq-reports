@@ -37,22 +37,21 @@ export default Vue.extend({
         updateColorscale(scale: any) {
             Plotly.restyle('heatmap-graph', scale);
         },
+        __transpose(data:Array<Array<number>>){
+            return data[0].map((col, i) => data.map(row => row[i]));
+        },
         createHeatmap() {
             let df = DataModel.getAggregateView();
 
-            var groups = df.filter((row: any) => row.get('group')).distinct('group').toArray().flat();
+            var groups = DataModel.getSelectedGroups();
             var sylNum = df.select('syllable').distinct('syllable').toArray().flat();
 
             var sylUsage = [];
-            var usg = df.select('usage').toArray();
-            var index = 0;
-            for (let i = 0; i < sylNum.length; i++) {
-                var temp = [];
-                for (let j = 0; j < groups.length; j++) {
-                    temp.push(usg[(j*sylNum.length)+i][0]);
-                }
-                sylUsage.push(temp);
+            for(const g of groups){
+                sylUsage.push(df.where({'group': g}).select('usage').toArray().flat());
             }
+            sylUsage = this.__transpose(sylUsage);
+
 
             const data = {
                 type: 'heatmap',
