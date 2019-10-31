@@ -6,9 +6,18 @@
                     <group-box></group-box>
                 </b-col>
                 <b-col>
-                    <heat-map></heat-map>
+                    <JqxDocking orientation="horizontal" width="100%" mode="floating">
+                        <div>
+                            <UiCard>
+                                Heatmap
+                                <heat-map slot="body"></heat-map>
+                            </UiCard>
+                            <UiCard>
+                                <test-syllable slot="body"></test-syllable>
+                            </UiCard>
+                        </div>
+                    </JqxDocking>
                 </b-col>
-                <b-col><test-syllable></test-syllable></b-col>
             </b-row>
         </b-container>
     </div>
@@ -17,6 +26,11 @@
 <script lang="ts">
 import Vue from 'vue';
 
+import UiCard from '@/components/Window.vue';
+
+import JqxDocking from "jqwidgets-scripts/jqwidgets-vue/vue_jqxdocking.vue";
+import JqxDockingLayout from "jqwidgets-scripts/jqwidgets-vue/vue_jqxdockinglayout.vue";
+
 import GroupBox from '@/components/GroupBox.vue';
 import Heatmap from '@/components/Heatmap/Heatmap.vue';
 import TestSyllable from '@/components/TestSyllable.vue';
@@ -24,6 +38,8 @@ import TestSyllable from '@/components/TestSyllable.vue';
 export default Vue.extend({
     name: 'homepage',
     components: {
+        JqxDocking,
+        UiCard,
         'group-box': GroupBox,
         'heat-map': Heatmap,
         'test-syllable': TestSyllable,
