@@ -2,10 +2,10 @@
     <div class='home'>
         <b-container fluid style="margin-top: 10px;" class="bv-example-row">
             <b-row>
-                <b-col>
+                <b-col md="auto">
                     <group-box></group-box>
                 </b-col>
-                <b-col>
+                <b-col md="auto">
                     <heat-map></heat-map>
                 </b-col>
                 <b-col>
