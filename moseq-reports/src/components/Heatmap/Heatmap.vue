@@ -1,5 +1,5 @@
 <template>
-    <div id="heatmap-container" style="display: flex; justify-content: space-between;">
+    <div id="heatmap-container">
         <div id='heatmap-graph'></div>
 
         <div id="heatmap-settings">
@@ -12,6 +12,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import resize from 'vue-resize-directive'
 import * as Plotly from 'plotly.js';
 
 import DataModel, { EventType } from '../../DataModel';
@@ -36,6 +37,13 @@ export default Vue.extend({
     methods: {
         updateColorscale(scale: any) {
             Plotly.restyle('heatmap-graph', scale);
+        },
+        onResize(event) {
+            console.log('window has been resized', event)
+            Plotly.relayout('heatmap-graph', {
+                width: event.width,
+                height: event.height
+            });
         },
         createHeatmap() {
             let df = DataModel.getAggregateView();
@@ -112,6 +120,9 @@ export default Vue.extend({
             });
         },
     },
+    directives:{
+        resize,
+    }
 });
 </script>
 
