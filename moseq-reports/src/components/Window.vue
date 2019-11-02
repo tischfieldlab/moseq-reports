@@ -25,6 +25,9 @@ export default Vue.component('ui-window', {
     props: {
         component: DataWindow,
     },
+    computed: {
+        
+    },
     methods: {
         onResize(event){
             //console.log("I got resized", event);
@@ -36,19 +39,20 @@ export default Vue.component('ui-window', {
             const modal = new SettingsModal();
             console.log(this.$refs.body)
             modal.$props.content = this.$refs.body.settings;
+            modal.$props.title = this.component.title + " Settings";
             modal.$mount();
             //console.log(this) 
-            modal.$el.classList.add('hidden');
-            modal.$on('close', ()=>{
+            //modal.$el.classList.add('hidden');
+            /*modal.$on('close', ()=>{
                 //console.log("got close");
                 modal.$el.classList.add('hidden');
-            });
+            });*/
 
             const button = document.createElement('img');
             button.src = "https://static.thenounproject.com/png/333746-200.png";
             button.classList.add("settings-button");
             button.addEventListener('click', event => {
-                modal.$el.classList.toggle('hidden');
+                modal.show = true;
             });
             
             container.appendChild(button);

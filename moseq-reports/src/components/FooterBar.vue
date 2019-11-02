@@ -43,7 +43,7 @@ export default Vue.extend({
 #myFooter {
     background-color: #3c3d41;
     color: white;
-    padding-top: 10px;
+    padding-top: 3px;
     position: bottom;
     bottom: 0;
     width: 100%;

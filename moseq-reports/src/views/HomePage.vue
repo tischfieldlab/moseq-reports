@@ -31,7 +31,6 @@ import Toolbox from '@/components/Toolbox.vue';
 class DataWindow{
     title: "default title";
     type: string;
-    instance: any;
     constructor(type, title){
         this.type = type;
         this.title = title;
@@ -62,12 +61,15 @@ export default Vue.extend({
                 orientation: 'horizontal',
                 items: [{
                     type:'tabbedGroup',
-                    width:300,
+                    width:250,
+                    allowPin:true,
+                    allowClose:false,
                     items:[{
                         type: 'layoutPanel',
                         title: 'Data Filter',
                         contentContainer: 'DataFilterPanel',
                         allowClose:false,
+                        allowPin:true,
                         initContent: () => {
                             var ComponentClass = Vue.extend(GroupBox);
                             var instance = new ComponentClass();
@@ -79,6 +81,7 @@ export default Vue.extend({
                         title: 'Toolbox',
                         contentContainer: 'ToolboxPanel',
                         allowClose:false,
+                        allowPin:true,
                         initContent: () => {
                             var ComponentClass = Vue.extend(Toolbox);
                             var instance = new ComponentClass({
@@ -101,24 +104,15 @@ export default Vue.extend({
     mounted(){
         
         this.docking.width = this.$parent.$el.offsetWidth;
-        this.addComponent("heat-map", "A heat map");
+        this.addComponent("heat-map", "Usage heatmap");
         this.$nextTick().then(() => {
             this.handleResize();
         });
     },
     methods:{
         addComponent(type, title){
-            console.log("in add component", type, title);
             const win = new DataWindow(type, title);
             this.windows.push(win);
-            //let winname = "data-window-"+(this.windows.length-1);
-
-            this.$nextTick().then(() => {
-                //this.$refs.docking.addWindow(winname, this.docking.mode, 0, 1);
-            });
-        },
-        addHeatmap(e){
-            this.addComponent("heat-map", "A heat map");
         },
         handleResize() {
             const header = document.getElementById('navigation-bar');
@@ -128,7 +122,6 @@ export default Vue.extend({
             
             this.height = document.documentElement.clientHeight - headerHeight-footerHeight;
             this.$refs.dockinglayout.height = this.height;
-            //console.log("in resize", this.height, document.documentElement.clientHeight, headerHeight, footerHeight)
         },
     },
 });

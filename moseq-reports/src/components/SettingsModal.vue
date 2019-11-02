@@ -1,30 +1,19 @@
 <template>
- <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-
-          <div style="text-align: center;" class="modal-header">
-            <slot style="text-align: center;" name="header">
-              <h3 style="text-align: center;">{{title}}</h3>
-            </slot>
-          </div>
-
-          <div ref="body" class="modal-body">
-            
-          </div>
-
-          <div class="modal-footer">
-            <slot name="footer">
-              <b-button variant="primary" class="modal-default-button" @click="$emit('close')">
-                OK
-              </b-button>
-            </slot>
-          </div>
-        </div>
-      </div>
-    </div>
-  </transition>
+<keep-alive>
+  <b-modal
+    @shown="onModalShow"
+    :title="title"
+    v-model="show"
+    header-bg-variant="dark"
+    header-text-variant="light"
+    body-bg-variant="light"
+    body-text-variant="dark"
+    hide-footer>
+    
+    <div :id="id" ref="body" class="modal-body"></div>
+    
+  </b-modal>
+  </keep-alive>
 </template>
 
 <script lang="ts">
@@ -37,70 +26,27 @@ export default Vue.extend({
         title: String,
         content: String
     },
-    mounted(){
-        this.content.$mount();
-        this.$refs.body.appendChild(this.content.$el);
+    data(){
+      return {
+        id:'modal-container',
+        show:false,
+      }
     },
+    beforeMount(){
+        this.id += this.content._uid;
+    },
+    mounted(){
+        
+    },
+    methods:{
+        onModalShow(){
+            this.content.$mount();
+            this.$refs.body.appendChild(this.content.$el);
+        },
+    }
 });
 </script>
 
 <style lang="scss" scoped>
-.modal-mask {
-  position: fixed;
-  z-index: 9998;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, .5);
-  display: table;
-  transition: opacity .3s ease;
-}
 
-.modal-wrapper {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.modal-container {
-  width: 400px;
-  margin: 0px auto;
-  padding: 20px 30px;
-  background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  transition: all .3s ease;
-  font-family: Helvetica, Arial, sans-serif;
-}
-
-.modal-header h3 {
-    text-align: center;
-    margin-right: 0;
-}
-
-.modal-body {
-  margin: 20px 0;
-}
-
-.modal-default-button {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-.modal-enter {
-  opacity: 0;
-}
-
-.modal-leave-active {
-  opacity: 0;
-}
-
-.modal-enter .modal-container,
-.modal-leave-active .modal-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-}
 </style>

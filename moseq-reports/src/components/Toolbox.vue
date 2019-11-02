@@ -1,7 +1,7 @@
 <template>
     <div>
-        <b-button pill @click="add_component('heat-map', 'A heat map');">Add Heatmap 1</b-button>
-        <b-button pill @click="add_component('heat-map', 'A heat map');">Add Heatmap 2</b-button>
+        <b-button pill @click="add_component('heat-map', 'Usage heatmap');">Add Heatmap 1</b-button>
+        <b-button pill @click="add_component('heat-map', 'Usage heatmap');">Add Heatmap 2</b-button>
     </div>
 </template>
 

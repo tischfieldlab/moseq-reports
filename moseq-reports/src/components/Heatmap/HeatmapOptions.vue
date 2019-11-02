@@ -1,10 +1,15 @@
 <template>
-    <div id="colorscale-container">
-        <p style="text-align: left; font-size: 16px; margin-top: -20px;"> <b>Heatmap Colorscale</b></p>
-        <b-form-select v-model="selectedColor" :options="options" 
+    <b-form-group
+        label="Heatmap Colorscale"
+        label-for="heat-color"
+    >
+        <b-form-select 
+            id="heat-color" 
+            v-model="selectedColor" 
+            :options="options" 
             @change="updateColorscale(selectedColor)" class="mb-3">
         </b-form-select>
-    </div>
+    </b-form-group>
 </template>
 
 <script scoped lang="ts">
@@ -48,20 +53,5 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-select {
-    background: dodgerblue;
-    color: white;
-    float: left;
-    margin-left: 15px;
-    padding-left: 15px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    margin-top: -11px;
-    text-align: left; 
-    
-}
 
-option {
-    text-align: left;
-}
 </style>
