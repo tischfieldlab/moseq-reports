@@ -1,6 +1,6 @@
 <template>
     <footer id="myFooter">
-        <div class="container">
+        <!--<div class="container">
             <div class="row">
                 <div class="col-sm-3">
                     <a href="#"><img class="navbar-brand" src="https://image.flaticon.com/icons/png/512/40/40508.png"></a>
@@ -24,9 +24,10 @@
                     </ul>
                 </div>
             </div>
-        </div>
+        </div>-->
         <div class="footer-copyright">
-            <p>© 2019 Jay A. Tischfield Lab </p>
+            <img class="navbar-brand" style="height:32px;width:32px;" src="https://image.flaticon.com/icons/png/512/40/40508.png">
+            <span>© 2019 Jay A. Tischfield Lab</span>
         </div>
     </footer>
 </template>

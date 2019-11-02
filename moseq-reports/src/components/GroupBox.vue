@@ -1,25 +1,22 @@
 <template>
-    <div id='groupbox-container' style='padding-top: 15px; float: left;'>
-        <b-card class="groups-header">
-            <b-form-group style="text-align: left;">
-                <h4>Group Selection</h4>
-                <b-card-text>
-                    <b-form-checkbox-group v-model='selected' :options='availableGroups'
-                        @change='onChange($event)' stacked>
-                    </b-form-checkbox-group>
-                </b-card-text>
-            </b-form-group>
-            <br>
-            <b-form-group style="text-align: left; margin-bottom: -15px;">
-                <h4>Syllable Selection</h4>
-                <b-card-text>
-                    <b-form-select v-model="syllable" :options="options" @change="onSyllableChange($event)" class="mb-3">
-                        <template v-slot:first>
-                            <option :value="-1" disabled>Select a Syllable</option>
-                        </template>
-                    </b-form-select>
-                </b-card-text>
-            </b-form-group>
+    <div id='groupbox-container' style=''>
+        <b-card no-body>
+            <b-card-header>Group Selection</b-card-header>
+            <b-card-body>
+                <b-form-checkbox-group v-model='selected' :options='availableGroups'
+                    @change='onChange($event)' stacked>
+                </b-form-checkbox-group>
+            </b-card-body>
+        </b-card>
+        <b-card no-body>
+            <b-card-header>Syllable Selection</b-card-header>
+            <b-card-body>
+                <b-form-select v-model="syllable" :options="options" @change="onSyllableChange($event)">
+                    <template v-slot:first>
+                        <option :value="-1" disabled>Select a Syllable</option>
+                    </template>
+                </b-form-select>
+            </b-card-body>
         </b-card>
     </div>
 </template>
@@ -67,5 +64,13 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-
+.card{
+    margin:10px;
+}
+.card-header{
+    font-weight: bold;
+}
+.card-body{
+    text-align: left;
+}
 </style>

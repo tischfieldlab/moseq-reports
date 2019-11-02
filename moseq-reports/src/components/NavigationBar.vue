@@ -21,4 +21,9 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
+.navbar-brand{
+    background: url(https://image.flaticon.com/icons/png/512/40/40508.png) center left no-repeat;
+    background-size: 56px 56px;
+    padding-left: 72px;
+}
 </style>

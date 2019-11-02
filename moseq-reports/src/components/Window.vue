@@ -1,14 +1,10 @@
 <template>
     <JqxWindow ref="window" @resized="onResize($event)" :showCollapseButton="true">
         <div>
-            <slot name="header">
-                default header
-            </slot>
+            <span class="title-text">{{component.title}}</span>
         </div>
         <div>
-            <slot name="body">
-                default body
-            </slot>
+            <component ref="body" v-bind:is="component.type" />
         </div>
     </JqxWindow>
 </template>
@@ -20,10 +16,14 @@ import Vue from 'vue';
 
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import SettingsModal from '@/components/SettingsModal.vue';
+import DataWindow from '@/views/HomePage.vue';
 
 export default Vue.component('ui-window', {
     components:{
         JqxWindow
+    },
+    props: {
+        component: DataWindow,
     },
     methods: {
         onResize(event){
@@ -34,13 +34,13 @@ export default Vue.component('ui-window', {
             const container = document.createElement('div');
             
             const modal = new SettingsModal();
-            
-            modal.$props.content = this.$slots.body[0].componentInstance.settings;
+            console.log(this.$refs.body)
+            modal.$props.content = this.$refs.body.settings;
             modal.$mount();
-            console.log(this) 
+            //console.log(this) 
             modal.$el.classList.add('hidden');
             modal.$on('close', ()=>{
-                console.log("got close");
+                //console.log("got close");
                 modal.$el.classList.add('hidden');
             });
 
@@ -57,15 +57,12 @@ export default Vue.component('ui-window', {
         }
     },
     mounted(){
-        console.log(this);
+        //console.log(this);
 
         this.$nextTick().then(() => {
             this.addSettingsButton();
         });
     },
-    /*directives:{
-        resize,
-    }*/
 });
 
 </script>

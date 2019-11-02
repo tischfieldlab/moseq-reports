@@ -13,8 +13,8 @@ import SettingsModal from '@/components/SettingsModal.vue';
 import HeatmapOptions from '@/components/Heatmap/HeatmapOptions.vue'
 
 /* tslint:disable */
-export default Vue.extend({
-    name: 'heatmap',
+export default Vue.component('heat-map', {
+    name: 'heat-map',
     mounted() {
         this.settings.$props.owner = this;
         this.createHeatmap();
@@ -28,6 +28,7 @@ export default Vue.extend({
     },
     data() {
         return {
+            title: "Syllable Usage Heatmap",
             settings: new HeatmapOptions(),
         };
     },
@@ -67,10 +68,12 @@ export default Vue.extend({
             } as Plotly.PlotData
 
             let layout = {
-                title: 'Syllable Usage Heatmap',
+                //title: 'Syllable Usage Heatmap',
                 margin: {
-                    t: 50,
-                    b: 70
+                    t: 10,
+                    b: 70,
+                    l:50,
+                    r:10
                 },
                 width: this.$parent.width - 10,
                 height: this.$parent.height - 100,
@@ -94,6 +97,7 @@ export default Vue.extend({
                     autorange: true,
                     side: 'left',
                     ticks: 'outside',
+                    title: "Syllable (ID)",
                 }
             } as Plotly.Layout
             
@@ -120,15 +124,5 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-input {
-    width: 35px;
-    height: 35px;
-    margin-top: 40px;
-    margin-left: -35px;
-    position: absolute;
-}    
 
-input:hover {
-    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
-}
 </style>
