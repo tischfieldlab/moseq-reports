@@ -10,8 +10,11 @@ import DataModel from './DataModel';
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-
 Vue.use(BootstrapVue);
+
+import VueResize from 'vue-resize';
+Vue.use(VueResize);
+
 Vue.config.productionTip = false;
 
 new Vue({

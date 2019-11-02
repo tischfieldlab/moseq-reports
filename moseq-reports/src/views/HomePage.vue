@@ -7,19 +7,18 @@
                     <b-button @click="addHeatmap($event)">Add Heatmap</b-button>
                 </b-col>
                 <b-col>
-                    <JqxDocking ref="docking" orientation="docking.orientation" width="docking.width" mode="docking.mode">
+                    <!--<JqxDocking ref="docking" orientation="docking.orientation" width="docking.width" mode="docking.mode">-->
                         <div>
                             <template v-for="(w, index) in windows">
-                                <UiCard :key="index" :id="`data-window-${index}`">
+                                <UiCard :key="index">
                                     <div slot="header">
                                         <span class="title-text">{{w.title}}</span>
-                                        <img style="float:right;" width="24" height="24" src="https://static.thenounproject.com/png/333746-200.png" />
                                     </div>
                                     <component slot="body" v-bind:is="w.type" />
                                 </UiCard>
                             </template>
                         </div>
-                    </JqxDocking>
+                    <!--</JqxDocking>-->
                 </b-col>
             </b-row>
         </b-container>
@@ -40,7 +39,6 @@ import TestSyllable from '@/components/TestSyllable.vue';
 
 class DataWindow{
     title: "default title";
-    content: "default content";
     type: string;
     constructor(type, title){
         this.type = type;
@@ -73,11 +71,12 @@ export default Vue.extend({
     },
     methods:{
         addComponent(type, title){
-            this.windows.push(new DataWindow(type, title));
-            let winname = "data-window-"+(this.windows.length-1);
+            const win = new DataWindow(type, title);
+            this.windows.push(win);
+            //let winname = "data-window-"+(this.windows.length-1);
 
             this.$nextTick().then(() => {
-                this.$refs.docking.addWindow(winname, this.docking.mode, 0, 1);
+                //this.$refs.docking.addWindow(winname, this.docking.mode, 0, 1);
             });
         },
         addHeatmap(e){

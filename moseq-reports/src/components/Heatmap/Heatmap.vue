@@ -1,48 +1,44 @@
 <template>
-    <div id="heatmap-container">
-        <div id='heatmap-graph'></div>
-
-        <div id="heatmap-settings">
-            <input type="image" name="heatmap-wheel" @click="showSettingsModal = true"
-                src="https://static.thenounproject.com/png/333746-200.png">
-            <heatmap-settings-modal v-if="showSettingsModal" @close="showSettingsModal = false"></heatmap-settings-modal>     
-        </div>
+    <div ref="heatmap-container">
+        <div ref='heatmap-graph'></div>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import resize from 'vue-resize-directive'
 import * as Plotly from 'plotly.js';
 
 import DataModel, { EventType } from '../../DataModel';
-import SettingsModal from '@/components/Heatmap/SettingsModal.vue';
+import SettingsModal from '@/components/SettingsModal.vue';
+import HeatmapOptions from '@/components/Heatmap/HeatmapOptions.vue'
 
 /* tslint:disable */
 export default Vue.extend({
     name: 'heatmap',
-    components: {
-        'heatmap-settings-modal': SettingsModal, 
-    },
     mounted() {
+        this.settings.$props.owner = this;
         this.createHeatmap();
 
         DataModel.subscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
+
+        this.$parent.$on('resized', this.onResize);
+        this.$nextTick().then(() => {
+            this.onResize();
+        });
     },
     data() {
-            return {
-                showSettingsModal: false,
-            };
+        return {
+            settings: new HeatmapOptions(),
+        };
     },
     methods: {
         updateColorscale(scale: any) {
-            Plotly.restyle('heatmap-graph', scale);
+            Plotly.restyle(this.$refs['heatmap-graph'], scale);
         },
-        onResize(event) {
-            console.log('window has been resized', event)
-            Plotly.relayout('heatmap-graph', {
-                width: event.width,
-                height: event.height
+        onResize() {
+            Plotly.relayout(this.$refs['heatmap-graph'], {
+                width: this.$parent.width - 10,
+                height: this.$parent.height - 100
             });
         },
         createHeatmap() {
@@ -76,8 +72,8 @@ export default Vue.extend({
                     t: 50,
                     b: 70
                 },
-                width: 720,
-                height: 980,
+                width: this.$parent.width - 10,
+                height: this.$parent.height - 100,
                 autosize: true,
                 xaxis: {
                     autorange: true,
@@ -101,10 +97,10 @@ export default Vue.extend({
                 }
             } as Plotly.Layout
             
-            var myPlot: any = document.getElementById('heatmap-graph'),
+            var myPlot: any = this.$refs['heatmap-graph'],
             d3 = Plotly.d3;
 
-            Plotly.newPlot('heatmap-graph', [data], layout);
+            Plotly.newPlot(this.$refs['heatmap-graph'], [data], layout);
 
             var syllable : number = 0;
             myPlot.on('plotly_click', function(data : any){
@@ -119,9 +115,6 @@ export default Vue.extend({
                 DataModel.updateSelectedSyllable(syllable);
             });
         },
-    },
-    directives:{
-        resize,
     }
 });
 </script>

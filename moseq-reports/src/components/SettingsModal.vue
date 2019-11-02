@@ -6,14 +6,12 @@
 
           <div style="text-align: center;" class="modal-header">
             <slot style="text-align: center;" name="header">
-              <h3 style="text-align: center;">Heatmap Settings</h3>
+              <h3 style="text-align: center;">{{title}}</h3>
             </slot>
           </div>
 
-          <div class="modal-body">
-            <slot name="body">
-              <heatmap-colors></heatmap-colors>
-            </slot>
+          <div ref="body" class="modal-body">
+            
           </div>
 
           <div class="modal-footer">
@@ -32,12 +30,16 @@
 <script lang="ts">
 import Vue from 'vue';
 
-import HeatmapColorSelection from '@/components/Heatmap/HeatmapColorSelection.vue';
 
 export default Vue.extend({
     name: 'settings-modal',
-    components: {
-        'heatmap-colors': HeatmapColorSelection,
+    props: {
+        title: String,
+        content: String
+    },
+    mounted(){
+        this.content.$mount();
+        this.$refs.body.appendChild(this.content.$el);
     },
 });
 </script>

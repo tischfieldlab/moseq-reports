@@ -12,9 +12,13 @@ import Vue from 'vue';
 
 import DataModel from '../../DataModel';
 import * as Plotly from 'plotly.js';
+import Heatmap from '@/components/Heatmap/Heatmap.vue';
 
 export default Vue.extend({
     name: 'heatmap-options',
+    props:{
+        owner: Heatmap,
+    },
     data() {
         return {
             selectedColor: 'Portland',
@@ -37,7 +41,7 @@ export default Vue.extend({
                 colorscale: scale,
             };
 
-            Plotly.restyle('heatmap-graph', update);
+            Plotly.restyle(this.owner.$refs['heatmap-graph'], update);
         },
     },
 });
