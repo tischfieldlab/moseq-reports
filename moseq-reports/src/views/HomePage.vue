@@ -1,23 +1,24 @@
 <template>
-    <div class='home' >
-        <JqxDockingLayout ref="dockinglayout" :width="'100%'" :height="'100%'" :layout="layout">
-            <div data-container="DataFilterPanel">
-                <div id="data-filter-container"></div>
-            </div>
-            <div data-container="ToolboxPanel">
-                <div id="toolbox-container"></div>
-            </div>
-            
-                
-            <template v-for="(w, index) in windows">
-                <UiCard :key="index" :component="w" />
-            </template>
-        </JqxDockingLayout>
+    <div class='home' :style="{height: height+'px'}">
+        <b-card id="toolbox_container" no-body style="width:250px;">
+            <b-tabs card :style="{height: height+'px'}">
+                <b-tab no-body title="Data Filter">
+                    <group-box  />
+                </b-tab>
+                <b-tab no-body title="Toolbox">
+                    <toolbox @createComponent="addComponent"  />
+                </b-tab>
+            </b-tabs>
+        </b-card>
+        <template v-for="(w, index) in windows">
+            <UiCard :key="index" :component="w" />
+        </template>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import { debounce } from 'ts-debounce';
 
 import UiCard from '@/components/Window.vue';
 
@@ -40,7 +41,6 @@ class DataWindow{
 export default Vue.extend({
     name: 'homepage',
     components: {
-        JqxDockingLayout,
         UiCard,
         Toolbox,
         'group-box': GroupBox,
@@ -50,59 +50,23 @@ export default Vue.extend({
     data() {
         return {
             height: 0,
+            toolbox_width:250,
             windows: [],
             docking: {
                 orientation: 'horizontal',
                 width: "100%",
                 mode:"floating",
             },
-            layout: [{
-                type: 'layoutGroup',
-                orientation: 'horizontal',
-                items: [{
-                    type:'tabbedGroup',
-                    width:250,
-                    allowPin:true,
-                    allowClose:false,
-                    items:[{
-                        type: 'layoutPanel',
-                        title: 'Data Filter',
-                        contentContainer: 'DataFilterPanel',
-                        allowClose:false,
-                        allowPin:true,
-                        initContent: () => {
-                            var ComponentClass = Vue.extend(GroupBox);
-                            var instance = new ComponentClass();
-                            instance.$mount();
-                            document.getElementById('data-filter-container').appendChild(instance.$el);
-                        }
-                    },{
-                        type: 'layoutPanel',
-                        title: 'Toolbox',
-                        contentContainer: 'ToolboxPanel',
-                        allowClose:false,
-                        allowPin:true,
-                        initContent: () => {
-                            var ComponentClass = Vue.extend(Toolbox);
-                            var instance = new ComponentClass({
-                                propsData: { add_component: this.addComponent }
-                            });
-                            instance.$mount();
-                            document.getElementById('toolbox-container').appendChild(instance.$el);
-                        }
-                    }],
-                },]
-            }],
         }
     },
     created() {
-        window.addEventListener('resize', this.handleResize)
+        this.debouncedResizeHandler = debounce(this.handleResize, 250);
+        window.addEventListener('resize', this.debouncedResizeHandler)
     },
     destroyed() {
-        window.removeEventListener('resize', this.handleResize)
+        window.removeEventListener('resize', this.debouncedResizeHandler)
     },
     mounted(){
-        
         this.docking.width = this.$parent.$el.offsetWidth;
         this.addComponent("heat-map", "Usage heatmap");
         this.$nextTick().then(() => {
@@ -121,12 +85,24 @@ export default Vue.extend({
             const footerHeight = footer ? footer.clientHeight : 0;
             
             this.height = document.documentElement.clientHeight - headerHeight-footerHeight;
-            this.$refs.dockinglayout.height = this.height;
         },
     },
 });
 </script>
 
 <style scoped lang="scss">
+.home{
+    background-color:#e9ecef ;
+}
+.tabs{
+    height:100%;
+}
+#toolbox_container{
+    height:100%;
+    border-radius:0;
+}
+#toolbox_container .tabs{
+    overflow: auto;
+}
 
 </style>

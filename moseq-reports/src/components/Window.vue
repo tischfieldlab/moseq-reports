@@ -30,29 +30,21 @@ export default Vue.component('ui-window', {
     },
     methods: {
         onResize(event){
-            //console.log("I got resized", event);
             this.$emit('resize', event.args);
         },
         addSettingsButton(){
             const container = document.createElement('div');
             
             const modal = new SettingsModal();
-            console.log(this.$refs.body)
             modal.$props.content = this.$refs.body.settings;
             modal.$props.title = this.component.title + " Settings";
             modal.$mount();
-            //console.log(this) 
-            //modal.$el.classList.add('hidden');
-            /*modal.$on('close', ()=>{
-                //console.log("got close");
-                modal.$el.classList.add('hidden');
-            });*/
 
             const button = document.createElement('img');
             button.src = "https://static.thenounproject.com/png/333746-200.png";
             button.classList.add("settings-button");
             button.addEventListener('click', event => {
-                modal.show = true;
+                modal.$props.show = true;
             });
             
             container.appendChild(button);
@@ -61,8 +53,6 @@ export default Vue.component('ui-window', {
         }
     },
     mounted(){
-        //console.log(this);
-
         this.$nextTick().then(() => {
             this.addSettingsButton();
         });
@@ -94,5 +84,6 @@ export default Vue.component('ui-window', {
     position: absolute; 
     right: 32px;
     cursor:pointer;
+    //background: url(https://static.thenounproject.com/png/333746-200.png);
 }
 </style>

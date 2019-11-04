@@ -1,7 +1,7 @@
 <template>
     <div>
-        <b-button pill @click="add_component('heat-map', 'Usage heatmap');">Add Heatmap 1</b-button>
-        <b-button pill @click="add_component('heat-map', 'Usage heatmap');">Add Heatmap 2</b-button>
+        <b-button pill @click="create_component('heat-map', 'Usage heatmap');">Add Heatmap 1</b-button>
+        <b-button pill @click="create_component('heat-map', 'Usage heatmap');">Add Heatmap 2</b-button>
     </div>
 </template>
 
@@ -10,7 +10,15 @@
 import Vue from 'vue';
 export default Vue.component('tool-box', {
     props:{
-        add_component: null,
+        
+    },
+    mounted(){
+        
+    },
+    methods:{
+        create_component: function(type:string, title:string) {
+            this.$emit('createComponent', type, title);
+        }
     }
 })
 </script>

@@ -24,12 +24,12 @@ export default Vue.extend({
     name: 'settings-modal',
     props: {
         title: String,
-        content: String
+        content: String,
+        show: Boolean
     },
     data(){
       return {
         id:'modal-container',
-        show:false,
       }
     },
     beforeMount(){
