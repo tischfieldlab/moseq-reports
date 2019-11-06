@@ -11,6 +11,7 @@ script:
 before_deploy:
   - NODE_OPTIONS=--max-old-space-size=4096 npm run build
   - export TRAVIS_TAG=$(npm version prerelease)
+  - echo "$TRAVIS_TAG"
   - git tag $TRAVIS_TAG
 
 deploy:
@@ -19,6 +20,6 @@ deploy:
     secure: bAOsODanvltdJBI2wTNrUPDlMJi9AixQ1Tj/+nY8dv88t4DsF2ENNeftRAH1S+OTxXcmZn/aMW9BovynQIh1JSfuxUnj1vspzdtApKptrnwA+Vf0OEt0t4WAtRrv0Clp8rDbDIJTQCOtOXxCU/OtZkt3T/I7Qa1ZbbOPtZKZjSuFtK9q0F/A7v9iTzhQYQT6zW1v6k3qceftwsGB3BCHq8DjikmvLWdTT0PWIog7UM7GjnI0trkiZ5NOpRRF7Bgnom2rDpYwkSiP6mh7qa7W5EDvJQYk/aqZQmANQ8RGRW/7XgM65Oc6gRWLLbFTHJ3jGBJVAbJ70a0U15WcbmF7gBV0ASyXV7GiGlaj5yOxc4FylEsTFLzMbh7RdgodI7/jqWYmGh6OcolQEci2Xq9FBZ3l+PGbwtEkOwjq3HXJLhYgStdmbeyUXlotJZk4soDilfyYlXfsjq5UWR6lv9AhnLXFlZny33aqPVq3SaIhdmAmVEP1JjcBrQ8yKC5xZlzmRWvW/po+9Hzn3jbkqnZ/NB1kIGFFPd0wHpYMfkkjjk1JOgKGeprMUUME1Q0v8u+Ne6tfbc8SxCc1BcDi5UXWj/4A5H8vIA9iZ7X3GUkeu9EVmXc4Inm0eI1Uf/3lsAsRwLysNoPiRZOqAroAAFla0cY4lwrsW0H3kGVro+x9CUc=
   file: dist/*
   skip_cleanup: true
+  tag_name: $TRAVIS_TAG
   on:
     branch: cicd-branch
-    tags: true
