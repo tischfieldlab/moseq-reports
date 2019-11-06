@@ -42,11 +42,29 @@ describe('DataModel SelectedSyllable', () => {
 });
 
 describe('DataModel EventType SYLLABLE_CHANGE', () => {
-  let y: number = -1;
-  const data: number = 3;
-  const fun = function test(x: number) { y = x; };
-  DataModel.subscribe(EventType.SYLLABLE_CHANGE, fun);
+  it('Checks if data model updates syllable correctly, and fires correct event.', () => {
+    let y: number = -1;
+    const fun = function test(x: number) { y = x; };
+    DataModel.subscribe(EventType.SYLLABLE_CHANGE, fun);
 
-  DataModel.updateSelectedSyllable(data);
-  assert.equal(data, y);
+    for (let i: number = 0; i <= DataModel.getMaxSyllable(); i++) {
+      DataModel.updateSelectedSyllable(i);
+      assert.equal(i, y);
+    }
+  });
 });
+
+describe('DataModel EventTpye GROUPS_CHANGE', () => {
+  it('Checks if data model updates groups correctly, and fires correct event.', () => {
+    let y: string[] = [];
+    const fun = function test(x: string[]) { y = x; };
+    DataModel.subscribe(EventType.GROUPS_CHANGE, fun);
+
+    const data: string[] = ['+/+_female', '+/CT_male', 'CT/CT_male'];
+
+    DataModel.updateSelectedGroups(data);
+    assert.equal(data, y);
+  });
+});
+
+// TODO: Test the view
