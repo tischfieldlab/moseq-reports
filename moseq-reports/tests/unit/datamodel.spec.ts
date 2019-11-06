@@ -43,13 +43,13 @@ describe('DataModel SelectedSyllable', () => {
 
 describe('DataModel EventType SYLLABLE_CHANGE', () => {
   it('Checks if data model updates syllable correctly, and fires correct event.', () => {
-    let y: number = -1;
-    const fun = function test(x: number) { y = x; };
+    let data: number = -1;
+    const fun = function test(x: number) { data = x; };
     DataModel.subscribe(EventType.SYLLABLE_CHANGE, fun);
 
     for (let i: number = 0; i <= DataModel.getMaxSyllable(); i++) {
       DataModel.updateSelectedSyllable(i);
-      assert.equal(i, y);
+      assert.equal(i, data);
     }
   });
 });
