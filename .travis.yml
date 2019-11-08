@@ -9,7 +9,7 @@ script:
 - npm run test:unit
 
 before_deploy:
-  - export TRAVIS_TAG=$(npm version prerelease)
+  - export TRAVIS_TAG=$(npm version prerelease).${TRAVIS_BUILD_NUMBER}
   - echo "$TRAVIS_TAG"
   - git tag $TRAVIS_TAG
   - NODE_OPTIONS=--max-old-space-size=4096 npm run build
