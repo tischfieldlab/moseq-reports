@@ -12,7 +12,7 @@ before_deploy:
   - export TRAVIS_TAG=$(npm version prerelease).${TRAVIS_BUILD_NUMBER}
   - echo "$TRAVIS_TAG"
   - git tag $TRAVIS_TAG
-  - NODE_OPTIONS=--max-old-space-size=4096 npm run build
+  - NODE_OPTIONS=--max-old-space-size=4096 npm run build --modern
   - export RELEASE_NAME=${TRAVIS_TAG}.tar.gz
   - tar czvf ${RELEASE_NAME} dist/
 
