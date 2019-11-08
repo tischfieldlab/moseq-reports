@@ -1,5 +1,10 @@
 <template>
-    <JqxWindow ref="window" @resized="onResize($event)" :showCollapseButton="true">
+    <JqxWindow ref="window" 
+        @resized="onResize($event)" 
+        :showCollapseButton="true"
+        :width="component.layout.width"
+        :height="component.layout.height"
+        :position="component.layout.position">
         <div>
             <span class="title-text">{{component.title}}</span>
         </div>

@@ -1,12 +1,12 @@
 <template>
     <div class='home' :style="{height: height+'px'}">
-        <b-card id="toolbox_container" no-body style="width:250px;">
+        <b-card id="toolbox_container" no-body :style="{width: toolbox_width+'px'}">
             <b-tabs card :style="{height: height+'px'}">
                 <b-tab no-body title="Data Filter">
-                    <group-box  />
+                    <GroupBox />
                 </b-tab>
                 <b-tab no-body title="Toolbox">
-                    <toolbox @createComponent="addComponent"  />
+                    <Toolbox @createComponent="addComponent" />
                 </b-tab>
             </b-tabs>
         </b-card>
@@ -22,19 +22,38 @@ import { debounce } from 'ts-debounce';
 
 import UiCard from '@/components/Window.vue';
 
-import JqxDockingLayout from "jqwidgets-scripts/jqwidgets-vue/vue_jqxdockinglayout.vue";
-
 import GroupBox from '@/components/GroupBox.vue';
 import Heatmap from '@/components/Heatmap/Heatmap.vue';
 import TestSyllable from '@/components/TestSyllable.vue';
 import Toolbox from '@/components/Toolbox.vue';
 
+class Layout{
+    position: Position;
+    width: number;
+    height: number;
+    constructor(){
+        this.width = 250;
+        this.height = 300;
+        this.position = new Position();
+    }
+}
+class Position{
+    x: number;
+    y: number;
+    constructor(){
+        this.x = (Math.random() * (1000 - 300) + 300);
+        this.y = (Math.random() * (500 - 100) + 100);
+    }
+}
+
 class DataWindow{
     title: "default title";
     type: string;
+    layout: Layout;
     constructor(type, title){
         this.type = type;
         this.title = title;
+        this.layout = new Layout();
     }
 }
 
@@ -43,20 +62,15 @@ export default Vue.extend({
     components: {
         UiCard,
         Toolbox,
-        'group-box': GroupBox,
-        'heat-map': Heatmap,
-        'test-syllable': TestSyllable,
+        GroupBox,
+        Heatmap,
+        TestSyllable,
     },
     data() {
         return {
             height: 0,
             toolbox_width:250,
             windows: [],
-            docking: {
-                orientation: 'horizontal',
-                width: "100%",
-                mode:"floating",
-            },
         }
     },
     created() {
@@ -67,11 +81,12 @@ export default Vue.extend({
         window.removeEventListener('resize', this.debouncedResizeHandler)
     },
     mounted(){
-        this.docking.width = this.$parent.$el.offsetWidth;
-        this.addComponent("heat-map", "Usage heatmap");
         this.$nextTick().then(() => {
             this.handleResize();
         });
+
+        this.addComponent("heat-map", "Usage heatmap");
+        this.addComponent("test-syllable", "Selected Syllable");
     },
     methods:{
         addComponent(type, title){
