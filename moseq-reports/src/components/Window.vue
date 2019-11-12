@@ -1,6 +1,7 @@
 <template>
     <JqxWindow ref="window" 
-        @resized="onResize($event)" 
+        @resized="onResized($event)"
+        @moved="onMoved($event)"
         :showCollapseButton="true"
         :width="component.layout.width"
         :height="component.layout.height"
@@ -21,7 +22,7 @@ import Vue from 'vue';
 
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import SettingsModal from '@/components/SettingsModal.vue';
-import DataWindow from '@/views/HomePage.vue';
+import DataWindow from '../models/DataWindow';
 
 export default Vue.component('ui-window', {
     components:{
@@ -33,16 +34,39 @@ export default Vue.component('ui-window', {
     computed: {
         
     },
+    mounted(){
+        //hold onto this component instance within the DataWindow
+        this.component.instance = this.$refs.body;
+        
+        // If settings exist on the DataWindow, and the component seems to support settings,
+        // then apply the settings
+        if (this.component.settings !== undefined
+         && this.component.instance.settings !== undefined
+         && this.component.instance.settings.applySettings !== undefined){
+            this.component.instance.settings.applySettings(this.component.settings);
+        }
+
+        // Create the settings button on the next tick when the DOM is ready
+        this.$nextTick().then(() => {
+            this.addSettingsButton();
+        });
+    },
     methods: {
-        onResize(event){
+        onResized(event){
             this.$emit('resize', event.args);
+            this.component.layout.width = event.args.width;
+            this.component.layout.height = event.args.height;
+        },
+        onMoved(event){
+            this.component.layout.position.x = event.args.x;
+            this.component.layout.position.y = event.args.y;
         },
         addSettingsButton(){
+            //console.log("in addSettingsButton", this.$refs.body);
             const container = document.createElement('div');
             
             const modal = new SettingsModal();
-            modal.$props.content = this.$refs.body.settings;
-            modal.$props.title = this.component.title + " Settings";
+            modal.$props.owner = this.$refs.body;
             modal.$mount();
 
             const button = document.createElement('img');
@@ -57,11 +81,7 @@ export default Vue.component('ui-window', {
             this.$el.children[0].children[0].appendChild(container);
         }
     },
-    mounted(){
-        this.$nextTick().then(() => {
-            this.addSettingsButton();
-        });
-    },
+    
 });
 
 </script>

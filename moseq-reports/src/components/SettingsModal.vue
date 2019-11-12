@@ -1,39 +1,42 @@
 <template>
-<keep-alive>
-  <b-modal
-    @shown="onModalShow"
-    :title="title"
-    v-model="show"
-    header-bg-variant="dark"
-    header-text-variant="light"
-    body-bg-variant="light"
-    body-text-variant="dark"
-    hide-footer>
-    
-    <div :id="id" ref="body" class="modal-body"></div>
-    
-  </b-modal>
-  </keep-alive>
+    <keep-alive>
+        <b-modal
+            @shown="onModalShow"
+            :title="title"
+            v-model="show"
+            header-bg-variant="dark"
+            header-text-variant="light"
+            body-bg-variant="light"
+            body-text-variant="dark"
+            hide-footer>
+            
+            <div :id="id" ref="body" class="modal-body"></div>
+            
+        </b-modal>
+    </keep-alive>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import  Vue from 'vue';
 
 
 export default Vue.extend({
     name: 'settings-modal',
     props: {
-        title: String,
-        content: String,
-        show: Boolean
+        show: Boolean,
+        owner: Vue
     },
     data(){
-      return {
-        id:'modal-container',
-      }
+        return {
+            title: "title",
+            content: null,
+            id:'modal-container',
+        }
     },
     beforeMount(){
-        this.id += this.content._uid;
+        this.content = this.$props.owner.settings;
+        this.title = this.$props.owner.title + " Settings";
+        this.id += this.$props.owner._uid;
     },
     mounted(){
         

@@ -48,6 +48,14 @@ export default Vue.extend({
 
             Plotly.restyle(this.owner.$refs['heatmap-graph'], update);
         },
+        getSettings(){
+            return {
+                color_scale: this.selectedColor
+            }
+        },
+        applySettings(data){
+            this.updateColorscale(data.color_scale);
+        }
     },
 });
 </script>

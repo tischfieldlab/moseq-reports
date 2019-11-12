@@ -2,11 +2,17 @@
     <div class='home' :style="{height: height+'px'}">
         <b-card id="toolbox_container" no-body :style="{width: toolbox_width+'px'}">
             <b-tabs card :style="{height: height+'px'}">
-                <b-tab no-body title="Data Filter">
+                <b-tab no-body title="Data">
                     <GroupBox />
                 </b-tab>
-                <b-tab no-body title="Toolbox">
+                <b-tab no-body title="Tools">
                     <Toolbox @createComponent="addComponent" />
+                </b-tab>
+                <b-tab no-body title="View">
+                    <b-button pill @click="serializeLayout">Save Layout</b-button>
+
+                    <input type="file" ref="layout_input" @change="loadLayout()" style="display:none;">
+                    <b-button pill @click="$refs.layout_input.click()">Load Layout</b-button>
                 </b-tab>
             </b-tabs>
         </b-card>
@@ -26,36 +32,11 @@ import GroupBox from '@/components/GroupBox.vue';
 import Heatmap from '@/components/Heatmap/Heatmap.vue';
 import TestSyllable from '@/components/TestSyllable.vue';
 import Toolbox from '@/components/Toolbox.vue';
+import DataWindow from '../models/DataWindow';
 
-class Layout{
-    position: Position;
-    width: number;
-    height: number;
-    constructor(){
-        this.width = 250;
-        this.height = 300;
-        this.position = new Position();
-    }
-}
-class Position{
-    x: number;
-    y: number;
-    constructor(){
-        this.x = (Math.random() * (1000 - 300) + 300);
-        this.y = (Math.random() * (500 - 100) + 100);
-    }
-}
+import {saveFile} from '../Util';
+import defaultLayout from './DefaultLayout.json';
 
-class DataWindow{
-    title: "default title";
-    type: string;
-    layout: Layout;
-    constructor(type, title){
-        this.type = type;
-        this.title = title;
-        this.layout = new Layout();
-    }
-}
 
 export default Vue.extend({
     name: 'homepage',
@@ -84,14 +65,19 @@ export default Vue.extend({
         this.$nextTick().then(() => {
             this.handleResize();
         });
-
-        this.addComponent("heat-map", "Usage heatmap");
-        this.addComponent("test-syllable", "Selected Syllable");
+        this.addComponentsJSON(defaultLayout);
     },
     methods:{
         addComponent(type, title){
             const win = new DataWindow(type, title);
             this.windows.push(win);
+            return win;
+        },
+        addComponentsJSON(data){
+            for(let w of data){
+                const win = DataWindow.fromJSON(w);
+                this.windows.push(win);
+            }
         },
         handleResize() {
             const header = document.getElementById('navigation-bar');
@@ -101,6 +87,26 @@ export default Vue.extend({
             
             this.height = document.documentElement.clientHeight - headerHeight-footerHeight;
         },
+        serializeLayout(){
+            let data = JSON.stringify(this.windows);
+            console.log(typeof data, data);
+            saveFile("layout.json", "data:text/json", data);
+        },
+        loadLayout(files){
+            //if no file selected, return
+            if(this.$refs.layout_input.files.length == 0){ return; }
+
+            //clear out any existing windows
+            while (this.windows.length) { this.windows.pop(); }
+
+            //read the file and apply the layout
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = JSON.parse(e.target.result as string);
+                this.addComponentsJSON(data);
+            }
+            reader.readAsText(this.$refs.layout_input.files[0]);
+        }
     },
 });
 </script>
