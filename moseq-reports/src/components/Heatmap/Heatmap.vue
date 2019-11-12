@@ -1,7 +1,5 @@
 <template>
-    <div ref="heatmap-container">
-        <div ref='heatmap-graph'></div>
-    </div>
+    <div ref='heatmap-graph'></div>
 </template>
 
 <script lang="ts">
@@ -11,6 +9,7 @@ import * as Plotly from 'plotly.js';
 import DataModel, { EventType } from '../../DataModel';
 import SettingsModal from '@/components/SettingsModal.vue';
 import HeatmapOptions from '@/components/Heatmap/HeatmapOptions.vue'
+import {transpose} from '../../Util';
 
 /* tslint:disable */
 export default Vue.component('heat-map', {
@@ -25,6 +24,9 @@ export default Vue.component('heat-map', {
         this.$nextTick().then(() => {
             this.onResize();
         });
+    },
+    destroyed(){
+        DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
     },
     data() {
         return {
@@ -45,26 +47,21 @@ export default Vue.component('heat-map', {
         createHeatmap() {
             let df = DataModel.getAggregateView();
 
-            var groups = df.filter((row: any) => row.get('group')).distinct('group').toArray().flat();
+            var groups = DataModel.getSelectedGroups();;
             var sylNum = df.select('syllable').distinct('syllable').toArray().flat();
 
             var sylUsage = [];
-            var usg = df.select('usage').toArray();
-            var index = 0;
-            for (let i = 0; i < sylNum.length; i++) {
-                var temp = [];
-                for (let j = 0; j < groups.length; j++) {
-                    temp.push(usg[(j*sylNum.length)+i][0]);
-                }
-                sylUsage.push(temp);
+            for(const g of groups){
+                sylUsage.push(df.where({'group': g}).select('usage').toArray().flat());
             }
+            sylUsage = transpose(sylUsage);
 
             const data = {
                 type: 'heatmap',
                 x: groups,
                 y: sylNum,
                 z: sylUsage,
-                colorscale: 'Portland',
+                colorscale: this.settings.selectedColor,
             } as Plotly.PlotData
 
             let layout = {

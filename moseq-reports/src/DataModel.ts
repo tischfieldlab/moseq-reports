@@ -40,9 +40,12 @@ class EventBus extends Vue {
      * @memberof EventBus
      */
     public subscribe(type: EventType, callback: Function) {
-        this.$on(type, ((event: any) => {
-            callback(event);
-        }));
+        this.$on(type, callback);
+    }
+
+
+    public unsubscribe(type: EventType, callback: Function) {
+        this.$off(type, callback);
     }
 }
 
@@ -118,6 +121,9 @@ class DataModel {
      */
     public subscribe(type: EventType, callback: Function) {
         this.eventBus.subscribe(type, callback);
+    }
+    public unsubscribe(type: EventType, callback: Function) {
+        this.eventBus.unsubscribe(type, callback);
     }
 
     /**

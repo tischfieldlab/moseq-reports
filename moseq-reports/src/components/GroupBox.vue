@@ -1,17 +1,27 @@
 <template>
     <div id='groupbox-container' style=''>
-        <b-card no-body>
+        <b-card no-body class="primary_card" id="group_selection_container">
+            <!--<b-form-group style="text-align: left;">-->
             <b-card-header>Group Selection</b-card-header>
             <b-card-body>
-                <b-form-checkbox-group v-model='selected' :options='availableGroups'
-                    @change='onChange($event)' stacked>
-                </b-form-checkbox-group>
+              <draggable v-model="groups" @change="updateGroups()">
+                  <b-card v-for="option in groups" :key="option.name" class="chk-card">
+                    <b-form-checkbox
+                      switch
+                      @input="updateGroups()"
+                      v-model="option.selected"
+                      :name="option.name"
+                      :class="option.style">
+                      {{ option.name }}
+                    </b-form-checkbox>
+                  </b-card>
+                </draggable>
             </b-card-body>
         </b-card>
-        <b-card no-body>
+        <b-card no-body class="primary_card">
             <b-card-header>Syllable Selection</b-card-header>
             <b-card-body>
-                <b-form-select v-model="syllable" :options="options" @change="onSyllableChange($event)">
+                <b-form-select v-model="syllable" :options="syllableIdOptions" @change="onSyllableChange($event)" class="mb-3">
                     <template v-slot:first>
                         <option :value="-1" disabled>Select a Syllable</option>
                     </template>
@@ -23,26 +33,48 @@
 
 <script lang="ts">
 import Vue from 'vue';
-
+import draggable from 'vuedraggable';
 import DataModel, { EventType } from '../DataModel';
+
+
+class SelectableGroupItem{
+  name: string;
+  selected: boolean;
+  get style(){
+      return this.selected ? '' : 'non-selected';
+  }
+  constructor(name:string, selected:boolean = true){
+    this.name = name;
+    this.selected = selected;
+  }
+}
 
 export default Vue.extend({
     name: 'groupbox',
+    components: {
+        draggable
+    },
     data() {
         return {
-            selected: DataModel.getSelectedGroups(),
-            availableGroups: DataModel.getAvailableGroups(),
+            groups: [] as Array<SelectableGroupItem>,
             syllable: DataModel.getSelectedSyllable(),
-            options: [] as any,
+            syllableIdOptions: [] as any,
         };
     },
     mounted() {
         DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.updateSyllable);
-        this.getOptions();
+        this.buildGroups()
+        this.getsyllableIdOptions();
     },
     methods: {
-        onChange(event: any) {
-            DataModel.updateSelectedGroups(event);
+        buildGroups(){
+            const selectedGroups = DataModel.getSelectedGroups();
+            DataModel.getAvailableGroups().map(g => this.groups.push(new SelectableGroupItem(g, selectedGroups.includes(g))));
+        },
+        updateGroups(){
+            const newGroups = this.groups.filter(g => g.selected).map(g => g.name);
+            //console.log("in updateGroups", newGroups);
+            DataModel.updateSelectedGroups(newGroups);
         },
         updateSyllable(event: any) {
             this.syllable = DataModel.getSelectedSyllable();
@@ -50,13 +82,13 @@ export default Vue.extend({
         onSyllableChange(event: any) {
             DataModel.updateSelectedSyllable(event);
         },
-        getOptions() {
+        getsyllableIdOptions() {
             const max = DataModel.getMaxSyllable();
 
             for (let i = 0; i < max + 1; i++) {
                 const val = '' + i;
                 const temp = { value: val, text: val };
-                this.options.push(temp);
+                this.syllableIdOptions.push(temp);
             }
         },
     },
@@ -64,13 +96,31 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-.card{
+.primary_card{
     margin:10px;
+}
+.primary_card .card-body{
+    padding: 0;
+}
+.chk-card .card-body{
+  padding:0.25rem;
+}
+.custom-switch::after{
+  content:"\22EE";
+  float:right;
+  margin-right: 5px;
+  cursor:grab;
+}
+.custom-switch.non-selected{
+    color:#AAAAAA;
 }
 .card-header{
     font-weight: bold;
 }
 .card-body{
     text-align: left;
+}
+.primary_card select{
+    margin:0 !important;
 }
 </style>

@@ -16,3 +16,7 @@ export function saveFile(name:string, type:string, data:string) {
         a.remove();
     }, 500);  
 }
+
+export function transpose(data: Array<Array<number>>) : Array<Array<number>>{
+    return data[0].map((col, i) => data.map(row => row[i]));
+}
