@@ -1,5 +1,11 @@
 <template>
-    <JqxWindow ref="window" @resized="onResize($event)" :showCollapseButton="true">
+    <JqxWindow ref="window" 
+        @resized="onResized($event)"
+        @moved="onMoved($event)"
+        :showCollapseButton="true"
+        :width="component.layout.width"
+        :height="component.layout.height"
+        :position="component.layout.position">
         <div>
             <span class="title-text">{{component.title}}</span>
         </div>
@@ -16,7 +22,7 @@ import Vue from 'vue';
 
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import SettingsModal from '@/components/SettingsModal.vue';
-import DataWindow from '@/views/HomePage.vue';
+import DataWindow from '../models/DataWindow';
 
 export default Vue.component('ui-window', {
     components:{
@@ -28,31 +34,46 @@ export default Vue.component('ui-window', {
     computed: {
         
     },
+    mounted(){
+        //hold onto this component instance within the DataWindow
+        this.component.instance = this.$refs.body;
+        
+        // If settings exist on the DataWindow, and the component seems to support settings,
+        // then apply the settings
+        if (this.component.settings !== undefined
+         && this.component.instance.settings !== undefined
+         && this.component.instance.settings.applySettings !== undefined){
+            this.component.instance.settings.applySettings(this.component.settings);
+        }
+
+        // Create the settings button on the next tick when the DOM is ready
+        this.$nextTick().then(() => {
+            this.addSettingsButton();
+        });
+    },
     methods: {
-        onResize(event){
-            //console.log("I got resized", event);
+        onResized(event){
             this.$emit('resize', event.args);
+            this.component.layout.width = event.args.width;
+            this.component.layout.height = event.args.height;
+        },
+        onMoved(event){
+            this.component.layout.position.x = event.args.x;
+            this.component.layout.position.y = event.args.y;
         },
         addSettingsButton(){
+            //console.log("in addSettingsButton", this.$refs.body);
             const container = document.createElement('div');
             
             const modal = new SettingsModal();
-            console.log(this.$refs.body)
-            modal.$props.content = this.$refs.body.settings;
-            modal.$props.title = this.component.title + " Settings";
+            modal.$props.owner = this.$refs.body;
             modal.$mount();
-            //console.log(this) 
-            //modal.$el.classList.add('hidden');
-            /*modal.$on('close', ()=>{
-                //console.log("got close");
-                modal.$el.classList.add('hidden');
-            });*/
 
             const button = document.createElement('img');
             button.src = "https://static.thenounproject.com/png/333746-200.png";
             button.classList.add("settings-button");
             button.addEventListener('click', event => {
-                modal.show = true;
+                modal.$props.show = true;
             });
             
             container.appendChild(button);
@@ -60,13 +81,7 @@ export default Vue.component('ui-window', {
             this.$el.children[0].children[0].appendChild(container);
         }
     },
-    mounted(){
-        //console.log(this);
-
-        this.$nextTick().then(() => {
-            this.addSettingsButton();
-        });
-    },
+    
 });
 
 </script>
@@ -94,5 +109,6 @@ export default Vue.component('ui-window', {
     position: absolute; 
     right: 32px;
     cursor:pointer;
+    //background: url(https://static.thenounproject.com/png/333746-200.png);
 }
 </style>

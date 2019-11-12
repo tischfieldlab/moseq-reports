@@ -17,7 +17,7 @@ import Vue from 'vue';
 
 import DataModel, { EventType } from '../DataModel';
 
-export default Vue.extend({
+export default Vue.component('test-syllable', {
     name: 'test-syllable',
     data() {
         return {

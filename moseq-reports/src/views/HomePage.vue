@@ -1,118 +1,83 @@
 <template>
-    <div class='home' >
-        <JqxDockingLayout ref="dockinglayout" :width="'100%'" :height="'100%'" :layout="layout">
-            <div data-container="DataFilterPanel">
-                <div id="data-filter-container"></div>
-            </div>
-            <div data-container="ToolboxPanel">
-                <div id="toolbox-container"></div>
-            </div>
-            
-                
-            <template v-for="(w, index) in windows">
-                <UiCard :key="index" :component="w" />
-            </template>
-        </JqxDockingLayout>
+    <div class='home' :style="{height: height+'px'}">
+        <b-card id="toolbox_container" no-body :style="{width: toolbox_width+'px'}">
+            <b-tabs card :style="{height: height+'px'}">
+                <b-tab no-body title="Data">
+                    <GroupBox />
+                </b-tab>
+                <b-tab no-body title="Tools">
+                    <Toolbox @createComponent="addComponent" />
+                </b-tab>
+                <b-tab no-body title="View">
+                    <b-button pill @click="serializeLayout">Save Layout</b-button>
+
+                    <input type="file" ref="layout_input" @change="loadLayout()" style="display:none;">
+                    <b-button pill @click="$refs.layout_input.click()">Load Layout</b-button>
+                </b-tab>
+            </b-tabs>
+        </b-card>
+        <template v-for="(w, index) in windows">
+            <UiCard :key="index" :component="w" />
+        </template>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import { debounce } from 'ts-debounce';
 
 import UiCard from '@/components/Window.vue';
-
-import JqxDockingLayout from "jqwidgets-scripts/jqwidgets-vue/vue_jqxdockinglayout.vue";
 
 import GroupBox from '@/components/GroupBox.vue';
 import Heatmap from '@/components/Heatmap/Heatmap.vue';
 import TestSyllable from '@/components/TestSyllable.vue';
 import Toolbox from '@/components/Toolbox.vue';
+import DataWindow from '../models/DataWindow';
 
-class DataWindow{
-    title: "default title";
-    type: string;
-    constructor(type, title){
-        this.type = type;
-        this.title = title;
-    }
-}
+import {saveFile} from '../Util';
+import defaultLayout from './DefaultLayout.json';
+
 
 export default Vue.extend({
     name: 'homepage',
     components: {
-        JqxDockingLayout,
         UiCard,
         Toolbox,
-        'group-box': GroupBox,
-        'heat-map': Heatmap,
-        'test-syllable': TestSyllable,
+        GroupBox,
+        Heatmap,
+        TestSyllable,
     },
     data() {
         return {
             height: 0,
+            toolbox_width:250,
             windows: [],
-            docking: {
-                orientation: 'horizontal',
-                width: "100%",
-                mode:"floating",
-            },
-            layout: [{
-                type: 'layoutGroup',
-                orientation: 'horizontal',
-                items: [{
-                    type:'tabbedGroup',
-                    width:250,
-                    allowPin:true,
-                    allowClose:false,
-                    items:[{
-                        type: 'layoutPanel',
-                        title: 'Data Filter',
-                        contentContainer: 'DataFilterPanel',
-                        allowClose:false,
-                        allowPin:true,
-                        initContent: () => {
-                            var ComponentClass = Vue.extend(GroupBox);
-                            var instance = new ComponentClass();
-                            instance.$mount();
-                            document.getElementById('data-filter-container').appendChild(instance.$el);
-                        }
-                    },{
-                        type: 'layoutPanel',
-                        title: 'Toolbox',
-                        contentContainer: 'ToolboxPanel',
-                        allowClose:false,
-                        allowPin:true,
-                        initContent: () => {
-                            var ComponentClass = Vue.extend(Toolbox);
-                            var instance = new ComponentClass({
-                                propsData: { add_component: this.addComponent }
-                            });
-                            instance.$mount();
-                            document.getElementById('toolbox-container').appendChild(instance.$el);
-                        }
-                    }],
-                },]
-            }],
         }
     },
     created() {
-        window.addEventListener('resize', this.handleResize)
+        this.debouncedResizeHandler = debounce(this.handleResize, 250);
+        window.addEventListener('resize', this.debouncedResizeHandler)
     },
     destroyed() {
-        window.removeEventListener('resize', this.handleResize)
+        window.removeEventListener('resize', this.debouncedResizeHandler)
     },
     mounted(){
-        
-        this.docking.width = this.$parent.$el.offsetWidth;
-        this.addComponent("heat-map", "Usage heatmap");
         this.$nextTick().then(() => {
             this.handleResize();
         });
+        this.addComponentsJSON(defaultLayout);
     },
     methods:{
         addComponent(type, title){
             const win = new DataWindow(type, title);
             this.windows.push(win);
+            return win;
+        },
+        addComponentsJSON(data){
+            for(let w of data){
+                const win = DataWindow.fromJSON(w);
+                this.windows.push(win);
+            }
         },
         handleResize() {
             const header = document.getElementById('navigation-bar');
@@ -121,12 +86,44 @@ export default Vue.extend({
             const footerHeight = footer ? footer.clientHeight : 0;
             
             this.height = document.documentElement.clientHeight - headerHeight-footerHeight;
-            this.$refs.dockinglayout.height = this.height;
         },
+        serializeLayout(){
+            let data = JSON.stringify(this.windows);
+            console.log(typeof data, data);
+            saveFile("layout.json", "data:text/json", data);
+        },
+        loadLayout(files){
+            //if no file selected, return
+            if(this.$refs.layout_input.files.length == 0){ return; }
+
+            //clear out any existing windows
+            while (this.windows.length) { this.windows.pop(); }
+
+            //read the file and apply the layout
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = JSON.parse(e.target.result as string);
+                this.addComponentsJSON(data);
+            }
+            reader.readAsText(this.$refs.layout_input.files[0]);
+        }
     },
 });
 </script>
 
 <style scoped lang="scss">
+.home{
+    background-color:#e9ecef ;
+}
+.tabs{
+    height:100%;
+}
+#toolbox_container{
+    height:100%;
+    border-radius:0;
+}
+#toolbox_container .tabs{
+    overflow: auto;
+}
 
 </style>
