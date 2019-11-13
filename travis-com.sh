@@ -16,7 +16,7 @@ commit_website_files() {
 }
 
 upload_files() {
-  git remote add origin-build https://${GH_TOKEN}@github.com/tischfieldlab/vue-reports.git > /dev/null 2>&1
+  git remote add origin-build https://${GITHUB_TOKEN}@github.com/tischfieldlab/vue-reports.git > /dev/null 2>&1
   git push --quiet --set-upstream origin-build build-branch
 }
 
