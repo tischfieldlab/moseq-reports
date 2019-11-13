@@ -2,6 +2,9 @@ language: node_js
 node_js:
 - 9
 
+git:
+  depth: false
+
 script:
 - cd moseq-reports/
 - npm install -g @vue/cli
