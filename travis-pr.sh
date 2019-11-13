@@ -1,6 +1,25 @@
-export TAG=$(npm version minor)
-echo "$TAG"
-git tag $TAG
+#!/bin/sh
 cd ..
-git add . && git push origin HEAD:"$TRAVIS_BRANCH" && git push origin HEAD:"$TRAVIS_BRANCH" --tags
+pwd
+
+setup_git() {
+  git config --global user.email "travis@travis-ci.org"
+  git config --global user.name "Travis CI"
+}
+
+commit_website_files() {
+  git checkout -b $TRAVIS_BRANCH
+  export TAG=$(npm version minor)
+  echo "$TAG"
+  git add .
+  git commit --message "Travis build: $TRAVIS_BUILD_NUMBER"
+}
+
+upload_files() {
+  git push
+}
+
+setup_git
+commit_website_files
+upload_files
 cd moseq-reports
