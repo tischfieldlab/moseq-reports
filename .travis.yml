@@ -7,10 +7,6 @@ script:
 - npm install -g @vue/cli
 - npm install
 - npm run test:unit
-- if: type = pull_request
-  bash ../travis-pr.sh
-- if: type = push
-  bash ../travis-com.sh
 
 before_deploy:
   - export TRAVIS_TAG=$(npm version major)
