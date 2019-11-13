@@ -5,8 +5,8 @@ cd ..
 pwd
 
 setup_git() {
-  git config --global user.email "travis@travis-ci.org"
-  git config --global user.name "Travis CI"
+  git config --global user.email "jmc07712@yahoo.com"
+  git config --global user.name "jmc07712"
 }
 
 commit_website_files() {
@@ -16,7 +16,7 @@ commit_website_files() {
 }
 
 upload_files() {
-  git remote add origin-build https://${GITHUB_TOKEN}@github.com/tischfieldlab/vue-reports.git > /dev/null 2>&1
+  git remote add origin-build https://jmc07712@github.com/tischfieldlab/vue-reports.git > /dev/null 2>&1
   git push --quiet --set-upstream origin-build build-branch
 }
 
