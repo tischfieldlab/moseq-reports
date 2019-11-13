@@ -7,19 +7,17 @@ pwd
 setup_git() {
   git config --global user.email "travis@travis-ci.org"
   git config --global user.name "Travis CI"
-  git config --global push.default current
-  git stash
 }
 
 commit_website_files() {
-  git checkout ${TRAVIS_BRANCH}
-  git stash pop
-  git add .
+  git checkout -b build-branch
+  git add . ./moseq-reports/package.json
   git commit --message "Travis build: $TRAVIS_BUILD_NUMBER"
 }
 
 upload_files() {
-  git push https://${GH_TOKEN}@github.com/tischfieldlab/vue-reports.git
+  git remote add origin-build https://${GH_TOKEN}@github.com/tischfieldlab/vue-reports.git > /dev/null 2>&1
+  git push --quiet --set-upstream origin-build build-branch
 }
 
 setup_git
