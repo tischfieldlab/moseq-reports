@@ -10,10 +10,7 @@ script:
 - npm install -g @vue/cli
 - npm install
 - npm run test:unit
-
-after_success:
-  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ "$TRAVIS_BRANCH" != "master" ]; then bash ../travis-pr.sh; fi'
-  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" != "master" ]; then bash ../travis-com.sh; fi'
+- bash ../travis-com.sh
 
 before_deploy:
   - export TRAVIS_TAG=$(npm version major)
