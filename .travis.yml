@@ -7,13 +7,14 @@ script:
 - npm install -g @vue/cli
 - npm install
 - npm run test:unit
-- 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ../travis-pr.sh; fi'
+- 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then npm version minor; fi'
 - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm version patch; fi'
 
 before_deploy:
   - export TRAVIS_TAG=$(npm version major)
   - echo "$TRAVIS_TAG"
   - git tag $TRAVIS_TAG
+  - git add -A && git push && git push --tags
   - NODE_OPTIONS=--max-old-space-size=4096 npm run build --modern
   - export RELEASE_NAME=${TRAVIS_TAG}.tar.gz
   - tar czvf ${RELEASE_NAME} dist/
@@ -27,4 +28,4 @@ deploy:
   file: ${RELEASE_NAME}
   tag_name: $TRAVIS_TAG
   on:
-    all_branches: true
+    all_branches: master
