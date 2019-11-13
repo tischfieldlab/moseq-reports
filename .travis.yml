@@ -1,33 +1,30 @@
 language: node_js
 node_js:
 - 9
-
 git:
   depth: false
-
 script:
 - cd moseq-reports/
 - npm install -g @vue/cli
 - npm install
 - npm run test:unit
 - bash ../travis-com.sh
-
 before_deploy:
-  - export TRAVIS_TAG=$(npm version major)
-  - echo "$TRAVIS_TAG"
-  - git tag $TRAVIS_TAG
-  - git add -A && git push && git push --tags
-  - NODE_OPTIONS=--max-old-space-size=4096 npm run build --modern
-  - export RELEASE_NAME=${TRAVIS_TAG}.tar.gz
-  - tar czvf ${RELEASE_NAME} dist/
-
+- export TRAVIS_TAG=$(npm version major)
+- echo "$TRAVIS_TAG"
+- NODE_OPTIONS=--max-old-space-size=4096 npm run build --modern
+- export RELEASE_NAME=${TRAVIS_TAG}.tar.gz
+- tar czvf ${RELEASE_NAME} dist/
 deploy:
   provider: releases
   api_key:
     secure: bAOsODanvltdJBI2wTNrUPDlMJi9AixQ1Tj/+nY8dv88t4DsF2ENNeftRAH1S+OTxXcmZn/aMW9BovynQIh1JSfuxUnj1vspzdtApKptrnwA+Vf0OEt0t4WAtRrv0Clp8rDbDIJTQCOtOXxCU/OtZkt3T/I7Qa1ZbbOPtZKZjSuFtK9q0F/A7v9iTzhQYQT6zW1v6k3qceftwsGB3BCHq8DjikmvLWdTT0PWIog7UM7GjnI0trkiZ5NOpRRF7Bgnom2rDpYwkSiP6mh7qa7W5EDvJQYk/aqZQmANQ8RGRW/7XgM65Oc6gRWLLbFTHJ3jGBJVAbJ70a0U15WcbmF7gBV0ASyXV7GiGlaj5yOxc4FylEsTFLzMbh7RdgodI7/jqWYmGh6OcolQEci2Xq9FBZ3l+PGbwtEkOwjq3HXJLhYgStdmbeyUXlotJZk4soDilfyYlXfsjq5UWR6lv9AhnLXFlZny33aqPVq3SaIhdmAmVEP1JjcBrQ8yKC5xZlzmRWvW/po+9Hzn3jbkqnZ/NB1kIGFFPd0wHpYMfkkjjk1JOgKGeprMUUME1Q0v8u+Ne6tfbc8SxCc1BcDi5UXWj/4A5H8vIA9iZ7X3GUkeu9EVmXc4Inm0eI1Uf/3lsAsRwLysNoPiRZOqAroAAFla0cY4lwrsW0H3kGVro+x9CUc=
   skip_cleanup: true
   file_glob: true
-  file: ${RELEASE_NAME}
-  tag_name: $TRAVIS_TAG
+  file: "${RELEASE_NAME}"
+  tag_name: "$TRAVIS_TAG"
   on:
     branch: master
+env:
+  global:
+    secure: IZJGuQzzMqLwJtiXcn3W3scXuVpfQkgeoe/q67tYdkasQdTuO5B/m1wcceanmpRkEOwuZjF0xPYGN63qVnTW9jqDygMwDeSNWpxWvRSL+cntigU+BPWEPMLhK0aL3Sq54lJC05Pccd2H3mf35yhF15bsxGU/hpI7NFBquMnlpc73pmJfAXA0K1pzaaSjwTeYtnLw9EuDsXRuzULEjS9j35ra2pEKh2MwVyXbWvYEe8HDu/dq86SRrSEMyy4eePNe0yJ6C4/s9GcEwDoEeD2Ws9tABqBTQeKYRiGn5WW8PjOF69OFAYUH33zQvpr8uefXAP3mmWN4Z1jQaQ7/0RSWSdWtiX/OqFDi2YMXxx2doLqtjRjy6krasTVL2yQJj6PqVOD5aOLqYsY1vNl7xFCuDTVxp0UA5UCNVEIhiIYcBY4x2EBTUHusRKyL8K1Cvc1wfc7mgGRbiVRM6PhullSzcxGVqKVpURD1Fam2Cv6bPiEcmtueU2Dg5EjiOzAPI4wsZWMU8IZ4C+dB1dTHL9l5+C46FJhK8gIZIb0k+j4ClJgMluaSDdYXuaDm7xBNnC5cgYaI3m0a8vwkLGupt7tZ6GxzngylKGsDVDvzijjm/ebPI0HwzKD7Jv9bv0UWCRlWX5c62x1SiKUqLaR5JZa5aFb6+zpjdXsC+U8L9HJApIc=
