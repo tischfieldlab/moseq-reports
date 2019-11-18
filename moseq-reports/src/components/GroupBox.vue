@@ -34,16 +34,16 @@
 <script lang="ts">
 import Vue from 'vue';
 import draggable from 'vuedraggable';
-import DataModel, { EventType } from '../DataModel';
+import DataModel, { EventType } from '@/models/DataModel';
 
 
-class SelectableGroupItem{
-  name: string;
-  selected: boolean;
-  get style(){
+class SelectableGroupItem {
+  public name: string;
+  public selected: boolean;
+  get style() {
       return this.selected ? '' : 'non-selected';
   }
-  constructor(name:string, selected:boolean = true){
+  constructor(name: string, selected: boolean = true) {
     this.name = name;
     this.selected = selected;
   }
@@ -52,27 +52,31 @@ class SelectableGroupItem{
 export default Vue.extend({
     name: 'groupbox',
     components: {
-        draggable
+        draggable,
     },
     data() {
         return {
-            groups: [] as Array<SelectableGroupItem>,
+            groups: [] as SelectableGroupItem[],
             syllable: DataModel.getSelectedSyllable(),
             syllableIdOptions: [] as any,
         };
     },
     mounted() {
         DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.updateSyllable);
-        this.buildGroups()
+        this.buildGroups();
         this.getsyllableIdOptions();
     },
     methods: {
-        buildGroups(){
+        buildGroups() {
             const selectedGroups = DataModel.getSelectedGroups();
-            DataModel.getAvailableGroups().map(g => this.groups.push(new SelectableGroupItem(g, selectedGroups.includes(g))));
+            DataModel.getAvailableGroups()
+                     .map((g) => {
+                         const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
+                         this.groups.push(sgi);
+                     });
         },
-        updateGroups(){
-            const newGroups = this.groups.filter(g => g.selected).map(g => g.name);
+        updateGroups() {
+            const newGroups = this.groups.filter((g) => g.selected).map((g) => g.name);
             //console.log("in updateGroups", newGroups);
             DataModel.updateSelectedGroups(newGroups);
         },

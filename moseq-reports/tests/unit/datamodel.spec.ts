@@ -1,7 +1,7 @@
 import { expect, assert } from 'chai';
 import { shallowMount, mount } from '@vue/test-utils';
 
-import DataModel, { EventType } from '@/DataModel';
+import DataModel, { EventType } from '@/models/DataModel';
 
 describe('DataModel', () => {
   const meta = require('../data/metadata.js');

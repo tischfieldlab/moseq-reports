@@ -4,7 +4,7 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 
-import DataModel from './DataModel';
+import DataModel from './models/DataModel';
 
 // Bootstrap Stuff
 import BootstrapVue from 'bootstrap-vue';

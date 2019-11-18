@@ -6,7 +6,7 @@
 import Vue from 'vue';
 import * as Plotly from 'plotly.js';
 
-import DataModel, { EventType } from '../../DataModel';
+import DataModel, { EventType } from '@/models/DataModel';
 import SettingsModal from '@/components/SettingsModal.vue';
 import HeatmapOptions from '@/components/Heatmap/HeatmapOptions.vue'
 import {transpose} from '../../Util';

@@ -36,7 +36,7 @@ export default Vue.component('ui-window', {
     },
     mounted(){
         //hold onto this component instance within the DataWindow
-        this.component.instance = this.$refs.body;
+        this.component.instance = this.$refs.body as Vue;
         
         // If settings exist on the DataWindow, and the component seems to support settings,
         // then apply the settings
@@ -52,12 +52,14 @@ export default Vue.component('ui-window', {
         });
     },
     methods: {
-        onResized(event){
+        onResized(event: any){
+            console.log(typeof event, event);
             this.$emit('resize', event.args);
             this.component.layout.width = event.args.width;
             this.component.layout.height = event.args.height;
         },
-        onMoved(event){
+        onMoved(event: any){
+            console.log(typeof event, event);
             this.component.layout.position.x = event.args.x;
             this.component.layout.position.y = event.args.y;
         },

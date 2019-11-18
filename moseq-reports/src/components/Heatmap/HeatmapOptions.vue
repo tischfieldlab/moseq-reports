@@ -15,7 +15,7 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 
-import DataModel from '../../DataModel';
+import DataModel from '@/models/DataModel';
 import * as Plotly from 'plotly.js';
 import Heatmap from '@/components/Heatmap/Heatmap.vue';
 

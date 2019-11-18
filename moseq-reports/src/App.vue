@@ -13,7 +13,6 @@ import Vue from 'vue';
 
 import NavBar from '@/components/NavigationBar.vue';
 import FooterBar from '@/components/FooterBar.vue';
-import DataModel from './DataModel';
 
 export default Vue.extend({
   name: 'App',

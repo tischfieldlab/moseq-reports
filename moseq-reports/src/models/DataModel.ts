@@ -2,7 +2,7 @@ import DataFrame from 'dataframe-js';
 import Vue from 'vue';
 
 /* tslint:disable */
-const meta = require('./metadata/metadata.js');
+const meta = require('../metadata/metadata.js');
 
 export enum EventType {
     GROUPS_CHANGE = 'selectedGroupsChange',

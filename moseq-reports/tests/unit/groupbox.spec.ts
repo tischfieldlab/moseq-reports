@@ -1,7 +1,7 @@
 import { expect, assert } from 'chai';
 import { shallowMount, mount } from '@vue/test-utils';
 
-import DataModel from '@/DataModel';
+import DataModel from '@/models/DataModel';
 
 import GroupBox from '@/components/GroupBox.vue';
 

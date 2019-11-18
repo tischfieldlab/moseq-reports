@@ -11,7 +11,7 @@
                 <b-tab no-body title="View">
                     <b-button pill @click="serializeLayout">Save Layout</b-button>
 
-                    <input type="file" ref="layout_input" @change="loadLayout()" style="display:none;">
+                    <input type="file" ref="layout_input" @change="loadLayout($event.target.files);" style="display:none;">
                     <b-button pill @click="$refs.layout_input.click()">Load Layout</b-button>
                 </b-tab>
             </b-tabs>
@@ -32,7 +32,7 @@ import GroupBox from '@/components/GroupBox.vue';
 import Heatmap from '@/components/Heatmap/Heatmap.vue';
 import TestSyllable from '@/components/TestSyllable.vue';
 import Toolbox from '@/components/Toolbox.vue';
-import DataWindow from '../models/DataWindow';
+import DataWindow, {IDataWindow} from '../models/DataWindow';
 
 import {saveFile} from '../Util';
 import defaultLayout from './DefaultLayout.json';
@@ -50,8 +50,9 @@ export default Vue.extend({
     data() {
         return {
             height: 0,
-            toolbox_width:250,
-            windows: [],
+            toolbox_width: 250,
+            windows: [] as DataWindow[],
+            debouncedResizeHandler: function(that: Window, ev: UIEvent){},
         }
     },
     created() {
@@ -61,25 +62,25 @@ export default Vue.extend({
     destroyed() {
         window.removeEventListener('resize', this.debouncedResizeHandler)
     },
-    mounted(){
+    mounted() {
         this.$nextTick().then(() => {
             this.handleResize();
         });
         this.addComponentsJSON(defaultLayout);
     },
     methods:{
-        addComponent(type, title){
+        addComponent(type: string, title: string) {
             const win = new DataWindow(type, title);
             this.windows.push(win);
             return win;
         },
-        addComponentsJSON(data){
+        addComponentsJSON(data: IDataWindow[]) {
             for(let w of data){
                 const win = DataWindow.fromJSON(w);
                 this.windows.push(win);
             }
         },
-        handleResize() {
+        handleResize(that: Window, ev: UIEvent) {
             const header = document.getElementById('navigation-bar');
             const headerHeight = header ? header.clientHeight : 0;
             const footer = document.getElementById('bottom');
@@ -87,14 +88,14 @@ export default Vue.extend({
             
             this.height = document.documentElement.clientHeight - headerHeight-footerHeight;
         },
-        serializeLayout(){
+        serializeLayout() {
             let data = JSON.stringify(this.windows);
             console.log(typeof data, data);
             saveFile("layout.json", "data:text/json", data);
         },
-        loadLayout(files){
+        loadLayout(files: FileList) {
             //if no file selected, return
-            if(this.$refs.layout_input.files.length == 0){ return; }
+            if(files === null || files.length == 0){ return; }
 
             //clear out any existing windows
             while (this.windows.length) { this.windows.pop(); }
@@ -102,10 +103,17 @@ export default Vue.extend({
             //read the file and apply the layout
             const reader = new FileReader();
             reader.onload = (e) => {
-                const data = JSON.parse(e.target.result as string);
-                this.addComponentsJSON(data);
+                if(e !== null && e.target !== null){
+                    const data = JSON.parse(e.target.result as string) as IDataWindow[];
+                    this.addComponentsJSON(data);
+                }else{
+                    console.warn("On load recieved null when reading selected files.");
+                }
             }
-            reader.readAsText(this.$refs.layout_input.files[0]);
+            const f = files.item(0);
+            if(f !== null) {
+                reader.readAsText(f);
+            }
         }
     },
 });

@@ -19,7 +19,14 @@ export class Position{
     }
 }
 
-export default class DataWindow{
+export interface IDataWindow{
+    title: string;
+    type: string;
+    layout: Layout;
+    settings: Object | undefined;
+}
+
+export default class DataWindow implements IDataWindow{
     title: string = "default title";
     type: string;
     layout: Layout;
@@ -43,7 +50,7 @@ export default class DataWindow{
         return {};
     }
 
-    toJSON(){
+    toJSON(): IDataWindow{
         return {
             title: this.title,
             type: this.type,
@@ -51,7 +58,7 @@ export default class DataWindow{
             settings: this.getSettings(),
         };
     }
-    static fromJSON(data:any){
+    static fromJSON(data: IDataWindow){
         const w = new DataWindow(data.type, data.title)
         w.layout.width = data.layout.width;
         w.layout.height = data.layout.height;

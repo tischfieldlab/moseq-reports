@@ -15,7 +15,7 @@
 <script lang="ts">
 import Vue from 'vue';
 
-import DataModel, { EventType } from '../DataModel';
+import DataModel, { EventType } from '@/models/DataModel';
 
 export default Vue.component('test-syllable', {
     name: 'test-syllable',

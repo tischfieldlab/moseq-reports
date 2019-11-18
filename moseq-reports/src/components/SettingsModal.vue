@@ -29,7 +29,7 @@ export default Vue.extend({
     data(){
         return {
             title: "title",
-            content: null,
+            content: null as Vue,
             id:'modal-container',
         }
     },
