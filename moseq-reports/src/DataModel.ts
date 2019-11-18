@@ -136,7 +136,20 @@ class DataModel {
      * @memberof DataModel     
      */
     public updateSelectedSyllable(syllable : number) {
-        this.selectedSyallable = Number.parseInt(syllable.toString());
+        const syl = Number.parseInt(syllable.toString());
+        if (isNaN(syl)) {
+            throw new Error(`Illegal Argument: Argument ${syl} cannot be NaN.`);
+        }
+        
+        if (syl > this.maxSyllable) {
+            throw new Error(`Illegal Argument: Argument ${syl} must be < max syllable.`);
+        }
+        
+        if (syl < 0) {
+            throw new Error(`Illegal Argument: Argument ${syl} must be > 0.`);
+        }
+
+        this.selectedSyallable = syl;
 
         // NOTE: Fire the event so everyone knows syllable changed
         this.eventBus.fire(EventType.SYLLABLE_CHANGE, this.selectedSyallable);
@@ -151,6 +164,10 @@ class DataModel {
      * @memberof DataModel
      */
     public updateSelectedGroups(groups : Array<string>) {
+        if (groups === null) {
+            throw new Error('Illegal Argument: Argument must not be null.');
+        }
+
         this.selectedGroups = groups;
         this.updateView();
 

@@ -16,6 +16,7 @@ import VueResize from 'vue-resize';
 Vue.use(VueResize);
 
 Vue.config.productionTip = false;
+Vue.config.silent = true;
 
 new Vue({
   router,
