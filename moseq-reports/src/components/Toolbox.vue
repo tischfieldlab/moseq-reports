@@ -1,23 +1,28 @@
 <template>
     <div>
-        <b-button pill @click="create_component('heat-map', 'Usage heatmap');">Add Heatmap 1</b-button>
-        <b-button pill @click="create_component('heat-map', 'Usage heatmap');">Add Heatmap 2</b-button>
+        <template v-for="(c, index) in this.available_components">
+            <b-button pill :key="index" @click="create_component(c);">Add {{ c.friendly_name }}</b-button>
+        </template>
     </div>
 </template>
 
 <script lang="ts">
 
 import Vue from 'vue';
+import store from '../store/root.store';
+import {createDataWindow, ComponentRegistration} from '../store/root.types';
+
 export default Vue.component('tool-box', {
-    props:{
-        
-    },
-    mounted(){
-        
+
+    computed: {
+        available_components(): ComponentRegistration[] {
+            return this.$store.state.registry;
+        },
     },
     methods:{
-        create_component: function(type:string, title:string) {
-            this.$emit('createComponent', type, title);
+        create_component: function(component_info: ComponentRegistration) {
+            const win = createDataWindow(component_info);
+            store.commit('addWindow', win);
         }
     }
 })

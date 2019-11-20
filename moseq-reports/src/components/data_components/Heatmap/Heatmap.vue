@@ -7,41 +7,74 @@ import Vue from 'vue';
 import * as Plotly from 'plotly.js';
 
 import DataModel, { EventType } from '@/models/DataModel';
-import SettingsModal from '@/components/SettingsModal.vue';
-import HeatmapOptions from '@/components/Heatmap/HeatmapOptions.vue'
-import {transpose} from '../../Util';
+import { transpose } from '@/Util';
+import {Size, Layout, ComponentRegistration } from '@/store/root.types';
+import store from '@/store/root.store';
+import BaseDataComponent from '@/components/data_components/BaseDataComponent';
+
+store.commit('registerComponent', <ComponentRegistration>{
+    friendly_name: 'Usage Heatmap',
+    component_type: 'heat-map',
+    settings_type: 'heatmap-options',
+    init_width: 400,
+    init_height: 500,
+    default_settings: {
+        style: {
+            colorscale: 'Portland',
+        }
+    }
+});
 
 /* tslint:disable */
 export default Vue.component('heat-map', {
-    name: 'heat-map',
+    extends: BaseDataComponent,
     mounted() {
-        this.settings.$props.owner = this;
+        //watch for resize events, and update the heatmap size accordingly.
+        store.watch(
+            (state, getters) => {
+                return getters.getWindowLayout(this.id);
+            },
+            (newValue: Layout, oldValue: Layout) => {
+                this.onResize({
+                    width: newValue.width,
+                    height: newValue.height,
+                });
+            },
+            {
+                deep: true,
+            }
+        );
+        store.watch(
+            (state, getters) => {
+                return getters.getWindowById(this.id).settings;
+            },
+            (newValue, oldValue) => {
+                console.log('calling restyle', this.settings.style, newValue, oldValue);
+                Plotly.restyle(this.$refs['heatmap-graph'], this.settings.style);
+            },
+            {
+                deep: true,
+            }
+        );
+
         this.createHeatmap();
 
         DataModel.subscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
-
-        this.$parent.$on('resized', this.onResize);
-        this.$nextTick().then(() => {
-            this.onResize();
-        });
     },
     destroyed(){
         DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
     },
     data() {
-        return {
-            title: "Syllable Usage Heatmap",
-            settings: new HeatmapOptions(),
-        };
+        return {};
     },
     methods: {
         updateColorscale(scale: any) {
             Plotly.restyle(this.$refs['heatmap-graph'], scale);
         },
-        onResize() {
+        onResize(newSize: Size) {
             Plotly.relayout(this.$refs['heatmap-graph'], {
-                width: this.$parent.width - 10,
-                height: this.$parent.height - 100
+                width: newSize.width - 10,
+                height: newSize.height - 100
             });
         },
         createHeatmap() {
@@ -69,11 +102,11 @@ export default Vue.component('heat-map', {
                 margin: {
                     t: 10,
                     b: 70,
-                    l:50,
-                    r:10
+                    l: 50,
+                    r: 10
                 },
-                width: this.$parent.width - 10,
-                height: this.$parent.height - 100,
+                width: this.layout.width - 10,
+                height: this.layout.height - 100,
                 autosize: true,
                 xaxis: {
                     autorange: true,
@@ -98,10 +131,11 @@ export default Vue.component('heat-map', {
                 }
             } as Plotly.Layout
             
-            var myPlot: any = this.$refs['heatmap-graph'],
+            const myPlot: HTMLElement = this.$refs['heatmap-graph'],
             d3 = Plotly.d3;
 
-            Plotly.newPlot(this.$refs['heatmap-graph'], [data], layout);
+            //console.log(typeof myPlot);
+            Plotly.newPlot(myPlot, [data], layout);
 
             var syllable : number = 0;
             myPlot.on('plotly_click', function(data : any){

@@ -10,7 +10,20 @@
             <span class="title-text">{{component.title}}</span>
         </div>
         <div>
-            <component ref="body" v-bind:is="component.type" />
+            <component ref="body" :id="component.id" :is="component.type" />
+            <b-modal
+                :title="settings_title"
+                v-model="show_modal"
+                header-bg-variant="dark"
+                header-text-variant="light"
+                body-bg-variant="light"
+                body-text-variant="dark"
+                hide-footer>
+                
+                <component v-if="settings_type" ref="modal_component" :id="component.id" :is="component.spec.settings_type" />
+                <p v-else>No settings available for this component</p>
+
+            </b-modal>
         </div>
     </JqxWindow>
 </template>
@@ -21,31 +34,30 @@ import Vue from 'vue';
 //import resize from 'vue-resize-directive'
 
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
-import SettingsModal from '@/components/SettingsModal.vue';
-import DataWindow from '../models/DataWindow';
+import {DataWindow, Size, Position, Layout} from '../store/root.types';
+import store from '../store/root.store';
 
 export default Vue.component('ui-window', {
     components:{
-        JqxWindow
+        JqxWindow,
     },
     props: {
-        component: DataWindow,
+        component: {
+            type: Object,
+            required: true
+        },
+    },
+    data() {
+        return {
+            show_modal: false,
+        }
     },
     computed: {
-        
+        settings_title() {
+            return this.component.title + " Settings";
+        },
     },
     mounted(){
-        //hold onto this component instance within the DataWindow
-        this.component.instance = this.$refs.body as Vue;
-        
-        // If settings exist on the DataWindow, and the component seems to support settings,
-        // then apply the settings
-        if (this.component.settings !== undefined
-         && this.component.instance.settings !== undefined
-         && this.component.instance.settings.applySettings !== undefined){
-            this.component.instance.settings.applySettings(this.component.settings);
-        }
-
         // Create the settings button on the next tick when the DOM is ready
         this.$nextTick().then(() => {
             this.addSettingsButton();
@@ -53,33 +65,33 @@ export default Vue.component('ui-window', {
     },
     methods: {
         onResized(event: any){
-            console.log(typeof event, event);
-            this.$emit('resize', event.args);
-            this.component.layout.width = event.args.width;
-            this.component.layout.height = event.args.height;
+            const s = event.args as Size;
+            store.commit('updateLayout', {
+                id: this.component.id,
+                width: s.width,
+                height: s.height,
+            });
         },
         onMoved(event: any){
-            console.log(typeof event, event);
-            this.component.layout.position.x = event.args.x;
-            this.component.layout.position.y = event.args.y;
+            const p = event.args as Position;
+            store.commit('updateLayout', {
+                id: this.component.id,
+                position_x: p.x,
+                position_y: p.y,
+            });
         },
         addSettingsButton(){
             //console.log("in addSettingsButton", this.$refs.body);
             const container = document.createElement('div');
-            
-            const modal = new SettingsModal();
-            modal.$props.owner = this.$refs.body;
-            modal.$mount();
 
             const button = document.createElement('img');
             button.src = "https://static.thenounproject.com/png/333746-200.png";
             button.classList.add("settings-button");
             button.addEventListener('click', event => {
-                modal.$props.show = true;
+                this.show_modal = true;
             });
             
             container.appendChild(button);
-            container.appendChild(modal.$el);
             this.$el.children[0].children[0].appendChild(container);
         }
     },

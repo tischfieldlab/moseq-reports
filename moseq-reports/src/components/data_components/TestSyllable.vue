@@ -16,9 +16,18 @@
 import Vue from 'vue';
 
 import DataModel, { EventType } from '@/models/DataModel';
+import store from '@/store/root.store';
+import {ComponentRegistration} from '@/store/root.types';
+import BaseDataComponent from '@/components/data_components/BaseDataComponent';
+
+store.commit('registerComponent', <ComponentRegistration>{
+    friendly_name: 'Test Syllable',
+    component_type: 'test-syllable',
+    settings_type: null,
+});
 
 export default Vue.component('test-syllable', {
-    name: 'test-syllable',
+    extends: BaseDataComponent,
     data() {
         return {
             syllable: DataModel.getSelectedSyllable(),
