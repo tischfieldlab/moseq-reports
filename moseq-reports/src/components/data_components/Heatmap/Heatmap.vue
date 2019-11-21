@@ -47,7 +47,6 @@ export default Vue.component('heat-map', {
             return win.layout;
         },
     },
-    created() {},
     mounted() {
         // watch for resize events, and update the heatmap size accordingly.
         this.watchers.push(this.$store.watch(
@@ -116,7 +115,7 @@ export default Vue.component('heat-map', {
                 x: groups,
                 y: sylNum,
                 z: sylUsage,
-                colorscale: this.settings.colorscale,
+                colorscale: this.settings.style.colorscale,
             } as Plotly.PlotData;
 
             const layout = {
