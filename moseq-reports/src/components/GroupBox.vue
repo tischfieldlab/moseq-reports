@@ -77,7 +77,6 @@ export default Vue.extend({
         },
         updateGroups() {
             const newGroups = this.groups.filter((g) => g.selected).map((g) => g.name);
-            //console.log("in updateGroups", newGroups);
             DataModel.updateSelectedGroups(newGroups);
         },
         updateSyllable(event: any) {

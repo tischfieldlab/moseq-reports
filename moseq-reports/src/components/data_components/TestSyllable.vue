@@ -18,16 +18,19 @@ import Vue from 'vue';
 import DataModel, { EventType } from '@/models/DataModel';
 import store from '@/store/root.store';
 import {ComponentRegistration} from '@/store/root.types';
-import BaseDataComponent from '@/components/data_components/BaseDataComponent';
 
-store.commit('registerComponent', <ComponentRegistration>{
+store.commit('registerComponent', {
     friendly_name: 'Test Syllable',
     component_type: 'test-syllable',
-    settings_type: null,
 });
 
 export default Vue.component('test-syllable', {
-    extends: BaseDataComponent,
+    props: {
+        id: {
+            type: Number,
+            required: true,
+        },
+    },
     data() {
         return {
             syllable: DataModel.getSelectedSyllable(),
@@ -35,6 +38,9 @@ export default Vue.component('test-syllable', {
     },
     mounted() {
         DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.onSyllableChange);
+    },
+    destroyed() {
+        DataModel.unsubscribe(EventType.SYLLABLE_CHANGE, this.onSyllableChange);
     },
     methods: {
         onSyllableChange(syllable: any) {

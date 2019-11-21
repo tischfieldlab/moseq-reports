@@ -1,18 +1,19 @@
 <template>
-    <div ref='heatmap-graph'></div>
+    <div ref='container'></div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+
+
 import * as Plotly from 'plotly.js';
 
 import DataModel, { EventType } from '@/models/DataModel';
 import { transpose } from '@/Util';
 import {Size, Layout, ComponentRegistration } from '@/store/root.types';
 import store from '@/store/root.store';
-import BaseDataComponent from '@/components/data_components/BaseDataComponent';
 
-store.commit('registerComponent', <ComponentRegistration>{
+store.commit('registerComponent', {
     friendly_name: 'Usage Heatmap',
     component_type: 'heat-map',
     settings_type: 'heatmap-options',
@@ -21,16 +22,35 @@ store.commit('registerComponent', <ComponentRegistration>{
     default_settings: {
         style: {
             colorscale: 'Portland',
-        }
-    }
+        },
+    },
 });
 
-/* tslint:disable */
+interface PlotHTMLElement extends HTMLElement  {
+  on(eventName: string, handler: (data: any) => void): void;
+}
+
+
 export default Vue.component('heat-map', {
-    extends: BaseDataComponent,
+    props: {
+        id: {
+            type: Number,
+            required: true,
+        },
+    },
+    computed: {
+        settings(): any {
+            return this.$store.getters.getWindowById(this.id).settings;
+        },
+        layout(): Layout {
+            const win = this.$store.getters.getWindowById(this.id);
+            return win.layout;
+        },
+    },
+    created() {},
     mounted() {
-        //watch for resize events, and update the heatmap size accordingly.
-        store.watch(
+        // watch for resize events, and update the heatmap size accordingly.
+        this.watchers.push(this.$store.watch(
             (state, getters) => {
                 return getters.getWindowLayout(this.id);
             },
@@ -42,68 +62,70 @@ export default Vue.component('heat-map', {
             },
             {
                 deep: true,
-            }
-        );
-        store.watch(
+            },
+        ));
+        this.watchers.push(this.$store.watch(
             (state, getters) => {
                 return getters.getWindowById(this.id).settings;
             },
             (newValue, oldValue) => {
-                console.log('calling restyle', this.settings.style, newValue, oldValue);
-                Plotly.restyle(this.$refs['heatmap-graph'], this.settings.style);
+                Plotly.restyle(this.$refs.container as HTMLElement, this.settings.style);
             },
             {
                 deep: true,
-            }
-        );
+            },
+        ));
 
         this.createHeatmap();
-
         DataModel.subscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
     },
-    destroyed(){
+    destroyed() {
+        // un-watch the store
+        this.watchers.forEach((w) => w());
+        // unsubscribe from the data model
         DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
     },
     data() {
-        return {};
+        return {
+            watchers: Array<(() => void)>()
+        };
     },
     methods: {
-        updateColorscale(scale: any) {
-            Plotly.restyle(this.$refs['heatmap-graph'], scale);
-        },
         onResize(newSize: Size) {
-            Plotly.relayout(this.$refs['heatmap-graph'], {
+            Plotly.relayout(this.$refs.container as HTMLElement, {
                 width: newSize.width - 10,
-                height: newSize.height - 100
+                height: newSize.height - 100,
             });
         },
         createHeatmap() {
-            let df = DataModel.getAggregateView();
+            const df = DataModel.getAggregateView();
 
-            var groups = DataModel.getSelectedGroups();;
-            var sylNum = df.select('syllable').distinct('syllable').toArray().flat();
+            const groups = DataModel.getSelectedGroups();
+            const sylNum = df.select('syllable').distinct('syllable').toArray().flat();
 
-            var sylUsage = [];
-            for(const g of groups){
-                sylUsage.push(df.where({'group': g}).select('usage').toArray().flat());
+            let sylUsage = [] as Array<Array<any>>;
+            for (const g of groups) {
+                sylUsage.push(df.where({group: g}).select('usage').toArray().flat() as []);
             }
             sylUsage = transpose(sylUsage);
+
+            const myPlot = this.$refs.container as PlotHTMLElement;
 
             const data = {
                 type: 'heatmap',
                 x: groups,
                 y: sylNum,
                 z: sylUsage,
-                colorscale: this.settings.selectedColor,
-            } as Plotly.PlotData
+                colorscale: this.settings.colorscale,
+            } as Plotly.PlotData;
 
-            let layout = {
-                //title: 'Syllable Usage Heatmap',
+            const layout = {
+                // title: 'Syllable Usage Heatmap',
                 margin: {
                     t: 10,
                     b: 70,
                     l: 50,
-                    r: 10
+                    r: 10,
                 },
                 width: this.layout.width - 10,
                 height: this.layout.height - 100,
@@ -127,30 +149,27 @@ export default Vue.component('heat-map', {
                     autorange: true,
                     side: 'left',
                     ticks: 'outside',
-                    title: "Syllable (ID)",
-                }
-            } as Plotly.Layout
-            
-            const myPlot: HTMLElement = this.$refs['heatmap-graph'],
-            d3 = Plotly.d3;
+                    title: 'Syllable (ID)',
+                },
+            } as Plotly.Layout;
 
-            //console.log(typeof myPlot);
             Plotly.newPlot(myPlot, [data], layout);
 
-            var syllable : number = 0;
-            myPlot.on('plotly_click', function(data : any){
-                var pts = '';
-                for(var i=0; i < data.points.length; i++){
-                    pts = 'x = '+data.points[i].x +'\ny = '+
-                        data.points[i].y + '\nz = ' + 
-                        data.points[i].z.toPrecision(4) + '\n\n';
+            myPlot.on('plotly_click', (data: any) => {
+                let pts = '';
+                let syllable: number = 0;
+                for (let i = 0; i < data.points.length; i++) {
+                    pts = 'x = ' + data.points[i].x + '\n'
+                        + 'y = ' + data.points[i].y + '\n'
+                        + 'z = ' + data.points[i].z.toPrecision(4)
+                        + '\n\n';
                     syllable = Number.parseInt(data.points[i].y);
                 }
 
                 DataModel.updateSelectedSyllable(syllable);
             });
         },
-    }
+    },
 });
 </script>
 

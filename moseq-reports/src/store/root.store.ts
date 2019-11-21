@@ -14,82 +14,88 @@ const store: StoreOptions<RootState> = {
     },
     getters: {
         getWindowById: (state) => (id: number) => {
-            return state.windows.find(w => w.id === id);
+            return state.windows.find((w) => w.id === id);
         },
         getWindowLayout: (state, getters) => (id: number) => {
             return getters.getWindowById(id).layout;
         },
-        getSpecification: (state) => (component_type: string) => {
-            return state.registry.find(r => r.component_type == component_type);
-        }
+        getSpecification: (state) => (componentType: string) => {
+            return state.registry.find((r) => r.component_type === componentType);
+        },
     },
     mutations: {
-        registerComponent(state, payload: ComponentRegistration){
-            state.registry.push(payload);
+        registerComponent(state, payload: ComponentRegistration) {
+            if (state.registry.find((r) => r.component_type === payload.component_type) === undefined) {
+                state.registry.push(payload);
+            }
         },
         addWindow(state, payload: DataWindow) {
             payload.id = state.window_count;
             state.window_count++;
             state.windows.push(payload);
         },
-        updateLayout(state, payload: ChangeLayoutPayload){
-            const w = state.windows.find(w => w.id === payload.id);
-            if(w !== undefined){
+        updateLayout(state, payload: ChangeLayoutPayload) {
+            const w = state.windows.find((win) => win.id === payload.id);
+            if (w !== undefined) {
                 w.layout.width = payload.width ? payload.width : w.layout.width;
                 w.layout.height = payload.height ? payload.height : w.layout.height;
                 w.layout.position.x = payload.position_x ? payload.position_x : w.layout.position.x;
                 w.layout.position.y = payload.position_y ? payload.position_y : w.layout.position.y;
             }
         },
-        updateComponentSettings(state, payload: UpdateComponentSettingsPayload){
-            const w = state.windows.find(w => w.id === payload.id);
-            if(w !== undefined){
-                if(w.settings === undefined){
+        updateComponentSettings(state, payload: UpdateComponentSettingsPayload) {
+            const w = state.windows.find((win) => win.id === payload.id);
+            if (w !== undefined) {
+                if (w.settings === undefined) {
                     w.settings = {};
                 }
-                for(const k in payload.settings){
+                for (const k in payload.settings) {
                     Vue.set(w.settings, k, payload.settings[k]);
                 }
             }
         },
         clearWindows(state) {
-            state.windows.length = 0;
-        }
+            while(state.windows.length){
+                state.windows.pop();
+            }
+            state.window_count = 0;
+        },
     },
     actions: {
         serializeLayout(context) {
-            let data = JSON.stringify(context.state.windows, (key, value) =>{
-                if(key === "instance") return undefined;
+            const data = JSON.stringify(context.state.windows, (key, value) => {
+                if (key === 'instance') {
+                    return undefined;
+                }
                 return value;
             });
-            console.log(typeof data, data);
-            saveFile("layout.json", "data:text/json", data);
+            saveFile('layout.json', 'data:text/json', data);
         },
         loadLayout(context, files: FileList) {
-            //if no file selected, return
-            if(files === null || files.length == 0){ return; }
+            // if no file selected, return
+            if (files === null || files.length === 0) { return; }
 
-            //clear out any existing windows
-            this.commit('clearWindows');
+            // clear out any existing windows
+            context.commit('clearWindows');
 
-            //read the file and apply the layout
+            // read the file and apply the layout
             const reader = new FileReader();
             reader.onload = (e) => {
-                if(e !== null && e.target !== null){
+                if (e !== null && e.target !== null) {
                     const data = JSON.parse(e.target.result as string) as DataWindow[];
-                    for (const w of data){
-                        this.commit('addWindow', w);
+                    for (const w of data) {
+                        context.commit('addWindow', w);
                     }
-                }else{
-                    console.warn("On load recieved null when reading selected files.");
+                } else {
+                    console.warn('On load recieved null when reading selected files.');
                 }
-            }
+            };
             const f = files.item(0);
-            if(f !== null) {
+            if (f !== null) {
                 reader.readAsText(f);
             }
-        }
-    }
+        },
+    },
 };
 
 

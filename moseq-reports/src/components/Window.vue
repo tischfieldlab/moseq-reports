@@ -3,14 +3,14 @@
         @resized="onResized($event)"
         @moved="onMoved($event)"
         :showCollapseButton="true"
-        :width="component.layout.width"
-        :height="component.layout.height"
-        :position="component.layout.position">
+        :width="data_component.layout.width"
+        :height="data_component.layout.height"
+        :position="data_component.layout.position">
         <div>
-            <span class="title-text">{{component.title}}</span>
+            <span class="title-text">{{data_component.title}}</span>
         </div>
         <div>
-            <component ref="body" :id="component.id" :is="component.type" />
+            <component ref="body" :id="data_component.id" :is="data_component.spec.component_type" />
             <b-modal
                 :title="settings_title"
                 v-model="show_modal"
@@ -20,7 +20,7 @@
                 body-text-variant="dark"
                 hide-footer>
                 
-                <component v-if="settings_type" ref="modal_component" :id="component.id" :is="component.spec.settings_type" />
+                <component v-if="data_component.spec.settings_type" ref="modal_component" :id="data_component.id" :is="data_component.spec.settings_type" />
                 <p v-else>No settings available for this component</p>
 
             </b-modal>
@@ -30,75 +30,73 @@
 
 
 <script lang="ts">
-import Vue from 'vue';
-//import resize from 'vue-resize-directive'
+import Vue, { PropType } from 'vue';
 
-import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
+import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
 import {DataWindow, Size, Position, Layout} from '../store/root.types';
-import store from '../store/root.store';
+
 
 export default Vue.component('ui-window', {
-    components:{
+    components: {
         JqxWindow,
     },
     props: {
-        component: {
-            type: Object,
-            required: true
+        data_component: {
+            type: Object as PropType<DataWindow>,
+            required: true,
         },
     },
     data() {
         return {
             show_modal: false,
-        }
+        };
     },
     computed: {
-        settings_title() {
-            return this.component.title + " Settings";
+        settings_title(): string {
+            return this.data_component.title + ' Settings';
         },
     },
-    mounted(){
+    mounted() {
+        // console.log(this, this.$refs.body);
         // Create the settings button on the next tick when the DOM is ready
         this.$nextTick().then(() => {
             this.addSettingsButton();
         });
     },
     methods: {
-        onResized(event: any){
+        onResized(event: any) {
             const s = event.args as Size;
-            store.commit('updateLayout', {
-                id: this.component.id,
+            this.$store.commit('updateLayout', {
+                id: this.data_component.id,
                 width: s.width,
                 height: s.height,
             });
         },
-        onMoved(event: any){
+        onMoved(event: any) {
             const p = event.args as Position;
-            store.commit('updateLayout', {
-                id: this.component.id,
+            this.$store.commit('updateLayout', {
+                id: this.data_component.id,
                 position_x: p.x,
                 position_y: p.y,
             });
         },
-        addSettingsButton(){
-            //console.log("in addSettingsButton", this.$refs.body);
+        addSettingsButton() {
             const container = document.createElement('div');
 
             const button = document.createElement('img');
-            button.src = "https://static.thenounproject.com/png/333746-200.png";
-            button.classList.add("settings-button");
-            button.addEventListener('click', event => {
+            button.src = 'https://static.thenounproject.com/png/333746-200.png';
+            button.classList.add('settings-button');
+            button.addEventListener('click', (event) => {
                 this.show_modal = true;
             });
-            
+
             container.appendChild(button);
             this.$el.children[0].children[0].appendChild(container);
-        }
+        },
     },
-    
 });
-
 </script>
+
 <style lang="scss">
 .UiCard {
   overflow: hidden;

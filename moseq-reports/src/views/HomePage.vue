@@ -11,13 +11,13 @@
                 <b-tab no-body title="View">
                     <b-button pill @click="$store.dispatch('serializeLayout')">Save Layout</b-button>
 
-                    <input type="file" ref="layout_input" @change="$store.dispatch('loadLayout', $event.target.files);" style="display:none;">
+                    <input type="file" ref="layout_input" @change="$store.dispatch('loadLayout', $event.target.files);$refs.layout_input.value='';" style="display:none;">
                     <b-button pill @click="$refs.layout_input.click()">Load Layout</b-button>
                 </b-tab>
             </b-tabs>
         </b-card>
-        <template v-for="(w, index) in windows">
-            <UiCard :key="index" :component="w" />
+        <template v-for="w in windows">
+            <UiCard :key="w.id" :data_component="w" />
         </template>
     </div>
 </template>
@@ -27,21 +27,11 @@ import Vue from 'vue';
 import { debounce } from 'ts-debounce';
 
 import UiCard from '@/components/Window.vue';
-
 import GroupBox from '@/components/GroupBox.vue';
 import Toolbox from '@/components/Toolbox.vue';
-import store from '../store/root.store';
-import {DataWindow} from '../store/root.types';
 
-import {saveFile} from '../Util';
 import defaultLayout from './DefaultLayout.json';
-
-interface ModalPayload{
-    title: string,
-    type: string,
-    id: number,
-    show: boolean,
-}
+import { DataWindow } from '../store/root.types';
 
 
 export default Vue.component('homepage', {
@@ -55,20 +45,20 @@ export default Vue.component('homepage', {
         return {
             height: 0,
             toolbox_width: 250,
-            debouncedResizeHandler: function(that: Window, ev: UIEvent){},
-        }
+            debouncedResizeHandler(this: Window, ev: UIEvent): any { return; },
+        };
     },
     computed: {
-        windows(){
-            return store.state.windows;
-        }
+        windows(): DataWindow[] {
+            return this.$store.state.windows;
+        },
     },
     created() {
         this.debouncedResizeHandler = debounce(this.handleResize, 250);
-        window.addEventListener('resize', this.debouncedResizeHandler)
+        window.addEventListener('resize', this.debouncedResizeHandler);
     },
     destroyed() {
-        window.removeEventListener('resize', this.debouncedResizeHandler)
+        window.removeEventListener('resize', this.debouncedResizeHandler);
     },
     mounted() {
         this.$nextTick().then(() => {
@@ -76,13 +66,12 @@ export default Vue.component('homepage', {
         });
     },
     methods: {
-        handleResize() {
+        handleResize(): any {
             const header = document.getElementById('navigation-bar');
             const headerHeight = header ? header.clientHeight : 0;
             const footer = document.getElementById('bottom');
             const footerHeight = footer ? footer.clientHeight : 0;
-            
-            this.height = document.documentElement.clientHeight - headerHeight-footerHeight;
+            this.height = document.documentElement.clientHeight - headerHeight - footerHeight;
         },
     },
 });

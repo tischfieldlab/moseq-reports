@@ -13,19 +13,18 @@ import store from '../store/root.store';
 import {createDataWindow, ComponentRegistration} from '../store/root.types';
 
 export default Vue.component('tool-box', {
-
     computed: {
         available_components(): ComponentRegistration[] {
             return this.$store.state.registry;
         },
     },
-    methods:{
-        create_component: function(component_info: ComponentRegistration) {
-            const win = createDataWindow(component_info);
+    methods: {
+        create_component(componentInfo: ComponentRegistration) {
+            const win = createDataWindow(componentInfo);
             store.commit('addWindow', win);
-        }
-    }
-})
+        },
+    },
+});
 </script>
 
 <style scoped lang="scss">

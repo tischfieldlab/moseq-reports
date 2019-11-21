@@ -12,7 +12,7 @@
   "dependencies": {
     "core-js": "^2.6.5",
     "d3": "^5.12.0",
-    "data-forge": "^1.7.3",
+    "data-forge": "^1.7.7",
     "jqwidgets-scripts": "^8.3.2",
     "register-service-worker": "^1.6.2",
     "ts-debounce": "^1.0.0",
@@ -22,6 +22,7 @@
     "vue-property-decorator": "^8.1.0",
     "vue-resize": "^0.4.5",
     "vue-router": "^3.0.3",
+    "vue-typed-mixins": "^0.2.0",
     "vuedraggable": "^2.23.2",
     "vuex": "^3.0.1"
   },

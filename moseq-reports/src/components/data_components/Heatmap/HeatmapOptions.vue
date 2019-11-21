@@ -11,26 +11,33 @@
 
 <script scoped lang="ts">
 import Vue from 'vue';
-import BaseDataComponent from '@/components/data_components/BaseDataComponent';
 
 export default Vue.component('heatmap-options', {
-    extends: BaseDataComponent,
+    props: {
+        id: {
+            type: Number,
+            required: true,
+        },
+    },
     computed: {
+        settings(): any {
+            return this.$store.getters.getWindowById(this.id).settings;
+        },
         colorscale: {
-            get() {
+            get(): string {
                 return this.settings.style.colorscale;
             },
-            set(value) {
-                this.$store.commit('updateComponentSettings', { 
-                    id: this.id, 
-                    settings: { 
-                        style: { 
-                            colorscale: value 
-                        }
-                    }
+            set(value: string) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        style: {
+                            colorscale: value,
+                        },
+                    },
                 });
-            }
-        }
+            },
+        },
     },
     data() {
         return {

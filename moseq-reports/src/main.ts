@@ -1,5 +1,10 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+Vue.use(Vuex);
+
+import '@/components/data_components';
+
+
 import App from './App.vue';
 import router from './router';
 import store from './store/root.store';
@@ -7,9 +12,9 @@ import './registerServiceWorker';
 
 import DataModel from './models/DataModel';
 
-import '@/components/data_components';
 
-Vue.use(Vuex)
+
+
 
 // Bootstrap Stuff
 import BootstrapVue from 'bootstrap-vue';
