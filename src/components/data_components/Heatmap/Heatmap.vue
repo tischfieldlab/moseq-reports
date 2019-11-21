@@ -86,7 +86,7 @@ export default Vue.component('heat-map', {
     },
     data() {
         return {
-            watchers: Array<(() => void)>()
+            watchers: Array<(() => void)>(),
         };
     },
     methods: {
@@ -102,7 +102,7 @@ export default Vue.component('heat-map', {
             const groups = DataModel.getSelectedGroups();
             const sylNum = df.select('syllable').distinct('syllable').toArray().flat();
 
-            let sylUsage = [] as Array<Array<any>>;
+            let sylUsage = [] as number[][];
             for (const g of groups) {
                 sylUsage.push(df.where({group: g}).select('usage').toArray().flat() as []);
             }
@@ -154,15 +154,15 @@ export default Vue.component('heat-map', {
 
             Plotly.newPlot(myPlot, [data], layout);
 
-            myPlot.on('plotly_click', (data: any) => {
+            myPlot.on('plotly_click', (event: any) => {
                 let pts = '';
                 let syllable: number = 0;
-                for (let i = 0; i < data.points.length; i++) {
-                    pts = 'x = ' + data.points[i].x + '\n'
-                        + 'y = ' + data.points[i].y + '\n'
-                        + 'z = ' + data.points[i].z.toPrecision(4)
+                for (const i of event.points) {
+                    pts = 'x = ' + event.points[i].x + '\n'
+                        + 'y = ' + event.points[i].y + '\n'
+                        + 'z = ' + event.points[i].z.toPrecision(4)
                         + '\n\n';
-                    syllable = Number.parseInt(data.points[i].y);
+                    syllable = Number.parseInt(event.points[i].y, 10);
                 }
 
                 DataModel.updateSelectedSyllable(syllable);

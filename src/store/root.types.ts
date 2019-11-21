@@ -38,10 +38,10 @@ export interface DataWindow {
 }
 
 export interface DehydratedDataWindow {
-    type: string,
-    title: string,
-    layout: Layout,
-    settings: object | undefined,
+    type: string;
+    title: string;
+    layout: Layout;
+    settings: object | undefined;
 }
 
 export interface ChangeLayoutPayload {
@@ -80,7 +80,7 @@ export function dehydrateWindow(window: DataWindow): DehydratedDataWindow {
         title: window.title,
         layout: window.layout,
         settings: window.settings,
-    }
+    };
 }
 export function hydrateWindow(data: DehydratedDataWindow): DataWindow {
     const spec = store.getters.getSpecification(data.type);

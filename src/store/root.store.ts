@@ -1,6 +1,15 @@
 import Vue from 'vue';
-import Vuex, {StoreOptions, MutationTree} from 'vuex';
-import { RootState, DataWindow, ChangeLayoutPayload, UpdateComponentSettingsPayload, ComponentRegistration, dehydrateWindow, DehydratedDataWindow, hydrateWindow } from './root.types';
+import Vuex, {StoreOptions} from 'vuex';
+import {
+    RootState,
+    DataWindow,
+    ChangeLayoutPayload,
+    UpdateComponentSettingsPayload,
+    ComponentRegistration,
+    dehydrateWindow,
+    DehydratedDataWindow,
+    hydrateWindow,
+} from './root.types';
 import { saveFile } from '@/Util';
 import DefaultLayout from '@/DefaultLayout';
 
@@ -50,13 +59,13 @@ const store: StoreOptions<RootState> = {
                 if (w.settings === undefined) {
                     w.settings = {};
                 }
-                for (const k in payload.settings) {
+                for (const k of Object.keys(payload.settings)) {
                     Vue.set(w.settings, k, payload.settings[k]);
                 }
             }
         },
         clearLayout(state) {
-            while(state.windows.length){
+            while (state.windows.length) {
                 state.windows.pop();
             }
             state.window_count = 0;
@@ -91,7 +100,7 @@ const store: StoreOptions<RootState> = {
                         context.commit('addWindow', hydrateWindow(w));
                     }
                 } else {
-                    console.warn('On load recieved null when reading selected files.');
+                    throw new Error('On load recieved null when reading selected files.');
                 }
             };
             const f = files.item(0);

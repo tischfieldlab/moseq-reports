@@ -6,7 +6,7 @@ import DataModel from '@/models/DataModel';
 import GroupBox from '@/components/GroupBox.vue';
 /*
 
-// 2019-11-21 - JT - disableing these as they do not make much sense right now. 
+// 2019-11-21 - JT - disableing these as they do not make much sense right now.
 // These are testing internal implementation state, not external behavior.
 
 describe('GroupBox', () => {
