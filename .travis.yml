@@ -3,7 +3,6 @@ node_js:
 - 9
 
 script:
-- cd moseq-reports/
 - npm install -g @vue/cli
 - npm install
 - npm run test:unit
