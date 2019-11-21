@@ -1,4 +1,9 @@
 .DS_Store
+node_modules
+
+/tests/e2e/reports/
+selenium-debug.log
+dist
 
 # local env files
 .env.local
@@ -17,4 +22,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
-node_modules
