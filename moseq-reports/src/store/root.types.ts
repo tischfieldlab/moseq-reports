@@ -1,4 +1,4 @@
-
+import store from '@/store/root.store';
 
 export interface RootState {
     window_count: number;
@@ -37,6 +37,13 @@ export interface DataWindow {
     settings: object | undefined;
 }
 
+export interface DehydratedDataWindow {
+    type: string,
+    title: string,
+    layout: Layout,
+    settings: object | undefined,
+}
+
 export interface ChangeLayoutPayload {
     id: number;
     width?: number;
@@ -65,6 +72,23 @@ export function createDataWindow(componentInfo: ComponentRegistration) {
         },
         settings: JSON.parse(JSON.stringify(componentInfo.default_settings || {})), // deep clone
     } as DataWindow;
+}
+
+export function dehydrateWindow(window: DataWindow): DehydratedDataWindow {
+    return {
+        type: window.spec.component_type,
+        title: window.title,
+        layout: window.layout,
+        settings: window.settings,
+    }
+}
+export function hydrateWindow(data: DehydratedDataWindow): DataWindow {
+    const spec = store.getters.getSpecification(data.type);
+    const win = createDataWindow(spec);
+    win.title = data.title;
+    win.layout = data.layout;
+    win.settings = { ...win.settings, ...data.settings };
+    return win;
 }
 
 

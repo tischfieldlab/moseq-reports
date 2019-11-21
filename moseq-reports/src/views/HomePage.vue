@@ -9,6 +9,8 @@
                     <Toolbox @createComponent="addComponent" />
                 </b-tab>
                 <b-tab no-body title="View">
+                    <b-button pill @click="$store.commit('clearLayout')">Clear Layout</b-button>
+                    <b-button pill @click="$store.dispatch('loadDefaultLayout')">Default Layout</b-button>
                     <b-button pill @click="$store.dispatch('serializeLayout')">Save Layout</b-button>
 
                     <input type="file" ref="layout_input" @change="$store.dispatch('loadLayout', $event.target.files);$refs.layout_input.value='';" style="display:none;">
@@ -30,8 +32,7 @@ import UiCard from '@/components/Window.vue';
 import GroupBox from '@/components/GroupBox.vue';
 import Toolbox from '@/components/Toolbox.vue';
 
-import defaultLayout from './DefaultLayout.json';
-import { DataWindow } from '../store/root.types';
+import { DataWindow } from '@/store/root.types';
 
 
 export default Vue.component('homepage', {
@@ -64,6 +65,7 @@ export default Vue.component('homepage', {
         this.$nextTick().then(() => {
             this.handleResize();
         });
+        this.$store.dispatch('loadDefaultLayout');
     },
     methods: {
         handleResize(): any {
@@ -91,5 +93,4 @@ export default Vue.component('homepage', {
 #toolbox_container .tabs{
     overflow: auto;
 }
-
 </style>

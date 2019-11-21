@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Vuex, {StoreOptions, MutationTree} from 'vuex';
-import { RootState, DataWindow, ChangeLayoutPayload, UpdateComponentSettingsPayload, ComponentRegistration } from './root.types';
+import { RootState, DataWindow, ChangeLayoutPayload, UpdateComponentSettingsPayload, ComponentRegistration, dehydrateWindow, DehydratedDataWindow, hydrateWindow } from './root.types';
 import { saveFile } from '@/Util';
+import DefaultLayout from '@/DefaultLayout';
 
 Vue.use(Vuex);
 
@@ -54,7 +55,7 @@ const store: StoreOptions<RootState> = {
                 }
             }
         },
-        clearWindows(state) {
+        clearLayout(state) {
             while(state.windows.length){
                 state.windows.pop();
             }
@@ -63,28 +64,31 @@ const store: StoreOptions<RootState> = {
     },
     actions: {
         serializeLayout(context) {
-            const data = JSON.stringify(context.state.windows, (key, value) => {
-                if (key === 'instance') {
-                    return undefined;
-                }
-                return value;
-            });
+            const dehydrated = context.state.windows.map(dehydrateWindow);
+            const data = JSON.stringify(dehydrated);
             saveFile('layout.json', 'data:text/json', data);
+        },
+        loadDefaultLayout(context) {
+            // clear out any existing windows
+            context.commit('clearLayout');
+            for (const dh of DefaultLayout) {
+                context.commit('addWindow', hydrateWindow(dh));
+            }
         },
         loadLayout(context, files: FileList) {
             // if no file selected, return
             if (files === null || files.length === 0) { return; }
 
             // clear out any existing windows
-            context.commit('clearWindows');
+            context.commit('clearLayout');
 
             // read the file and apply the layout
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (e !== null && e.target !== null) {
-                    const data = JSON.parse(e.target.result as string) as DataWindow[];
+                    const data = JSON.parse(e.target.result as string) as DehydratedDataWindow[];
                     for (const w of data) {
-                        context.commit('addWindow', w);
+                        context.commit('addWindow', hydrateWindow(w));
                     }
                 } else {
                     console.warn('On load recieved null when reading selected files.');

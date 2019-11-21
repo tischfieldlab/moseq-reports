@@ -10,7 +10,9 @@ export default [{
         },
     },
     settings: {
-        color_scale: 'Portland',
+        style: {
+            colorscale: 'Portland',
+        },
     },
 }, {
     title: 'Selected Syllable',
