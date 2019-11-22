@@ -156,7 +156,7 @@ export default Vue.component('heat-map', {
             Plotly.newPlot(myPlot, [data], layout);
 
             myPlot.on('plotly_click', (event: any) => {
-                if(event.points.length > 0){
+                if (event.points.length > 0) {
                     DataModel.updateSelectedSyllable(Number.parseInt(event.points[0].y, 10));
                 }
             });
