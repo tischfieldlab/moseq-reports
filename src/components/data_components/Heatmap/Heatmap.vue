@@ -6,7 +6,7 @@
 import Vue from 'vue';
 
 
-import * as Plotly from 'plotly.js';
+import * as Plotly from 'plotly.js-dist';
 
 import DataModel, { EventType } from '@/models/DataModel';
 import { transpose } from '@/Util';
