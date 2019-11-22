@@ -157,12 +157,12 @@ export default Vue.component('heat-map', {
             myPlot.on('plotly_click', (event: any) => {
                 let pts = '';
                 let syllable: number = 0;
-                for (const i of event.points) {
-                    pts = 'x = ' + event.points[i].x + '\n'
-                        + 'y = ' + event.points[i].y + '\n'
-                        + 'z = ' + event.points[i].z.toPrecision(4)
+                for (const point of event.points) {
+                    pts = 'x = ' + point.x + '\n'
+                        + 'y = ' + point.y + '\n'
+                        + 'z = ' + point.z.toPrecision(4)
                         + '\n\n';
-                    syllable = Number.parseInt(event.points[i].y, 10);
+                    syllable = Number.parseInt(point.y, 10);
                 }
 
                 DataModel.updateSelectedSyllable(syllable);
