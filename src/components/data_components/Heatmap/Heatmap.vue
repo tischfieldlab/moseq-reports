@@ -116,6 +116,7 @@ export default Vue.component('heat-map', {
                 y: sylNum,
                 z: sylUsage,
                 colorscale: this.settings.style.colorscale,
+                hovertemplate: 'Group: %{x}<br />Module: %{y}<br />Usage: %{z:.4g}<extra></extra>',
             } as Plotly.PlotData;
 
             const layout = {
@@ -155,17 +156,9 @@ export default Vue.component('heat-map', {
             Plotly.newPlot(myPlot, [data], layout);
 
             myPlot.on('plotly_click', (event: any) => {
-                let pts = '';
-                let syllable: number = 0;
-                for (const point of event.points) {
-                    pts = 'x = ' + point.x + '\n'
-                        + 'y = ' + point.y + '\n'
-                        + 'z = ' + point.z.toPrecision(4)
-                        + '\n\n';
-                    syllable = Number.parseInt(point.y, 10);
+                if(event.points.length > 0){
+                    DataModel.updateSelectedSyllable(Number.parseInt(event.points[0].y, 10));
                 }
-
-                DataModel.updateSelectedSyllable(syllable);
             });
         },
     },
