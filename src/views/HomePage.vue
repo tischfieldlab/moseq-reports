@@ -13,13 +13,14 @@
                     <b-button pill @click="$store.dispatch('loadDefaultLayout')">Default Layout</b-button>
                     <b-button pill @click="$store.dispatch('serializeLayout')">Save Layout</b-button>
 
-                    <input type="file" ref="layout_input" @change="$store.dispatch('loadLayout', $event.target.files);$refs.layout_input.value='';" style="display:none;">
+                    <input type="file" ref="layout_input" @change="$store.dispatch('loadLayoutFromFile', $event.target.files);$refs.layout_input.value='';" style="display:none;">
                     <b-button pill @click="$refs.layout_input.click()">Load Layout</b-button>
                 </b-tab>
             </b-tabs>
         </b-card>
         <template v-for="w in windows">
-            <UiCard :key="w.id" :data_component="w" />
+            <UiCard :key="w.id" :id="w.id" />
+            <!--<UiCard2 :key="w.id" :id="w.id" />-->
         </template>
     </div>
 </template>
@@ -29,6 +30,7 @@ import Vue from 'vue';
 import { debounce } from 'ts-debounce';
 
 import UiCard from '@/components/Window.vue';
+import UiCard2 from '@/components/Window2.vue';
 import GroupBox from '@/components/GroupBox.vue';
 import Toolbox from '@/components/Toolbox.vue';
 
@@ -39,6 +41,7 @@ export default Vue.component('homepage', {
     name: 'homepage',
     components: {
         UiCard,
+        UiCard2,
         Toolbox,
         GroupBox,
     },

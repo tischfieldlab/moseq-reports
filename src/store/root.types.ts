@@ -44,7 +44,7 @@ export interface DehydratedDataWindow {
     settings: object | undefined;
 }
 
-export interface ChangeLayoutPayload {
+export interface UpdateComponentLayoutPayload {
     id: number;
     width?: number;
     height?: number;
@@ -55,6 +55,11 @@ export interface ChangeLayoutPayload {
 export interface UpdateComponentSettingsPayload {
     id: number;
     settings: any;
+}
+
+export interface UpdateComponentTitlePayload {
+    id: number;
+    title: string;
 }
 
 
@@ -70,7 +75,7 @@ export function createDataWindow(componentInfo: ComponentRegistration) {
                 y: 60,
             },
         },
-        settings: JSON.parse(JSON.stringify(componentInfo.default_settings || {})), // deep clone
+        settings: __clone(componentInfo.default_settings || {}), // deep clone
     } as DataWindow;
 }
 
@@ -85,10 +90,14 @@ export function dehydrateWindow(window: DataWindow): DehydratedDataWindow {
 export function hydrateWindow(data: DehydratedDataWindow): DataWindow {
     const spec = store.getters.getSpecification(data.type);
     const win = createDataWindow(spec);
-    win.title = data.title;
-    win.layout = data.layout;
-    win.settings = { ...win.settings, ...data.settings };
+    win.title = __clone(data.title);
+    win.layout = { ...win.layout, ...__clone(data.layout) };
+    win.settings = { ...win.settings, ...__clone(data.settings) };
     return win;
+}
+
+function __clone(obj: any) {
+    return JSON.parse(JSON.stringify(obj));
 }
 
 

@@ -3,12 +3,13 @@ import Vuex, {StoreOptions} from 'vuex';
 import {
     RootState,
     DataWindow,
-    ChangeLayoutPayload,
+    UpdateComponentLayoutPayload,
     UpdateComponentSettingsPayload,
     ComponentRegistration,
     dehydrateWindow,
     DehydratedDataWindow,
     hydrateWindow,
+    UpdateComponentTitlePayload,
 } from './root.types';
 import { saveFile } from '@/Util';
 import DefaultLayout from '@/DefaultLayout';
@@ -40,17 +41,26 @@ const store: StoreOptions<RootState> = {
             }
         },
         addWindow(state, payload: DataWindow) {
-            payload.id = state.window_count;
-            state.window_count++;
+            payload.id = state.window_count++;
             state.windows.push(payload);
         },
-        updateLayout(state, payload: ChangeLayoutPayload) {
+        removeWindow(state, id: number) {
+            const start = state.windows.findIndex((w) => w.id === id);
+            state.windows.splice(start, 1);
+        },
+        updateComponentLayout(state, payload: UpdateComponentLayoutPayload) {
             const w = state.windows.find((win) => win.id === payload.id);
             if (w !== undefined) {
                 w.layout.width = payload.width ? payload.width : w.layout.width;
                 w.layout.height = payload.height ? payload.height : w.layout.height;
                 w.layout.position.x = payload.position_x ? payload.position_x : w.layout.position.x;
                 w.layout.position.y = payload.position_y ? payload.position_y : w.layout.position.y;
+            }
+        },
+        updateComponentTitle(state, payload: UpdateComponentTitlePayload) {
+            const w = state.windows.find((win) => win.id === payload.id);
+            if (w !== undefined) {
+                w.title = payload.title;
             }
         },
         updateComponentSettings(state, payload: UpdateComponentSettingsPayload) {
@@ -65,10 +75,7 @@ const store: StoreOptions<RootState> = {
             }
         },
         clearLayout(state) {
-            while (state.windows.length) {
-                state.windows.pop();
-            }
-            state.window_count = 0;
+            state.windows = new Array<DataWindow>();
         },
     },
     actions: {
@@ -77,28 +84,30 @@ const store: StoreOptions<RootState> = {
             const data = JSON.stringify(dehydrated);
             saveFile('layout.json', 'data:text/json', data);
         },
-        loadDefaultLayout(context) {
+        async loadLayout(context, layout: DehydratedDataWindow[]) {
             // clear out any existing windows
             context.commit('clearLayout');
-            for (const dh of DefaultLayout) {
+
+            // very important to wait for next tick!!!
+            await Vue.nextTick();
+
+            for (const dh of layout) {
                 context.commit('addWindow', hydrateWindow(dh));
             }
         },
-        loadLayout(context, files: FileList) {
+        loadDefaultLayout(context) {
+            context.dispatch('loadLayout', DefaultLayout);
+        },
+        loadLayoutFromFile(context, files: FileList) {
             // if no file selected, return
             if (files === null || files.length === 0) { return; }
-
-            // clear out any existing windows
-            context.commit('clearLayout');
 
             // read the file and apply the layout
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (e !== null && e.target !== null) {
                     const data = JSON.parse(e.target.result as string) as DehydratedDataWindow[];
-                    for (const w of data) {
-                        context.commit('addWindow', hydrateWindow(w));
-                    }
+                    context.dispatch('loadLayout', data);
                 } else {
                     throw new Error('On load recieved null when reading selected files.');
                 }

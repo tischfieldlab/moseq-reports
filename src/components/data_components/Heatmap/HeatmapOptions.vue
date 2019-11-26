@@ -1,12 +1,19 @@
 <template>
-    <b-form-group label="Heatmap Colorscale" label-for="heat-color">
-        <b-form-select 
-            id="heat-color" 
-            v-model="colorscale"
-            :options="color_options"
-            class="mb-3">
-        </b-form-select>
-    </b-form-group>
+    <b-container fluid>
+        <b-row>
+            <b-col cols="3" align-self="center">
+                <label label-for="heat-color" class="font-weight-bold pt-0">Colormap</label>
+            </b-col>
+            <b-col>
+                <b-form-select 
+                    id="heat-color" 
+                    v-model="colorscale"
+                    :options="color_options"
+                    class="mb-3">
+                </b-form-select>
+            </b-col>
+        </b-row>
+    </b-container>
 </template>
 
 <script scoped lang="ts">
@@ -57,5 +64,7 @@ export default Vue.component('heatmap-options', {
 </script>
 
 <style lang="scss" scoped>
-
+.row{
+    margin:10px 0;
+}
 </style>

@@ -2,15 +2,16 @@
     <JqxWindow ref="window" 
         @resized="onResized($event)"
         @moved="onMoved($event)"
-        :showCollapseButton="true"
-        :width="data_component.layout.width"
-        :height="data_component.layout.height"
-        :position="data_component.layout.position">
+        @close="onClosed($event)"
+        :width="width"
+        :height="height"
+        :position="position"
+        :showCollapseButton="true">
         <div>
-            <span class="title-text">{{data_component.title}}</span>
+            {{ title }}
         </div>
         <div>
-            <component ref="body" :id="data_component.id" :is="data_component.spec.component_type" />
+            <component ref="body" :id="id" :is="spec.component_type" />
             <b-modal
                 :title="settings_title"
                 v-model="show_modal"
@@ -19,9 +20,19 @@
                 body-bg-variant="light"
                 body-text-variant="dark"
                 hide-footer>
-                
-                <component v-if="data_component.spec.settings_type" ref="modal_component" :id="data_component.id" :is="data_component.spec.settings_type" />
-                <p v-else>No settings available for this component</p>
+
+                <b-tabs>
+                    <b-tab title="Layout">
+                        <LayoutSettings :id="id" />
+                    </b-tab>
+                    <b-tab title="Data">
+                        <DataSettings :id="id" />
+                    </b-tab>
+                    <b-tab title="Component">
+                        <component v-if="spec.settings_type" ref="modal_component" :id="id" :is="spec.settings_type" />
+                        <p v-else class="no-settings text-muted">No settings available for this component</p>
+                    </b-tab>
+                </b-tabs>
 
             </b-modal>
         </div>
@@ -33,7 +44,7 @@
 import Vue, { PropType } from 'vue';
 
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
-import {DataWindow, Size, Position, Layout} from '../store/root.types';
+import {DataWindow, ComponentRegistration, Size, Position, Layout} from '../store/root.types';
 
 
 export default Vue.component('ui-window', {
@@ -41,44 +52,88 @@ export default Vue.component('ui-window', {
         JqxWindow,
     },
     props: {
-        data_component: {
-            type: Object as PropType<DataWindow>,
+        id: {
+            type: Number,
             required: true,
         },
     },
     data() {
         return {
             show_modal: false,
+            watchers: Array<(() => void)>(),
         };
     },
     computed: {
+        spec(): ComponentRegistration {
+            return this.$store.getters.getWindowById(this.id).spec;
+        },
+        title(): string {
+            return this.$store.getters.getWindowById(this.id).title;
+        },
         settings_title(): string {
-            return this.data_component.title + ' Settings';
+            return this.title + ' Settings';
+        },
+        width(): number {
+            return this.$store.getters.getWindowLayout(this.id).width;
+        },
+        height(): number {
+            return this.$store.getters.getWindowLayout(this.id).height;
+        },
+        position(): number {
+            return this.$store.getters.getWindowLayout(this.id).position;
         },
     },
     mounted() {
-        // console.log(this, this.$refs.body);
+        this.watchers.push(this.$store.watch(
+            (state, getters) => {
+                return getters.getWindowLayout(this.id);
+            },
+            (newValue: Layout, oldValue: Layout) => {
+                (this.$refs.window as any).width = newValue.width;
+                (this.$refs.window as any).height = newValue.height;
+                (this.$refs.window as any).position = newValue.position;
+            },
+            {
+                deep: true,
+            },
+        ));
+        this.watchers.push(this.$store.watch(
+            (state, getters) => {
+                return getters.getWindowById(this.id).title;
+            },
+            (newValue: string, oldValue: string) => {
+                (this.$refs.window as any).title = newValue;
+            },
+        ));
+
         // Create the settings button on the next tick when the DOM is ready
         this.$nextTick().then(() => {
             this.addSettingsButton();
         });
     },
+    beforeDestroy() {
+        // un-watch the store
+        this.watchers.forEach((w) => w());
+    },
     methods: {
         onResized(event: any) {
             const s = event.args as Size;
-            this.$store.commit('updateLayout', {
-                id: this.data_component.id,
+            this.$store.commit('updateComponentLayout', {
+                id: this.id,
                 width: s.width,
                 height: s.height,
             });
         },
         onMoved(event: any) {
             const p = event.args as Position;
-            this.$store.commit('updateLayout', {
-                id: this.data_component.id,
+            this.$store.commit('updateComponentLayout', {
+                id: this.id,
                 position_x: p.x,
                 position_y: p.y,
             });
+        },
+        onClosed(event: any) {
+            this.$store.commit('removeWindow', this.id);
         },
         addSettingsButton() {
             const container = document.createElement('div');
@@ -122,5 +177,9 @@ export default Vue.component('ui-window', {
     right: 32px;
     cursor:pointer;
     //background: url(https://static.thenounproject.com/png/333746-200.png);
+}
+.no-settings{
+    text-align: center;
+    margin:20px 0;
 }
 </style>

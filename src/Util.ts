@@ -21,3 +21,16 @@ export function saveFile(name: string, type: string, data: string) {
 export function transpose(data: number[][]): number[][] {
     return data[0].map((col, i) => data.map((row) => row[i]));
 }
+
+export declare type Procedure = (...args: any[]) => void;
+export function throttled<F extends Procedure>(delay: number, fn: F) {
+    let lastCall = 0;
+    return (...args) => {
+        const now = new Date().getTime();
+        if (now - lastCall < delay) {
+            return;
+        }
+        lastCall = now;
+        return fn(...args);
+    };
+}

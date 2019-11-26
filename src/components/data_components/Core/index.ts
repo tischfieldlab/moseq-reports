@@ -7,8 +7,8 @@ import Vue from 'vue';
 // https://webpack.js.org/guides/dependency-management/#require-context
 const requireComponent = require.context(
     // Look for files in the current directory
-    '.',
-    // Do not look in subdirectories
+    '@/components/data_components',
+    // Do look in subdirectories
     true,
     // Only include "_base-" prefixed .vue files
     /[\w-]+\.vue$/,
@@ -32,7 +32,6 @@ requireComponent.keys().forEach((fileName) => {
         .map((kebab) => kebab.charAt(0).toUpperCase() + kebab.slice(1))
         // Concatenated
         .join('');
-        // console.log(componentName);
 
     // Globally register the component
     Vue.component(componentName, componentConfig.default || componentConfig);
