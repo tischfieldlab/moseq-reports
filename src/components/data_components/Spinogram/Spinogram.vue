@@ -9,6 +9,18 @@
                 </g>
                 <g v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
                 <g v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
+                <text 
+                    transform="rotate(-90)"
+                    :y="0"
+                    :x="0 - (height / 2)"
+                    dy="1em"
+                    style="text-anchor:middle;">
+                    Height (mm)
+                </text>
+                <text
+                    style="text-anchor:middle;"
+                    :transform="`translate(${xLabelPos[0]},${xLabelPos[1]})`"
+                >Relative Lateral Position (mm)</text>
             </svg>
         </template>
         <p v-else>No Data</p>
@@ -63,8 +75,8 @@ export default Vue.component('spinogram-plots', {
             margin: {
                 top: 20,
                 right: 20,
-                bottom: 20,
-                left: 35,
+                bottom: 45,
+                left: 45,
             },
             // watchers: Array<(() => void)>(),
         };
@@ -87,6 +99,9 @@ export default Vue.component('spinogram-plots', {
         },
         outsideHeight(): number {
             return this.layout.height - 41;
+        },
+        xLabelPos(): number[] {
+            return [this.outsideWidth / 2, this.outsideHeight];
         },
         origin(): any {
             const x = this.margin.left;
