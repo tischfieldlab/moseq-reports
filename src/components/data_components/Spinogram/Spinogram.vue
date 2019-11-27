@@ -55,7 +55,7 @@ store.commit('registerComponent', {
     component_type: 'spinogram-plots',
     // settings_type: 'detailed-usage-options',
     init_width: 400,
-    init_height: 500,
+    init_height: 200,
     default_settings: {},
 });
 
