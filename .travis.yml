@@ -8,11 +8,12 @@ script:
 - npm run test:unit
 
 before_deploy:
-  - export TRAVIS_TAG="$(npm version patch).${TRAVIS_BUILD_NUMBER}"
-  - echo "$TRAVIS_TAG"
+  - export PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+  - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+  - echo $TRAVIS_TAG
   - git tag $TRAVIS_TAG
   - NODE_OPTIONS=--max-old-space-size=4096 npm run build --modern
-  - export RELEASE_NAME="${TRAVIS_TAG}.tar.gz"
+  - export RELEASE_NAME=${TRAVIS_TAG}.tar.gz
   - tar czvf ${RELEASE_NAME} dist/
 
 deploy:
@@ -24,4 +25,4 @@ deploy:
   file: ${RELEASE_NAME}
   tag_name: $TRAVIS_TAG
   on:
-    branch: master
+    branch: cicd-fix
