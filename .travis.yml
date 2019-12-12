@@ -8,7 +8,7 @@ script:
 - npm run test:unit
 
 before_deploy:
-  - export PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+  - export PACKAGE_VERSION=$(version.sh)
   - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
   - echo $TRAVIS_TAG
   - git tag $TRAVIS_TAG
