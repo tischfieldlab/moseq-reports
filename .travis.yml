@@ -8,7 +8,7 @@ script:
 - npm run test:unit
 
 before_deploy:
-  - export PACKAGE_VERSION=$(version.sh)
+  - export PACKAGE_VERSION=$(npm run --silent version)
   - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
   - echo $TRAVIS_TAG
   - git tag $TRAVIS_TAG
