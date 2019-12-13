@@ -1,28 +1,25 @@
 language: node_js
 node_js:
 - 9
-
 script:
 - npm install -g @vue/cli
 - npm install
 - npm run test:unit
-
 before_deploy:
-  - export PACKAGE_VERSION=$(npm run --silent version)
-  - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-  - echo $TRAVIS_TAG
-  - git tag $TRAVIS_TAG
-  - NODE_OPTIONS=--max-old-space-size=4096 npm run build --modern
-  - export RELEASE_NAME=${TRAVIS_TAG}.tar.gz
-  - tar czvf ${RELEASE_NAME} dist/
-
+- export PACKAGE_VERSION=$(npm run --silent version)
+- export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+- echo $TRAVIS_TAG
+- git tag $TRAVIS_TAG
+- NODE_OPTIONS=--max-old-space-size=4096 npm run build --modern
+- export RELEASE_NAME=${TRAVIS_TAG}.tar.gz
+- tar czvf ${RELEASE_NAME} dist/
 deploy:
   provider: releases
   api_key:
-    secure: bAOsODanvltdJBI2wTNrUPDlMJi9AixQ1Tj/+nY8dv88t4DsF2ENNeftRAH1S+OTxXcmZn/aMW9BovynQIh1JSfuxUnj1vspzdtApKptrnwA+Vf0OEt0t4WAtRrv0Clp8rDbDIJTQCOtOXxCU/OtZkt3T/I7Qa1ZbbOPtZKZjSuFtK9q0F/A7v9iTzhQYQT6zW1v6k3qceftwsGB3BCHq8DjikmvLWdTT0PWIog7UM7GjnI0trkiZ5NOpRRF7Bgnom2rDpYwkSiP6mh7qa7W5EDvJQYk/aqZQmANQ8RGRW/7XgM65Oc6gRWLLbFTHJ3jGBJVAbJ70a0U15WcbmF7gBV0ASyXV7GiGlaj5yOxc4FylEsTFLzMbh7RdgodI7/jqWYmGh6OcolQEci2Xq9FBZ3l+PGbwtEkOwjq3HXJLhYgStdmbeyUXlotJZk4soDilfyYlXfsjq5UWR6lv9AhnLXFlZny33aqPVq3SaIhdmAmVEP1JjcBrQ8yKC5xZlzmRWvW/po+9Hzn3jbkqnZ/NB1kIGFFPd0wHpYMfkkjjk1JOgKGeprMUUME1Q0v8u+Ne6tfbc8SxCc1BcDi5UXWj/4A5H8vIA9iZ7X3GUkeu9EVmXc4Inm0eI1Uf/3lsAsRwLysNoPiRZOqAroAAFla0cY4lwrsW0H3kGVro+x9CUc=
+    secure: NTNjBhh2Fzc8D9T6rFcq8YD8jzIpojHLglKvYvWCQrgo+J8kWfqtWuqrHWQAUjyM7pgwDCoN2UtwviHxXlNvQU+y/c+1orODXAZqvXPMQRcLBcJqsGmOwuBgUosaBvwmAKPGnB4Vun270u3dnHKKAbYN7JKNrI2L4eUcHVEwmuJKEH/Trf4X/uTp68FKZlEJqb6hMEqTZnJCybtY/XQ7qjS/SitojBog2Ub06PGM8dEVZBa/SBq410TqzfnNkYRUN2tCkhBmoD27kVqEcwVGtnp/66P6xMdXW2AsuIOLskMcEYplnT4V1FmlHTJGiMxJzmvUthUKeGiRUPHYrXJDpfofN3FZNPb3UAnjScxa59yLfIk6pRItXSM7Oda4g6FMfjEKSio8+TMdcMFrNLlyBJc2rrGGikYp02ATJUDPTqtUW7JyTMctqn+nfv+3Hm42ssQupFAmSdDLOoQUGQEvlaKQydgXsmHXDUBcH9tSJl+jCaSHqu8K5A62OkD0Kx6tW2fAb0uPuCM6F8Gm0O6TDzphSjwm4lLBCCJoWDsAC9xH8Kw4ydTcTKOShK8s6VckAwfFXVwgieZvJSLYrsqhqIezTidYvg6RP75hE1P+al2k91dThmr1bCl01Idn4o/dXf0RvlBaddNQ+GaJJdTHE+2QKlU9Ol2f2AS+jv7RXLA=
   skip_cleanup: true
   file_glob: true
-  file: ${RELEASE_NAME}
-  tag_name: $TRAVIS_TAG
+  file: "${RELEASE_NAME}"
+  tag_name: "$TRAVIS_TAG"
   on:
     branch: master
