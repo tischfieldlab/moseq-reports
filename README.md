@@ -1,4 +1,4 @@
-# moseq-reports
+# moseq-reports [![Build Status](https://travis-ci.com/tischfieldlab/vue-reports.svg?token=es6YKetAnwLEmS78p5ss&branch=master)](https://travis-ci.com/tischfieldlab/vue-reports)
 
 ## Project setup
 ```
