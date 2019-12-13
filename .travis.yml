@@ -25,4 +25,4 @@ deploy:
   file: ${RELEASE_NAME}
   tag_name: $TRAVIS_TAG
   on:
-    branch: cicd-fix
+    branch: master
