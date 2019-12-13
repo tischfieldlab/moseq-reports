@@ -1,6 +1,8 @@
 'use strict';
+declare const __static: any;
 
 import { app, protocol, BrowserWindow } from 'electron';
+import path from 'path';
 import {
   createProtocol,
   installVueDevtools,
@@ -17,6 +19,7 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
+    icon: path.join(__static, 'img', 'mouse.png'),
     width: 800,
     height: 600,
     webPreferences: {
@@ -67,11 +70,12 @@ app.on('ready', async () => {
     // Electron will not launch with Devtools extensions installed on Windows 10 with dark mode
     // If you are not using Windows 10 dark mode, you may uncomment these lines
     // In addition, if the linked issue is closed, you can upgrade electron and uncomment these lines
-    // try {
-    //   await installVueDevtools()
-    // } catch (e) {
-    //   console.error('Vue Devtools failed to install:', e.toString())
-    // }
+    try {
+      await installVueDevtools();
+    } catch (e) {
+      // tslint:disable-next-line:no-console
+      console.error('Vue Devtools failed to install:', e.toString());
+    }
 
   }
   createWindow();
