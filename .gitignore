@@ -5,6 +5,9 @@ node_modules
 selenium-debug.log
 dist
 
+# package file
+package-lock.json
+
 # local env files
 .env.local
 .env.*.local
