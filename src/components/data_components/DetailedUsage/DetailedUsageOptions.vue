@@ -13,6 +13,15 @@
                 Show Boxplot
             </b-form-checkbox>
         </b-row>
+        <b-row v-show="show_boxplot">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-group label="Whisker Type:">
+                    <b-form-select v-model="boxplot_whiskers" :options="whisker_options"></b-form-select>
+                    <div class="figure-caption">{{ boxplot_whisker_description }}</div>
+                </b-form-group>
+            </b-col>
+        </b-row>
         <b-row>
             <b-form-checkbox v-model="show_violinplot" switch>
                 Show Violin Plot
@@ -23,6 +32,11 @@
 
 <script scoped lang="ts">
 import Vue from 'vue';
+
+export enum WhiskerType {
+    TUKEY,
+    MIN_MAX,
+}
 
 export default Vue.component('detailed-usage-options', {
     props: {
@@ -61,6 +75,24 @@ export default Vue.component('detailed-usage-options', {
                 });
             },
         },
+        boxplot_whiskers: {
+            get(): WhiskerType {
+                return this.settings.boxplot_whiskers;
+            },
+            set(value: WhiskerType) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        boxplot_whiskers: value,
+                    },
+                });
+            },
+        },
+        boxplot_whisker_description: {
+            get(): string {
+                return this.whisker_options.find((wo) => wo.value === this.boxplot_whiskers)!.description;
+            },
+        },
         show_violinplot: {
             get(): boolean {
                 return this.settings.show_violinplot;
@@ -76,13 +108,25 @@ export default Vue.component('detailed-usage-options', {
         },
     },
     data() {
-        return {};
+        return {
+            whisker_options: [
+                {
+                    value: WhiskerType.TUKEY,
+                    text: 'Tukey',
+                    description: 'Whiskers extend up to 1.5 * IQR from 25th and 75th percentile',
+                }, {
+                    value: WhiskerType.MIN_MAX,
+                    text: 'Min/Max',
+                    description: 'Whiskers extend to min and max data points',
+                },
+            ],
+        };
     },
 });
 </script>
 
 <style lang="scss" scoped>
-.row{
+.row {
     margin:10px 0;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div id="detail-usage-container" style="display: flex; justify-content: space-between;">
         <div id='detail-usage-plot'>
-            <svg :width="outsideWidth" :height="outsideHeight" >
+            <svg ref="canvas" :width="outsideWidth" :height="outsideHeight" >
                 <g v-if="settings.show_boxplot" :transform="`translate(${margin.left}, ${margin.top})`">
                     <template v-for="(node, index) in groupedData" v-on:click="select(index, node)">
                         <g class="boxplot" v-bind:key="node.StartTime">
@@ -9,9 +9,9 @@
                             <line 
                                 stroke="#000000"
                                 v-bind:x1="scale.x(node.group) + halfBandwith"
-                                v-bind:y1="scale.y(node.min)"
+                                v-bind:y1="scale.y(fences.lower(node))"
                                 v-bind:x2="scale.x(node.group) + halfBandwith"
-                                v-bind:y2="scale.y(node.max)" />
+                                v-bind:y2="scale.y(fences.upper(node))" />
                             <!-- the Box of the BoxPlot -->
                             <rect 
                                 stroke="#000000"
@@ -24,9 +24,9 @@
                             <line 
                                 stroke="#000000"
                                 v-bind:x1="scale.x(node.group) + quaterBandwith"
-                                v-bind:y1="scale.y(node.min)"
+                                v-bind:y1="scale.y(fences.lower(node))"
                                 v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
-                                v-bind:y2="scale.y(node.min)" />
+                                v-bind:y2="scale.y(fences.lower(node))" />
                             <!-- Horizontal Median line -->
                             <line 
                                 stroke="#000000"
@@ -38,9 +38,9 @@
                             <line 
                                 stroke="#000000"
                                 v-bind:x1="scale.x(node.group) + quaterBandwith"
-                                v-bind:y1="scale.y(node.max)"
+                                v-bind:y1="scale.y(fences.upper(node))"
                                 v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
-                                v-bind:y2="scale.y(node.max)" />
+                                v-bind:y2="scale.y(fences.upper(node))" />
                         </g>
                     </template>
                 </g>
@@ -56,22 +56,21 @@
                         <!-- Circles for each node -->  
                         <circle 
                             v-bind:key="node.StartTime"
-                            :r="3" 
-                            :cx="scale.x(node.group) + halfBandwith + (Math.random() * (quaterBandwith - (-quaterBandwith)) + (-quaterBandwith))"
-                            :cy="scale.y(node.usage)" 
+                            v-b-tooltip.html :title="point_tooltip(node)"
+                            :r="3"
+                            :cx="scale.x(node.group) + node.jitter + halfBandwith"
+                            :cy="scale.y(node.usage)"
                             :style="{'fill': color(node.group), stroke: '#000000'}" />
                     </template>
                 </g>
-                <g v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
-                <g v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
+                <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
+                <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
+                <g>
+                    <text transform="rotate(-90)" text-anchor="middle" :y="margin.left / 4" :x="0 - (height/2)">Module Usage</text>
+                    <text text-anchor="middle" :y="outsideHeight - (margin.bottom / 4)" :x="margin.left + (width / 2)">Group</text>
+                </g>
             </svg>
         </div>
-
-        <!--<div id="heatmap-settings">
-            <input type="image" name="heatmap-wheel" @click="showSettingsModal = true"
-                src="https://static.thenounproject.com/png/333746-200.png">
-            <heatmap-settings-modal v-if="showSettingsModal" @close="showSettingsModal = false"></heatmap-settings-modal>     
-        </div>-->
     </div>
 </template>
 
@@ -79,20 +78,28 @@
 import Vue from 'vue';
 import * as d3 from 'd3';
 import {scaleLinear, scaleBand, scaleOrdinal} from 'd3-scale';
-import {range, histogram, max, min, mean, quantile} from 'd3-array';
+import {range, histogram, max, min, mean, quantile, median} from 'd3-array';
 import {area, line} from 'd3-shape';
 import {axisBottom, axisLeft} from 'd3-axis';
 import {select} from 'd3-selection';
 import { schemeSet1 } from 'd3-scale-chromatic';
+import {forceSimulation} from 'd3-force';
 
 import DataModel, { EventType } from '@/models/DataModel';
 import store from '@/store/root.store';
 import {Layout} from '@/store/root.types';
+import { WhiskerType } from './DetailedUsageOptions.vue';
 
 interface UsageItem {
     usage: number;
     group: string;
     StartTime: string;
+    jitter: number;
+    radius: 3;
+}
+
+interface UsageItemQueueNode extends UsageItem {
+    next: UsageItemQueueNode | null;
 }
 
 interface GroupStats {
@@ -101,10 +108,12 @@ interface GroupStats {
     min: number;
     max: number;
     mean: number;
+    median: number;
     q1: number;
     q2: number;
     q3: number;
-    kde: number[];
+    iqr: number;
+    kde: number[][];
 }
 
 store.commit('registerComponent', {
@@ -117,6 +126,7 @@ store.commit('registerComponent', {
         show_points: true,
         show_boxplot: true,
         show_violinplot: false,
+        boxplot_whiskers: WhiskerType.TUKEY,
         /* style: {
             colorscale: 'Portland',
         }, */
@@ -137,9 +147,10 @@ export default Vue.component('detailed-usage', {
             margin: {
                 top: 20,
                 right: 20,
-                bottom: 20,
-                left: 35,
+                bottom: 50,
+                left: 60,
             },
+            rotate_labels: false,
             // watchers: Array<(() => void)>(),
         };
     },
@@ -163,7 +174,15 @@ export default Vue.component('detailed-usage', {
             return this.$store.getters.getWindowById(this.id).layout;
         },
         width(): number {
-            return this.outsideWidth - this.margin.left - this.margin.right;
+            const width = this.outsideWidth - this.margin.left - this.margin.right;
+            const ls = this.calc_label_stats();
+            this.rotate_labels = ls.longest > width / ls.count;
+            if (this.rotate_labels) {
+                this.margin.bottom = ls.longest + 30;
+            } else {
+                this.margin.bottom = 50;
+            }
+            return width;
         },
         height(): number {
             return this.outsideHeight - this.margin.top - this.margin.bottom;
@@ -202,6 +221,22 @@ export default Vue.component('detailed-usage', {
                 .range([0, x.bandwidth()]);
             return { x, y, w };
         },
+        fences() {
+            switch (this.settings.boxplot_whiskers) {
+                case WhiskerType.MIN_MAX:
+                    return {
+                        lower: (gs: GroupStats) => gs.min,
+                        upper: (gs: GroupStats) => gs.max,
+                    };
+                case WhiskerType.TUKEY:
+                    return {
+                        lower: (gs: GroupStats) => Math.max(gs.q1 - (1.5 * gs.iqr), gs.min),
+                        upper: (gs: GroupStats) => Math.min(gs.q3 + (1.5 * gs.iqr), gs.max),
+                    };
+                default:
+                    throw new Error(`Unsupported Whisker Type ${this.settings.boxplot_whiskers}!`);
+            }
+        },
         violinArea(): any {
             const a = area()
                 .x0((d) => this.scale.w(d[1]))
@@ -226,7 +261,9 @@ export default Vue.component('detailed-usage', {
 
             this.individualUseageData = df.where({syllable: currSyllable})
                                           .select('usage', 'group', 'StartTime')
+                                          .sortBy('usage')
                                           .toCollection();
+            this.swarm_points();
 
             this.groupedData = DataModel.getSelectedGroups().map((g) => {
                 const values = df.where({syllable: currSyllable, group: g})
@@ -237,30 +274,114 @@ export default Vue.component('detailed-usage', {
             });
             // console.log(this.groupedData);
         },
-        computeGroupStats(data, group): GroupStats {
+        computeGroupStats(data: number[], group: string): GroupStats {
             const kde = this.kernelDensityEstimator(this.epanechnikovKernel(.01), this.scale.y.ticks(100));
-            return {
+            const gstats = {
                 group,
                 count: data.length,
-                min: min(data) as any,
-                max: max(data) as any,
-                mean: mean(data) as any,
-                q1: quantile(data, 0.25) as any,
-                q2: quantile(data, 0.5) as any,
-                q3: quantile(data, 0.75) as any,
+                min: min(data) as number,
+                max: max(data) as number,
+                mean: mean(data) as number,
+                median: median(data) as number,
+                q1: quantile(data, 0.25) as number,
+                q2: quantile(data, 0.5) as number,
+                q3: quantile(data, 0.75) as number,
                 kde: kde(data),
-            };
-
+            } as GroupStats;
+            gstats.iqr = gstats.q1 - gstats.q3;
+            return gstats as GroupStats;
         },
-        kernelDensityEstimator(kernel, x) {
-            return (sample) => {
-                return x.map((y) => [y, mean(sample, (v: number) => kernel(y - v))]);
+        kernelDensityEstimator(kernel: (u: number) => number, x: number[]): (sample: number[]) => number[][] {
+            return (sample: number[]) => {
+                return x.map((y) => [y, mean(sample, (v: number) => kernel(y - v))]) as number[][];
             };
         },
-        epanechnikovKernel(scale) {
-            return (u) => {
+        epanechnikovKernel(scale: number): (u: number) => number {
+            return (u: number) => {
                 return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
             };
+        },
+        point_tooltip(item: UsageItem): string {
+            return `<div style="text-align:left;">
+                        ${item.group}<br />
+                        ${new Date(item.StartTime).toLocaleString('en-US')}<br />
+                        ${item.usage}
+                    </div>`;
+        },
+        swarm_points() {
+            DataModel.getSelectedGroups().map((g) => {
+                const radius2 = 8 ** 2;
+                let head: UsageItemQueueNode | null = null;
+                let tail: UsageItemQueueNode | null = null;
+                const indv = this.individualUseageData
+                               .filter((ui) => ui.group === g)
+                               .map((ui) => { ui.jitter = 0; return ui; }) as UsageItemQueueNode[];
+
+                const intersects = (x, y) => {
+                    const epsilon = 1e-5;
+                    let item = head;
+                    while (item) {
+                        const dx = (item.jitter - x) ** 2;
+                        const dy = (this.scale.y(item.usage) - this.scale.y(y)) ** 2;
+                        if (radius2 - epsilon >= dx + dy) {
+                            return true;
+                        }
+                        item = item.next;
+                    }
+                    return false;
+                };
+
+                for (const b of indv) {
+                    // Remove circles from the queue that can’t intersect the new circle b.
+                    while (head && this.scale.y(head.usage) < (this.scale.y(b.usage) - radius2)) {
+                        head = head.next;
+                    }
+                    // Choose the minimum non-intersecting tangent.
+                    b.jitter = 0;
+                    if (intersects(b.jitter, b.usage)) {
+                        let a = head;
+                        b.jitter = Infinity;
+                        do {
+                            const dy = Math.sqrt(radius2 - (this.scale.y(a!.usage) - this.scale.y(b.usage)) ** 2);
+                            const j = a!.jitter + dy;
+
+                            if (j < b.jitter) {
+                                if (!intersects(j, b.usage)) {
+                                    b.jitter = j;
+                                } else if (j < b.jitter && !intersects(-j, b.usage)) {
+                                    b.jitter = -j;
+                                }
+                            }
+                            a = a!.next;
+                        } while (a);
+                        if (b.jitter === Infinity) {
+                            // console.log('Got Infinity?', b);
+                        }
+                    }
+                    // Add b to the queue.
+                    b.next = null;
+                    if (head === null) {
+                        head = tail = b;
+                    } else {
+                        tail = tail!.next = b;
+                    }
+                }
+            });
+        },
+        calc_label_stats() {
+            try {
+                const canvas = this.$refs.canvas as ParentNode;
+                const labels = [...canvas.querySelectorAll('g.x-axis g.tick text')] as SVGTextElement[];
+                const totalWidth = labels.reduce((total: number, e: SVGTextElement) =>  total + e.getBBox().width, 0);
+                return {
+                    count: labels.length,
+                    total: totalWidth,
+                    longest: Math.max(...labels.map((e) => e.getBBox().width)),
+                };
+            } catch (e) {
+                return {count: 0, total: 0, longest: 0};
+            }
+            return {count: 0, total: 0, longest: 0};
         },
     },
     directives: {
@@ -274,10 +395,13 @@ export default Vue.component('detailed-usage', {
         },
     },
 });
-
 </script>
 
 
 
-<style scoped lang="scss">
+<style>
+g.x-axis.rotate g.tick text {
+    transform: translate(-10px,0px) rotate(-45deg);
+    text-anchor: end;
+}
 </style>
