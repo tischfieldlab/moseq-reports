@@ -1,0 +1,2862 @@
+files:
+- path:
+  - _aggregate_results/2019-04-09_t10-57-09_190409-pnkdko-f-190217_pnkdko-f-21_results_00.h5
+  - _aggregate_results/2019-04-09_t10-57-09_190409-pnkdko-f-190217_pnkdko-f-21_results_00.yaml
+  uuid: daad8955-cf75-469d-adc2-d0ac616e8026
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190409-PNKDKO-F-190217
+    StartTime: '2019-04-09T10:57:09.1593027-04:00'
+    SubjectName: PNKDKO-F-21
+- path:
+  - _aggregate_results/2018-10-12_t11-57-27_2018-10-12_pnkdct-m_cohort0815_ct-74_results_00.h5
+  - _aggregate_results/2018-10-12_t11-57-27_2018-10-12_pnkdct-m_cohort0815_ct-74_results_00.yaml
+  uuid: 5573445e-07f7-482e-9578-ecd774d4e603
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_PNKDCT-M_cohort0815
+    StartTime: '2018-10-12T11:57:27.825104-04:00'
+    SubjectName: CT-74
+- path:
+  - _aggregate_results/2019-03-28_t12-03-43_190328-pkdko-f-coh190202_pnkdko-f-19_results_00.h5
+  - _aggregate_results/2019-03-28_t12-03-43_190328-pkdko-f-coh190202_pnkdko-f-19_results_00.yaml
+  uuid: 360c05da-13fe-4d1d-a17f-0c9e6febcd02
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190328-PKDKO-F-coh190202
+    StartTime: '2019-03-28T12:03:43.2989386-04:00'
+    SubjectName: PNKDKO-F-19
+- path:
+  - _aggregate_results/2019-04-09_t12-01-05_190409-pnkdko-m-190217_pnkdko-m-29_results_00.h5
+  - _aggregate_results/2019-04-09_t12-01-05_190409-pnkdko-m-190217_pnkdko-m-29_results_00.yaml
+  uuid: c7e5f6ec-527a-4536-8f24-effb6cb0fb3e
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190409-PNKDKO-M-190217
+    StartTime: '2019-04-09T12:01:05.4670321-04:00'
+    SubjectName: PNKDKO-M-29
+- path:
+  - _aggregate_results/2019-03-04_t12-30-44_190304-pnkdko-f-coh181216_pnkdko-13_results_00.h5
+  - _aggregate_results/2019-03-04_t12-30-44_190304-pnkdko-f-coh181216_pnkdko-13_results_00.yaml
+  uuid: 9b85a8cf-1d1e-4a23-9065-df32733e862f
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-F-coh181216
+    StartTime: '2019-03-04T12:30:44.2638839-05:00'
+    SubjectName: PNKDKO-13
+- path:
+  - _aggregate_results/2018-10-12_t11-57-09_2018-10-12_pnkd-m_cohort0815_ct-73_results_00.h5
+  - _aggregate_results/2018-10-12_t11-57-09_2018-10-12_pnkd-m_cohort0815_ct-73_results_00.yaml
+  uuid: 5f95d813-43e0-482e-ab0c-0fd415543cb5
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_PNKD-M_cohort0815
+    StartTime: '2018-10-12T11:57:09.8946584-04:00'
+    SubjectName: CT-73
+- path:
+  - _aggregate_results/2019-05-14_t10-32-25_190514-pnkdct-m-190314_pnkdct-m-20_results_00.h5
+  - _aggregate_results/2019-05-14_t10-32-25_190514-pnkdct-m-190314_pnkdct-m-20_results_00.yaml
+  uuid: c3457f42-9bb5-4206-a8f8-0daad4dadba2
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190514-PNKDCT-M-190314
+    StartTime: '2019-05-14T10:32:25.8573108-04:00'
+    SubjectName: PNKDCT-M-20
+- path:
+  - _aggregate_results/2018-08-20_t12-11-00_2018-08-14__pnkd_ct-f_cohort0606_cage-ppp_mouse-4_results_00.h5
+  - _aggregate_results/2018-08-20_t12-11-00_2018-08-14__pnkd_ct-f_cohort0606_cage-ppp_mouse-4_results_00.yaml
+  uuid: f24d6aa9-42ff-4c88-925a-bbfa989bd068
+  group: M_unk
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-14_Pnkd_CT-f_cohort0606
+    StartTime: '2018-08-20T12:11:00.1612808-04:00'
+    SubjectName: cage-PPP_mouse-4
+- path:
+  - _aggregate_results/2019-06-06_t13-39-51_190606-pnkdct-m-coh190405_pnkdct-m-29_results_00.h5
+  - _aggregate_results/2019-06-06_t13-39-51_190606-pnkdct-m-coh190405_pnkdct-m-29_results_00.yaml
+  uuid: a4394c65-b062-4e67-b87d-1c1ddfac393c
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190606-PNKDCT-M-coh190405
+    StartTime: '2019-06-06T13:39:51.5269795-04:00'
+    SubjectName: PNKDCT-M-29
+- path:
+  - _aggregate_results/2019-05-10_t14-10-19_190509-pnkdct-m-190317_pnkdct-m-17_results_00.h5
+  - _aggregate_results/2019-05-10_t14-10-19_190509-pnkdct-m-190317_pnkdct-m-17_results_00.yaml
+  uuid: 0ba0eeaf-633a-4eb0-b0d0-721eb17ced90
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190509-PNKDCT-M-190317
+    StartTime: '2019-05-10T14:10:19.1384568-04:00'
+    SubjectName: PNKDCT-M-17
+- path:
+  - _aggregate_results/2018-09-18_t11-07-33_2018-09-18__pnkd_ct-f_cohort0720_pct-51_f_results_00.h5
+  - _aggregate_results/2018-09-18_t11-07-33_2018-09-18__pnkd_ct-f_cohort0720_pct-51_f_results_00.yaml
+  uuid: ddaf31f6-9ad1-440e-998a-285d35cf43a2
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-18_PnkdCT-F_cohort0720
+    StartTime: '2018-09-18T11:07:33.8798141-04:00'
+    SubjectName: PCT-51F
+- path:
+  - _aggregate_results/2018-08-13_t14-16-58_2018-08-13__pnkd_ct_cohort0612_cage-yy_mouse-12_results_00.h5
+  - _aggregate_results/2018-08-13_t14-16-58_2018-08-13__pnkd_ct_cohort0612_cage-yy_mouse-12_results_00.yaml
+  uuid: 4b98c0c3-c552-4047-bd42-37564923d2fb
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0612
+    StartTime: '2018-08-13T14:16:58.4936258-04:00'
+    SubjectName: cage-YY_mouse-12
+- path:
+  - _aggregate_results/2019-02-26_t11-01-32_190226-pnkdct-m-coh181211_pnkdct-1_results_00.h5
+  - _aggregate_results/2019-02-26_t11-01-32_190226-pnkdct-m-coh181211_pnkdct-1_results_00.yaml
+  uuid: 892cc1f6-5b17-409a-ad82-1802edca11a1
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190226-PNKDCT-M-coh181211
+    StartTime: '2019-02-26T11:01:32.254998-05:00'
+    SubjectName: PNKDCT-1
+- path:
+  - _aggregate_results/2019-02-19_t11-13-09_190219-pnkdko-f-coh181124_pnkdko-2_results_00.h5
+  - _aggregate_results/2019-02-19_t11-13-09_190219-pnkdko-f-coh181124_pnkdko-2_results_00.yaml
+  uuid: 090259a1-1c3d-4885-abe3-c5872b1be10b
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190219-PNKDKO-F-coh181124
+    StartTime: '2019-02-19T11:13:09.3316676-05:00'
+    SubjectName: PNKDKO-2
+- path:
+  - _aggregate_results/2018-08-13_t16-02-20_2018-08-13__pnkd_ct_cohort0606_cage-vv_mouse-19_results_00.h5
+  - _aggregate_results/2018-08-13_t16-02-20_2018-08-13__pnkd_ct_cohort0606_cage-vv_mouse-19_results_00.yaml
+  uuid: 033c930f-6775-4676-ad9e-2118f013df8e
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T16:02:20.4564804-04:00'
+    SubjectName: cage-VV_mouse-19
+- path:
+  - _aggregate_results/2018-08-13_t12-21-26_2018-08-13__pnkd_ct_cohort0606_cage-mm_mouse-4_results_00.h5
+  - _aggregate_results/2018-08-13_t12-21-26_2018-08-13__pnkd_ct_cohort0606_cage-mm_mouse-4_results_00.yaml
+  uuid: 830a3906-07bd-4220-ab37-a2919bbe2cc8
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T12:21:26.7680905-04:00'
+    SubjectName: cage-MM_mouse-4
+- path:
+  - _aggregate_results/2019-03-05_t11-39-14_190304-pnkdko-m-coh190109_pnkdko-18_results_00.h5
+  - _aggregate_results/2019-03-05_t11-39-14_190304-pnkdko-m-coh190109_pnkdko-18_results_00.yaml
+  uuid: 281d7358-eca7-4998-9be2-ef65dc5687b9
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-M-coh190109
+    StartTime: '2019-03-05T11:39:14.7918726-05:00'
+    SubjectName: PNKDKO-18
+- path:
+  - _aggregate_results/2018-09-17_t10-55-26_2018-09-17__pnkd_ct-f_cohort0720_pct-43_f_results_00.h5
+  - _aggregate_results/2018-09-17_t10-55-26_2018-09-17__pnkd_ct-f_cohort0720_pct-43_f_results_00.yaml
+  uuid: 5b075cd3-a8ed-4a2b-b37a-2ad4e54ee975
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-17_PnkdCT-F_cohort0720
+    StartTime: '2018-09-17T10:55:26.189834-04:00'
+    SubjectName: PCT-43F
+- path:
+  - _aggregate_results/2018-09-17_t14-06-42_2018-09-17__pnkd_ct-f_cohort0720_pct-48_f_results_00.h5
+  - _aggregate_results/2018-09-17_t14-06-42_2018-09-17__pnkd_ct-f_cohort0720_pct-48_f_results_00.yaml
+  uuid: 7373bcaf-3cfa-41cb-a623-b706b60de454
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-17_PnkdCT-F_cohort0720
+    StartTime: '2018-09-17T14:06:42.6912196-04:00'
+    SubjectName: PCT-48F
+- path:
+  - _aggregate_results/2019-05-14_t11-06-18_190514-pnkdct-f-coh190321_pnkdct-f-18_results_00.h5
+  - _aggregate_results/2019-05-14_t11-06-18_190514-pnkdct-f-coh190321_pnkdct-f-18_results_00.yaml
+  uuid: 729413ed-054d-4e62-bdc5-139a4eccac00
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190514-PNKDCT-F-coh190321
+    StartTime: '2019-05-14T11:06:18.5602663-04:00'
+    SubjectName: PNKDCT-F-18
+- path:
+  - _aggregate_results/2019-03-01_t08-57-55_190301-pnkdct-f-coh181223_pnkdct-2_results_00.h5
+  - _aggregate_results/2019-03-01_t08-57-55_190301-pnkdct-f-coh181223_pnkdct-2_results_00.yaml
+  uuid: f9a59bf0-4d90-4dd3-9147-1774b239d0fb
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190301-PNKDCT-F-coh181223
+    StartTime: '2019-03-01T08:57:55.962499-05:00'
+    SubjectName: PNKDCT-2
+- path:
+  - _aggregate_results/2019-04-04_t10-40-44_190404-pkdko-m-coh190202_pnkdko-m-24_results_00.h5
+  - _aggregate_results/2019-04-04_t10-40-44_190404-pkdko-m-coh190202_pnkdko-m-24_results_00.yaml
+  uuid: df07fd40-3c33-4af7-b3d9-8bd9beda1e6b
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190404-PKDKO-M-coh190202
+    StartTime: '2019-04-04T10:40:44.2079066-04:00'
+    SubjectName: PNKDKO-M-24
+- path:
+  - _aggregate_results/2019-02-19_t12-05-30_190219-pnkdko-m-coh181128_pnkdko-5_results_00.h5
+  - _aggregate_results/2019-02-19_t12-05-30_190219-pnkdko-m-coh181128_pnkdko-5_results_00.yaml
+  uuid: b4c2a40e-a6d8-425b-a5a2-fc65445fe0eb
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190219-PNKDKO-M-coh181128
+    StartTime: '2019-02-19T12:05:30.9094308-05:00'
+    SubjectName: PNKDKO-5
+- path:
+  - _aggregate_results/2018-08-13_t14-16-43_2018-08-13__pnkd_ct_cohort0606_cage-uu_mouse-11_results_00.h5
+  - _aggregate_results/2018-08-13_t14-16-43_2018-08-13__pnkd_ct_cohort0606_cage-uu_mouse-11_results_00.yaml
+  uuid: 162fa371-d88a-4fa8-b936-f0d9f255d095
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T14:16:43.987865-04:00'
+    SubjectName: cage-UU_mouse-11
+- path:
+  - _aggregate_results/2018-09-02_t12-44-23_2018-09-02__pnkd_ct-f_cohort0703_cage-nonumber_mouse-38_results_00.h5
+  - _aggregate_results/2018-09-02_t12-44-23_2018-09-02__pnkd_ct-f_cohort0703_cage-nonumber_mouse-38_results_00.yaml
+  uuid: e770a6a6-2bc4-4aa8-b2ad-049594126279
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-02_Pnkd_CT-F_cohort0703
+    StartTime: '2018-09-02T12:44:23.3383884-04:00'
+    SubjectName: cage-nonumber_mouse-38
+- path:
+  - _aggregate_results/2019-02-19_t11-39-51_190219-pnkdko-f-coh181124_pnkdko-4_results_00.h5
+  - _aggregate_results/2019-02-19_t11-39-51_190219-pnkdko-f-coh181124_pnkdko-4_results_00.yaml
+  uuid: 2e9c9ceb-4f33-4123-9c77-151f1261f2d2
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190219-PNKDKO-F-coh181124
+    StartTime: '2019-02-19T11:39:51.4388092-05:00'
+    SubjectName: PNKDKO-4
+- path:
+  - _aggregate_results/2018-09-17_t10-55-00_2018-09-17_pnkdct-f_cohort0720_pct-42_f_results_00.h5
+  - _aggregate_results/2018-09-17_t10-55-00_2018-09-17_pnkdct-f_cohort0720_pct-42_f_results_00.yaml
+  uuid: 8f0312b9-8bcf-4c02-bbb4-5e2fa3afaca2
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-17_PNKDCT-F_cohort0720
+    StartTime: '2018-09-17T10:55:00.8316772-04:00'
+    SubjectName: PCT-42F
+- path:
+  - _aggregate_results/2019-05-09_t10-56-16_190509-pnkdct-f-coh190317_pnkdct-f-10_results_00.h5
+  - _aggregate_results/2019-05-09_t10-56-16_190509-pnkdct-f-coh190317_pnkdct-f-10_results_00.yaml
+  uuid: 026d6686-af4c-48c6-b9fb-a3441169254c
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190509-PNKDCT-F-coh190317
+    StartTime: '2019-05-09T10:56:16.3864189-04:00'
+    SubjectName: PNKDCT-F-10
+- path:
+  - _aggregate_results/2019-05-10_t13-45-26_190509-pnkdct-m-190317_pnkdct-m-16_results_00.h5
+  - _aggregate_results/2019-05-10_t13-45-26_190509-pnkdct-m-190317_pnkdct-m-16_results_00.yaml
+  uuid: 266635c7-e0fd-4ed0-a41e-b8cdd9e4b71a
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190509-PNKDCT-M-190317
+    StartTime: '2019-05-10T13:45:26.7614495-04:00'
+    SubjectName: PNKDCT-M-16
+- path:
+  - _aggregate_results/2019-04-02_t11-12-30_190402-pkdko-m-coh190202_pnkdko-m-22_results_00.h5
+  - _aggregate_results/2019-04-02_t11-12-30_190402-pkdko-m-coh190202_pnkdko-m-22_results_00.yaml
+  uuid: 34911618-9314-40ce-a258-1088ca1aae2d
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190402-PKDKO-M-coh190202
+    StartTime: '2019-04-02T11:12:30.894873-04:00'
+    SubjectName: PNKDKO-M-22
+- path:
+  - _aggregate_results/2019-03-04_t12-55-30_190304-pnkdko-f-coh181216_pnkdko-15_results_00.h5
+  - _aggregate_results/2019-03-04_t12-55-30_190304-pnkdko-f-coh181216_pnkdko-15_results_00.yaml
+  uuid: 8830f648-1864-478d-859d-7ff5b394f744
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-F-coh181216
+    StartTime: '2019-03-04T12:55:30.0774073-05:00'
+    SubjectName: PNKDKO-15
+- path:
+  - _aggregate_results/2018-09-17_t14-06-18_2018-09-17_pnkdct-f_cohort0720_pct-47_f_results_00.h5
+  - _aggregate_results/2018-09-17_t14-06-18_2018-09-17_pnkdct-f_cohort0720_pct-47_f_results_00.yaml
+  uuid: 88e64bd0-e964-4f22-86ac-7dc59a42bed8
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-17_PNKDCT-F_cohort0720
+    StartTime: '2018-09-17T14:06:18.7052984-04:00'
+    SubjectName: PCT-47F
+- path:
+  - _aggregate_results/2018-09-17_t13-32-16_2018-09-17__pnkd_ct-f_cohort0720_pct-46_f_results_00.h5
+  - _aggregate_results/2018-09-17_t13-32-16_2018-09-17__pnkd_ct-f_cohort0720_pct-46_f_results_00.yaml
+  uuid: c0154eb3-7e25-4412-9368-4e883dca4776
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-17_PnkdCT-F_cohort0720
+    StartTime: '2018-09-17T13:32:16.5376215-04:00'
+    SubjectName: PCT-46F
+- path:
+  - _aggregate_results/2019-04-04_t11-09-08_190404-pkdko-m-coh190202_pnkdko-m-25_results_00.h5
+  - _aggregate_results/2019-04-04_t11-09-08_190404-pkdko-m-coh190202_pnkdko-m-25_results_00.yaml
+  uuid: 46947d5d-b9f0-4468-8a3f-f6b1cebfc210
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190404-PKDKO-M-coh190202
+    StartTime: '2019-04-04T11:09:08.8162441-04:00'
+    SubjectName: PNKDKO-M-25
+- path:
+  - _aggregate_results/2019-06-06_t13-39-24_190606-pnkdct-m-190405_pnkdct-m-28_results_00.h5
+  - _aggregate_results/2019-06-06_t13-39-24_190606-pnkdct-m-190405_pnkdct-m-28_results_00.yaml
+  uuid: 50bec24c-b7be-4046-bd0b-5c148ef1c253
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190606-PNKDCT-M-190405
+    StartTime: '2019-06-06T13:39:24.1943845-04:00'
+    SubjectName: PNKDCT-M-28
+- path:
+  - _aggregate_results/2018-08-20_t12-37-33_2018-08-20__pnkd_ct-f_cohort0618_cage-ppp_mouse-6_results_00.h5
+  - _aggregate_results/2018-08-20_t12-37-33_2018-08-20__pnkd_ct-f_cohort0618_cage-ppp_mouse-6_results_00.yaml
+  uuid: 19b0b13c-e338-4a08-b3f9-239aab4a6a25
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-20_Pnkd_CT-f_cohort0618
+    StartTime: '2018-08-20T12:37:33.3293054-04:00'
+    SubjectName: cage-PPP_mouse-6
+- path:
+  - _aggregate_results/2019-04-09_t12-27-28_190409-pnkdko-m-190217_pnkdko-m-31_results_00.h5
+  - _aggregate_results/2019-04-09_t12-27-28_190409-pnkdko-m-190217_pnkdko-m-31_results_00.yaml
+  uuid: 2aeda52c-ee87-46fa-823f-c6c003d46467
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190409-PNKDKO-M-190217
+    StartTime: '2019-04-09T12:27:28.229388-04:00'
+    SubjectName: PNKDKO-M-31
+- path:
+  - _aggregate_results/2019-05-14_t10-01-52_190514-pnkdct-m-coh190314_pnkdct-m-19_results_00.h5
+  - _aggregate_results/2019-05-14_t10-01-52_190514-pnkdct-m-coh190314_pnkdct-m-19_results_00.yaml
+  uuid: b17be739-5f9d-4e65-9b98-c099010b98d2
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190514-PNKDCT-M-coh190314
+    StartTime: '2019-05-14T10:01:52.9164544-04:00'
+    SubjectName: PNKDCT-M-19
+- path:
+  - _aggregate_results/2019-06-04_t13-45-51_190604-pnkdct-f-coh190331_pnkdct-f-35_results_00.h5
+  - _aggregate_results/2019-06-04_t13-45-51_190604-pnkdct-f-coh190331_pnkdct-f-35_results_00.yaml
+  uuid: 832b66ff-be0f-4531-8656-438b7c4b219e
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190604-PNKDCT-F-coh190331
+    StartTime: '2019-06-04T13:45:51.0742197-04:00'
+    SubjectName: PNKDCT-F-35
+- path:
+  - _aggregate_results/2019-05-12_t13-00-04_190512-pnkdct-f-190314_pnkdct-f-15_results_00.h5
+  - _aggregate_results/2019-05-12_t13-00-04_190512-pnkdct-f-190314_pnkdct-f-15_results_00.yaml
+  uuid: 1db5b6ee-e64b-42c7-8bb7-6bb560ca6cc4
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190512-PNKDCT-F-190314
+    StartTime: '2019-05-12T13:00:04.9384721-04:00'
+    SubjectName: PNKDCT-F-15
+- path:
+  - _aggregate_results/2019-06-04_t11-35-22_190604-pnkdct-m-coh190321_pnkdct-m-25_results_00.h5
+  - _aggregate_results/2019-06-04_t11-35-22_190604-pnkdct-m-coh190321_pnkdct-m-25_results_00.yaml
+  uuid: 8ea99d7d-7607-44b1-8d2c-217ecbcc0359
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190604-PNKDCT-M-coh190321
+    StartTime: '2019-06-04T11:35:22.3974422-04:00'
+    SubjectName: PNKDCT-M-25
+- path:
+  - _aggregate_results/2019-03-28_t11-33-22_190328-pnkdko-f-190202_pnkdko-f-16_results_00.h5
+  - _aggregate_results/2019-03-28_t11-33-22_190328-pnkdko-f-190202_pnkdko-f-16_results_00.yaml
+  uuid: cd6853ee-4d7f-4734-8143-b0d0edaeb3dd
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190328-PNKDKO-F-190202
+    StartTime: '2019-03-28T11:33:22.6350072-04:00'
+    SubjectName: PNKDKO-F-16
+- path:
+  - _aggregate_results/2018-08-13_t13-45-47_2018-08-13__pnkd_ct_cohort0606_cage-uu_mouse-10_results_00.h5
+  - _aggregate_results/2018-08-13_t13-45-47_2018-08-13__pnkd_ct_cohort0606_cage-uu_mouse-10_results_00.yaml
+  uuid: d296518d-e196-4420-9add-0b688eee1ecb
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T13:45:47.7592963-04:00'
+    SubjectName: cage-UU_mouse-10
+- path:
+  - _aggregate_results/2018-09-02_t12-20-12_2018-09-02__pnkd_ct-m_cohort0706_cage-nonumber_mouse-37_results_00.h5
+  - _aggregate_results/2018-09-02_t12-20-12_2018-09-02__pnkd_ct-m_cohort0706_cage-nonumber_mouse-37_results_00.yaml
+  uuid: f2f42423-3ca8-49a8-9096-b85cf1f48c67
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-02_Pnkd_CT-M_cohort0706
+    StartTime: '2018-09-02T12:20:12.45754-04:00'
+    SubjectName: cage-nonumber_mouse-37
+- path:
+  - _aggregate_results/2018-08-13_t15-09-46_2018-08-13__pnkd_ct_cohort0612_cage-vv_mouse-16_results_00.h5
+  - _aggregate_results/2018-08-13_t15-09-46_2018-08-13__pnkd_ct_cohort0612_cage-vv_mouse-16_results_00.yaml
+  uuid: 6ea3ef64-e527-43e9-91e3-b0bcdb7fd283
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0612
+    StartTime: '2018-08-13T15:09:46.9305113-04:00'
+    SubjectName: cage-VV_mouse-16
+- path:
+  - _aggregate_results/2019-02-19_t11-38-47_190219-pnkdko-f-coh181124_pnkdko-3_results_00.h5
+  - _aggregate_results/2019-02-19_t11-38-47_190219-pnkdko-f-coh181124_pnkdko-3_results_00.yaml
+  uuid: 9e505680-7c24-45eb-856c-df2ac0145f58
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190219-PNKDKO-F-coh181124
+    StartTime: '2019-02-19T11:38:47.1623682-05:00'
+    SubjectName: PNKDKO-3
+- path:
+  - _aggregate_results/2019-05-09_t10-56-01_190509-pnkdct-f-190317_pnkdct-f-9_results_00.h5
+  - _aggregate_results/2019-05-09_t10-56-01_190509-pnkdct-f-190317_pnkdct-f-9_results_00.yaml
+  uuid: 1a9634a9-10d0-4fa8-8244-23d1c3cfa48f
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190509-PNKDCT-F-190317
+    StartTime: '2019-05-09T10:56:01.5994827-04:00'
+    SubjectName: PNKDCT-F-9
+- path:
+  - _aggregate_results/2019-05-09_t11-20-30_190509-pnkdct-f-coh190317_pnkdct-f-12_results_00.h5
+  - _aggregate_results/2019-05-09_t11-20-30_190509-pnkdct-f-coh190317_pnkdct-f-12_results_00.yaml
+  uuid: 372076ef-6f4d-47f5-8fcc-79dfd5ffc178
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190509-PNKDCT-F-coh190317
+    StartTime: '2019-05-09T11:20:30.3769066-04:00'
+    SubjectName: PNKDCT-F-12
+- path:
+  - _aggregate_results/2019-06-04_t13-18-41_190604-pnkdct-f-190331_pnkdct-f-32_results_00.h5
+  - _aggregate_results/2019-06-04_t13-18-41_190604-pnkdct-f-190331_pnkdct-f-32_results_00.yaml
+  uuid: c0ebf9c5-e77b-430d-9d27-e2ce235fa63a
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190604-PNKDCT-F-190331
+    StartTime: '2019-06-04T13:18:41.1113982-04:00'
+    SubjectName: PNKDCT-F-32
+- path:
+  - _aggregate_results/2019-03-05_t10-49-10_190304-pnkdko-m-coh190109_pnkdko-15_results_00.h5
+  - _aggregate_results/2019-03-05_t10-49-10_190304-pnkdko-m-coh190109_pnkdko-15_results_00.yaml
+  uuid: 0abe628f-9e89-426a-95e9-ff6f3123b2cc
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-M-coh190109
+    StartTime: '2019-03-05T10:49:10.1659362-05:00'
+    SubjectName: PNKDKO-15
+- path:
+  - _aggregate_results/2019-02-19_t12-06-27_190219-pnkdko-m-coh181128_pnkdko-6_results_00.h5
+  - _aggregate_results/2019-02-19_t12-06-27_190219-pnkdko-m-coh181128_pnkdko-6_results_00.yaml
+  uuid: 2f6eeb71-a5ae-4cef-8c3b-9158022a4000
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190219-PNKDKO-M-coh181128
+    StartTime: '2019-02-19T12:06:27.2448543-05:00'
+    SubjectName: PNKDKO-6
+- path:
+  - _aggregate_results/2019-02-19_t11-12-59_190219-pnkdko-f-coh181124_pnkdko-1_results_00.h5
+  - _aggregate_results/2019-02-19_t11-12-59_190219-pnkdko-f-coh181124_pnkdko-1_results_00.yaml
+  uuid: 151a2122-2970-4910-9d37-6653007cab5d
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190219-PNKDKO-F-coh181124
+    StartTime: '2019-02-19T11:12:59.7564198-05:00'
+    SubjectName: PNKDKO-1
+- path:
+  - _aggregate_results/2019-03-05_t10-49-39_190304-pnkdko-m-coh190109_pnkdko-16_results_00.h5
+  - _aggregate_results/2019-03-05_t10-49-39_190304-pnkdko-m-coh190109_pnkdko-16_results_00.yaml
+  uuid: 8e8277ec-a482-4823-983d-df7ac18b5a3f
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-M-coh190109
+    StartTime: '2019-03-05T10:49:39.9326388-05:00'
+    SubjectName: PNKDKO-16
+- path:
+  - _aggregate_results/2019-03-05_t11-38-12_190304-pnkdko-m-coh190109_pnkdko-19_results_00.h5
+  - _aggregate_results/2019-03-05_t11-38-12_190304-pnkdko-m-coh190109_pnkdko-19_results_00.yaml
+  uuid: e92c7d9c-9308-43eb-9eec-65d964df38f8
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-M-coh190109
+    StartTime: '2019-03-05T11:38:12.0479846-05:00'
+    SubjectName: PNKDKO-19
+- path:
+  - _aggregate_results/2019-02-26_t11-26-24_190226-pnkdct-m-coh181211_pnkdct-4_results_00.h5
+  - _aggregate_results/2019-02-26_t11-26-24_190226-pnkdct-m-coh181211_pnkdct-4_results_00.yaml
+  uuid: ad976a52-5960-47f6-9d3e-1af8776fa4e9
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190226-PNKDCT-M-coh181211
+    StartTime: '2019-02-26T11:26:24.6003794-05:00'
+    SubjectName: PNKDCT-4
+- path:
+  - _aggregate_results/2018-09-02_t13-32-48_2018-09-02__pnkd_ct-f_cohort0704_cage-i_mouse-40_results_00.h5
+  - _aggregate_results/2018-09-02_t13-32-48_2018-09-02__pnkd_ct-f_cohort0704_cage-i_mouse-40_results_00.yaml
+  uuid: c0bd38fe-2f7d-4498-9804-7a63b57c9377
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-02_Pnkd_CT-F_cohort0704
+    StartTime: '2018-09-02T13:32:48.177425-04:00'
+    SubjectName: cage-I_mouse-40
+- path:
+  - _aggregate_results/2019-03-04_t12-31-01_190304-pnkdko-f-coh181216_pnkdko-14_results_00.h5
+  - _aggregate_results/2019-03-04_t12-31-01_190304-pnkdko-f-coh181216_pnkdko-14_results_00.yaml
+  uuid: 589e688b-0461-4029-86c3-8c2548e05aa1
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-F-coh181216
+    StartTime: '2019-03-04T12:31:01.2694858-05:00'
+    SubjectName: PNKDKO-14
+- path:
+  - _aggregate_results/2019-02-26_t11-51-32_190226-pnkdct-m-coh181223_pnkdct-6_results_00.h5
+  - _aggregate_results/2019-02-26_t11-51-32_190226-pnkdct-m-coh181223_pnkdct-6_results_00.yaml
+  uuid: abb6f777-cc4c-4041-8990-d965ea82a8fa
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190226-PNKDCT-M-coh181223
+    StartTime: '2019-02-26T11:51:32.4041349-05:00'
+    SubjectName: PNKDCT-6
+- path:
+  - _aggregate_results/2018-08-13_t11-52-19_2018-08-13__pnkd_ct_cohort0606_cage-mm_mouse-2_results_00.h5
+  - _aggregate_results/2018-08-13_t11-52-19_2018-08-13__pnkd_ct_cohort0606_cage-mm_mouse-2_results_00.yaml
+  uuid: c5497661-9607-4c23-be08-32e6de8e194d
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T11:52:19.7277615-04:00'
+    SubjectName: cage-MM_mouse-2
+- path:
+  - _aggregate_results/2019-05-14_t12-32-13_190514-pnkdct-m-coh190321_pnkdct-m-23_results_00.h5
+  - _aggregate_results/2019-05-14_t12-32-13_190514-pnkdct-m-coh190321_pnkdct-m-23_results_00.yaml
+  uuid: 39e81654-20a1-4c93-88ae-afdf8cc6d89f
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190514-PNKDCT-M-coh190321
+    StartTime: '2019-05-14T12:32:13.3480144-04:00'
+    SubjectName: PNKDCT-M-23
+- path:
+  - _aggregate_results/2019-04-02_t10-44-16_190402-pkdko-m-coh190202_pnkdko-m-21_results_00.h5
+  - _aggregate_results/2019-04-02_t10-44-16_190402-pkdko-m-coh190202_pnkdko-m-21_results_00.yaml
+  uuid: 518f5966-2c66-4f42-b601-39031bd4409b
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190402-PKDKO-M-coh190202
+    StartTime: '2019-04-02T10:44:16.2472847-04:00'
+    SubjectName: PNKDKO-M-21
+- path:
+  - _aggregate_results/2019-05-09_t11-20-10_190509-pnkdct-f-190317_pnkdct-f-11_results_00.h5
+  - _aggregate_results/2019-05-09_t11-20-10_190509-pnkdct-f-190317_pnkdct-f-11_results_00.yaml
+  uuid: 8997f25c-89c2-45cd-94e4-49128557f78f
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190509-PNKDCT-F-190317
+    StartTime: '2019-05-09T11:20:10.3805226-04:00'
+    SubjectName: PNKDCT-F-11
+- path:
+  - _aggregate_results/2019-06-04_t13-18-46_190604-pnkdct-f-coh190331_pnkdct-f-33_results_00.h5
+  - _aggregate_results/2019-06-04_t13-18-46_190604-pnkdct-f-coh190331_pnkdct-f-33_results_00.yaml
+  uuid: 3d287c92-9c71-4658-9e05-be0d876da008
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190604-PNKDCT-F-coh190331
+    StartTime: '2019-06-04T13:18:46.0153861-04:00'
+    SubjectName: PNKDCT-F-33
+- path:
+  - _aggregate_results/2018-09-02_t13-08-35_2018-09-02__pnkd_ct-f_cohort0703_cage-p_mouse-39_results_00.h5
+  - _aggregate_results/2018-09-02_t13-08-35_2018-09-02__pnkd_ct-f_cohort0703_cage-p_mouse-39_results_00.yaml
+  uuid: 92f4a45b-0f36-4d32-8bf6-22261e646819
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-02_Pnkd_CT-F_cohort0703
+    StartTime: '2018-09-02T13:08:35.4664532-04:00'
+    SubjectName: cage-P_mouse-39
+- path:
+  - _aggregate_results/2019-03-04_t11-36-37_190304-pnkdko-m-coh181216_pnkdko-10_results_00.h5
+  - _aggregate_results/2019-03-04_t11-36-37_190304-pnkdko-m-coh181216_pnkdko-10_results_00.yaml
+  uuid: 77f24153-c892-4190-926a-a65ab820f72b
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-M-coh181216
+    StartTime: '2019-03-04T11:36:37.1355041-05:00'
+    SubjectName: PNKDKO-10
+- path:
+  - _aggregate_results/2018-08-14_t12-29-34_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-4_results_00.h5
+  - _aggregate_results/2018-08-14_t12-29-34_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-4_results_00.yaml
+  uuid: 01d76f5e-cc1e-41ed-a0e1-024b5bd448e0
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-14_Pnkd_CT-f_cohort0606
+    StartTime: '2018-08-14T12:29:34.0003352-04:00'
+    SubjectName: cage-WW_mouse-4
+- path:
+  - _aggregate_results/2019-03-28_t12-03-05_190328-pnkdko-f-190202_pnkdko-f-18_results_00.h5
+  - _aggregate_results/2019-03-28_t12-03-05_190328-pnkdko-f-190202_pnkdko-f-18_results_00.yaml
+  uuid: 1fb69d9b-fa68-4fca-9bc2-7fb4bf322fe9
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190328-PNKDKO-F-190202
+    StartTime: '2019-03-28T12:03:05.1463859-04:00'
+    SubjectName: PNKDKO-F-18
+- path:
+  - _aggregate_results/2018-08-14_t11-29-23_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-1_results_00.h5
+  - _aggregate_results/2018-08-14_t11-29-23_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-1_results_00.yaml
+  uuid: af28edb1-79fa-4913-9186-1e967220c747
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-14_Pnkd_CT-f_cohort0606
+    StartTime: '2018-08-14T11:29:23.2796198-04:00'
+    SubjectName: cage-WW_mouse-1
+- path:
+  - _aggregate_results/2018-08-20_t11-45-40_2018-08-20__pnkd_ct-m_cohort0618_cage-ppp_mouse-1_results_00.h5
+  - _aggregate_results/2018-08-20_t11-45-40_2018-08-20__pnkd_ct-m_cohort0618_cage-ppp_mouse-1_results_00.yaml
+  uuid: 9356498d-b08a-4907-9e6c-4fc4fdd6a3f6
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-20_Pnkd_CT-M_cohort0618
+    StartTime: '2018-08-20T11:45:40.3186777-04:00'
+    SubjectName: cage-PPP_mouse-1
+- path:
+  - _aggregate_results/2018-08-13_t14-43-54_2018-08-13__pnkd_ct_cohort0612_cage-yy_mouse-14_results_00.h5
+  - _aggregate_results/2018-08-13_t14-43-54_2018-08-13__pnkd_ct_cohort0612_cage-yy_mouse-14_results_00.yaml
+  uuid: 4a2f2f6f-61c5-4020-9084-e80a59ca92c8
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0612
+    StartTime: '2018-08-13T14:43:54.9063079-04:00'
+    SubjectName: cage-YY_mouse-14
+- path:
+  - _aggregate_results/2019-03-04_t12-04-32_190304-pnkdko-m-coh181216_pnkdko-11_results_00.h5
+  - _aggregate_results/2019-03-04_t12-04-32_190304-pnkdko-m-coh181216_pnkdko-11_results_00.yaml
+  uuid: c1a52b24-6fdb-49a8-adaf-9e6240b644a5
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-M-coh181216
+    StartTime: '2019-03-04T12:04:32.8946977-05:00'
+    SubjectName: PNKDKO-11
+- path:
+  - _aggregate_results/2018-09-18_t11-34-20_2018-09-18_pnkdct-m_cohort0720_pct-52_m_results_00.h5
+  - _aggregate_results/2018-09-18_t11-34-20_2018-09-18_pnkdct-m_cohort0720_pct-52_m_results_00.yaml
+  uuid: 066c55d7-9ef1-40a1-a07e-78ea457c8b85
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-18_PNKDCT-M_cohort0720
+    StartTime: '2018-09-18T11:34:20.2755717-04:00'
+    SubjectName: PCT-52M
+- path:
+  - _aggregate_results/2019-05-01_t10-31-10_190501-pnkdct-m-190310_pnkdct-m-7_results_00.h5
+  - _aggregate_results/2019-05-01_t10-31-10_190501-pnkdct-m-190310_pnkdct-m-7_results_00.yaml
+  uuid: b95ceb0f-1bf5-4e86-8b32-e1f2d7af39c4
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190501-PNKDCT-M-190310
+    StartTime: '2019-05-01T10:31:10.5906071-04:00'
+    SubjectName: PNKDCT-M-7
+- path:
+  - _aggregate_results/2019-05-14_t10-01-35_190514-pnkdct-m-190314_pnkdct-m-18_results_00.h5
+  - _aggregate_results/2019-05-14_t10-01-35_190514-pnkdct-m-190314_pnkdct-m-18_results_00.yaml
+  uuid: 07cf99bc-cb36-4f14-a9b7-4df250cad4dc
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190514-PNKDCT-M-190314
+    StartTime: '2019-05-14T10:01:35.2531128-04:00'
+    SubjectName: PNKDCT-M-18
+- path:
+  - _aggregate_results/2018-09-18_t11-34-40_2018-09-18__pnkd_ct-f_cohort0720_pct-53_m_results_00.h5
+  - _aggregate_results/2018-09-18_t11-34-40_2018-09-18__pnkd_ct-f_cohort0720_pct-53_m_results_00.yaml
+  uuid: ec4bdf95-a3d0-4148-9aea-7eab274fedc5
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-18_PnkdCT-F_cohort0720
+    StartTime: '2018-09-18T11:34:40.9869338-04:00'
+    SubjectName: PCT-53M
+- path:
+  - _aggregate_results/2018-08-14_t13-37-13_2018-08-14__pnkd_ct-f_cohort0606_cage-zz_mouse-26_results_00.h5
+  - _aggregate_results/2018-08-14_t13-37-13_2018-08-14__pnkd_ct-f_cohort0606_cage-zz_mouse-26_results_00.yaml
+  uuid: e10f8a3e-a668-4ef9-abc1-d99647ad054b
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-14_Pnkd_CT-f_cohort0606
+    StartTime: '2018-08-14T13:37:13.5102571-04:00'
+    SubjectName: cage-ZZ_mouse-26
+- path:
+  - _aggregate_results/2019-04-09_t11-26-32_190409-pkdko-f-coh190217_pnkdko-f-24_results_00.h5
+  - _aggregate_results/2019-04-09_t11-26-32_190409-pkdko-f-coh190217_pnkdko-f-24_results_00.yaml
+  uuid: 3fbc9a8d-069d-4cb6-9a38-40fa26148b83
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190409-PKDKO-F-coh190217
+    StartTime: '2019-04-09T11:26:32.4845138-04:00'
+    SubjectName: PNKDKO-F-24
+- path:
+  - _aggregate_results/2018-09-17_t14-30-35_2018-09-17_pnkdct-f_cohort0720_pct-48_f_results_00.h5
+  - _aggregate_results/2018-09-17_t14-30-35_2018-09-17_pnkdct-f_cohort0720_pct-48_f_results_00.yaml
+  uuid: 8157fc10-efe0-448c-8702-322fe8a83dbc
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-17_PNKDCT-F_cohort0720
+    StartTime: '2018-09-17T14:30:35.0292209-04:00'
+    SubjectName: PCT-48F
+- path:
+  - _aggregate_results/2018-08-13_t15-35-26_2018-08-13__pnkd_ct_cohort0612_cage-vv_mouse-18_results_00.h5
+  - _aggregate_results/2018-08-13_t15-35-26_2018-08-13__pnkd_ct_cohort0612_cage-vv_mouse-18_results_00.yaml
+  uuid: afd78d1f-ea51-4aa3-a089-d990d30bff19
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0612
+    StartTime: '2018-08-13T15:35:26.2890464-04:00'
+    SubjectName: cage-VV_mouse-18
+- path:
+  - _aggregate_results/2018-08-13_t12-50-01_2018-08-13__pnkd_ct_cohort0606_cage-tt_mouse-6_results_00.h5
+  - _aggregate_results/2018-08-13_t12-50-01_2018-08-13__pnkd_ct_cohort0606_cage-tt_mouse-6_results_00.yaml
+  uuid: 8f3a8eb8-ead4-4d69-a9a4-706502b98cf4
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T12:50:01.6242687-04:00'
+    SubjectName: cage-TT_mouse-6
+- path:
+  - _aggregate_results/2019-05-01_t10-33-54_190501-pnkdct-m-coh190310_pnkdct-m-8_results_00.h5
+  - _aggregate_results/2019-05-01_t10-33-54_190501-pnkdct-m-coh190310_pnkdct-m-8_results_00.yaml
+  uuid: cbbe16c7-8b6b-4ef1-8735-9f638f239c50
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190501-PNKDCT-M-coh190310
+    StartTime: '2019-05-01T10:33:54.0235198-04:00'
+    SubjectName: PNKDCT-M-8
+- path:
+  - _aggregate_results/2018-09-02_t11-55-58_2018-09-02__pnkd_ct-m_cohort0706_cage-nonumber_mouse-36_results_00.h5
+  - _aggregate_results/2018-09-02_t11-55-58_2018-09-02__pnkd_ct-m_cohort0706_cage-nonumber_mouse-36_results_00.yaml
+  uuid: ac2c00c1-ed53-4379-aa22-034cbdc0cd22
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-02_Pnkd_CT-M_cohort0706
+    StartTime: '2018-09-02T11:55:58.7910726-04:00'
+    SubjectName: cage-nonumber_mouse-36
+- path:
+  - _aggregate_results/2018-08-13_t11-52-02_2018-08-13__pnkd_ct_cohort0606_cage-mm_mouse-1_results_00.h5
+  - _aggregate_results/2018-08-13_t11-52-02_2018-08-13__pnkd_ct_cohort0606_cage-mm_mouse-1_results_00.yaml
+  uuid: c46aa555-c3b9-463d-9031-f9b5d48a157b
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T11:52:02.7449759-04:00'
+    SubjectName: cage-MM_mouse-1
+- path:
+  - _aggregate_results/2019-05-10_t13-45-23_190509-pnkdct-m-coh190317_pnkdct-m-14_results_00.h5
+  - _aggregate_results/2019-05-10_t13-45-23_190509-pnkdct-m-coh190317_pnkdct-m-14_results_00.yaml
+  uuid: 11e47322-5726-43ef-bc43-8b72d5c5ffb1
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190509-PNKDCT-M-coh190317
+    StartTime: '2019-05-10T13:45:23.4572983-04:00'
+    SubjectName: PNKDCT-M-14
+- path:
+  - _aggregate_results/2019-02-19_t12-32-37_190219-pnkdko-m-coh181128_pnkdko-7_results_00.h5
+  - _aggregate_results/2019-02-19_t12-32-37_190219-pnkdko-m-coh181128_pnkdko-7_results_00.yaml
+  uuid: c7e9e714-dbad-453c-9594-eb995abb0756
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190219-PNKDKO-M-coh181128
+    StartTime: '2019-02-19T12:32:37.8989789-05:00'
+    SubjectName: PNKDKO-7
+- path:
+  - _aggregate_results/2019-05-14_t11-34-37_190514-pnkdct-f-190321_pnkdct-f-19_results_00.h5
+  - _aggregate_results/2019-05-14_t11-34-37_190514-pnkdct-f-190321_pnkdct-f-19_results_00.yaml
+  uuid: 8b7a03e2-1e8c-4e7c-93c2-1c586a8a8a32
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190514-PNKDCT-F-190321
+    StartTime: '2019-05-14T11:34:37.9831904-04:00'
+    SubjectName: PNKDCT-F-19
+- path:
+  - _aggregate_results/2018-08-20_t12-37-23_2018-08-20__pnkd_ct-f_cohort0618_cage-ppp_mouse-5_results_00.h5
+  - _aggregate_results/2018-08-20_t12-37-23_2018-08-20__pnkd_ct-f_cohort0618_cage-ppp_mouse-5_results_00.yaml
+  uuid: ee3305f6-816d-4213-95e3-e7fbd7b97b6d
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-20_Pnkd_CT-f_cohort0618
+    StartTime: '2018-08-20T12:37:23.7961088-04:00'
+    SubjectName: cage-PPP_mouse-5
+- path:
+  - _aggregate_results/2019-06-06_t13-06-43_190606-pnkdct-m-190405_pnkdct-m-26_results_00.h5
+  - _aggregate_results/2019-06-06_t13-06-43_190606-pnkdct-m-190405_pnkdct-m-26_results_00.yaml
+  uuid: 1addd8ef-6555-4fe9-b868-9572a611f521
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190606-PNKDCT-M-190405
+    StartTime: '2019-06-06T13:06:43.4332444-04:00'
+    SubjectName: PNKDCT-M-26
+- path:
+  - _aggregate_results/2019-02-26_t11-01-22_190226-pnkdct-m-coh181211_pnkdct-2_results_00.h5
+  - _aggregate_results/2019-02-26_t11-01-22_190226-pnkdct-m-coh181211_pnkdct-2_results_00.yaml
+  uuid: e9b3855e-a2c5-4f3b-8b22-d7323ecd52d6
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190226-PNKDCT-M-coh181211
+    StartTime: '2019-02-26T11:01:22.5942303-05:00'
+    SubjectName: PNKDCT-2
+- path:
+  - _aggregate_results/2018-10-12_t11-07-36_2018-10-12_pnkd-f_cohort0815_ct-69_results_00.h5
+  - _aggregate_results/2018-10-12_t11-07-36_2018-10-12_pnkd-f_cohort0815_ct-69_results_00.yaml
+  uuid: c14a1aba-9d79-4cd6-ab44-e39aea7a125d
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_PNKD-F_cohort0815
+    StartTime: '2018-10-12T11:07:36.3137276-04:00'
+    SubjectName: CT-69
+- path:
+  - _aggregate_results/2018-08-13_t15-36-19_2018-08-13__pnkd_ct_cohort0606_cage-vv_mouse-17_results_00.h5
+  - _aggregate_results/2018-08-13_t15-36-19_2018-08-13__pnkd_ct_cohort0606_cage-vv_mouse-17_results_00.yaml
+  uuid: d814eb15-bbba-42ae-bc2e-1c12c5a3a866
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T15:36:19.0167235-04:00'
+    SubjectName: cage-VV_mouse-17
+- path:
+  - _aggregate_results/2019-03-05_t11-14-53_190304-pnkdko-m-coh190109_pnkdko-17_results_00.h5
+  - _aggregate_results/2019-03-05_t11-14-53_190304-pnkdko-m-coh190109_pnkdko-17_results_00.yaml
+  uuid: 45fb0c17-ab55-4243-b962-ae123462b3a9
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-M-coh190109
+    StartTime: '2019-03-05T11:14:53.2488765-05:00'
+    SubjectName: PNKDKO-17
+- path:
+  - _aggregate_results/2019-06-04_t12-54-47_190604-pnkdct-f-coh190331_pnkdct-f-31_results_00.h5
+  - _aggregate_results/2019-06-04_t12-54-47_190604-pnkdct-f-coh190331_pnkdct-f-31_results_00.yaml
+  uuid: eb38acd5-f7e5-4779-9763-d0b8d7d5c3c8
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190604-PNKDCT-F-coh190331
+    StartTime: '2019-06-04T12:54:47.7077964-04:00'
+    SubjectName: PNKDCT-F-31
+- path:
+  - _aggregate_results/2018-08-14_t13-04-18_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-5_results_00.h5
+  - _aggregate_results/2018-08-14_t13-04-18_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-5_results_00.yaml
+  uuid: eb8bff26-a76d-425e-8ecf-e279345e354d
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-14_Pnkd_CT-f_cohort0606
+    StartTime: '2018-08-14T13:04:18.4946482-04:00'
+    SubjectName: cage-WW_mouse-5
+- path:
+  - _aggregate_results/2019-03-04_t11-34-33_190304-pnkdko-m-coh181216_pnkdko-9_results_00.h5
+  - _aggregate_results/2019-03-04_t11-34-33_190304-pnkdko-m-coh181216_pnkdko-9_results_00.yaml
+  uuid: 1d49aba7-03d1-4cdc-b465-4d00bd5c44eb
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-M-coh181216
+    StartTime: '2019-03-04T11:34:33.602421-05:00'
+    SubjectName: PNKDKO-9
+- path:
+  - _aggregate_results/2019-06-04_t12-54-30_190604-pnkdct-f-190331_pnkdct-f-30_results_00.h5
+  - _aggregate_results/2019-06-04_t12-54-30_190604-pnkdct-f-190331_pnkdct-f-30_results_00.yaml
+  uuid: 93a1f334-f165-4719-93c3-4bde82ddcbd0
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190604-PNKDCT-F-190331
+    StartTime: '2019-06-04T12:54:30.2365404-04:00'
+    SubjectName: PNKDCT-F-30
+- path:
+  - _aggregate_results/2018-10-12_t11-32-32_2018-10-12_pnkd-m_cohort0815_ct-71_results_00.h5
+  - _aggregate_results/2018-10-12_t11-32-32_2018-10-12_pnkd-m_cohort0815_ct-71_results_00.yaml
+  uuid: f1a5c63a-5564-403b-9902-d5613480ce10
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_PNKD-M_cohort0815
+    StartTime: '2018-10-12T11:32:32.532211-04:00'
+    SubjectName: CT-71
+- path:
+  - _aggregate_results/2018-09-17_t14-31-02_2018-09-17__pnkd_ct-f_cohort0720_pct-49_f_results_00.h5
+  - _aggregate_results/2018-09-17_t14-31-02_2018-09-17__pnkd_ct-f_cohort0720_pct-49_f_results_00.yaml
+  uuid: 60be8f52-7bd3-40de-a530-299e5e7d2754
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-17_PnkdCT-F_cohort0720
+    StartTime: '2018-09-17T14:31:02.3751502-04:00'
+    SubjectName: PCT-49F
+- path:
+  - _aggregate_results/2018-10-12_t11-32-55_2018-10-12_pnkdct-m_cohort0815_ct-72_results_00.h5
+  - _aggregate_results/2018-10-12_t11-32-55_2018-10-12_pnkdct-m_cohort0815_ct-72_results_00.yaml
+  uuid: daf5672d-6f8f-4fae-b560-20c9a86e1a8a
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_PNKDCT-M_cohort0815
+    StartTime: '2018-10-12T11:32:55.9507964-04:00'
+    SubjectName: CT-72
+- path:
+  - _aggregate_results/2019-03-01_t08-57-32_190301-pnkdct-f-coh181223_pnkdct-1_results_00.h5
+  - _aggregate_results/2019-03-01_t08-57-32_190301-pnkdct-f-coh181223_pnkdct-1_results_00.yaml
+  uuid: 86b3a21f-dba2-47b9-b437-2e57ed0a42e4
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190301-PNKDCT-F-coh181223
+    StartTime: '2019-03-01T08:57:32.3231442-05:00'
+    SubjectName: PNKDCT-1
+- path:
+  - _aggregate_results/2019-05-12_t12-29-22_190512-pnkdct-f-coh190314_pnkdct-f-14_results_00.h5
+  - _aggregate_results/2019-05-12_t12-29-22_190512-pnkdct-f-coh190314_pnkdct-f-14_results_00.yaml
+  uuid: 210d35bf-d939-45b0-b52f-deaecae4966d
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190512-PNKDCT-F-coh190314
+    StartTime: '2019-05-12T12:29:22.5767216-04:00'
+    SubjectName: PNKDCT-F-14
+- path:
+  - _aggregate_results/2018-08-13_t14-43-42_2018-08-13__pnkd_ct_cohort0606_cage-yy_mouse-13_results_00.h5
+  - _aggregate_results/2018-08-13_t14-43-42_2018-08-13__pnkd_ct_cohort0606_cage-yy_mouse-13_results_00.yaml
+  uuid: c6a779e0-3bcf-4ade-8d7b-da3d24a32f89
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T14:43:42.65247-04:00'
+    SubjectName: cage-YY_mouse-13
+- path:
+  - _aggregate_results/2019-05-10_t13-16-30_190509-pnkdct-m-coh190317_pnkdct-m-14_results_00.h5
+  - _aggregate_results/2019-05-10_t13-16-30_190509-pnkdct-m-coh190317_pnkdct-m-14_results_00.yaml
+  uuid: c6631355-e8d0-4db4-8887-fc9d34b42358
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190509-PNKDCT-M-coh190317
+    StartTime: '2019-05-10T13:16:30.8720424-04:00'
+    SubjectName: PNKDCT-M-14
+- path:
+  - _aggregate_results/2019-06-06_t13-07-11_190606-pnkdct-m-coh190405_pnkdct-m-27_results_00.h5
+  - _aggregate_results/2019-06-06_t13-07-11_190606-pnkdct-m-coh190405_pnkdct-m-27_results_00.yaml
+  uuid: ed9b28d5-fa94-4e58-9354-68687a77231a
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190606-PNKDCT-M-coh190405
+    StartTime: '2019-06-06T13:07:11.0462679-04:00'
+    SubjectName: PNKDCT-M-27
+- path:
+  - _aggregate_results/2018-09-02_t13-57-01_2018-09-02__pnkd_ct-f_cohort0704_cage-i_mouse-41_results_00.h5
+  - _aggregate_results/2018-09-02_t13-57-01_2018-09-02__pnkd_ct-f_cohort0704_cage-i_mouse-41_results_00.yaml
+  uuid: 49f082e0-7fac-4ad9-a645-05b335872f02
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-02_Pnkd_CT-F_cohort0704
+    StartTime: '2018-09-02T13:57:01.3027668-04:00'
+    SubjectName: cage-I_mouse-41
+- path:
+  - _aggregate_results/2018-09-17_t11-19-48_2018-09-17__pnkd_ct-f_cohort0720_pct-45_f_results_00.h5
+  - _aggregate_results/2018-09-17_t11-19-48_2018-09-17__pnkd_ct-f_cohort0720_pct-45_f_results_00.yaml
+  uuid: b2432f2a-762e-4ff9-a65d-50619c46828c
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-17_PnkdCT-F_cohort0720
+    StartTime: '2018-09-17T11:19:48.9746604-04:00'
+    SubjectName: PCT-45F
+- path:
+  - _aggregate_results/2019-05-12_t13-00-57_190512-pnkdct-f-coh190314_pnkdct-f-16_results_00.h5
+  - _aggregate_results/2019-05-12_t13-00-57_190512-pnkdct-f-coh190314_pnkdct-f-16_results_00.yaml
+  uuid: 63c3b73b-e9e5-4f5a-ba4a-1b99e397f676
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190512-PNKDCT-F-coh190314
+    StartTime: '2019-05-12T13:00:57.3563774-04:00'
+    SubjectName: PNKDCT-F-16
+- path:
+  - _aggregate_results/2018-08-13_t13-45-34_2018-08-13__pnkd_ct_cohort0606_cage-uu_mouse-9_results_00.h5
+  - _aggregate_results/2018-08-13_t13-45-34_2018-08-13__pnkd_ct_cohort0606_cage-uu_mouse-9_results_00.yaml
+  uuid: 09ac939b-4347-4a94-979c-0c9d84f132d0
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T13:45:34.2171015-04:00'
+    SubjectName: cage-UU_mouse-9
+- path:
+  - _aggregate_results/2019-06-04_t11-35-04_190604-pnkdct-m-190321_pnkdct-m-24_results_00.h5
+  - _aggregate_results/2019-06-04_t11-35-04_190604-pnkdct-m-190321_pnkdct-m-24_results_00.yaml
+  uuid: 5cddb878-7b79-47d9-87f1-9157431fbdfb
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190604-PNKDCT-M-190321
+    StartTime: '2019-06-04T11:35:04.4631718-04:00'
+    SubjectName: PNKDCT-M-24
+- path:
+  - _aggregate_results/2018-09-18_t11-58-09_2018-09-18_pnkdct-m_cohort0720_pct-54_m_results_00.h5
+  - _aggregate_results/2018-09-18_t11-58-09_2018-09-18_pnkdct-m_cohort0720_pct-54_m_results_00.yaml
+  uuid: 978905f9-d1fe-4551-ae9c-522a1d5a462f
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-18_PNKDCT-M_cohort0720
+    StartTime: '2018-09-18T11:58:09.4186899-04:00'
+    SubjectName: PCT-54M
+- path:
+  - _aggregate_results/2019-05-14_t12-31-44_190514-pnkdct-m-190321_pnkdct-m-22_results_00.h5
+  - _aggregate_results/2019-05-14_t12-31-44_190514-pnkdct-m-190321_pnkdct-m-22_results_00.yaml
+  uuid: fe163fc6-5cb2-4694-8016-8dd415de7e2a
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190514-PNKDCT-M-190321
+    StartTime: '2019-05-14T12:31:44.8900384-04:00'
+    SubjectName: PNKDCT-M-22
+- path:
+  - _aggregate_results/2018-08-13_t15-09-35_2018-08-13__pnkd_ct_cohort0606_cage-vv_mouse-15_results_00.h5
+  - _aggregate_results/2018-08-13_t15-09-35_2018-08-13__pnkd_ct_cohort0606_cage-vv_mouse-15_results_00.yaml
+  uuid: ce7c2a44-c7ae-41ac-9c68-fab564cbdc5d
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T15:09:35.8161491-04:00'
+    SubjectName: cage-VV_mouse-15
+- path:
+  - _aggregate_results/2019-04-09_t10-56-35_190409-pkdko-f-coh190217_pnkdko-f-22_results_00.h5
+  - _aggregate_results/2019-04-09_t10-56-35_190409-pkdko-f-coh190217_pnkdko-f-22_results_00.yaml
+  uuid: 5ea197c7-31e0-4405-a27d-5b441e25deec
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190409-PKDKO-F-coh190217
+    StartTime: '2019-04-09T10:56:35.6796935-04:00'
+    SubjectName: PNKDKO-F-22
+- path:
+  - _aggregate_results/2019-04-09_t11-26-05_190409-pnkdko-f-190217_pnkdko-f-23_results_00.h5
+  - _aggregate_results/2019-04-09_t11-26-05_190409-pnkdko-f-190217_pnkdko-f-23_results_00.yaml
+  uuid: 3fe20d21-2e1a-4054-9453-2b52f9500970
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190409-PNKDKO-F-190217
+    StartTime: '2019-04-09T11:26:05.2935295-04:00'
+    SubjectName: PNKDKO-F-23
+- path:
+  - _aggregate_results/2019-02-26_t11-51-11_190226-pnkdct-m-coh181223_pnkdct-5_results_00.h5
+  - _aggregate_results/2019-02-26_t11-51-11_190226-pnkdct-m-coh181223_pnkdct-5_results_00.yaml
+  uuid: 58808691-7769-4dd4-a9ae-3ecdb6aed273
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190226-PNKDCT-M-coh181223
+    StartTime: '2019-02-26T11:51:11.7450466-05:00'
+    SubjectName: PNKDCT-5
+- path:
+  - _aggregate_results/2018-08-20_t12-10-46_2018-08-20__pnkd_ct-m_cohort0618_cage-ppp_mouse-3_results_00.h5
+  - _aggregate_results/2018-08-20_t12-10-46_2018-08-20__pnkd_ct-m_cohort0618_cage-ppp_mouse-3_results_00.yaml
+  uuid: 806f9337-6f01-40d1-8df4-3f024011e461
+  group: M_unk
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-20_Pnkd_CT-M_cohort0618
+    StartTime: '2018-08-20T12:10:46.3479196-04:00'
+    SubjectName: cage-PPP_mouse-3
+- path:
+  - _aggregate_results/2018-08-13_t13-18-23_2018-08-13__pnkd_ct_cohort0606_cage-tt_mouse-7_results_00.h5
+  - _aggregate_results/2018-08-13_t13-18-23_2018-08-13__pnkd_ct_cohort0606_cage-tt_mouse-7_results_00.yaml
+  uuid: 192aa797-3684-4365-b004-d990145569c4
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T13:18:23.1419138-04:00'
+    SubjectName: cage-TT_mouse-7
+- path:
+  - _aggregate_results/2019-04-04_t10-40-04_190404-pnkdko-m-190202_pnkdko-m-23_results_00.h5
+  - _aggregate_results/2019-04-04_t10-40-04_190404-pnkdko-m-190202_pnkdko-m-23_results_00.yaml
+  uuid: cda72ab8-7ae9-4540-a7a3-3a21f11cb9bd
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190404-PNKDKO-M-190202
+    StartTime: '2019-04-04T10:40:04.961714-04:00'
+    SubjectName: PNKDKO-M-23
+- path:
+  - _aggregate_results/2019-04-02_t11-38-04_190402-pkdko-m-coh190202_pnkdko-m-20_results_00.h5
+  - _aggregate_results/2019-04-02_t11-38-04_190402-pkdko-m-coh190202_pnkdko-m-20_results_00.yaml
+  uuid: dea78bb4-1716-4674-b1ff-51c71ae50188
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190402-PKDKO-M-coh190202
+    StartTime: '2019-04-02T11:38:04.1817388-04:00'
+    SubjectName: PNKDKO-M-20
+- path:
+  - _aggregate_results/2019-03-28_t11-33-49_190328-pkdko-f-coh190202_pnkd-17_results_00.h5
+  - _aggregate_results/2019-03-28_t11-33-49_190328-pkdko-f-coh190202_pnkd-17_results_00.yaml
+  uuid: c4da2335-b3b7-4fb3-9f73-6dccb8c12856
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190328-PKDKO-F-coh190202
+    StartTime: '2019-03-28T11:33:49.8731261-04:00'
+    SubjectName: PNKD-17
+- path:
+  - _aggregate_results/2019-05-14_t10-32-54_190514-pnkdct-m-coh190314_pnkdct-m-21_results_00.h5
+  - _aggregate_results/2019-05-14_t10-32-54_190514-pnkdct-m-coh190314_pnkdct-m-21_results_00.yaml
+  uuid: 856bd089-c6b9-4688-ae40-987d2093b005
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190514-PNKDCT-M-coh190314
+    StartTime: '2019-05-14T10:32:54.6283384-04:00'
+    SubjectName: PNKDCT-M-21
+- path:
+  - _aggregate_results/2018-08-13_t12-21-13_2018-08-13__pnkd_ct_cohort0606_cage-mm_mouse-3_results_00.h5
+  - _aggregate_results/2018-08-13_t12-21-13_2018-08-13__pnkd_ct_cohort0606_cage-mm_mouse-3_results_00.yaml
+  uuid: 06d3359b-afb6-418b-ac0c-688e5205ddbd
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T12:21:13.1941475-04:00'
+    SubjectName: cage-MM_mouse-3
+- path:
+  - _aggregate_results/2019-03-04_t12-04-43_190304-pnkdko-m-coh181216_pnkdko-12_results_00.h5
+  - _aggregate_results/2019-03-04_t12-04-43_190304-pnkdko-m-coh181216_pnkdko-12_results_00.yaml
+  uuid: 101a662c-5675-466f-bb43-8d1ad7e751c2
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190304-PNKDKO-M-coh181216
+    StartTime: '2019-03-04T12:04:43.8438957-05:00'
+    SubjectName: PNKDKO-12
+- path:
+  - _aggregate_results/2018-08-14_t12-28-45_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-3_results_00.h5
+  - _aggregate_results/2018-08-14_t12-28-45_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-3_results_00.yaml
+  uuid: 9768453d-63df-4d67-b2a3-19102128b1dd
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-14_Pnkd_CT-f_cohort0606
+    StartTime: '2018-08-14T12:28:45.3840995-04:00'
+    SubjectName: cage-WW_mouse-3
+- path:
+  - _aggregate_results/2019-05-12_t12-28-47_190512-pnkdct-f-190314_pnkdct-f-13_results_00.h5
+  - _aggregate_results/2019-05-12_t12-28-47_190512-pnkdct-f-190314_pnkdct-f-13_results_00.yaml
+  uuid: 553ed13f-521e-4a98-85f6-476e9a4336da
+  group: F_unk
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190512-PNKDCT-F-190314
+    StartTime: '2019-05-12T12:28:47.7717372-04:00'
+    SubjectName: PNKDCT-F-13
+- path:
+  - _aggregate_results/2018-08-13_t13-18-35_2018-08-13__pnkd_ct_cohort0606_cage-tt_mouse-8_results_00.h5
+  - _aggregate_results/2018-08-13_t13-18-35_2018-08-13__pnkd_ct_cohort0606_cage-tt_mouse-8_results_00.yaml
+  uuid: 50e75b4f-2593-46b0-98bc-07faa626afe8
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T13:18:35.5760586-04:00'
+    SubjectName: cage-TT_mouse-8
+- path:
+  - _aggregate_results/2018-09-18_t11-07-09_2018-09-18_pnkdct-f_cohort0720_pct-50_f_results_00.h5
+  - _aggregate_results/2018-09-18_t11-07-09_2018-09-18_pnkdct-f_cohort0720_pct-50_f_results_00.yaml
+  uuid: 406526c8-e5cf-4ed5-839b-5f76b7336750
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-18_PNKDCT-F_cohort0720
+    StartTime: '2018-09-18T11:07:09.4635373-04:00'
+    SubjectName: PCT-50F
+- path:
+  - _aggregate_results/2019-02-26_t11-25-55_190226-pnkdct-m-coh181211_pnkdct-3_results_00.h5
+  - _aggregate_results/2019-02-26_t11-25-55_190226-pnkdct-m-coh181211_pnkdct-3_results_00.yaml
+  uuid: 46028c64-d45e-4dc8-acdc-cf9f8f8cf40a
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190226-PNKDCT-M-coh181211
+    StartTime: '2019-02-26T11:25:55.3487494-05:00'
+    SubjectName: PNKDCT-3
+- path:
+  - _aggregate_results/2018-09-02_t11-31-32_2018-09-02__pnkd_ct-f_cohort0706_cage-nonumber_mouse-35_results_00.h5
+  - _aggregate_results/2018-09-02_t11-31-32_2018-09-02__pnkd_ct-f_cohort0706_cage-nonumber_mouse-35_results_00.yaml
+  uuid: c6d49e54-c2d5-4dd6-842b-30c44250d653
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-02_Pnkd_CT-f_cohort0706
+    StartTime: '2018-09-02T11:31:32.9452847-04:00'
+    SubjectName: cage-nonumber_mouse-35
+- path:
+  - _aggregate_results/2018-08-13_t12-49-58_2018-08-13__pnkd_ct_cohort0606_cage-tt_mouse-5_results_00.h5
+  - _aggregate_results/2018-08-13_t12-49-58_2018-08-13__pnkd_ct_cohort0606_cage-tt_mouse-5_results_00.yaml
+  uuid: 11d8aebd-b8dc-4258-8ad8-a829472dfb71
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-13_Pnkd_CT_cohort0606
+    StartTime: '2018-08-13T12:49:58.793197-04:00'
+    SubjectName: cage-TT_mouse-5
+- path:
+  - _aggregate_results/2019-02-19_t12-32-19_190219-pnkdko-f-coh181128=4_pnkdko-8_results_00.h5
+  - _aggregate_results/2019-02-19_t12-32-19_190219-pnkdko-f-coh181128=4_pnkdko-8_results_00.yaml
+  uuid: bf1e7787-e408-4c00-8627-58568d1e8b9f
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190219-PNKDKO-F-coh181128=4
+    StartTime: '2019-02-19T12:32:19.2118613-05:00'
+    SubjectName: PNKDKO-8
+- path:
+  - _aggregate_results/2018-08-14_t13-08-39_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-6_results_00.h5
+  - _aggregate_results/2018-08-14_t13-08-39_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-6_results_00.yaml
+  uuid: bf31fdbf-ed58-4545-a359-3e05c6dd2da4
+  group: F_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-14_Pnkd_CT-f_cohort0606
+    StartTime: '2018-08-14T13:08:39.1333802-04:00'
+    SubjectName: cage-WW_mouse-6
+- path:
+  - _aggregate_results/2018-08-14_t11-29-51_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-2_results_00.h5
+  - _aggregate_results/2018-08-14_t11-29-51_2018-08-14__pnkd_ct-f_cohort0606_cage-ww_mouse-2_results_00.yaml
+  uuid: 6bef5edc-389b-4cc7-ab95-cb570e47d276
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-14_Pnkd_CT-f_cohort0606
+    StartTime: '2018-08-14T11:29:51.9014467-04:00'
+    SubjectName: cage-WW_mouse-2
+- path:
+  - _aggregate_results/2019-04-09_t12-01-32_190409-pkdko-m-coh190217_pnkdko-m-30_results_00.h5
+  - _aggregate_results/2019-04-09_t12-01-32_190409-pkdko-m-coh190217_pnkdko-m-30_results_00.yaml
+  uuid: 52a26a5a-39b0-44d3-b921-6f62642cd9f0
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190409-PKDKO-M-coh190217
+    StartTime: '2019-04-09T12:01:32.7314897-04:00'
+    SubjectName: PNKDKO-M-30
+- path:
+  - _aggregate_results/2018-08-20_t11-45-48_2018-08-14__pnkd_ct-f_cohort0606_cage-ppp_mouse-2_results_00.h5
+  - _aggregate_results/2018-08-20_t11-45-48_2018-08-14__pnkd_ct-f_cohort0606_cage-ppp_mouse-2_results_00.yaml
+  uuid: b6555c67-659e-40f4-b669-a5f126388f0a
+  group: M_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-14_Pnkd_CT-f_cohort0606
+    StartTime: '2018-08-20T11:45:48.057517-04:00'
+    SubjectName: cage-PPP_mouse-2
+- path:
+  - _aggregate_results/2018-09-17_t11-19-26_2018-09-17_pnkdct-f_cohort0720_pct-44_f_results_00.h5
+  - _aggregate_results/2018-09-17_t11-19-26_2018-09-17_pnkdct-f_cohort0720_pct-44_f_results_00.yaml
+  uuid: 732f07fd-487f-4069-b143-df51ab922482
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-17_PNKDCT-F_cohort0720
+    StartTime: '2018-09-17T11:19:26.0617072-04:00'
+    SubjectName: PCT-44F
+- path:
+  - _aggregate_results/2018-09-02_t11-07-04_2018-09-02__pnkd_ct-f_cohort0706_cage-nonumber_mouse-34_results_00.h5
+  - _aggregate_results/2018-09-02_t11-07-04_2018-09-02__pnkd_ct-f_cohort0706_cage-nonumber_mouse-34_results_00.yaml
+  uuid: 6a34907c-bf09-48ec-a54a-aea2bbeb00f1
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-09-02_Pnkd_CT-f_cohort0706
+    StartTime: '2018-09-02T11:07:04.5118671-04:00'
+    SubjectName: cage-nonumber_mouse-34
+- path:
+  - _aggregate_results/2019-05-14_t11-05-53_190514-pnkdct-f-190321_pnkdct-f-17_results_00.h5
+  - _aggregate_results/2019-05-14_t11-05-53_190514-pnkdct-f-190321_pnkdct-f-17_results_00.yaml
+  uuid: 966f5d37-bc27-49be-885b-1304866b0899
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190514-PNKDCT-F-190321
+    StartTime: '2019-05-14T11:05:53.4376319-04:00'
+    SubjectName: PNKDCT-F-17
+- path:
+  - _aggregate_results/2018-08-20_t13-02-00_2018-08-20__pnkd_ct-f_cohort0618_cage-ppp_mouse-7_results_00.h5
+  - _aggregate_results/2018-08-20_t13-02-00_2018-08-20__pnkd_ct-f_cohort0618_cage-ppp_mouse-7_results_00.yaml
+  uuid: 9fa27700-de20-4fe4-82e0-ad8442ea2b60
+  group: F_CT/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-08-20_Pnkd_CT-f_cohort0618
+    StartTime: '2018-08-20T13:02:00.9300008-04:00'
+    SubjectName: cage-PPP_mouse-7
+- path:
+  - _aggregate_results/2019-06-04_t13-45-48_190604-pnkdct-f-190331_pnkdct-f-34_results_00.h5
+  - _aggregate_results/2019-06-04_t13-45-48_190604-pnkdct-f-190331_pnkdct-f-34_results_00.yaml
+  uuid: 037fbc7d-d787-42ee-b5a4-6c68f2d8c195
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190604-PNKDCT-F-190331
+    StartTime: '2019-06-04T13:45:48.5991194-04:00'
+    SubjectName: PNKDCT-F-34
+- path:
+  - _aggregate_results/2019-03-01_t09-22-57_190301-pnkdct-f-coh181223_pnkdct-3_results_00.h5
+  - _aggregate_results/2019-03-01_t09-22-57_190301-pnkdct-f-coh181223_pnkdct-3_results_00.yaml
+  uuid: 320f710c-ce50-40fd-a1ac-ba2b999eb3f0
+  group: F_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190301-PNKDCT-F-coh181223
+    StartTime: '2019-03-01T09:22:57.395285-05:00'
+    SubjectName: PNKDCT-3
+- path:
+  - _aggregate_results/2019-05-10_t13-16-10_190509-pnkdct-m-190317_pnkdct-f-13_results_00.h5
+  - _aggregate_results/2019-05-10_t13-16-10_190509-pnkdct-m-190317_pnkdct-f-13_results_00.yaml
+  uuid: d65a5d69-4f3e-45e1-bd08-9d2a5017e54e
+  group: M_+/+
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 190509-PNKDCT-M-190317
+    StartTime: '2019-05-10T13:16:10.2785286-04:00'
+    SubjectName: PNKDCT-F-13
+- path:
+  - _aggregate_results/2018-10-12_t11-07-55_2018-10-12_pnkdct-m_cohort0815_ct-70_results_00.h5
+  - _aggregate_results/2018-10-12_t11-07-55_2018-10-12_pnkdct-m_cohort0815_ct-70_results_00.yaml
+  uuid: d585966d-ab7e-474c-9c7c-82f15ff4db76
+  group: M_+/CT
+  metadata:
+    ColorDataType: Byte[]
+    ColorResolution:
+    - 512
+    - 424
+    DepthDataType: UInt16[]
+    DepthResolution:
+    - 512
+    - 424
+    IsLittleEndian: true
+    NidaqChannels: 0
+    NidaqSamplingRate: 0.0
+    SessionName: 2018-10-12_PNKDCT-M_cohort0815
+    StartTime: '2018-10-12T11:07:55.5872649-04:00'
+    SubjectName: CT-70
+pca_path: _pca/pca_scores.h5

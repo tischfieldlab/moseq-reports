@@ -8,7 +8,8 @@
                     <b-nav-item href="/data" right>Data</b-nav-item>
                     <b-nav-item href="/options" left>Options</b-nav-item>
                 </b-navbar-nav>
-                <b-button @click="openFileClicked()" style="right: 10px; position: absolute;">Open File</b-button>
+
+                <b-button pill @click="openFileClicked()" style="right: 10px; position: absolute;">Open File</b-button>
             </b-navbar>
         </div>
     </div>
@@ -16,19 +17,25 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { MetadataJson } from '../models/DataModel';
 export default Vue.extend({
     name: 'NavBar',
     methods: {
         openFileClicked() {
             const app = require('electron').remote;
             const path = require('path');
+            const fs = require('fs');
 
             // Open up the metadata directory to start with
             // TODO: Maybe add the file extension filter
             let currDirectory: string = process.cwd();
             currDirectory = path.join(currDirectory, 'src', 'metadata');
 
-            app.dialog.showOpenDialog({properties: ['openFile'], defaultPath: currDirectory});
+            const filenames = app.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDirectory});
+
+            if (filenames === undefined) { return; }
+
+            const content: MetadataJson = JSON.parse(fs.readFileSync(filenames[0])) as MetadataJson;
         },
     },
 });

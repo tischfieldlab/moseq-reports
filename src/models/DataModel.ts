@@ -9,6 +9,11 @@ export enum EventType {
     SYLLABLE_CHANGE = 'selectedSyllableChange',
 }
 
+export interface MetadataJson {
+    dataframeJson: any,
+    cohortGroups: string[]
+};
+
 class EventBus extends Vue {
 
 
