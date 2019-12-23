@@ -8,6 +8,7 @@
                     <b-nav-item href="/data" right>Data</b-nav-item>
                     <b-nav-item href="/options" left>Options</b-nav-item>
                 </b-navbar-nav>
+                <b-button @click="openFileClicked()" style="right: 10px; position: absolute;">Open File</b-button>
             </b-navbar>
         </div>
     </div>
@@ -17,6 +18,19 @@
 import Vue from 'vue';
 export default Vue.extend({
     name: 'NavBar',
+    methods: {
+        openFileClicked() {
+            const app = require('electron').remote;
+            const path = require('path');
+
+            // Open up the metadata directory to start with
+            // TODO: Maybe add the file extension filter
+            let currDirectory: string = process.cwd();
+            currDirectory = path.join(currDirectory, 'src', 'metadata');
+
+            app.dialog.showOpenDialog({properties: ['openFile'], defaultPath: currDirectory});
+        },
+    },
 });
 </script>
 

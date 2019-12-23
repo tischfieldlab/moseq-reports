@@ -52,9 +52,9 @@ class EventBus extends Vue {
 class DataModel {
     private static instance : DataModel;
     
-    private availableGroups     :   Array<string> = [];
+    private availableGroups     :   string[] = [];
     private maxSyllable         :   number = 0;
-    private selectedGroups      :   Array<string> = [];
+    private selectedGroups      :   string[] = [];
     private selectedSyallable   :   number = 0;
     private baseDataframe       :   any = null;
     private aggregateView       :   any = null;
@@ -89,7 +89,7 @@ class DataModel {
      * @memberof DataModel
      */
     private updateView() {
-        let excludeGroups : Array<string> = [];
+        let excludeGroups : string[] = [];
         for (var i = 0; i < this.availableGroups.length; i++) {
             if (!this.selectedGroups.includes(this.availableGroups[i])) {
                 excludeGroups.push(this.availableGroups[i]);
@@ -159,11 +159,11 @@ class DataModel {
      * Updates the selected groups based on UI input
      * and fires the GROUPS_CHANGE event.
      *
-     * @param {Array<string>} groups    New list of groups to display
+     * @param {string[]} groups    New list of groups to display
      *                                  and model.
      * @memberof DataModel
      */
-    public updateSelectedGroups(groups : Array<string>) {
+    public updateSelectedGroups(groups : string[]) {
         if (groups === null) {
             throw new Error('Illegal Argument: Argument must not be null.');
         }
@@ -190,7 +190,7 @@ class DataModel {
     /**
      * Returns the list of selected groups.
      *
-     * @returns {Array<string>} The list of selected groups.
+     * @returns {string[]} The list of selected groups.
      * @memberof DataModel
      */
     public getSelectedGroups() {
@@ -201,7 +201,7 @@ class DataModel {
      * Returns the list of all available groups that
      * gets populated from the metadata.json file.
      *
-     * @returns {Array<string>} List of all available groups.
+     * @returns {string[]} List of all available groups.
      * @memberof DataModel
      */
     public getAvailableGroups() {

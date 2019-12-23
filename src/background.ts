@@ -60,7 +60,7 @@ app.on('activate', () => {
 });
 
 // This needs to be added because somewhere in Vue this ready event gets
-// overwritten, so this wipes it all clean. 
+// overwritten, so this wipes it all clean.
 // @ref: https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/378
 app.removeAllListeners('ready');
 // This method will be called when Electron has finished
