@@ -2,8 +2,6 @@ import DataFrame from 'dataframe-js';
 import Vue from 'vue';
 
 /* tslint:disable */
-const meta = require('../metadata/metadata.js');
-
 export enum EventType {
     GROUPS_CHANGE = 'selectedGroupsChange',
     SYLLABLE_CHANGE = 'selectedSyllableChange',
@@ -76,11 +74,30 @@ class DataModel {
     }
 
     private constructor() {
-        this.availableGroups = meta.cohortGroups;
+        const path = require('path');
+        const fs = require('fs');
 
-        this.selectedGroups = this.availableGroups;
-        this.baseDataframe = new DataFrame(meta.dataframeJson.data, meta.dataframeJson.columns);
-        
+        let fpath: string = process.cwd();
+        fpath = path.join(fpath, 'src', 'metadata', 'metadata.msq');
+
+        try {
+            const content: MetadataJson = JSON.parse(fs.readFileSync(fpath)) as MetadataJson;
+            content.dataframeJson = JSON.parse(content.dataframeJson);
+            this.loadMetadataFile(content);
+        } catch(e) {
+            this.availableGroups = [];
+            this.baseDataframe = null;
+            this.selectedGroups = [];
+            this.maxSyllable = 100;
+        }
+    }
+
+    public loadMetadataFile(jsonFile: MetadataJson) {
+        this.availableGroups = jsonFile.cohortGroups;
+        this.selectedGroups = jsonFile.cohortGroups;
+
+        this.baseDataframe = new DataFrame(jsonFile.dataframeJson.data, jsonFile.dataframeJson.columns);
+
         this.maxSyllable = this.baseDataframe.filter((row: any) => row.get('syllable')).distinct('syllable').toArray().length;
 
         this.updateView();

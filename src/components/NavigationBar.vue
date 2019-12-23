@@ -18,6 +18,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import { MetadataJson } from '../models/DataModel';
+import DataModel from '../models/DataModel';
+
 export default Vue.extend({
     name: 'NavBar',
     methods: {
@@ -36,6 +38,8 @@ export default Vue.extend({
             if (filenames === undefined) { return; }
 
             const content: MetadataJson = JSON.parse(fs.readFileSync(filenames[0])) as MetadataJson;
+            content.dataframeJson = JSON.parse(content.dataframeJson) as any;
+            DataModel.loadMetadataFile(content);
         },
     },
 });

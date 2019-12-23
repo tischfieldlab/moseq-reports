@@ -29,13 +29,12 @@ def main():
 def writeMetadataFile(df, dfGroups, outputPath):
     ensure_dir(outputPath)
     
-    outputPath = os.path.join(outputPath, 'metadata.json')
+    outputPath = os.path.join(outputPath, 'metadata.msq')
     res = {}
     res['cohortGroups'] = dfGroups
     res['dataframeJson'] = df
-    res = json.dumps(res)
     with open(outputPath, 'w') as f:
-        f.write(res)
+        json.dump(res, f)
 #end writeMetadataFile
 
 def getGroupsFromDataframe(df):
@@ -46,8 +45,6 @@ def getGroupsFromDataframe(df):
         groups.add(arr[1])
 
     groups = list(groups)
-    groups = ', '.join("'" + str(e) + "'" for e in groups)
-    groups = '[' + groups + ']'
 
     return groups
 #end getGroupsFromDataframe()
