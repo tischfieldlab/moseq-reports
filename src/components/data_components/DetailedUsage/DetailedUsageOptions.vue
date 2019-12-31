@@ -8,6 +8,14 @@
                 Show Individual Data Points
             </b-form-checkbox>
         </b-row>
+        <b-row v-show="show_points">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Point Size">
+                    <b-form-input type="number" v-model="point_size" min="1" max="10" ></b-form-input>
+                </b-input-group>
+            </b-col>
+        </b-row>
         <b-row>
             <b-form-checkbox v-model="show_boxplot" switch>
                 Show Boxplot
@@ -16,10 +24,10 @@
         <b-row v-show="show_boxplot">
             <b-col cols="1"></b-col>
             <b-col>
-                <b-form-group label="Whisker Type:">
+                <b-input-group prepend="Whiskers">
                     <b-form-select v-model="boxplot_whiskers" :options="whisker_options"></b-form-select>
                     <div class="figure-caption">{{ boxplot_whisker_description }}</div>
-                </b-form-group>
+                </b-input-group>
             </b-col>
         </b-row>
         <b-row>
@@ -58,6 +66,19 @@ export default Vue.component('detailed-usage-options', {
                     id: this.id,
                     settings: {
                         show_points: value,
+                    },
+                });
+            },
+        },
+        point_size: {
+            get(): boolean {
+                return this.settings.point_size;
+            },
+            set(value: boolean) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        point_size: value,
                     },
                 });
             },

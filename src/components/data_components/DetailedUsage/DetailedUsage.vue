@@ -53,11 +53,11 @@
                 </g>
                 <g v-if="settings.show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
                     <template v-for="(node, index) in individualUseageData" v-on:click="select(index, node)">
-                        <!-- Circles for each node -->  
-                        <circle 
+                        <!-- Circles for each node -->
+                        <circle
                             v-bind:key="node.StartTime"
                             v-b-tooltip.html :title="point_tooltip(node)"
-                            :r="3"
+                            :r="point_size"
                             :cx="scale.x(node.group) + node.jitter + halfBandwith"
                             :cy="scale.y(node.usage)"
                             :style="{'fill': color(node.group), stroke: '#000000'}" />
@@ -123,6 +123,7 @@ store.commit('registerComponent', {
     init_height: 500,
     default_settings: {
         show_points: true,
+        point_size: 3,
         show_boxplot: true,
         show_violinplot: false,
         boxplot_whiskers: WhiskerType.TUKEY,
@@ -214,6 +215,11 @@ export default Vue.component('detailed-usage', {
                 .range([0, x.bandwidth()]);
             return { x, y, w };
         },
+        point_size(): number {
+            const ps = this.settings.point_size;
+            this.swarm_points(ps);
+            return ps;
+        },
         fences() {
             switch (this.settings.boxplot_whiskers) {
                 case WhiskerType.MIN_MAX:
@@ -300,9 +306,12 @@ export default Vue.component('detailed-usage', {
                         ${item.usage}
                     </div>`;
         },
-        swarm_points() {
+        swarm_points(pointSize?: number) {
             DataModel.getSelectedGroups().map((g) => {
-                const radius2 = 8 ** 2;
+                if (pointSize === undefined) {
+                    pointSize = this.settings.point_size as number;
+                }
+                const radius2 = (pointSize * 2.5) ** 2;
                 let head: UsageItemQueueNode | null = null;
                 let tail: UsageItemQueueNode | null = null;
                 const indv = this.individualUseageData
