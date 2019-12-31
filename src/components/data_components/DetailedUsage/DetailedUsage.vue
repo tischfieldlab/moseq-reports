@@ -94,7 +94,6 @@ interface UsageItem {
     group: string;
     StartTime: string;
     jitter: number;
-    radius: 3;
 }
 
 interface UsageItemQueueNode extends UsageItem {
