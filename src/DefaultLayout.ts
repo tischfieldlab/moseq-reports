@@ -28,6 +28,7 @@ export default [{
     settings: {
         show_points: true,
         show_boxplot: true,
+        boxplot_whiskers: 0, // Tukey-style
         show_violinplot: false,
     },
 }, {
