@@ -51,7 +51,7 @@
                         </g>
                     </template>
                 </g>
-                <g v-if="settings.show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`"> <!-- v-on:click="select(index, node)"   v-bind:style="node.style" v-bind:class="[node.className, {'highlight': node.highlight}]">-->
+                <g v-if="settings.show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
                     <template v-for="(node, index) in individualUseageData" v-on:click="select(index, node)">
                         <!-- Circles for each node -->  
                         <circle 
@@ -77,17 +77,16 @@
 <script lang="ts">
 import Vue from 'vue';
 import * as d3 from 'd3';
-import {scaleLinear, scaleBand, scaleOrdinal} from 'd3-scale';
-import {range, histogram, max, min, mean, quantile, median} from 'd3-array';
-import {area, line} from 'd3-shape';
-import {axisBottom, axisLeft} from 'd3-axis';
-import {select} from 'd3-selection';
+import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
+import { range, histogram, max, min, mean, quantile, median } from 'd3-array';
+import { area, line } from 'd3-shape';
+import { axisBottom, axisLeft } from 'd3-axis';
+import { select } from 'd3-selection';
 import { schemeSet1 } from 'd3-scale-chromatic';
-import {forceSimulation} from 'd3-force';
 
 import DataModel, { EventType } from '@/models/DataModel';
 import store from '@/store/root.store';
-import {Layout} from '@/store/root.types';
+import { Layout } from '@/store/root.types';
 import { WhiskerType } from './DetailedUsageOptions.vue';
 
 interface UsageItem {
@@ -127,9 +126,6 @@ store.commit('registerComponent', {
         show_boxplot: true,
         show_violinplot: false,
         boxplot_whiskers: WhiskerType.TUKEY,
-        /* style: {
-            colorscale: 'Portland',
-        }, */
     },
 });
 
@@ -151,7 +147,6 @@ export default Vue.component('detailed-usage', {
                 left: 60,
             },
             rotate_labels: false,
-            // watchers: Array<(() => void)>(),
         };
     },
     mounted() {
@@ -160,8 +155,6 @@ export default Vue.component('detailed-usage', {
         DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.createView);
     },
     destroyed() {
-        // un-watch the store
-        // this.watchers.forEach((w) => w());
         // unsubscribe from the data model
         DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.createView);
         DataModel.unsubscribe(EventType.SYLLABLE_CHANGE, this.createView);
@@ -272,7 +265,6 @@ export default Vue.component('detailed-usage', {
                                  .toArray();
                 return this.computeGroupStats(values, g);
             });
-            // console.log(this.groupedData);
         },
         computeGroupStats(data: number[], group: string): GroupStats {
             const kde = this.kernelDensityEstimator(this.epanechnikovKernel(.01), this.scale.y.ticks(100));
