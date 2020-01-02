@@ -85,7 +85,7 @@ import {axisBottom, axisLeft} from 'd3-axis';
 import {select} from 'd3-selection';
 import { schemeSet1 } from 'd3-scale-chromatic';
 
-import DataModel, { EventType } from '@/models/DataModel';
+import DataModel, { EventType, MetadataJson } from '@/models/DataModel';
 import store from '@/store/root.store';
 import {Layout} from '@/store/root.types';
 
@@ -144,9 +144,10 @@ export default Vue.component('detailed-usage', {
         };
     },
     mounted() {
-        this.createView();
         DataModel.subscribe(EventType.GROUPS_CHANGE, this.createView);
         DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.createView);
+
+        this.createView();
     },
     destroyed() {
         // un-watch the store
@@ -221,7 +222,15 @@ export default Vue.component('detailed-usage', {
     },
     methods: {
         createView() {
+            if (DataModel.getAvailableGroups().length === 0) {
+                return;
+            }
+
             const df = DataModel.getView();
+            if (df === null) {
+                return;
+            }
+
             const currSyllable = DataModel.getSelectedSyllable();
 
             this.individualUseageData = df.where({syllable: currSyllable})

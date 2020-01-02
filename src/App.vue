@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <nav-bar></nav-bar>
     <router-view/>
     <div id="bottom" style="bottom: 0;">
       <footer-bar></footer-bar>
@@ -11,14 +10,19 @@
 <script lang="ts">
 import Vue from 'vue';
 
-import NavBar from '@/components/NavigationBar.vue';
 import FooterBar from '@/components/FooterBar.vue';
+import createMenuStrip from '@/MenuStrip';
+
+import { remote } from 'electron';
 
 export default Vue.extend({
   name: 'App',
   components: {
-    'nav-bar': NavBar,
     'footer-bar': FooterBar,
+  },
+  mounted() {
+    const menu = createMenuStrip();
+    remote.Menu.setApplicationMenu(menu);
   },
 });
 </script>

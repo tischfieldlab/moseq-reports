@@ -63,11 +63,13 @@ export default Vue.extend({
     },
     mounted() {
         DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.updateSyllable);
+        DataModel.subscribe(EventType.METADATA_LOADED, this.buildGroups);
         this.buildGroups();
         this.getsyllableIdOptions();
     },
     methods: {
         buildGroups() {
+            this.groups = []; // Need to reset this so that we don't have duplicate options.
             const selectedGroups = DataModel.getSelectedGroups();
             DataModel.getAvailableGroups()
                      .map((g) => {

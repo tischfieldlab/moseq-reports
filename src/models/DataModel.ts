@@ -5,6 +5,7 @@ import Vue from 'vue';
 export enum EventType {
     GROUPS_CHANGE = 'selectedGroupsChange',
     SYLLABLE_CHANGE = 'selectedSyllableChange',
+    METADATA_LOADED = 'metadataLoaded',
 }
 
 export interface MetadataJson {
@@ -97,10 +98,15 @@ class DataModel {
         this.selectedGroups = jsonFile.cohortGroups;
 
         this.baseDataframe = new DataFrame(jsonFile.dataframeJson.data, jsonFile.dataframeJson.columns);
-
         this.maxSyllable = this.baseDataframe.filter((row: any) => row.get('syllable')).distinct('syllable').toArray().length;
 
+        // NOTE: THIS NEEDS TO BE FIRST OTHERWISE IT WON'T BE CALLED SYNCHRONOUSLY
+        console.log(DataModel);
         this.updateView();
+
+        this.eventBus.fire(EventType.GROUPS_CHANGE, jsonFile.cohortGroups);
+        this.eventBus.fire(EventType.SYLLABLE_CHANGE, 0);
+        this.eventBus.fire(EventType.METADATA_LOADED, null);
     }
 
     /**

@@ -8,7 +8,7 @@ import Vue from 'vue';
 
 import * as Plotly from 'plotly.js-dist';
 
-import DataModel, { EventType } from '@/models/DataModel';
+import DataModel, { EventType, MetadataJson } from '@/models/DataModel';
 import { transpose } from '@/Util';
 import {Size, Layout, ComponentRegistration } from '@/store/root.types';
 import store from '@/store/root.store';
@@ -75,8 +75,8 @@ export default Vue.component('heat-map', {
             },
         ));
 
-        this.createHeatmap();
         DataModel.subscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
+        this.createHeatmap();
     },
     destroyed() {
         // un-watch the store
@@ -97,7 +97,14 @@ export default Vue.component('heat-map', {
             });
         },
         createHeatmap() {
+            if (DataModel.getAvailableGroups().length === 0) {
+                return;
+            }
+
             const df = DataModel.getAggregateView();
+            if (df === null) {
+                return;
+            }
 
             const groups = DataModel.getSelectedGroups();
             const sylNum = df.select('syllable').distinct('syllable').toArray().flat();
