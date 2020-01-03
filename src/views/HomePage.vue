@@ -85,11 +85,7 @@ export default Vue.component('homepage', {
     },
     methods: {
         handleResize(): any {
-            const header = document.getElementById('navigation-bar');
-            const headerHeight = header ? header.clientHeight : 0;
-            const footer = document.getElementById('bottom');
-            const footerHeight = footer ? footer.clientHeight : 0;
-            this.height = document.documentElement.clientHeight - headerHeight - footerHeight;
+            this.height = document.documentElement.clientHeight;
             this.width = document.documentElement.clientWidth - this.toolbox_width;
         },
         loadDefaultLayout(): void {

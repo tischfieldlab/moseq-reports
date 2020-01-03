@@ -1,27 +1,19 @@
 <template>
   <div id="app">
     <router-view/>
-    <div id="bottom" style="bottom: 0;">
-      <footer-bar></footer-bar>
-    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-
-import FooterBar from '@/components/FooterBar.vue';
-import createMenuStrip from '@/MenuStrip';
-
 import { remote } from 'electron';
+
+import createMainMenu from '@/MenuStrip';
 
 export default Vue.extend({
   name: 'App',
-  components: {
-    'footer-bar': FooterBar,
-  },
   mounted() {
-    const menu = createMenuStrip();
+    const menu = createMainMenu();
     remote.Menu.setApplicationMenu(menu);
   },
 });

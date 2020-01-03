@@ -2,6 +2,6 @@ module.exports = {
     publicPath: '',
     assetsDir: '',
     configureWebpack: {
-        devtool: 'source-map'
+        devtool: 'source-map',
     }
 }

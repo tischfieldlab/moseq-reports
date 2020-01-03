@@ -48,6 +48,16 @@ class EventBus extends Vue {
     }
 
 
+    /**
+     * Uses the event system implemented by all Vue components
+     * to remove all of the subscribed functions based off the
+     * passed in event.
+     *
+     * @param {EventType} type      The enum representing the specific
+     *                              event subscribed to.
+     * @param {Function} callback   The function that will be removed.
+     * @memberof EventBus
+     */
     public unsubscribe(type: EventType, callback: Function) {
         this.$off(type, callback);
     }
@@ -74,6 +84,14 @@ class DataModel {
         return DataModel.instance;
     }
 
+    /**
+     * Creates an instance of DataModel, and tries to load in metadata
+     * from 'metadata/metadata.msq' file if it exists, and will load in
+     * the data to the datamodel. If no file exists at that location,
+     * it will default all datamodel values to null or 0.
+     *
+     * @memberof DataModel
+     */
     private constructor() {
         const path = require('path');
         const fs = require('fs');
@@ -93,6 +111,14 @@ class DataModel {
         }
     }
 
+    /**
+     * Updates the datamodel and render components based on new metadata json
+     * information read in from a file selected through the UI.
+     *
+     * @param {MetadataJson} jsonFile   The json object that contains the new
+     *                                  metadata information to be loaded in.
+     * @memberof DataModel
+     */
     public loadMetadataFile(jsonFile: MetadataJson) {
         this.availableGroups = jsonFile.cohortGroups;
         this.selectedGroups = jsonFile.cohortGroups;
@@ -101,7 +127,6 @@ class DataModel {
         this.maxSyllable = this.baseDataframe.filter((row: any) => row.get('syllable')).distinct('syllable').toArray().length;
 
         // NOTE: THIS NEEDS TO BE FIRST OTHERWISE IT WON'T BE CALLED SYNCHRONOUSLY
-        console.log(DataModel);
         this.updateView();
 
         this.eventBus.fire(EventType.GROUPS_CHANGE, jsonFile.cohortGroups);

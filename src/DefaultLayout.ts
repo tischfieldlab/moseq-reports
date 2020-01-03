@@ -6,7 +6,7 @@ export default [{
         height: 600,
         position: {
             x: 260,
-            y: 60,
+            y: 10,
         },
     },
     settings: {
@@ -22,7 +22,7 @@ export default [{
         height: 600,
         position: {
             x: 570,
-            y: 60,
+            y: 10,
         },
     },
     settings: {
@@ -38,7 +38,7 @@ export default [{
         height: 300,
         position: {
             x: 1480,
-            y: 60,
+            y: 10,
         },
     },
     settings: {},
