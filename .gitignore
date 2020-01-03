@@ -4,7 +4,7 @@ node_modules
 /tests/e2e/reports/
 selenium-debug.log
 dist
-data
+/data
 
 # package file
 package-lock.json
