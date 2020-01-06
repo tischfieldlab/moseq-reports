@@ -1,6 +1,6 @@
 <template>
-    <div id="heatmap-container">
-        <svg id="heatmap-graph" :width="outsideWidth" :height="outsideHeight">
+    <div>
+        <svg :width="outsideWidth" :height="outsideHeight">
             <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`">
                 <template v-for="(node, index) in usages">
                     <rect 
@@ -10,6 +10,7 @@
                         :width="scale.x.bandwidth()"
                         :height="scale.y.bandwidth()"
                         :fill="scale.z(node.usage)"
+                        shape-rendering="crispEdges"
                         />
                 </template>
             </g>
@@ -21,11 +22,11 @@
                         />
                 </template>
             </g>
-            <g class="ctree" :transform="`translate(${dims.ctree.x},${dims.ctree.y}) rotate(90)`">
+            <g class="ctree" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
                 <template v-for="(link, index) in groupLinks">
                     <path class="clink"
                         :key="index"
-                        :d="elbow(link)"
+                        :d="elbowV(link)"
                         />
                 </template>
             </g>
@@ -42,19 +43,21 @@
                         <stop offset="100%" :stop-color="scale.z(scale.z.domain()[1])" />
                     </linearGradient>
                 </defs>
+                <rect
+                    :x="-dims.legend.w/2"
+                    :y="0"
+                    :width="dims.legend.w"
+                    :height="10"
+                    fill="url(#color_gradiant)"
+                    />
+                <g v-axis:c="scale" transform="translate(0,10)" />
                 <text
                     class="title"
                     x="0"
-                    y="0"
-                    style="text-anchor:middle;">Usage</text>
-                <rect
-                    :x="-dims.legend.w/2"
-                    :y="10"
-                    :width="dims.legend.w"
-                    :height="10"
-                    fill="url(#color_gradiant)" />
-                
-                <g v-axis:c="scale" transform="translate(0,20)" />
+                    y="50"
+                    style="text-anchor:middle;">
+                    Usage
+                </text>
             </g>
         </svg>
     </div>
@@ -121,6 +124,10 @@ export default Vue.component('clustered-heatmap2', {
     },
     mounted() {
         this.prepareData();
+        DataModel.subscribe(EventType.GROUPS_CHANGE, this.prepareData);
+    },
+    destroyed() {
+        DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.prepareData);
     },
     computed: {
         settings(): any {
@@ -141,25 +148,21 @@ export default Vue.component('clustered-heatmap2', {
         outsideHeight(): number {
             return this.layout.height - 41;
         },
-        /*legendWidth(): number {
-            return Math.min(this.width*0.8, 400);
-        },
-        rtreeWidth(): number {
-            return Math.min(this.width*10, 50);
-        },
-        ctreeHeight(): number {
-            return Math.min(this.height*10, 50);
-        },*/
         dims(): any {
-            const rtreeWidth =  Math.min(this.width*10, 50);
-            const ctreeHeight = Math.min(this.height*10, 50);
+            const rtreeWidth =  Math.min(this.width * .10, 50);
+            const ctreeHeight = Math.min(this.height * .10, 50);
             const yaxisWidth = 45;
             const xaxisHeight = 45;
             const legendHeight = 50;
 
             const heatWidth = this.width - rtreeWidth - yaxisWidth;
             const heatHeight = this.height - ctreeHeight - xaxisHeight - legendHeight;
-
+            const heatmap = {
+                x: this.margin.left + rtreeWidth + yaxisWidth,
+                y: this.margin.top + ctreeHeight,
+                w: heatWidth,
+                h: heatHeight,
+            };
             const rtree = {
                 x: this.margin.left,
                 y: this.margin.top + ctreeHeight,
@@ -167,16 +170,10 @@ export default Vue.component('clustered-heatmap2', {
                 h: heatHeight,
             };
             const ctree = {
-                x: rtreeWidth + yaxisWidth + heatWidth,
+                x: heatmap.x,// + (heatWidth / 2),
                 y: this.margin.top,
                 w: heatWidth,
                 h: ctreeHeight,
-            };
-            const heatmap = {
-                x: this.margin.left + rtreeWidth + yaxisWidth,
-                y: this.margin.top + ctreeHeight,
-                w: heatWidth,
-                h: heatHeight,
             };
             const xaxis = {
                 x: heatmap.x,
@@ -192,9 +189,9 @@ export default Vue.component('clustered-heatmap2', {
             };
             const legend = {
                 x: heatmap.x + (heatmap.w / 2),
-                y: this.outsideHeight - this.margin.bottom - legendHeight,
-                w: Math.min(this.width*0.8, 400),
-                h: legendHeight
+                y: this.outsideHeight - this.margin.bottom - legendHeight + 10,
+                w: Math.min(heatmap.w, 400),
+                h: legendHeight,
             };
             return {
                 heatmap,
@@ -211,25 +208,25 @@ export default Vue.component('clustered-heatmap2', {
             const y = scaleBand()
                 .domain(this.syllableOrder)
                 .range([this.dims.heatmap.h, 0])
-                .padding(0);
+                .padding(-0);
             const z = scaleSequential(interpolateViridis)
                 .domain([
                     Math.min(...this.usages.map((n) => n.usage)),
-                    Math.max(...this.usages.map((n) => n.usage))
+                    Math.max(...this.usages.map((n) => n.usage)),
                 ]);
             const c = scaleLinear()
                 .domain(z.domain())
-                .range([-this.dims.legend.w/2, this.dims.legend.w/2])
+                .range([-this.dims.legend.w / 2, this.dims.legend.w / 2]);
             return { x, y, z, c };
         },
         groupLinks(): any[] {
-            if (this.groupHierarchy === undefined){
+            if (this.groupHierarchy === undefined) {
                 return [];
             }
             return cluster().size([this.dims.ctree.w, this.dims.ctree.h])(this.groupHierarchy as any).links() as any;
         },
         syllableLinks(): any[] {
-            if (this.syllableHierarchy === undefined){
+            if (this.syllableHierarchy === undefined) {
                 return [];
             }
             return cluster().size([this.dims.rtree.h, this.dims.rtree.w])(this.syllableHierarchy as any).links() as any;
@@ -238,33 +235,16 @@ export default Vue.component('clustered-heatmap2', {
     methods: {
         prepareData() {
             const groups = DataModel.getSelectedGroups();
-            const df = DataModel.getAggregateView();
-            const syllableIds = df.select('syllable').distinct('syllable').toArray().flat();
-
-            let sylUsage = new Array<HeatmapTile>();
-            for (const g of groups) {
-                for (const sid of syllableIds){
-                    sylUsage.push({
-                        group: g,
-                        syllable: sid,
-                        usage: df.find({group: g, syllable: sid}).get('usage')
-                    });
-                }
-            }
-            //sylUsage = transpose(sylUsage);
-            this.usages = sylUsage;
+            this.usages = DataModel.getAggregateView().toCollection();
 
             this.clusterGroups();
             this.clusterSyllables();
-
-            // console.log(sylUsage);
-
         },
         clusterGroups() {
             const groups = DataModel.getSelectedGroups();
             const df = DataModel.getAggregateView();
 
-            let sylUsage = new Array<SyllableRow>();
+            const sylUsage = new Array<SyllableRow>();
             for (const g of groups) {
                 sylUsage.push({
                     name: g,
@@ -279,7 +259,7 @@ export default Vue.component('clustered-heatmap2', {
             const df = DataModel.getAggregateView();
             const syllableIds = df.select('syllable').distinct('syllable').toArray().flat();
 
-            let sylUsage = new Array<SyllableRow>();
+            const sylUsage = new Array<SyllableRow>();
             for (const sid of syllableIds) {
                 sylUsage.push({
                     name: sid,
@@ -290,35 +270,39 @@ export default Vue.component('clustered-heatmap2', {
             [this.syllableOrder, this.syllableHierarchy] = this.cluster(sylUsage);
             // console.log(sylOrder);
         },
-        cluster(data: any[], distance='euclidean', linkage='avg', key='usage') {
+        cluster(data: any[], distance = 'euclidean', linkage = 'avg', key = 'usage') {
             const clustering = hcluster()
                 .distance(distance) // support for 'euclidean' and 'angular'
-                .linkage(linkage)        // support for 'avg', 'max' and 'min'
-                .posKey(key)    // 'position' by default
-                .data(data); // pass in an array of objects w/ array values for 'position' or specified posKey() as an array of objects w/ array values for 'position'
+                .linkage(linkage)   // support for 'avg', 'max' and 'min'
+                .posKey(key)        // object key holding value
+                .data(data);        // pass in an array of objects
 
-            let tree = clustering.tree();
+            const tree = clustering.tree();
             return [
                 this.getDenOrder(tree),
                 hierarchy(tree),
             ];
         },
         getDenOrder(tree) {
-            return this.getDenRec(tree,[]);
+            return this.getDenRec(tree, []);
         },
         getDenRec(tree, denOrder) {
-            if(typeof tree.children === 'undefined'){
+            if (typeof tree.children === 'undefined') {
                 denOrder[denOrder.length] = tree.name;
                 return denOrder;
             }
-            denOrder = this.getDenRec(tree.children[0],denOrder);
-            denOrder = this.getDenRec(tree.children[1],denOrder);
+            denOrder = this.getDenRec(tree.children[0], denOrder);
+            denOrder = this.getDenRec(tree.children[1], denOrder);
             return denOrder;
         },
         elbow(d) {
             // console.log(d);
             return `M${d.source.y},${d.source.x}V${d.target.x}H${d.target.y}`;
-        }
+        },
+        elbowV(d) {
+            // console.log(d);
+            return `M${d.source.x},${d.source.y}H${d.target.x}V${d.target.y}`;
+        },
     },
     directives: {
         axis(el, binding) {
@@ -326,13 +310,13 @@ export default Vue.component('clustered-heatmap2', {
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisLeft', c: 'axisBottom' }[axis];
                 const methodArg = binding.value[axis];
-                const actual_axis = d3[axisMethod](methodArg);
-                if(axis === 'c'){
-                    actual_axis.ticks(5);
+                const actualAxis = d3[axisMethod](methodArg);
+                if (axis === 'c') {
+                    actualAxis.ticks(5);
                 }
-                d3.select(el).call(actual_axis);
+                d3.select(el).call(actualAxis);
             }
         },
     },
-})
+});
 </script>
