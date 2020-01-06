@@ -14,6 +14,13 @@
             </b-col>
         </b-row>
         <b-row>
+            <b-col>
+                <b-input-group prepend="Syllable Ordering">
+                    <b-form-select v-model="syllable_order_type" :options="syllable_order_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row>
             <b-form-checkbox v-model="cluster_syllables" switch>
                 Cluster Syllables
             </b-form-checkbox>
@@ -28,6 +35,12 @@
 
 <script scoped lang="ts">
 import Vue from 'vue';
+
+export enum SyllableOrderingType {
+    Natural,
+    Value,
+    Cluster,
+}
 
 export default Vue.component('clustered-heatmap-options', {
     props: {
@@ -55,6 +68,32 @@ export default Vue.component('clustered-heatmap-options', {
                 });
             },
         },
+        syllable_order_type: {
+            get(): SyllableOrderingType {
+                return this.settings.syllable_order_type;
+            },
+            set(value: SyllableOrderingType) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        syllable_order_type: value,
+                    },
+                });
+            },
+        },
+        syllable_order_group_value: {
+            get(): SyllableOrderingType {
+                return this.settings.syllable_order_group_value;
+            },
+            set(value: SyllableOrderingType) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        syllable_order_group_value: value,
+                    },
+                });
+            },
+        },
     },
     data() {
         return {
@@ -67,6 +106,11 @@ export default Vue.component('clustered-heatmap-options', {
                 { text: 'Portland', value: 'Portland' },
                 { text: 'Picnic', value: 'Picnic' },
                 { text: 'Jet', value: 'Jet' },
+            ],
+            syllable_order_options: [
+                { text: 'Syllable ID', value: SyllableOrderingType.Natural },
+                { text: 'Syllable Value', value: SyllableOrderingType.Value },
+                { text: 'Clustered', value: SyllableOrderingType.Cluster },
             ],
         };
     },
