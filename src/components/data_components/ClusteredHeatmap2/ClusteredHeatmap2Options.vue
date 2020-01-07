@@ -20,27 +20,79 @@
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row>
-            <b-form-checkbox v-model="cluster_syllables" switch>
-                Cluster Syllables
-            </b-form-checkbox>
+        <b-row v-show="syllable_order_type === 'value'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Sort Group">
+                    <b-form-select v-model="syllable_order_group_value" :options="syllable_order_group_value_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="syllable_order_type === 'value'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Direction">
+                    <b-form-select v-model="syllable_order_direction" :options="syllable_order_direction_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="syllable_order_type === 'cluster'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Distance">
+                    <b-form-select v-model="syllable_cluster_distance" :options="cluster_distance_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="syllable_order_type === 'cluster'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Linkage">
+                    <b-form-select v-model="syllable_cluster_linkage" :options="cluster_linkage_options"></b-form-select>
+                </b-input-group>
+            </b-col>
         </b-row>
         <b-row>
-            <b-form-checkbox v-model="cluster_groups" switch>
-                Cluster Groups
-            </b-form-checkbox>
+            <b-col>
+                <b-input-group prepend="Group Ordering">
+                    <b-form-select v-model="group_order_type" :options="group_order_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="group_order_type === 'cluster'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Distance">
+                    <b-form-select v-model="group_cluster_distance" :options="cluster_distance_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="group_order_type === 'cluster'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Linkage">
+                    <b-form-select v-model="group_cluster_linkage" :options="cluster_linkage_options"></b-form-select>
+                </b-input-group>
+            </b-col>
         </b-row>
     </b-container>
 </template>
 
 <script scoped lang="ts">
 import Vue from 'vue';
+import {GetInterpolatedScaleOptions} from '@/util/D3ColorProvider';
+import DataModel, { EventType } from '@/models/DataModel';
 
-export enum SyllableOrderingType {
-    Natural,
-    Value,
-    Cluster,
+export enum OrderingType {
+    Natural = 'natural',
+    Value = 'value',
+    Cluster = 'cluster',
 }
+export enum SortOrderDirection {
+    Asc = 'asc',
+    Dec = 'dec',
+}
+
 
 export default Vue.component('clustered-heatmap-options', {
     props: {
@@ -49,30 +101,41 @@ export default Vue.component('clustered-heatmap-options', {
             required: true,
         },
     },
+    mounted() {
+        this.populateGroups();
+        DataModel.subscribe(EventType.GROUPS_CHANGE, this.populateGroups);
+    },
+    methods: {
+        populateGroups() {
+            this.syllable_order_group_value_options = DataModel.getSelectedGroups()
+                                                               .map((g) => ({text: g, value: g}));
+            if (this.syllable_order_group_value === undefined) {
+                this.syllable_order_group_value = this.syllable_order_group_value_options[0].value;
+            }
+        },
+    },
     computed: {
         settings(): any {
             return this.$store.getters.getWindowById(this.id).settings;
         },
         colorscale: {
             get(): string {
-                return this.settings.style.colorscale;
+                return this.settings.colormap;
             },
             set(value: string) {
                 this.$store.commit('updateComponentSettings', {
                     id: this.id,
                     settings: {
-                        style: {
-                            colorscale: value,
-                        },
+                        colormap: value,
                     },
                 });
             },
         },
         syllable_order_type: {
-            get(): SyllableOrderingType {
+            get(): OrderingType {
                 return this.settings.syllable_order_type;
             },
-            set(value: SyllableOrderingType) {
+            set(value: OrderingType) {
                 this.$store.commit('updateComponentSettings', {
                     id: this.id,
                     settings: {
@@ -82,10 +145,10 @@ export default Vue.component('clustered-heatmap-options', {
             },
         },
         syllable_order_group_value: {
-            get(): SyllableOrderingType {
+            get(): string {
                 return this.settings.syllable_order_group_value;
             },
-            set(value: SyllableOrderingType) {
+            set(value: string) {
                 this.$store.commit('updateComponentSettings', {
                     id: this.id,
                     settings: {
@@ -94,23 +157,113 @@ export default Vue.component('clustered-heatmap-options', {
                 });
             },
         },
+        syllable_order_direction: {
+            get(): SortOrderDirection {
+                return this.settings.syllable_order_direction;
+            },
+            set(value: SortOrderDirection) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        syllable_order_direction: value,
+                    },
+                });
+            },
+        },
+        syllable_cluster_distance: {
+            get(): string {
+                return this.settings.syllable_cluster_distance;
+            },
+            set(value: string) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        syllable_cluster_distance: value,
+                    },
+                });
+            },
+        },
+        syllable_cluster_linkage: {
+            get(): string {
+                return this.settings.syllable_cluster_linkage;
+            },
+            set(value: string) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        syllable_cluster_linkage: value,
+                    },
+                });
+            },
+        },
+        group_order_type: {
+            get(): OrderingType {
+                return this.settings.group_order_type;
+            },
+            set(value: OrderingType) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        group_order_type: value,
+                    },
+                });
+            },
+        },
+        group_cluster_distance: {
+            get(): string {
+                return this.settings.group_cluster_distance;
+            },
+            set(value: string) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        group_cluster_distance: value,
+                    },
+                });
+            },
+        },
+        group_cluster_linkage: {
+            get(): string {
+                return this.settings.group_cluster_linkage;
+            },
+            set(value: string) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        group_cluster_linkage: value,
+                    },
+                });
+            },
+        },
     },
     data() {
         return {
-            color_options: [
-                { text: 'Blackbody', value: 'Blackbody' },
-                { text: 'Electric', value: 'Electric' },
-                { text: 'Earth', value: 'Earth' },
-                { text: 'Bluered', value: 'Bluered' },
-                { text: 'RdBu', value: 'RdBu' },
-                { text: 'Portland', value: 'Portland' },
-                { text: 'Picnic', value: 'Picnic' },
-                { text: 'Jet', value: 'Jet' },
-            ],
+            color_options: GetInterpolatedScaleOptions(),
             syllable_order_options: [
-                { text: 'Syllable ID', value: SyllableOrderingType.Natural },
-                { text: 'Syllable Value', value: SyllableOrderingType.Value },
-                { text: 'Clustered', value: SyllableOrderingType.Cluster },
+                { text: 'Syllable ID', value: OrderingType.Natural },
+                { text: 'Syllable Value', value: OrderingType.Value },
+                { text: 'Clustered', value: OrderingType.Cluster },
+            ],
+            syllable_order_group_value_options: new Array<{text: string, value: string}>(),
+            syllable_order_direction_options: [
+                { text: 'Ascending', value: SortOrderDirection.Asc },
+                { text: 'Descending', value: SortOrderDirection.Dec },
+            ],
+            cluster_distance_options: [
+                { text: 'Euclidean', value: 'euclidean' },
+                // { text: 'Manhattan', value: 'manhattan' },
+                // { text: 'Chebyshev', value: 'chebyshev' },
+                // { text: 'Cosine', value: 'cosine' },
+                { text: 'Angular', value: 'angular' },
+            ],
+            cluster_linkage_options: [
+                { text: 'Average', value: 'avg' },
+                { text: 'Maximum', value: 'max' },
+                { text: 'Minimum', value: 'min' },
+            ],
+            group_order_options: [
+                { text: 'Data Source Order', value: OrderingType.Natural },
+                { text: 'Clustered', value: OrderingType.Cluster },
             ],
         };
     },

@@ -11,10 +11,13 @@
                         :height="scale.y.bandwidth()"
                         :fill="scale.z(node.usage)"
                         shape-rendering="crispEdges"
+                        :mouseover="hover_syllable = node.syllable"
+                        v-on:click="setSelectedSyllable(node.syllable)"
+                        v-b-tooltip.html :title="heatmap_node_tooltip(node)"
                         />
                 </template>
             </g>
-            <g class="rtree" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
+            <g class="rtree" v-show="isSyllablesClustered" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
                 <template v-for="(link, index) in syllableLinks">
                     <path class="rlink"
                         :key="index"
@@ -22,7 +25,7 @@
                         />
                 </template>
             </g>
-            <g class="ctree" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
+            <g class="ctree" v-show="isGroupsClustered" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
                 <template v-for="(link, index) in groupLinks">
                     <path class="clink"
                         :key="index"
@@ -34,7 +37,7 @@
                 <text class="label" text-anchor="middle" fill="#000" :x="dims.xaxis.w/2" :y="dims.xaxis.ly">Group</text>
             </g>
             <g class="y-axis" v-axis:y="scale" :transform="`translate(${dims.yaxis.x},${dims.yaxis.y})`">
-                <text transform="rotate(-90)" text-anchor="middle" :x="-dims.yaxis.h/2" :y="30" fill="#000">Module ID</text>
+                <text class="label" transform="rotate(-90)" text-anchor="middle" :x="-dims.yaxis.h/2" :y="40" fill="#000">Module ID</text>
             </g>
             <g class="legend" :transform="`translate(${dims.legend.x}, ${dims.legend.y})`">
                 <defs>
@@ -52,7 +55,7 @@
                     />
                 <g v-axis:c="scale" transform="translate(0,10)" />
                 <text
-                    class="title"
+                    class="label"
                     x="0"
                     y="50"
                     style="text-anchor:middle;">
@@ -66,9 +69,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-
 import store from '@/store/root.store';
-import { transpose } from '@/Util';
 import DataModel, { EventType } from '@/models/DataModel';
 import hcluster from 'hclusterjs';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
@@ -76,7 +77,8 @@ import {interpolateViridis} from 'd3-scale-chromatic';
 import { Layout } from '@/store/root.types';
 import * as d3 from 'd3';
 import { cluster, hierarchy, HierarchyNode } from 'd3';
-import {SyllableOrderingType} from '@/components/data_components/ClusteredHeatmap2/ClusteredHeatmap2Options.vue';
+import {OrderingType, SortOrderDirection} from '@/components/data_components/ClusteredHeatmap2/ClusteredHeatmap2Options.vue';
+import {GetScale} from '@/util/D3ColorProvider';
 
 store.commit('registerComponent', {
     friendly_name: 'Clustered Usage Heatmap 2',
@@ -85,10 +87,15 @@ store.commit('registerComponent', {
     init_width: 400,
     init_height: 500,
     default_settings: {
-        syllable_order_type: SyllableOrderingType.Natural,
-        style: {
-            colorscale: 'Portland',
-        },
+        syllable_order_type: OrderingType.Natural,
+        syllable_order_group_value: undefined,
+        syllable_order_direction: SortOrderDirection.Asc,
+        syllable_cluster_distance: 'euclidean',
+        syllable_cluster_linkage: 'avg',
+        group_order_type: OrderingType.Natural,
+        group_cluster_distance: 'euclidean',
+        group_cluster_linkage: 'avg',
+        colormap: 'interpolateViridis',
     },
 });
 
@@ -123,14 +130,50 @@ export default Vue.component('clustered-heatmap2', {
                 bottom: 20,
                 left: 20,
             },
+            label_stats: {count: 0, total: 0, longest: 0},
+            hover_syllable: -1,
+            watchers: Array<(() => void)>(),
         };
     },
     mounted() {
+        this.watchers.push(this.$store.watch(
+            (state, getters) => {
+                const s = getters.getWindowById(this.id).settings;
+                return {
+                    syllable_cluster_distance: s.syllable_cluster_distance,
+                    syllable_cluster_linkage: s.syllable_cluster_linkage,
+                };
+            },
+            (newValue, oldValue) => {
+                this.clusterSyllables();
+            },
+        ));
+        this.watchers.push(this.$store.watch(
+            (state, getters) => {
+                const s = getters.getWindowById(this.id).settings;
+                return {
+                    group_cluster_distance: s.group_cluster_distance,
+                    group_cluster_linkage: s.group_cluster_linkage,
+                };
+            },
+            (newValue, oldValue) => {
+                this.clusterGroups();
+            },
+        ));
         this.prepareData();
         DataModel.subscribe(EventType.GROUPS_CHANGE, this.prepareData);
     },
     destroyed() {
+        // un-watch the store
+        this.watchers.forEach((w) => w());
+        // unsubscribe from the data model
         DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.prepareData);
+    },
+    updated() {
+        const s = this.calc_label_stats();
+        if (s.longest !== this.label_stats.longest) {
+            this.label_stats = s;
+        }
     },
     computed: {
         settings(): any {
@@ -152,8 +195,8 @@ export default Vue.component('clustered-heatmap2', {
             return this.layout.height - 41;
         },
         dims(): any {
-            const rtreeWidth =  Math.min(this.width * .10, 50);
-            const ctreeHeight = Math.min(this.height * .10, 50);
+            const rtreeWidth =  this.isSyllablesClustered ? Math.min(this.width * .10, 50) : 0;
+            const ctreeHeight = this.isGroupsClustered ? Math.min(this.height * .10, 50) : 0;
             const yaxisWidth = 35;
             let xaxisHeight = 45;
             let xaxisLabelYOffset = 40;
@@ -161,11 +204,10 @@ export default Vue.component('clustered-heatmap2', {
 
             const heatWidth = this.width - rtreeWidth - yaxisWidth;
 
-            const ls = this.calc_label_stats();
-            this.rotate_labels = ls.longest > heatWidth / ls.count;
+            this.rotate_labels = this.label_stats.longest > heatWidth / this.label_stats.count;
             if (this.rotate_labels) {
-                xaxisHeight = ls.longest + 10;
-                xaxisLabelYOffset = ls.longest + 10;
+                xaxisHeight = this.label_stats.longest + 10;
+                xaxisLabelYOffset = this.label_stats.longest + 10;
             }
 
             const heatHeight = this.height - ctreeHeight - xaxisHeight - legendHeight;
@@ -215,14 +257,35 @@ export default Vue.component('clustered-heatmap2', {
             };
         },
         groupOrder(): string[] {
-            return this.clusteredGroupOrder;
+            switch (this.settings.group_order_type) {
+                case OrderingType.Cluster:
+                    return this.clusteredGroupOrder;
+
+                case OrderingType.Natural:
+                default:
+                    return DataModel.getSelectedGroups();
+            }
+        },
+        isGroupsClustered(): boolean {
+            return this.settings.group_order_type === OrderingType.Cluster;
+        },
+        isSyllablesClustered(): boolean {
+            return this.settings.syllable_order_type === OrderingType.Cluster;
         },
         syllableOrder(): string[] {
             switch (this.settings.syllable_order_type) {
-                case SyllableOrderingType.Cluster:
+                case OrderingType.Cluster:
                     return this.clusteredSyllableOrder;
 
-                case SyllableOrderingType.Natural:
+                case OrderingType.Value:
+                    return DataModel.getAggregateView()
+                                    .where({group: this.settings.syllable_order_group_value})
+                                    .sortBy('usage', this.settings.syllable_order_direction === SortOrderDirection.Asc)
+                                    .select('syllable')
+                                    .toArray()
+                                    .flat();
+
+                case OrderingType.Natural:
                 default:
                     return DataModel.getAggregateView()
                                     .select('syllable')
@@ -231,6 +294,9 @@ export default Vue.component('clustered-heatmap2', {
                                     .toArray()
                                     .flat();
             }
+        },
+        colormap(): any {
+            return GetScale(this.settings.colormap);
         },
         scale(): any {
             const x = scaleBand()
@@ -241,7 +307,7 @@ export default Vue.component('clustered-heatmap2', {
                 .domain(this.syllableOrder)
                 .range([this.dims.heatmap.h, 0])
                 .padding(0);
-            const z = scaleSequential(interpolateViridis)
+            const z = scaleSequential(this.colormap)
                 .domain([
                     Math.min(...this.usages.map((n) => n.usage)),
                     Math.max(...this.usages.map((n) => n.usage)),
@@ -284,7 +350,9 @@ export default Vue.component('clustered-heatmap2', {
                 });
             }
 
-            [this.clusteredGroupOrder, this.groupHierarchy] = this.cluster(sylUsage);
+            [this.clusteredGroupOrder, this.groupHierarchy] = this.cluster(sylUsage,
+                                                                           this.settings.group_cluster_distance,
+                                                                           this.settings.group_cluster_linkage);
         },
         clusterSyllables() {
             const df = DataModel.getAggregateView();
@@ -298,7 +366,9 @@ export default Vue.component('clustered-heatmap2', {
                 });
             }
 
-            [this.clusteredSyllableOrder, this.syllableHierarchy] = this.cluster(sylUsage);
+            [this.clusteredSyllableOrder, this.syllableHierarchy] = this.cluster(sylUsage,
+                                                                            this.settings.syllable_cluster_distance,
+                                                                            this.settings.syllable_cluster_linkage);
         },
         cluster(data: any[], distance = 'euclidean', linkage = 'avg', key = 'usage') {
             const clustering = hcluster()
@@ -346,6 +416,16 @@ export default Vue.component('clustered-heatmap2', {
             }
             return {count: 0, total: 0, longest: 0};
         },
+        setSelectedSyllable(syllableId: number) {
+            DataModel.updateSelectedSyllable(syllableId);
+        },
+        heatmap_node_tooltip(item: HeatmapTile) {
+            return `<div style="text-align:left;">
+                        Group: ${item.group}<br />
+                        Module: ${item.syllable}<br />
+                        Usage: ${item.usage.toExponential(3)}
+                    </div>`;
+        },
     },
     directives: {
         axis(el, binding) {
@@ -377,5 +457,26 @@ svg >>> g.x-axis.rotate g.tick text {
 }
 svg >>> path.domain {
     stroke:none;
+}
+svg >>> g.x-axis text.label,
+svg >>> g.y-axis text.label,
+svg >>> g.legend text.label {
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 13px;
+}
+svg >>> g.y-axis g.tick text {
+    font-size: 8px;
+}
+svg >>> g.x-axis g.tick line,
+svg >>> g.y-axis g.tick line,
+svg >>> g.legend g.tick line {
+    stroke: #666;
+}
+svg >>> g.heatmap {
+    cursor: crosshair;
+}
+svg >>> g.legend g.tick text,
+svg >>> g.legend text.label {
+    fill: #666;
 }
 </style>
