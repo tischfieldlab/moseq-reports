@@ -1,7 +1,7 @@
 <template>
     <div>
         <svg ref="canvas" :width="outsideWidth" :height="outsideHeight">
-            <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`">
+            <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`" v-on:click="setSelectedSyllable">
                 <template v-for="(node, index) in usages">
                     <rect 
                         :key="index"
@@ -11,8 +11,7 @@
                         :height="scale.y.bandwidth()"
                         :fill="scale.z(node.usage)"
                         shape-rendering="crispEdges"
-                        :mouseover="hover_syllable = node.syllable"
-                        v-on:click="setSelectedSyllable(node.syllable)"
+                        :syllable="node.syllable"
                         v-b-tooltip.html :title="heatmap_node_tooltip(node)"
                         />
                 </template>
@@ -418,8 +417,11 @@ export default Vue.component('clustered-heatmap', {
             }
             return {count: 0, total: 0, longest: 0};
         },
-        setSelectedSyllable(syllableId: number) {
-            DataModel.updateSelectedSyllable(syllableId);
+        setSelectedSyllable(event: Event) {
+            const sid = (event.target as SVGRectElement).getAttribute('syllable');
+            if (sid !== null) {
+                DataModel.updateSelectedSyllable(Number.parseInt(sid, 10));
+            }
         },
         heatmap_node_tooltip(item: HeatmapTile) {
             return `<div style="text-align:left;">
