@@ -70,20 +70,22 @@
 <script lang="ts">
 import Vue from 'vue';
 import store from '@/store/root.store';
-import DataModel, { EventType } from '@/models/DataModel';
-import hcluster from 'hclusterjs';
-import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
-import {interpolateViridis} from 'd3-scale-chromatic';
 import { Layout } from '@/store/root.types';
+import DataModel, { EventType } from '@/models/DataModel';
+import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue';
+import hcluster from 'hclusterjs';
 import * as d3 from 'd3';
 import { cluster, hierarchy, HierarchyNode } from 'd3';
-import {OrderingType, SortOrderDirection} from '@/components/data_components/ClusteredHeatmap2/ClusteredHeatmap2Options.vue';
-import {GetScale} from '@/util/D3ColorProvider';
+import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
+import { GetScale } from '@/util/D3ColorProvider';
+
+
+
 
 store.commit('registerComponent', {
-    friendly_name: 'Clustered Usage Heatmap 2',
-    component_type: 'clustered-heatmap2',
-    settings_type: 'ClusteredHeatmap2Options',
+    friendly_name: 'Clustered Usage Heatmap',
+    component_type: 'clustered-heatmap',
+    settings_type: 'ClusteredHeatmapOptions',
     init_width: 400,
     init_height: 500,
     default_settings: {
@@ -109,7 +111,7 @@ interface HeatmapTile {
     usage: number;
 }
 
-export default Vue.component('clustered-heatmap2', {
+export default Vue.component('clustered-heatmap', {
     props: {
         id: {
             type: Number,
