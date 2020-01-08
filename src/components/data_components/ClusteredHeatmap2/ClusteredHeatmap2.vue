@@ -41,7 +41,7 @@
             </g>
             <g class="legend" :transform="`translate(${dims.legend.x}, ${dims.legend.y})`">
                 <defs>
-                    <linearGradient id="color_gradiant" x1="0%" x2="100%" y1="0%" y2="0%">
+                    <linearGradient :id="`color_gradiant_${id}`" x1="0%" x2="100%" y1="0%" y2="0%">
                         <stop offset="0%" :stop-color="scale.z(scale.z.domain()[0])" />
                         <stop offset="100%" :stop-color="scale.z(scale.z.domain()[1])" />
                     </linearGradient>
@@ -51,7 +51,7 @@
                     :y="0"
                     :width="dims.legend.w"
                     :height="10"
-                    fill="url(#color_gradiant)"
+                    :fill="`url(#color_gradiant_${id})`"
                     />
                 <g v-axis:c="scale" transform="translate(0,10)" />
                 <text
