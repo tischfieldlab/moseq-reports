@@ -3,5 +3,10 @@ module.exports = {
     assetsDir: '',
     configureWebpack: {
         devtool: 'source-map',
+    },
+    pluginOptions: {
+        electronBuilder: {
+            externals: ['plotly.js-dist']
+        }
     }
 }
