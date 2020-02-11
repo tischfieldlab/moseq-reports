@@ -4,23 +4,24 @@
             <svg :width="outsideWidth" :height="outsideHeight" >
                 <g :transform="`translate(${margin.left}, ${margin.top})`" >
                     <template v-for="(tp, idx) in current_data">
-                        <path v-bind:key="idx" :d="line(tp)" :style="{opacity:current_alphas[idx]}" />
+                        <path v-bind:key="idx" :d="line(tp)" :stroke="line_color" :style="{opacity:current_alphas[idx]}" />
                     </template>
                 </g>
-                <g v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
-                <g v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
-                <text 
-                    transform="rotate(-90)"
-                    :y="0"
-                    :x="0 - (height / 2)"
-                    dy="1em"
-                    style="text-anchor:middle;">
-                    Height (mm)
-                </text>
-                <text
-                    style="text-anchor:middle;"
-                    :transform="`translate(${xLabelPos[0]},${xLabelPos[1]})`"
-                >Relative Lateral Position (mm)</text>
+                <g class="x-axis" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
+                    <text class="label" :x="this.width / 2" :y="40">
+                        Relative Lateral Position (mm)
+                    </text>
+                </g>
+                <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`">
+                    <text class="label"
+                        transform="rotate(-90)"
+                        :y="-45"
+                        :x="0 - (height / 2)"
+                        dy="1em"
+                        style="text-anchor:middle;">
+                        Height (mm)
+                    </text>
+                </g>
             </svg>
         </template>
         <p v-else>No Data</p>
@@ -53,10 +54,12 @@ interface SpinogramTimepoint {
 store.commit('registerComponent', {
     friendly_name: 'Spinogram',
     component_type: 'spinogram-plots',
-    // settings_type: 'detailed-usage-options',
+    settings_type: 'spinogram-options',
     init_width: 400,
     init_height: 200,
-    default_settings: {},
+    default_settings: {
+        line_color: '#FF0000',
+    },
 });
 
 
@@ -100,9 +103,6 @@ export default Vue.component('spinogram-plots', {
         outsideHeight(): number {
             return this.layout.height - 41;
         },
-        xLabelPos(): number[] {
-            return [this.outsideWidth / 2, this.outsideHeight];
-        },
         origin(): any {
             const x = this.margin.left;
             const y = this.height + this.margin.top;
@@ -125,6 +125,9 @@ export default Vue.component('spinogram-plots', {
                 .x((d) => this.scale.x(d[0]))
                 .y((d) => this.scale.y(d[1]));
             return a;
+        },
+        line_color(): string {
+            return this.settings.line_color;
         },
     },
     mounted() {
@@ -169,9 +172,15 @@ export default Vue.component('spinogram-plots', {
 
 <style scoped>
 path {
-    stroke:#FF0000;
     stroke-width: 3;
     fill:none;
+}
+svg >>> g.x-axis text.label,
+svg >>> g.y-axis text.label {
+    text-anchor:middle;
+    fill:#000;
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 13px;
 }
 
 </style>
