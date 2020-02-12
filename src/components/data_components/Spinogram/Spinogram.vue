@@ -4,7 +4,12 @@
             <svg :width="outsideWidth" :height="outsideHeight" >
                 <g :transform="`translate(${margin.left}, ${margin.top})`" >
                     <template v-for="(tp, idx) in current_data">
-                        <path v-bind:key="idx" :d="line(tp)" :stroke="line_color" :style="{opacity:current_alphas[idx]}" />
+                        <path 
+                            v-bind:key="idx"
+                            :d="line(tp)"
+                            :stroke="line_color"
+                            :stroke-width="line_weight"
+                            :style="{opacity:current_alphas[idx]}" />
                     </template>
                 </g>
                 <g class="x-axis" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
@@ -59,6 +64,7 @@ store.commit('registerComponent', {
     init_height: 200,
     default_settings: {
         line_color: '#FF0000',
+        line_weight: 2,
     },
 });
 
@@ -129,6 +135,17 @@ export default Vue.component('spinogram-plots', {
         line_color(): string {
             return this.settings.line_color;
         },
+        line_weight(): string {
+            return this.settings.line_weight;
+        },
+        spinogram_data(): Spinogram[] {
+            return this.$store.state.datasets.spinogram;
+        }
+    },
+    watch: {
+        spinogram_data(newValue, oldValue) {
+            this.createView();
+        },
     },
     mounted() {
         this.createView();
@@ -145,7 +162,7 @@ export default Vue.component('spinogram-plots', {
     methods: {
         createView() {
             const sid = DataModel.getSelectedSyllable();
-            const data = SpinogramData.find((s) => s.id === sid) as Spinogram;
+            const data = this.spinogram_data.find((s) => s.id === sid) as Spinogram;
             if (data !== undefined) {
                 this.has_data = true;
                 this.current_data = data.data.map((stp, idx) => {
@@ -172,7 +189,6 @@ export default Vue.component('spinogram-plots', {
 
 <style scoped>
 path {
-    stroke-width: 3;
     fill:none;
 }
 svg >>> g.x-axis text.label,

@@ -13,11 +13,15 @@ import {
 } from './root.types';
 import { saveFile } from '@/Util';
 import DefaultLayout from '@/DefaultLayout';
+import DatasetsStore from '@/store/datasets.store.ts';
 
 Vue.use(Vuex);
 
 const store: StoreOptions<RootState> = {
     strict: true,
+    modules: {
+        datasets: DatasetsStore,
+    },
     state: {
         registry: Array<ComponentRegistration>(),
         window_count: 0,

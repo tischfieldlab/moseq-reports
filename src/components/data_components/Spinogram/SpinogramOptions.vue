@@ -2,6 +2,14 @@
     <b-container fluid>
         <b-row>
             <b-col cols="3" align-self="center">
+                <label class="font-weight-bold pt-0">Line Weight</label>
+            </b-col>
+            <b-col>
+                <b-form-input v-model="line_weight" type="number" number="true" min="1" max="10" />
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col cols="3" align-self="center">
                 <label class="font-weight-bold pt-0">Line Color</label>
             </b-col>
             <b-col>
@@ -38,6 +46,19 @@ export default Vue.component('spinogram-options', {
                     id: this.id,
                     settings: {
                         line_color: value.hex,
+                    },
+                });
+            },
+        },
+        line_weight: {
+            get(): string {
+                return this.settings.line_weight;
+            },
+            set(value: any) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        line_weight: value,
                     },
                 });
             },
