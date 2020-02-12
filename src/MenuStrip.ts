@@ -1,5 +1,6 @@
 import { remote, Menu, MenuItem, MenuItemConstructorOptions } from 'electron';
-import DataModel, { MetadataJson } from '@/models/DataModel';
+// import DataModel, { MetadataJson } from '@/models/DataModel';
+import LoadDataBundle from '@/models/DataLoader';
 
 import { createDataWindow, ComponentRegistration, DehydratedDataWindow } from '@/store/root.types';
 import store from '@/store/root.store';
@@ -197,9 +198,11 @@ function openNewFileButton(): void {
     const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
     if (filenames === undefined) { return; }
 
-    const content: MetadataJson = JSON.parse(fs.readFileSync(filenames[0])) as MetadataJson;
+    /*const content: MetadataJson = JSON.parse(fs.readFileSync(filenames[0])) as MetadataJson;
     content.dataframeJson = JSON.parse(content.dataframeJson) as any;
-    DataModel.loadMetadataFile(content);
+    DataModel.loadMetadataFile(content);*/
+
+    LoadDataBundle(filenames[0]);
 }
 
 /**

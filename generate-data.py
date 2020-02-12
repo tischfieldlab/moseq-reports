@@ -1,6 +1,9 @@
 import os, argparse, json, sys, glob, subprocess
 import pandas as pd
 import moseq2_extras
+import os, argparse, json
+import zipfile
+
 from moseq2_extras.util import ensure_dir
 from moseq2_viz.util import parse_index
 from moseq2_viz.model.util import parse_model_results, \
@@ -33,17 +36,28 @@ def main():
     writeMetadataFile(df, dfGroups, args.outputPath)
     
     create_spinograms(args.modelFile, args.indexFile, args.outputPath, max_syllable, sort, count)
+    
+    archiveData(args.outputPath)
 #end main()
+
+def archiveData(outputPath):
+    zipf = zipfile.ZipFile('{}.msq'.format(outputPath), 'w', zipfile.ZIP_DEFLATED)
+    
+    for root, _, files in os.walk(outputPath):
+        for file in files:
+            zipf.write(os.path.join(root, file), file)
+    zipf.close()
+#end archiveData()
 
 def writeMetadataFile(df, dfGroups, outputPath):
     ensure_dir(outputPath)
     
-    outputPath = os.path.join(outputPath, 'metadata.msq')
+    outputPath = os.path.join(outputPath, 'metadata.json')
     res = {}
     res['cohortGroups'] = dfGroups
     res['dataframeJson'] = df
     with open(outputPath, 'w') as f:
-        json.dump(res, f)
+        json.dump(res, f, default=lambda df: json.loads(df.to_json(orient='split')))
 #end writeMetadataFile
 
 def getGroupsFromDataframe(df):
