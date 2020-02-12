@@ -72,7 +72,7 @@ export function createDataWindow(componentInfo: ComponentRegistration) {
             height: componentInfo.init_height || 300,
             position: {
                 x: 250,
-                y: 60,
+                y: 10,
             },
         },
         settings: __clone(componentInfo.default_settings || {}), // deep clone

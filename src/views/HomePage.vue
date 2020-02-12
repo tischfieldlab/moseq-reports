@@ -18,16 +18,22 @@
                 </b-tab>
             </b-tabs>
         </b-card>
+        <div id="has-no-metadata-container" :style="{'padding-left': toolbox_width+40+'px', 'width': width+'px', 'padding-top': height/2+'px'}" v-if="!metadataLoaded">
+            <h4 style="text-align: center;" id="no-data-text">{{ noDataMessage }} </h4>
+        </div>
         <template v-for="w in windows">
             <UiCard :key="w.id" :id="w.id" />
             <!--<UiCard2 :key="w.id" :id="w.id" />-->
         </template>
+        
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import { debounce } from 'ts-debounce';
+
+import DataModel, { EventType } from '@/models/DataModel';
 
 import UiCard from '@/components/Window.vue';
 import UiCard2 from '@/components/Window2.vue';
@@ -47,7 +53,10 @@ export default Vue.component('homepage', {
     },
     data() {
         return {
+            metadataLoaded: false,
+            noDataMessage: 'No metadata file can be found. Please load in a file by clicking File > Open File.',
             height: 0,
+            width: 0,
             toolbox_width: 250,
             debouncedResizeHandler(this: Window, ev: UIEvent): any { return; },
         };
@@ -68,15 +77,20 @@ export default Vue.component('homepage', {
         this.$nextTick().then(() => {
             this.handleResize();
         });
-        this.$store.dispatch('loadDefaultLayout');
+        DataModel.subscribe(EventType.METADATA_LOADED, this.loadDefaultLayout);
+        // NOTE: Check if there is data, in case we missed the event firing
+        if (DataModel.getAggregateView() !== null || DataModel.getAvailableGroups().length !== 0) {
+            this.loadDefaultLayout();
+        }
     },
     methods: {
         handleResize(): any {
-            const header = document.getElementById('navigation-bar');
-            const headerHeight = header ? header.clientHeight : 0;
-            const footer = document.getElementById('bottom');
-            const footerHeight = footer ? footer.clientHeight : 0;
-            this.height = document.documentElement.clientHeight - headerHeight - footerHeight;
+            this.height = document.documentElement.clientHeight;
+            this.width = document.documentElement.clientWidth - this.toolbox_width;
+        },
+        loadDefaultLayout(): void {
+            this.metadataLoaded = true;
+            this.$store.dispatch('loadDefaultLayout');
         },
     },
 });
@@ -95,5 +109,10 @@ export default Vue.component('homepage', {
 }
 #toolbox_container .tabs{
     overflow: auto;
+}
+#has-no-metadata-container{
+    position: fixed;
+    top: 0px;
+    padding-right: 40px;
 }
 </style>

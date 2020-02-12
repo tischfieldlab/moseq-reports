@@ -27,15 +27,24 @@ def main():
 
     ensure_dir(args.outputPath)
 
+
     df = getUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, sort, count)
-    convertToJson(df, os.path.join(args.outputPath, 'metadata.js'), 'export let dataframeJson = ', 'w')
-
     dfGroups = getGroupsFromDataframe(df)
-    convertToJson(dfGroups, os.path.join(args.outputPath, 'metadata.js'), '\nexport let cohortGroups = ', 'a')
-
+    writeMetadataFile(df, dfGroups, args.outputPath)
+    
     create_spinograms(args.modelFile, args.indexFile, args.outputPath, max_syllable, sort, count)
 #end main()
 
+def writeMetadataFile(df, dfGroups, outputPath):
+    ensure_dir(outputPath)
+    
+    outputPath = os.path.join(outputPath, 'metadata.msq')
+    res = {}
+    res['cohortGroups'] = dfGroups
+    res['dataframeJson'] = df
+    with open(outputPath, 'w') as f:
+        json.dump(res, f)
+#end writeMetadataFile
 
 def getGroupsFromDataframe(df):
     return list(df['group'].unique())
@@ -52,16 +61,6 @@ def getUsageDataframe(model, index, groups, max_syl, sort, count):
 
     return df
 #end getUsageDataframe()
-
-def convertToJson(df, path, preamble, mode='w'):
-    if isinstance(df, pd.DataFrame):
-        j_str = df.to_json(orient='split')
-    else:
-        j_str = json.dumps(df)
-
-    with open(path, mode) as f:
-        f.write('{}{}'.format(preamble, j_str))
-#end createMetadataFile()
 
 def create_spinograms(model, index, out_dir, max_syl, sort, count):
     out_dir = ensure_dir(out_dir)
