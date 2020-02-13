@@ -1,5 +1,12 @@
 <template>
     <div id='groupbox-container' style=''>
+        <b-card no-body class="primary_card">
+            <b-card-header>Count Method</b-card-header>
+            <b-card-body>
+                <b-form-select v-model="selectedCountMethod" :options="countMethods" @change="onCountMethodChange($event)" class="mb-3">
+                </b-form-select>
+            </b-card-body>
+        </b-card>
         <b-card no-body class="primary_card" id="group_selection_container">
             <!--<b-form-group style="text-align: left;">-->
             <b-card-header>Group Selection</b-card-header>
@@ -79,6 +86,8 @@ export default Vue.extend({
             syllable: DataModel.getSelectedSyllable(),
             syllableIdOptions: [] as any,
             colorChangeHandler: (option, event) => {/**/},
+            countMethods: ['Usage', 'Frames'],
+            selectedCountMethod: 'Usage',
         };
     },
     mounted() {
@@ -119,6 +128,9 @@ export default Vue.extend({
         },
         onSyllableChange(event: any) {
             DataModel.updateSelectedSyllable(event);
+        },
+        onCountMethodChange(event: any) {
+            // DataModel.updateSelectedSyllable(event);
         },
         getsyllableIdOptions() {
             const max = DataModel.getMaxSyllable();

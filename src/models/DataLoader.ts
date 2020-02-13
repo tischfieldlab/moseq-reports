@@ -18,6 +18,8 @@ let currentState: DataLoaderState|undefined;
 
 export default function LoadDataBundle(filename: string) {
     // console.log('attempting to open ', filename);
+    CleanState(); // clean any old state
+
     const zip = new StreamZip({
         file: filename,
         storeEntries: true,
@@ -46,6 +48,13 @@ export default function LoadDataBundle(filename: string) {
     });
 }
 
+function CleanState() {
+    if (currentState === undefined) {
+        return;
+    }
+    fs.rmdirSync(currentState.path, {recursive: true});
+}
+
 function LoadSpinogramData(zip) {
     if (currentState === undefined) {
         throw new Error('unexpected current state is undefined!');
@@ -59,7 +68,7 @@ function LoadUsageData(zip) {
     const data = zip.entryDataSync('metadata.json');
     const content: MetadataJson = JSON.parse(data) as MetadataJson;
     DataModel.loadMetadataFile(content);
-    //store.commit('datasets/SetUsageByUsage', content);
+    store.commit('datasets/SetUsageByUsage', content);
 }
 
 function LoadCrowdMovies(zip) {
