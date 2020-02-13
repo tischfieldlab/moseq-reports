@@ -1,7 +1,7 @@
 <template>
     <b-container fluid>
         <b-row>
-            <b-col cols="3" align-self="center">
+            <b-col cols="4" align-self="center">
                 <label class="font-weight-bold pt-0">Line Weight</label>
             </b-col>
             <b-col>
@@ -9,11 +9,11 @@
             </b-col>
         </b-row>
         <b-row>
-            <b-col cols="3" align-self="center">
+            <b-col cols="4" align-self="center">
                 <label class="font-weight-bold pt-0">Line Color</label>
             </b-col>
             <b-col>
-                <chrome-picker v-model="line_color" />
+                <chrome-picker v-model="line_color" disableAlpha="true" />
             </b-col>
         </b-row>
     </b-container>

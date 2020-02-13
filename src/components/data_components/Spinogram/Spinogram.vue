@@ -140,7 +140,7 @@ export default Vue.component('spinogram-plots', {
         },
         spinogram_data(): Spinogram[] {
             return this.$store.state.datasets.spinogram;
-        }
+        },
     },
     watch: {
         spinogram_data(newValue, oldValue) {
