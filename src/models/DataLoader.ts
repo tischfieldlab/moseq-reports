@@ -6,10 +6,11 @@ import os from 'os';
 import store from '@/store/root.store';
 import StreamZip from 'node-stream-zip';
 
+import app from '@/main';
+
 interface DataLoaderState {
     bundle: string; // path to the bundle
     path: string; // path to uncompressed data
-    datasets: Map<string, any>;
 }
 
 let currentState: DataLoaderState|undefined;
@@ -29,17 +30,19 @@ export default function LoadDataBundle(filename: string) {
         currentState = {
             bundle: filename,
             path: fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-')),
-            datasets: new Map<string, any>(),
         };
         // console.log('Entries read: ' + zip.entriesCount);
         // console.log('zip ready');
         LoadUsageData(zip);
         LoadSpinogramData(zip);
-
-
         // LoadCrowdMovies(zip); //for future use
 
         zip.close();
+        app.$bvToast.toast('File "' + filename + '" was loaded successfully.', {
+            title: 'Data loaded successfully!',
+            variant: 'success',
+            toaster: 'b-toaster-bottom-right',
+        });
     });
 }
 
@@ -48,19 +51,15 @@ function LoadSpinogramData(zip) {
         throw new Error('unexpected current state is undefined!');
     }
     const data = zip.entryDataSync('spinogram.corpus-sorted-usage.json').toString();
-    // tslint:disable-next-line:no-eval
     // TODO: JSON cannot handle NaN here!
     store.commit('datasets/SetSpinogramData', parseJsonContainingNaN(data));
-    // console.log(eval(data))
-    // console.log(store);
-    // (store.state as any).datasets.spinogram = data;
-    // currentState.datasets.set('spinogram', data);
 }
 
 function LoadUsageData(zip) {
     const data = zip.entryDataSync('metadata.json');
     const content: MetadataJson = JSON.parse(data) as MetadataJson;
     DataModel.loadMetadataFile(content);
+    //store.commit('datasets/SetUsageByUsage', content);
 }
 
 function LoadCrowdMovies(zip) {

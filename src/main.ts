@@ -25,10 +25,13 @@ Vue.use(BootstrapVue);
 import VueResize from 'vue-resize';
 Vue.use(VueResize);
 
+import { ToastPlugin } from 'bootstrap-vue';
+Vue.use(ToastPlugin);
+
 Vue.config.productionTip = false;
 Vue.config.silent = true;
 
-new Vue({
+const vm = new Vue({
     router,
     store,
     render: (h) => h(App),
@@ -36,3 +39,5 @@ new Vue({
         dataModel: DataModel,
     },
 }).$mount('#app');
+
+export default vm;
