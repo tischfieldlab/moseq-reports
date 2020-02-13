@@ -77,7 +77,7 @@ export default Vue.component('homepage', {
         this.$nextTick().then(() => {
             this.handleResize();
         });
-        DataModel.subscribe(EventType.METADATA_LOADED, this.loadDefaultLayout);
+        // DataModel.subscribe(EventType.METADATA_LOADED, this.loadDefaultLayout);
         // NOTE: Check if there is data, in case we missed the event firing
         if (DataModel.getAggregateView() !== null || DataModel.getAvailableGroups().length !== 0) {
             this.loadDefaultLayout();
