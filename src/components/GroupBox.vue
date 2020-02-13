@@ -108,6 +108,7 @@ export default Vue.extend({
         updateGroups() {
             const newGroups = this.groups.filter((g) => g.selected).map((g) => g.name);
             DataModel.updateSelectedGroups(newGroups);
+            this.updateColors();
         },
         updateColors() {
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
