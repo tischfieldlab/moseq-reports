@@ -78,12 +78,12 @@ export default Vue.extend({
             groups: [] as SelectableGroupItem[],
             syllable: DataModel.getSelectedSyllable(),
             syllableIdOptions: [] as any,
-            colorChangeHandler: () => {},
+            colorChangeHandler: (option, event) => {/**/},
         };
     },
     mounted() {
         this.colorChangeHandler = debounce((option, event) => {
-            option.color = event.hex; 
+            option.color = event.hex;
             this.updateColors();
         }, 250);
 
