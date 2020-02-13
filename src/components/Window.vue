@@ -45,6 +45,9 @@ import Vue, { PropType } from 'vue';
 
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
 import {DataWindow, ComponentRegistration, Size, Position, Layout} from '../store/root.types';
+import { toPng, toCanvas } from 'html-to-image';
+import { saveAs } from 'file-saver';
+
 
 
 export default Vue.component('ui-window', {
@@ -138,15 +141,35 @@ export default Vue.component('ui-window', {
         addSettingsButton() {
             const container = document.createElement('div');
 
-            const button = document.createElement('img');
-            button.src = 'https://static.thenounproject.com/png/333746-200.png';
-            button.classList.add('settings-button');
-            button.addEventListener('click', (event) => {
+            const settingsButton = document.createElement('img');
+            settingsButton.src = 'https://static.thenounproject.com/png/333746-200.png';
+            settingsButton.classList.add('settings-button');
+            settingsButton.addEventListener('click', (event) => {
                 this.show_modal = true;
             });
 
-            container.appendChild(button);
+            container.appendChild(settingsButton);
             this.$el.children[0].children[0].appendChild(container);
+
+            const snapButton = document.createElement('img');
+            snapButton.src = '/img/camera.png';
+            snapButton.classList.add('snapshot-button');
+            snapButton.addEventListener('click', (event) => {
+                this.snapshotContent();
+            });
+            container.appendChild(snapButton);
+        },
+        snapshotContent() {
+            const options = {
+                width: this.width * (300 / 96),
+                height: this.height * (300 / 96),
+            };
+            toCanvas((this.$refs.body as Vue).$el as HTMLElement, options)
+                .then((canvas) => {
+                    canvas.toBlob((blob) => {
+                        saveAs(blob as Blob, this.title + '.png');
+                    });
+                });
         },
     },
 });
@@ -176,7 +199,15 @@ export default Vue.component('ui-window', {
     position: absolute; 
     right: 32px;
     cursor:pointer;
-    //background: url(https://static.thenounproject.com/png/333746-200.png);
+}
+.snapshot-button{
+    width: 16px; 
+    height: 16px; 
+    margin-right: 7px; 
+    margin-left: 0px; 
+    position: absolute; 
+    right: 54px;
+    cursor:pointer;
 }
 .no-settings{
     text-align: center;
