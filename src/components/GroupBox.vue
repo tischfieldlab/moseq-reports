@@ -5,22 +5,22 @@
             <b-card-header>Group Selection</b-card-header>
             <b-card-body>
               <draggable v-model="groups" @change="updateGroups()">
-                  <b-card v-for="option in groups" :key="option.name" class="chk-card">
-                    <b-form-checkbox
-                      switch
-                      @input="updateGroups()"
-                      v-model="option.selected"
-                      :name="option.name"
-                      :class="option.style">
-                        <div class="swatch" :id="option.id" :style="{'background-color': option.color}" />
-                        <b-popover :target="option.id" triggers="hover" placement="top">
-                            <template v-slot:title>{{ option.name }} Group Color</template>
-                            <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
-                        </b-popover>
-                        
-                        {{ option.name }}
-                    </b-form-checkbox>
-                  </b-card>
+                    <b-card v-for="option in groups" :key="option.name" class="chk-card">
+                        <div :class="{'group-wrap': true, [option.style]: true}">
+                            <b-form-checkbox
+                                switch
+                                @input="updateGroups()"
+                                v-model="option.selected"
+                                :name="option.name">
+                            </b-form-checkbox>
+                            <div class="swatch" :id="option.id" :style="{'background-color': option.color}" />
+                            <b-popover :target="option.id" triggers="click blur" placement="top">
+                                <template v-slot:title>{{ option.name }} Group Color</template>
+                                <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
+                            </b-popover>
+                            <span>{{ option.name }}</span>
+                        </div>
+                    </b-card>
                 </draggable>
             </b-card-body>
         </b-card>
@@ -143,13 +143,13 @@ export default Vue.extend({
 .chk-card .card-body{
   padding:0.25rem;
 }
-.custom-switch::after{
+.group-wrap::after{
   content:"\22EE";
   float:right;
   margin-right: 5px;
   cursor:grab;
 }
-.custom-switch.non-selected{
+.group-wrap.non-selected{
     color:#AAAAAA;
 }
 .card-header{
@@ -160,6 +160,9 @@ export default Vue.extend({
 }
 .primary_card select{
     margin:0 !important;
+}
+.custom-switch {
+    float:left;
 }
 .swatch {
     width:24px;
