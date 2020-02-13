@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import store from '@/store/root.store';
+import StreamZip from 'node-stream-zip';
 
 interface DataLoaderState {
     bundle: string; // path to the bundle
@@ -16,7 +17,6 @@ let currentState: DataLoaderState|undefined;
 
 export default function LoadDataBundle(filename: string) {
     // console.log('attempting to open ', filename);
-    const StreamZip = require('node-stream-zip');
     const zip = new StreamZip({
         file: filename,
         storeEntries: true,
@@ -70,6 +70,7 @@ function LoadCrowdMovies(zip) {
     const dest = path.join(currentState.path, 'crowd_movies');
     fs.mkdirSync(dest);
     zip.extract('crowd_movies', dest, (err, count) => {
+        // tslint:disable-next-line:no-console
         console.log(err ? 'Extract error' : `Extracted ${count} entries`);
     });
 }
