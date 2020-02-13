@@ -12,7 +12,13 @@
                       v-model="option.selected"
                       :name="option.name"
                       :class="option.style">
-                      {{ option.name }}
+                        <div class="swatch" :id="option.id" :style="{'background-color': option.color}" />
+                        <b-popover :target="option.id" triggers="hover" placement="top">
+                            <template v-slot:title>{{ option.name }} Group Color</template>
+                            <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
+                        </b-popover>
+                        
+                        {{ option.name }}
                     </b-form-checkbox>
                   </b-card>
                 </draggable>
@@ -35,33 +41,52 @@
 import Vue from 'vue';
 import draggable from 'vuedraggable';
 import DataModel, { EventType } from '@/models/DataModel';
+import { Chrome } from 'vue-color';
+import { schemeDark2 } from 'd3-scale-chromatic';
+import {scaleOrdinal} from 'd3-scale';
+import { debounce } from 'ts-debounce';
+
 
 
 class SelectableGroupItem {
-  public name: string;
-  public selected: boolean;
-  get style() {
-      return this.selected ? '' : 'non-selected';
-  }
-  constructor(name: string, selected: boolean = true) {
-    this.name = name;
-    this.selected = selected;
-  }
+    public name: string;
+    public selected: boolean;
+    public color: string;
+
+    get style(): string {
+        return this.selected ? 'selected' : 'non-selected';
+    }
+    get id(): string {
+        return 'group_' + this.name.replace(/\W/g, '_');
+    }
+
+    constructor(name: string, selected: boolean = true) {
+        this.name = name;
+        this.selected = selected;
+        this.color = '#000000';
+    }
 }
 
 export default Vue.extend({
     name: 'groupbox',
     components: {
         draggable,
+        'chrome-picker': Chrome,
     },
     data() {
         return {
             groups: [] as SelectableGroupItem[],
             syllable: DataModel.getSelectedSyllable(),
             syllableIdOptions: [] as any,
+            colorChangeHandler: () => {},
         };
     },
     mounted() {
+        this.colorChangeHandler = debounce((option, event) => {
+            option.color = event.hex; 
+            this.updateColors();
+        }, 250);
+
         DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.updateSyllable);
         DataModel.subscribe(EventType.METADATA_LOADED, this.buildGroups);
         this.buildGroups();
@@ -69,17 +94,24 @@ export default Vue.extend({
     },
     methods: {
         buildGroups() {
+            const colorScale = scaleOrdinal(schemeDark2);
             this.groups = []; // Need to reset this so that we don't have duplicate options.
             const selectedGroups = DataModel.getSelectedGroups();
             DataModel.getAvailableGroups()
                      .map((g) => {
                          const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
+                         sgi.color = colorScale(g);
                          this.groups.push(sgi);
                      });
+            this.updateColors();
         },
         updateGroups() {
             const newGroups = this.groups.filter((g) => g.selected).map((g) => g.name);
             DataModel.updateSelectedGroups(newGroups);
+        },
+        updateColors() {
+            const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
+            DataModel.updateSelectedGroupColors(colors);
         },
         updateSyllable(event: any) {
             this.syllable = DataModel.getSelectedSyllable();
@@ -127,5 +159,12 @@ export default Vue.extend({
 }
 .primary_card select{
     margin:0 !important;
+}
+.swatch {
+    width:24px;
+    height:24px;
+    float:left;
+    border:1px solid #efefef;
+    margin: 0 10px 0 5px;
 }
 </style>

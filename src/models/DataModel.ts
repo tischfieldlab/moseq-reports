@@ -6,6 +6,7 @@ export enum EventType {
     GROUPS_CHANGE = 'selectedGroupsChange',
     SYLLABLE_CHANGE = 'selectedSyllableChange',
     METADATA_LOADED = 'metadataLoaded',
+    GROUP_COLORS_CHANGE = 'groupColorsChange',
 }
 
 export interface MetadataJson {
@@ -69,6 +70,7 @@ class DataModel {
     private availableGroups     :   string[] = [];
     private maxSyllable         :   number = 0;
     private selectedGroups      :   string[] = [];
+    private groupColors         :   string[] = [];
     private selectedSyallable   :   number = 0;
     private baseDataframe       :   any = null;
     private aggregateView       :   any = null;
@@ -105,6 +107,7 @@ class DataModel {
             this.loadMetadataFile(content);
         } catch(e) {
             this.availableGroups = [];
+            this.groupColors = [];
             this.baseDataframe = null;
             this.selectedGroups = [];
             this.maxSyllable = 100;
@@ -226,6 +229,14 @@ class DataModel {
 
         // NOTE: Fire the event so everyone knows groups changed
         this.eventBus.fire(EventType.GROUPS_CHANGE, groups);
+    }
+
+    public updateSelectedGroupColors(colors: string[]) {
+        this.groupColors = colors;
+        this.eventBus.fire(EventType.GROUP_COLORS_CHANGE, colors);
+    }
+    public getSelectedGroupColors() {
+        return this.groupColors;
     }
 
 

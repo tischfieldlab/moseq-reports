@@ -140,12 +140,15 @@ export default Vue.component('detailed-usage', {
                 bottom: 20,
                 left: 35,
             },
+            groupNames: Array<string>(),
+            groupColors: Array<string>(),
             // watchers: Array<(() => void)>(),
         };
     },
     mounted() {
         DataModel.subscribe(EventType.GROUPS_CHANGE, this.createView);
         DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.createView);
+        DataModel.subscribe(EventType.GROUP_COLORS_CHANGE, this.updateGroupColors);
 
         this.createView();
     },
@@ -155,6 +158,7 @@ export default Vue.component('detailed-usage', {
         // unsubscribe from the data model
         DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.createView);
         DataModel.unsubscribe(EventType.SYLLABLE_CHANGE, this.createView);
+        DataModel.unsubscribe(EventType.GROUP_COLORS_CHANGE, this.updateGroupColors);
     },
     computed: {
         settings(): any {
@@ -191,7 +195,7 @@ export default Vue.component('detailed-usage', {
                 return { x: scaleBand(), y: scaleLinear() };
             }
             const x = scaleBand()
-                .domain(DataModel.getSelectedGroups())
+                .domain(this.groupNames)
                 .rangeRound([0, this.width])
                 .padding(0.2);
             const y = scaleLinear()
@@ -217,7 +221,7 @@ export default Vue.component('detailed-usage', {
             return a;
         },
         color(): any {
-            return scaleOrdinal(schemeSet1);
+            return scaleOrdinal().domain(this.groupNames).range(this.groupColors);
         },
     },
     methods: {
@@ -230,6 +234,9 @@ export default Vue.component('detailed-usage', {
             if (df === null) {
                 return;
             }
+
+            this.groupColors = DataModel.getSelectedGroupColors();
+            this.groupNames = DataModel.getSelectedGroups();
 
             const currSyllable = DataModel.getSelectedSyllable();
 
@@ -245,6 +252,9 @@ export default Vue.component('detailed-usage', {
                 return this.computeGroupStats(values, g);
             });
             // console.log(this.groupedData);
+        },
+        updateGroupColors(newColors) {
+            this.groupColors = newColors;
         },
         computeGroupStats(data, group): GroupStats {
             const kde = this.kernelDensityEstimator(this.epanechnikovKernel(.01), this.scale.y.ticks(100));
