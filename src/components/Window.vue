@@ -164,7 +164,7 @@ export default Vue.component('ui-window', {
                 width: this.width * (300 / 96),
                 height: this.height * (300 / 96),
             };
-            toCanvas((this.$refs.body as Vue).$el as HTMLElement, options)
+            toCanvas((this.$refs.body as Vue).$el as HTMLElement/*, options*/)
                 .then((canvas) => {
                     canvas.toBlob((blob) => {
                         saveAs(blob as Blob, this.title + '.png');
