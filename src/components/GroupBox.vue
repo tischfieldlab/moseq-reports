@@ -83,7 +83,6 @@ export default Vue.extend({
     data() {
         return {
             groups: [] as SelectableGroupItem[],
-            syllable: DataModel.getSelectedSyllable(),
             syllableIdOptions: [] as any,
             colorChangeHandler: (option, event) => {/**/},
             countMethods: [
@@ -92,6 +91,16 @@ export default Vue.extend({
             ],
             selectedCountMethod: 'Usage',
         };
+    },
+    computed: {
+        syllable: {
+            get(): number {
+                return this.$store.state.dataview.selectedSyllable;
+            },
+            set() {
+                this.$store.commit('dataview/setSelectedSyllable', event);
+            },
+        },
     },
     mounted() {
         this.colorChangeHandler = debounce((option, event) => {
@@ -108,35 +117,38 @@ export default Vue.extend({
         buildGroups() {
             const colorScale = scaleOrdinal(schemeDark2);
             this.groups = []; // Need to reset this so that we don't have duplicate options.
-            const selectedGroups = DataModel.getSelectedGroups();
-            DataModel.getAvailableGroups()
-                     .map((g) => {
-                         const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
-                         sgi.color = colorScale(g);
-                         this.groups.push(sgi);
-                     });
+            const selectedGroups = this.$store.state.dataview.selectedGroups;
+            this.$store.state.dataview.availableGroups.map((g) => {
+                const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
+                sgi.color = colorScale(g);
+                this.groups.push(sgi);
+            });
             this.updateColors();
         },
         updateGroups() {
             const newGroups = this.groups.filter((g) => g.selected).map((g) => g.name);
-            DataModel.updateSelectedGroups(newGroups);
+            this.$store.commit('dataview/selectedGroups', newGroups);
+            // DataModel.updateSelectedGroups(newGroups);
             this.updateColors();
         },
         updateColors() {
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-            DataModel.updateSelectedGroupColors(colors);
+            this.$store.commit('dataview/setSelectedGroupColors', colors);
+            // DataModel.updateSelectedGroupColors(colors);
         },
         updateSyllable(event: any) {
-            this.syllable = DataModel.getSelectedSyllable();
+            // this.syllable = DataModel.getSelectedSyllable();
         },
         onSyllableChange(event: any) {
-            DataModel.updateSelectedSyllable(event);
+            // this.$store.commit('dataview/setSelectedSyllable', event);
+            // DataModel.updateSelectedSyllable(event);
         },
         onCountMethodChange(event: any) {
-            DataModel.updateCountMethod(event);
+            this.$store.commit('dataview/setCountMethod', event);
+            // DataModel.updateCountMethod(event);
         },
         getsyllableIdOptions() {
-            const max = DataModel.getMaxSyllable();
+            const max = this.$store.state.dataview.maxSyllable;
 
             for (let i = 0; i < max + 1; i++) {
                 const val = '' + i;

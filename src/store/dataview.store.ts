@@ -47,6 +47,9 @@ const DataviewModule: Module<DataviewState, RootState> = {
                                .aggregate((g: any) => g.stat.mean('usage'))
                                .rename('aggregation', 'usage');
         },
+        maxSyllable: (state, getters) => {
+            return getters.view.distinct('syllable').toArray().length;
+        },
     },
     mutations: {
         setCountMethod(state, countMethod: CountMethod) {
