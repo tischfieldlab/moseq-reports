@@ -45,7 +45,7 @@ export default function LoadDataBundle(filename: string) {
         LoadMetadataData(zip);
         LoadUsageData(zip);
         LoadSpinogramData(zip);
-        // LoadCrowdMovies(zip); //for future use
+        LoadCrowdMovies(zip); // TODO: Keshav
 
         zip.close();
         app.$bvToast.toast('File "' + filename + '" was loaded successfully.', {
@@ -103,7 +103,7 @@ function LoadCrowdMovies(zip) {
     fs.mkdirSync(dest);
     zip.extract('crowd_movies', dest, (err, count) => {
         // tslint:disable-next-line:no-console
-        console.log(err ? 'Extract error' : `Extracted ${count} entries`);
+        console.log(err ? 'Extract error' : `Extracted ${count} crowd movie entries`);
     });
 }
 
