@@ -25,7 +25,6 @@
             <UiCard :key="w.id" :id="w.id" />
             <!--<UiCard2 :key="w.id" :id="w.id" />-->
         </template>
-        
     </div>
 </template>
 
@@ -77,7 +76,7 @@ export default Vue.component('homepage', {
         this.$nextTick().then(() => {
             this.handleResize();
         });
-        // DataModel.subscribe(EventType.METADATA_LOADED, this.loadDefaultLayout);
+        DataModel.subscribe(EventType.METADATA_LOADED, this.onMetadataLoaded);
         // NOTE: Check if there is data, in case we missed the event firing
         if (DataModel.getAggregateView() !== null || DataModel.getAvailableGroups().length !== 0) {
             this.loadDefaultLayout();
@@ -88,8 +87,10 @@ export default Vue.component('homepage', {
             this.height = document.documentElement.clientHeight;
             this.width = document.documentElement.clientWidth - this.toolbox_width;
         },
-        loadDefaultLayout(): void {
+        onMetadataLoaded() {
             this.metadataLoaded = true;
+        },
+        loadDefaultLayout(): void {
             this.$store.dispatch('loadDefaultLayout');
         },
     },
