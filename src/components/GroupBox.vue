@@ -3,8 +3,7 @@
         <b-card no-body class="primary_card">
             <b-card-header>Count Method</b-card-header>
             <b-card-body>
-                <b-form-select v-model="selectedCountMethod" :options="countMethods" @change="onCountMethodChange($event)" class="mb-3">
-                </b-form-select>
+                <b-form-select v-model="selectedCountMethod" :options="countMethods" @change="onCountMethodChange($event)" class="mb-3" />
             </b-card-body>
         </b-card>
         <b-card no-body class="primary_card" id="group_selection_container">
@@ -47,11 +46,12 @@
 <script lang="ts">
 import Vue from 'vue';
 import draggable from 'vuedraggable';
-import DataModel, { EventType } from '@/models/DataModel';
+import DataModel, { EventType, CountMethod } from '@/models/DataModel';
 import { Chrome } from 'vue-color';
 import { schemeDark2 } from 'd3-scale-chromatic';
 import {scaleOrdinal} from 'd3-scale';
 import { debounce } from 'ts-debounce';
+
 
 
 
@@ -86,7 +86,10 @@ export default Vue.extend({
             syllable: DataModel.getSelectedSyllable(),
             syllableIdOptions: [] as any,
             colorChangeHandler: (option, event) => {/**/},
-            countMethods: ['Usage', 'Frames'],
+            countMethods: [
+                { text: 'Usage', value: CountMethod.Usage },
+                { text: 'Frames', value: CountMethod.Frames },
+            ],
             selectedCountMethod: 'Usage',
         };
     },
@@ -130,7 +133,7 @@ export default Vue.extend({
             DataModel.updateSelectedSyllable(event);
         },
         onCountMethodChange(event: any) {
-            // DataModel.updateSelectedSyllable(event);
+            DataModel.updateCountMethod(event);
         },
         getsyllableIdOptions() {
             const max = DataModel.getMaxSyllable();

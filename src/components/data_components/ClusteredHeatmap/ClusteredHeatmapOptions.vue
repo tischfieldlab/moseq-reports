@@ -1,16 +1,10 @@
 <template>
     <b-container fluid>
         <b-row>
-            <b-col cols="3" align-self="center">
-                <label label-for="heat-color" class="font-weight-bold pt-0">Colormap</label>
-            </b-col>
             <b-col>
-                <b-form-select 
-                    id="heat-color" 
-                    v-model="colorscale"
-                    :options="color_options"
-                    class="mb-3">
-                </b-form-select>
+                <b-input-group prepend="Colormap">
+                    <b-form-select v-model="colorscale" :options="color_options"></b-form-select>
+                </b-input-group>
             </b-col>
         </b-row>
         <b-row>
