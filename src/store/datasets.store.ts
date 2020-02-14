@@ -5,6 +5,8 @@ interface DatasetsState {
     spinogram: any[];
     usageByUsage: any;
     usageByFrames: any;
+    groups: string[];
+    label_map: any;
 }
 
 const DatasetsModule: Module<DatasetsState, RootState> = {
@@ -13,6 +15,8 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         spinogram: [],
         usageByUsage: null,
         usageByFrames: null,
+        groups: [],
+        label_map: null,
     },
     mutations: {
         SetSpinogramData(state, data: []) {
@@ -23,6 +27,12 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         },
         SetUsageByFrames(state, data: any) {
             state.usageByFrames = data;
+        },
+        SetGroupInfo(state, data: any) {
+            state.groups = data;
+        },
+        SetLabelMap(state, data: any) {
+            state.label_map = data;
         },
     },
 };

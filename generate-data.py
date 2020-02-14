@@ -8,6 +8,8 @@ from moseq2_extras.util import ensure_dir
 from moseq2_viz.util import parse_index
 from moseq2_viz.model.util import parse_model_results, \
         results_to_dataframe
+from moseq2_extras.model import get_syllable_id_mapping
+
 
 METADATAPATH = os.getcwd()
 
@@ -24,18 +26,21 @@ def main():
     parser.set_defaults(indexFile=None, modelFile=None, outputPath=METADATAPATH, filterGroups=[])
     args = parser.parse_args()
 
-    sort = True
     max_syllable = 100
-    count = 'usage'
 
     ensure_dir(args.outputPath)
 
+    # write map of syllable id's between various count methods
+    writeSyllableIdMap(args.modelFile, args.outputPath)
 
-    df = getUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, sort, count)
-    dfGroups = getGroupsFromDataframe(df)
-    writeMetadataFile(df, dfGroups, args.outputPath)
+    # write out the groups and their preferred ordering
+    writePrefferedGroups(args.indexFile, args.filterGroups, args.outputPath)
+
+    # write out usage data
+    writeUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'usage', args.outputPath)
+    writeUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'frames', args.outputPath)
     
-    create_spinograms(args.modelFile, args.indexFile, args.outputPath, max_syllable, sort, count)
+    create_spinograms(args.modelFile, args.indexFile, args.outputPath, max_syllable, True, 'usage')
     
     archiveData(args.outputPath)
 #end main()
@@ -49,32 +54,38 @@ def archiveData(outputPath):
     zipf.close()
 #end archiveData()
 
-def writeMetadataFile(df, dfGroups, outputPath):
-    ensure_dir(outputPath)
+def writePrefferedGroups(index, groups, outputPath):
+    idx, _ = parse_index(index)
+    known_groups = list(set([f['group'] for f in idx['files']]))
+    known_groups.sort()
     
-    outputPath = os.path.join(outputPath, 'metadata.json')
-    res = {}
-    res['cohortGroups'] = dfGroups
-    res['dataframeJson'] = df
-    with open(outputPath, 'w') as f:
-        json.dump(res, f, default=lambda df: json.loads(df.to_json(orient='split')))
-#end writeMetadataFile
+    if groups is None or len(groups) == 0:
+        groups = known_groups
+    
+    final_groups = [g for g in groups if g in known_groups]
 
-def getGroupsFromDataframe(df):
-    return list(df['group'].unique())
-#end getGroupsFromDataframe()
+    with open(os.path.join(outputPath, 'groups.json'), 'w') as f:
+        json.dump(final_groups, f)
+#end writePrefferedGroups()
 
-def getUsageDataframe(model, index, groups, max_syl, sort, count):
+def writeSyllableIdMap(model, outputPath):
+    syllable_mapping = get_syllable_id_mapping(model)
+    sm_df = pd.DataFrame(syllable_mapping)
+    sm_df.to_json(os.path.join(outputPath, "label_map.json"), orient='split')
+#end writeSyllableIdMap()
+
+def writeUsageDataframe(model, index, groups, max_syl, sort, count, outputPath):
     _, sortedIndex = parse_index(index)
     modelRes = parse_model_results(model)
 
     df, _ = results_to_dataframe(modelRes, sortedIndex, max_syllable=max_syl, sort=sort, count=count)
 
-    if (groups):
+    if groups:
         df = df.loc[df['group'].isin(groups)]
 
-    return df
-#end getUsageDataframe()
+    dest = os.path.join(outputPath, 'usage.ms{}.c{}.s{}.json'.format(max_syl, count, sort))
+    df.to_json(dest, orient='split')
+#end writeUsageDataframe()
 
 def create_spinograms(model, index, out_dir, max_syl, sort, count):
     out_dir = ensure_dir(out_dir)

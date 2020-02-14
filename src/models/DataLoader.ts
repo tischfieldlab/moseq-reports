@@ -5,6 +5,8 @@ import path from 'path';
 import os from 'os';
 import store from '@/store/root.store';
 import StreamZip from 'node-stream-zip';
+import DataFrame from 'dataframe-js';
+
 
 import app from '@/main';
 
@@ -26,6 +28,11 @@ export default function LoadDataBundle(filename: string) {
         skipEntryNameValidation: false,
     });
     zip.on('error', (err) => {
+        app.$bvToast.toast(err, {
+            title: 'Error loading data!',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+        });
         throw new Error(err);
     });
     zip.on('ready', () => {
@@ -35,6 +42,7 @@ export default function LoadDataBundle(filename: string) {
         };
         // console.log('Entries read: ' + zip.entriesCount);
         // console.log('zip ready');
+        LoadMetadataData(zip);
         LoadUsageData(zip);
         LoadSpinogramData(zip);
         // LoadCrowdMovies(zip); //for future use
@@ -54,21 +62,37 @@ function CleanState() {
     }
     fs.rmdirSync(currentState.path, {recursive: true});
 }
-
-function LoadSpinogramData(zip) {
+function EnsureState() {
     if (currentState === undefined) {
         throw new Error('unexpected current state is undefined!');
     }
+}
+
+function LoadMetadataData(zip) {
+    EnsureState();
+    store.commit('datasets/SetGroupInfo', jsonParseZipEntry(zip, 'groups.json'));
+    store.commit('datasets/SetLabelMap', jsonParseZipEntry(zip, 'label_map.json'));
+}
+
+function LoadSpinogramData(zip) {
+    EnsureState();
     const data = zip.entryDataSync('spinogram.corpus-sorted-usage.json').toString();
     // TODO: JSON cannot handle NaN here!
     store.commit('datasets/SetSpinogramData', parseJsonContainingNaN(data));
 }
 
 function LoadUsageData(zip) {
-    const data = zip.entryDataSync('metadata.json');
-    const content: MetadataJson = JSON.parse(data) as MetadataJson;
-    DataModel.loadMetadataFile(content);
-    store.commit('datasets/SetUsageByUsage', content);
+    EnsureState();
+
+    const data1 = jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json');
+    const data1Df = new DataFrame(data1.data, data1.columns);
+    store.commit('datasets/SetUsageByUsage', data1Df);
+
+    const data2 = jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json');
+    const data2Df = new DataFrame(data2.data, data2.columns);
+    store.commit('datasets/SetUsageByFrames', data2Df);
+
+    // DataModel.loadMetadataFile(data1);
 }
 
 function LoadCrowdMovies(zip) {
@@ -84,7 +108,10 @@ function LoadCrowdMovies(zip) {
 }
 
 
-
+function jsonParseZipEntry(zip, entryName) {
+    const data = zip.entryDataSync(entryName);
+    return JSON.parse(data);
+}
 function parseJsonContainingNaN(data) {
     return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
         return value === '***NaN***' ? NaN : value;

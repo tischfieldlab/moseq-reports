@@ -1,5 +1,6 @@
 import DataFrame from 'dataframe-js';
 import Vue from 'vue';
+import store from '@/store/root.store';
 
 /* tslint:disable */
 export enum EventType {
@@ -7,6 +8,11 @@ export enum EventType {
     SYLLABLE_CHANGE = 'selectedSyllableChange',
     METADATA_LOADED = 'metadataLoaded',
     GROUP_COLORS_CHANGE = 'groupColorsChange',
+}
+
+export enum CountMethod {
+    Usage,
+    Frames,
 }
 
 export interface MetadataJson {
@@ -67,12 +73,13 @@ class EventBus extends Vue {
 class DataModel {
     private static instance : DataModel;
     
+    private countMethod: CountMethod;
     private availableGroups     :   string[] = [];
     private maxSyllable         :   number = 0;
     private selectedGroups      :   string[] = [];
     private groupColors         :   string[] = [];
     private selectedSyallable   :   number = 0;
-    private baseDataframe       :   any = null;
+    // private baseDataframe       :   any = null;
     private aggregateView       :   any = null;
     private eventBus            :   EventBus = new EventBus();
 
@@ -95,23 +102,12 @@ class DataModel {
      * @memberof DataModel
      */
     private constructor() {
-        const path = require('path');
-        const fs = require('fs');
-
-        let fpath: string = process.cwd();
-        fpath = path.join(fpath, 'src', 'metadata', 'metadata.msq');
-
-        try {
-            const content: MetadataJson = JSON.parse(fs.readFileSync(fpath)) as MetadataJson;
-            content.dataframeJson = JSON.parse(content.dataframeJson);
-            this.loadMetadataFile(content);
-        } catch(e) {
-            this.availableGroups = [];
-            this.groupColors = [];
-            this.baseDataframe = null;
-            this.selectedGroups = [];
-            this.maxSyllable = 100;
-        }
+        this.countMethod = CountMethod.Usage;
+        this.availableGroups = [];
+        this.groupColors = [];
+        // this.baseDataframe = null;
+        this.selectedGroups = [];
+        this.maxSyllable = 100;
     }
 
     /**
@@ -122,19 +118,33 @@ class DataModel {
      *                                  metadata information to be loaded in.
      * @memberof DataModel
      */
-    public loadMetadataFile(jsonFile: MetadataJson) {
-        this.availableGroups = jsonFile.cohortGroups;
-        this.selectedGroups = jsonFile.cohortGroups;
+    public loadMetadataFile(jsonFile: any) {
+        this.availableGroups = (store.state as any).datasets.groups;
+        this.selectedGroups = (store.state as any).datasets.groups;
 
-        this.baseDataframe = new DataFrame(jsonFile.dataframeJson.data, jsonFile.dataframeJson.columns);
-        this.maxSyllable = this.baseDataframe.filter((row: any) => row.get('syllable')).distinct('syllable').toArray().length;
+        this.maxSyllable = this.getBaseDataFrame()
+                               .filter((row: any) => row.get('syllable'))
+                               .distinct('syllable')
+                               .toArray().length;
 
         // NOTE: THIS NEEDS TO BE FIRST OTHERWISE IT WON'T BE CALLED SYNCHRONOUSLY
         this.updateView();
 
-        this.eventBus.fire(EventType.GROUPS_CHANGE, jsonFile.cohortGroups);
+        this.eventBus.fire(EventType.GROUPS_CHANGE, this.availableGroups);
         this.eventBus.fire(EventType.SYLLABLE_CHANGE, 0);
         this.eventBus.fire(EventType.METADATA_LOADED, null);
+    }
+
+    private getBaseDataFrame() {
+        let data;
+        if (this.countMethod === CountMethod.Usage){
+            data = (store.state as any).datasets.usageByUsage;
+        } else if (this.countMethod === CountMethod.Frames) {
+            data = (store.state as any).datasets.usageByFrames;
+        }else {
+            throw new Error('Unknown Count Method '+this.countMethod);
+        }
+        return new DataFrame(data.data, data.columns);
     }
 
     /**
@@ -146,20 +156,20 @@ class DataModel {
      */
     private updateView() {
         let excludeGroups : string[] = [];
-        for (var i = 0; i < this.availableGroups.length; i++) {
+        for (let i = 0; i < this.availableGroups.length; i++) {
             if (!this.selectedGroups.includes(this.availableGroups[i])) {
                 excludeGroups.push(this.availableGroups[i]);
             }
         }
 
-        var dfClone = this.baseDataframe.toDict();
-        dfClone = new DataFrame(dfClone);
-        for (i = 0; i < excludeGroups.length; i++) {
+        let dfClone = this.getBaseDataFrame();
+        for (let i = 0; i < excludeGroups.length; i++) {
             dfClone = dfClone.filter((row : any) => row.get('group') !== excludeGroups[i]);
         }
 
-        this.aggregateView = dfClone.groupBy('syllable', 'group').aggregate((g: any) => g.stat.mean('usage'))
-                .rename('aggregation', 'usage');
+        this.aggregateView = dfClone.groupBy('syllable', 'group')
+                                    .aggregate((g: any) => g.stat.mean('usage'))
+                                    .rename('aggregation', 'usage');
 
         this.view = dfClone;
     }
@@ -237,6 +247,15 @@ class DataModel {
     }
     public getSelectedGroupColors() {
         return this.groupColors;
+    }
+
+    public updateCountMethod(countMethod: CountMethod) {
+        this.countMethod = countMethod;
+        this.updateView();
+        this.eventBus.fire(EventType.METADATA_LOADED, null);
+    }
+    public getCountMethod() {
+        return this.countMethod;
     }
 
 
