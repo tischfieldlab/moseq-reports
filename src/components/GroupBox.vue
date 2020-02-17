@@ -45,7 +45,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import draggable from 'vuedraggable';
-import DataModel, { EventType, CountMethod } from '@/models/DataModel';
+import { CountMethod } from '@/store/dataview.store';
 import { Chrome } from 'vue-color';
 import { debounce } from 'ts-debounce';
 

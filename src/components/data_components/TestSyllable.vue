@@ -14,8 +14,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-
-import DataModel, { EventType } from '@/models/DataModel';
 import store from '@/store/root.store';
 import {ComponentRegistration} from '@/store/root.types';
 

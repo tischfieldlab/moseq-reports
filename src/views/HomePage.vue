@@ -32,8 +32,6 @@
 import Vue from 'vue';
 import { debounce } from 'ts-debounce';
 
-import DataModel, { EventType } from '@/models/DataModel';
-
 import UiCard from '@/components/Window.vue';
 import UiCard2 from '@/components/Window2.vue';
 import GroupBox from '@/components/GroupBox.vue';

@@ -1,5 +1,4 @@
 import { remote, Menu, MenuItem, MenuItemConstructorOptions } from 'electron';
-// import DataModel, { MetadataJson } from '@/models/DataModel';
 import LoadDataBundle from '@/models/DataLoader';
 
 import { createDataWindow, ComponentRegistration, DehydratedDataWindow } from '@/store/root.types';
@@ -183,8 +182,6 @@ function createAddWidgetSubmenu(menu: Menu) {
 
 /**
  * Opens a file dialog and reads in the file selected as json.
- * After it will load the json file into the datamodel and then
- * update the view based on that.
  *
  * @returns {void}
  */
@@ -197,10 +194,6 @@ function openNewFileButton(): void {
 
     const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
     if (filenames === undefined) { return; }
-
-    /*const content: MetadataJson = JSON.parse(fs.readFileSync(filenames[0])) as MetadataJson;
-    content.dataframeJson = JSON.parse(content.dataframeJson) as any;
-    DataModel.loadMetadataFile(content);*/
 
     LoadDataBundle(filenames[0]);
 }

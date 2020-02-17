@@ -36,7 +36,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import DataModel, {EventType} from '@/models/DataModel';
 import {Layout} from '@/store/root.types';
 import store from '@/store/root.store';
 import SpinogramData from '@/metadata/spinogram.corpus-sorted-usage';

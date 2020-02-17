@@ -1,10 +1,14 @@
 import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
-import { CountMethod } from '@/models/DataModel';
 import Vue from 'vue';
 import DataFrame from 'dataframe-js';
 import { schemeDark2 } from 'd3-scale-chromatic';
 import {scaleOrdinal} from 'd3-scale';
+
+export enum CountMethod {
+    Usage,
+    Frames,
+}
 
 interface DataviewState {
     countMethod: CountMethod;
