@@ -52,7 +52,6 @@ export default Vue.component('homepage', {
     },
     data() {
         return {
-            metadataLoaded: false,
             noDataMessage: 'No metadata file can be found. Please load in a file by clicking File > Open File.',
             height: 0,
             width: 0,
@@ -63,6 +62,19 @@ export default Vue.component('homepage', {
     computed: {
         windows(): DataWindow[] {
             return this.$store.state.windows;
+        },
+        metadataLoaded(): boolean {
+            return this.$store.getters['dataview/view'] !== null;
+        },
+    },
+    watch: {
+        metadataLoaded: {
+            handler(newState, oldState) {
+                if (!oldState && newState && this.windows.length === 0) {
+                    this.loadDefaultLayout();
+                }
+            },
+            deep: true,
         },
     },
     created() {
@@ -76,19 +88,11 @@ export default Vue.component('homepage', {
         this.$nextTick().then(() => {
             this.handleResize();
         });
-        DataModel.subscribe(EventType.METADATA_LOADED, this.onMetadataLoaded);
-        // NOTE: Check if there is data, in case we missed the event firing
-        if (DataModel.getAggregateView() !== null || DataModel.getAvailableGroups().length !== 0) {
-            this.loadDefaultLayout();
-        }
     },
     methods: {
         handleResize(): any {
             this.height = document.documentElement.clientHeight;
             this.width = document.documentElement.clientWidth - this.toolbox_width;
-        },
-        onMetadataLoaded() {
-            this.metadataLoaded = true;
         },
         loadDefaultLayout(): void {
             this.$store.dispatch('loadDefaultLayout');
