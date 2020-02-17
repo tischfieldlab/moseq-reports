@@ -19,7 +19,9 @@
             </b-tabs>
         </b-card>
         <div id="has-no-metadata-container" :style="{'left': toolbox_width+'px', 'width': width+'px', 'top': height/2+'px'}" v-if="!metadataLoaded">
-            <h4 style="text-align: center;" id="no-data-text">{{ noDataMessage }} </h4>
+            <h4 style="text-align: center;" id="no-data-text">
+                No data loaded. Please <a href="#" @click="initiateFileOpen">load some data</a> by clicking File > Open File.
+            </h4>
         </div>
         <template v-for="w in windows">
             <UiCard :key="w.id" :id="w.id" />
@@ -38,6 +40,7 @@ import GroupBox from '@/components/GroupBox.vue';
 import Toolbox from '@/components/Toolbox.vue';
 
 import { DataWindow } from '@/store/root.types';
+import { openNewFileButton } from '@/MenuStrip';
 
 
 export default Vue.component('homepage', {
@@ -50,7 +53,7 @@ export default Vue.component('homepage', {
     },
     data() {
         return {
-            noDataMessage: 'No metadata file can be found. Please load in a file by clicking File > Open File.',
+            noDataMessage: 'No data loaded. Please load some data by clicking File > Open File.',
             height: 0,
             width: 0,
             toolbox_width: 250,
@@ -94,6 +97,9 @@ export default Vue.component('homepage', {
         },
         loadDefaultLayout(): void {
             this.$store.dispatch('loadDefaultLayout');
+        },
+        initiateFileOpen(): void {
+            openNewFileButton();
         },
     },
 });
