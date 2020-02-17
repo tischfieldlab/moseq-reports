@@ -1,5 +1,6 @@
 import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
+import Vue from 'vue';
 
 interface DatasetsState {
     spinogram: any[];
@@ -29,7 +30,7 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
             state.usageByFrames = data;
         },
         SetGroupInfo(state, data: any) {
-            state.groups = data;
+            Vue.set(state, 'groups', [...data]);
         },
         SetLabelMap(state, data: any) {
             state.label_map = data;

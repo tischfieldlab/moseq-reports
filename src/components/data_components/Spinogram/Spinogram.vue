@@ -3,13 +3,13 @@
         <template v-if="has_data">
             <svg :width="outsideWidth" :height="outsideHeight" >
                 <g :transform="`translate(${margin.left}, ${margin.top})`" >
-                    <template v-for="(tp, idx) in current_data">
+                    <template v-for="(tp, idx) in spinogram_plot">
                         <path 
                             v-bind:key="idx"
                             :d="line(tp)"
                             :stroke="line_color"
                             :stroke-width="line_weight"
-                            :style="{opacity:current_alphas[idx]}" />
+                            :style="{opacity:spinogram_alphas[idx]}" />
                     </template>
                 </g>
                 <g class="x-axis" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
@@ -36,7 +36,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import DataModel, {EventType} from '@/models/DataModel';
 import {Layout} from '@/store/root.types';
 import store from '@/store/root.store';
 import SpinogramData from '@/metadata/spinogram.corpus-sorted-usage';
@@ -78,16 +77,12 @@ export default Vue.component('spinogram-plots', {
     },
     data() {
         return {
-            has_data: false,
-            current_data: [] as number[][][],
-            current_alphas: [] as number[],
             margin: {
                 top: 20,
                 right: 20,
                 bottom: 45,
                 left: 45,
             },
-            // watchers: Array<(() => void)>(),
         };
     },
     computed: {
@@ -115,7 +110,7 @@ export default Vue.component('spinogram-plots', {
             return { x, y };
         },
         scale(): any {
-            if (this.current_data === undefined) {
+            if (this.spinogram_plot === undefined) {
                 return { x: scaleLinear(), y: scaleLinear() };
             }
             const x = scaleLinear()
@@ -138,40 +133,22 @@ export default Vue.component('spinogram-plots', {
         line_weight(): string {
             return this.settings.line_weight;
         },
-        spinogram_data(): Spinogram[] {
-            return this.$store.state.datasets.spinogram;
+        selectedSyllable(): number {
+            return this.$store.state.dataview.selectedSyllable;
         },
-    },
-    watch: {
-        spinogram_data(newValue, oldValue) {
-            this.createView();
+        spinogram_data(): Spinogram {
+            return this.$store.state.datasets.spinogram.find((s) => s.id === this.selectedSyllable) as Spinogram;
         },
-    },
-    mounted() {
-        this.createView();
-        DataModel.subscribe(EventType.GROUPS_CHANGE, this.createView);
-        DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.createView);
-    },
-    destroyed() {
-        // un-watch the store
-        // this.watchers.forEach((w) => w());
-        // unsubscribe from the data model
-        DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.createView);
-        DataModel.unsubscribe(EventType.SYLLABLE_CHANGE, this.createView);
-    },
-    methods: {
-        createView() {
-            const sid = DataModel.getSelectedSyllable();
-            const data = this.spinogram_data.find((s) => s.id === sid) as Spinogram;
-            if (data !== undefined) {
-                this.has_data = true;
-                this.current_data = data.data.map((stp, idx) => {
-                    return stp.x.map((tpx, jdx) => [ tpx, stp.y[jdx] ]);
-                });
-                this.current_alphas = data.data.map((stp, idx) => stp.a);
-            } else {
-                this.has_data = false;
-            }
+        spinogram_plot(): number[][][] {
+            return this.spinogram_data.data.map((stp, idx) => {
+                return stp.x.map((tpx, jdx) => [ tpx, stp.y[jdx] ]);
+            });
+        },
+        spinogram_alphas(): number[] {
+            return this.spinogram_data.data.map((stp, idx) => stp.a);
+        },
+        has_data(): boolean {
+            return this.spinogram_data !== undefined;
         },
     },
     directives: {

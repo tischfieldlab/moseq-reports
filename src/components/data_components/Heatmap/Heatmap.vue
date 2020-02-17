@@ -7,8 +7,6 @@ import Vue from 'vue';
 
 
 import * as Plotly from 'plotly.js-dist';
-
-import DataModel, { EventType, MetadataJson } from '@/models/DataModel';
 import { transpose } from '@/Util';
 import {Size, Layout, ComponentRegistration } from '@/store/root.types';
 import store from '@/store/root.store';
@@ -46,6 +44,14 @@ export default Vue.component('heat-map', {
             const win = this.$store.getters.getWindowById(this.id);
             return win.layout;
         },
+        aggregateView(): any {
+            return this.$store.getters['dataview/aggregateView'];
+        },
+    },
+    watch: {
+        aggregateView() {
+            this.createHeatmap();
+        },
     },
     mounted() {
         // watch for resize events, and update the heatmap size accordingly.
@@ -75,14 +81,11 @@ export default Vue.component('heat-map', {
             },
         ));
 
-        DataModel.subscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
         this.createHeatmap();
     },
     destroyed() {
         // un-watch the store
         this.watchers.forEach((w) => w());
-        // unsubscribe from the data model
-        DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.createHeatmap);
     },
     data() {
         return {
@@ -97,16 +100,12 @@ export default Vue.component('heat-map', {
             });
         },
         createHeatmap() {
-            if (DataModel.getAvailableGroups().length === 0) {
-                return;
-            }
-
-            const df = DataModel.getAggregateView();
+            const df = this.aggregateView;
             if (df === null) {
                 return;
             }
 
-            const groups = DataModel.getSelectedGroups();
+            const groups = this.$store.state.dataview.selectedGroups;
             const sylNum = df.select('syllable').distinct('syllable').toArray().flat();
 
             let sylUsage = [] as number[][];
@@ -164,7 +163,7 @@ export default Vue.component('heat-map', {
 
             myPlot.on('plotly_click', (event: any) => {
                 if (event.points.length > 0) {
-                    DataModel.updateSelectedSyllable(Number.parseInt(event.points[0].y, 10));
+                    this.$store.commit('dataview/setSelectedSyllable', Number.parseInt(event.points[0].y, 10));
                 }
             });
         },

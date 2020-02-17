@@ -1,6 +1,7 @@
 import DataFrame from 'dataframe-js';
 import Vue from 'vue';
 import store from '@/store/root.store';
+import { CountMethod } from '@/store/dataview.store';
 
 /* tslint:disable */
 export enum EventType {
@@ -10,10 +11,7 @@ export enum EventType {
     GROUP_COLORS_CHANGE = 'groupColorsChange',
 }
 
-export enum CountMethod {
-    Usage,
-    Frames,
-}
+
 
 export interface MetadataJson {
     dataframeJson: any,

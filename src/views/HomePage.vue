@@ -18,8 +18,10 @@
                 </b-tab>
             </b-tabs>
         </b-card>
-        <div id="has-no-metadata-container" :style="{'padding-left': toolbox_width+40+'px', 'width': width+'px', 'padding-top': height/2+'px'}" v-if="!metadataLoaded">
-            <h4 style="text-align: center;" id="no-data-text">{{ noDataMessage }} </h4>
+        <div id="has-no-metadata-container" :style="{'left': toolbox_width+'px', 'width': width+'px', 'top': height/2+'px'}" v-if="!metadataLoaded">
+            <h4 style="text-align: center;" id="no-data-text">
+                No data loaded. Please <a href="#" @click="initiateFileOpen">load some data</a> by clicking File > Open File.
+            </h4>
         </div>
         <template v-for="w in windows">
             <UiCard :key="w.id" :id="w.id" />
@@ -32,14 +34,13 @@
 import Vue from 'vue';
 import { debounce } from 'ts-debounce';
 
-import DataModel, { EventType } from '@/models/DataModel';
-
 import UiCard from '@/components/Window.vue';
 import UiCard2 from '@/components/Window2.vue';
 import GroupBox from '@/components/GroupBox.vue';
 import Toolbox from '@/components/Toolbox.vue';
 
 import { DataWindow } from '@/store/root.types';
+import { openNewFileButton } from '@/MenuStrip';
 
 
 export default Vue.component('homepage', {
@@ -52,8 +53,7 @@ export default Vue.component('homepage', {
     },
     data() {
         return {
-            metadataLoaded: false,
-            noDataMessage: 'No metadata file can be found. Please load in a file by clicking File > Open File.',
+            noDataMessage: 'No data loaded. Please load some data by clicking File > Open File.',
             height: 0,
             width: 0,
             toolbox_width: 250,
@@ -63,6 +63,19 @@ export default Vue.component('homepage', {
     computed: {
         windows(): DataWindow[] {
             return this.$store.state.windows;
+        },
+        metadataLoaded(): boolean {
+            return this.$store.getters['dataview/view'] !== null;
+        },
+    },
+    watch: {
+        metadataLoaded: {
+            handler(newState, oldState) {
+                if (!oldState && newState && this.windows.length === 0) {
+                    this.loadDefaultLayout();
+                }
+            },
+            deep: true,
         },
     },
     created() {
@@ -76,22 +89,17 @@ export default Vue.component('homepage', {
         this.$nextTick().then(() => {
             this.handleResize();
         });
-        DataModel.subscribe(EventType.METADATA_LOADED, this.onMetadataLoaded);
-        // NOTE: Check if there is data, in case we missed the event firing
-        if (DataModel.getAggregateView() !== null || DataModel.getAvailableGroups().length !== 0) {
-            this.loadDefaultLayout();
-        }
     },
     methods: {
         handleResize(): any {
             this.height = document.documentElement.clientHeight;
             this.width = document.documentElement.clientWidth - this.toolbox_width;
         },
-        onMetadataLoaded() {
-            this.metadataLoaded = true;
-        },
         loadDefaultLayout(): void {
             this.$store.dispatch('loadDefaultLayout');
+        },
+        initiateFileOpen(): void {
+            openNewFileButton();
         },
     },
 });

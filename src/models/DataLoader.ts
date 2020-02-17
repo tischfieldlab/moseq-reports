@@ -1,11 +1,8 @@
-// import StreamZip from 'node-stream-zip';
-import DataModel, { MetadataJson } from './DataModel';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import store from '@/store/root.store';
 import StreamZip from 'node-stream-zip';
-import DataFrame from 'dataframe-js';
 
 
 import app from '@/main';
@@ -48,6 +45,7 @@ export default function LoadDataBundle(filename: string) {
         LoadCrowdMovies(zip); // TODO: Keshav
 
         zip.close();
+        store.dispatch('dataview/initialize');
         app.$bvToast.toast('File "' + filename + '" was loaded successfully.', {
             title: 'Data loaded successfully!',
             variant: 'success',
@@ -83,16 +81,11 @@ function LoadSpinogramData(zip) {
 
 function LoadUsageData(zip) {
     EnsureState();
-
     const data1 = jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json');
-    const data1Df = new DataFrame(data1.data, data1.columns);
-    store.commit('datasets/SetUsageByUsage', data1Df);
+    store.commit('datasets/SetUsageByUsage', data1);
 
     const data2 = jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json');
-    const data2Df = new DataFrame(data2.data, data2.columns);
-    store.commit('datasets/SetUsageByFrames', data2Df);
-
-    // DataModel.loadMetadataFile(data1);
+    store.commit('datasets/SetUsageByFrames', data2);
 }
 
 function LoadCrowdMovies(zip) {

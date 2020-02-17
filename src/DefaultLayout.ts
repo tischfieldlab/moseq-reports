@@ -36,7 +36,7 @@ export default [{
     type: 'test-syllable',
     layout: {
         width: 250,
-        height: 300,
+        height: 175,
         position: {
             x: 1480,
             y: 10,

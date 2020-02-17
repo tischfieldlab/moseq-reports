@@ -66,7 +66,9 @@
                 <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
                 <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
                 <g>
-                    <text transform="rotate(-90)" text-anchor="middle" :y="margin.left / 4" :x="0 - (height/2)">Module Usage</text>
+                    <text transform="rotate(-90)" text-anchor="middle" :y="margin.left / 4" :x="0 - (height/2)">
+                        Module #{{selectedSyllable}} Usage ({{countMethod}})
+                    </text>
                     <text text-anchor="middle" :y="outsideHeight - (margin.bottom / 4)" :x="margin.left + (width / 2)">Group</text>
                 </g>
             </svg>
@@ -84,7 +86,6 @@ import { axisBottom, axisLeft } from 'd3-axis';
 import { select } from 'd3-selection';
 import { schemeSet1 } from 'd3-scale-chromatic';
 
-import DataModel, { EventType, MetadataJson } from '@/models/DataModel';
 import store from '@/store/root.store';
 import { Layout } from '@/store/root.types';
 import { WhiskerType } from './DetailedUsageOptions.vue';
@@ -146,24 +147,27 @@ export default Vue.component('detailed-usage', {
                 bottom: 50,
                 left: 60,
             },
-            groupNames: Array<string>(),
-            groupColors: Array<string>(),
-            // watchers: Array<(() => void)>(),
+            watchers: Array<(() => void)>(),
             rotate_labels: false,
         };
     },
     mounted() {
-        DataModel.subscribe(EventType.GROUPS_CHANGE, this.createView);
-        DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.createView);
-        DataModel.subscribe(EventType.GROUP_COLORS_CHANGE, this.updateGroupColors);
+        this.watchers.push(this.$store.watch(
+            (state, getters) => {
+                return {
+                    countMethod: state.dataview.countMethod,
+                    selectedGroups: state.dataview.selectedGroups,
+                    selectedSyllable: state.dataview.selectedSyllable,
+                };
+            },
+            () => this.$nextTick(() => this.createView()),
+        ));
 
         this.createView();
     },
     destroyed() {
-        // unsubscribe from the data model
-        DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.createView);
-        DataModel.unsubscribe(EventType.SYLLABLE_CHANGE, this.createView);
-        DataModel.unsubscribe(EventType.GROUP_COLORS_CHANGE, this.updateGroupColors);
+        // un-watch the store
+        this.watchers.forEach((w) => w());
     },
     computed: {
         settings(): any {
@@ -222,7 +226,7 @@ export default Vue.component('detailed-usage', {
         },
         point_size(): number {
             const ps = this.settings.point_size;
-            this.swarm_points(ps);
+            this.swarm_points(this.individualUseageData);
             return ps;
         },
         fences() {
@@ -257,39 +261,58 @@ export default Vue.component('detailed-usage', {
         color(): any {
             return scaleOrdinal().domain(this.groupNames).range(this.groupColors);
         },
-    },
-    methods: {
-        createView() {
-            if (DataModel.getAvailableGroups().length === 0) {
-                return;
-            }
-
-            const df = DataModel.getView();
-            if (df === null) {
-                return;
-            }
-
-            this.groupColors = DataModel.getSelectedGroupColors();
-            this.groupNames = DataModel.getSelectedGroups();
-
-            const currSyllable = DataModel.getSelectedSyllable();
-
-            this.individualUseageData = df.where({syllable: currSyllable})
-                                          .select('usage', 'group', 'StartTime')
-                                          .sortBy('usage')
-                                          .toCollection();
-            this.swarm_points();
-
-            this.groupedData = DataModel.getSelectedGroups().map((g) => {
-                const values = df.where({syllable: currSyllable, group: g})
+        groupColors(): string[] {
+            return this.$store.state.dataview.groupColors;
+        },
+        groupNames(): string[] {
+            return this.$store.state.dataview.selectedGroups;
+        },
+        selectedSyllable(): number {
+            return this.$store.state.dataview.selectedSyllable;
+        },
+        countMethod(): string {
+            return this.$store.state.dataview.countMethod;
+        },
+        /*individualUseageData(): UsageItem[] {
+            const df = this.$store.getters['dataview/view'];
+            let data = df.where({syllable: this.selectedSyllable});
+            data = data.select('usage', 'group', 'StartTime');
+            data = data.sortBy('usage');
+            data = data.toCollection();
+            // this.swarm_points(data);
+            return data;
+        },
+        groupedData(): GroupStats[] {
+            const df = this.$store.getters['dataview/view'];
+            return this.groupNames.map((g) => {
+                const values = df.where({syllable: this.selectedSyllable, group: g})
                                  .select('usage')
                                  .sortBy('usage', true)
                                  .toArray();
                 return this.computeGroupStats(values, g);
             });
-        },
-        updateGroupColors(newColors) {
-            this.groupColors = newColors;
+        },*/
+    },
+    methods: {
+        createView() {
+            const df = this.$store.getters['dataview/view'];
+            if (df === null) {
+                return;
+            }
+            // console.log(this.selectedSyllable, [...this.groupNames]);
+            this.individualUseageData = df.where({syllable: this.selectedSyllable})
+                                          .select('usage', 'group', 'StartTime')
+                                          .sortBy('usage')
+                                          .toCollection();
+            this.swarm_points(this.individualUseageData);
+
+            this.groupedData = this.groupNames.map((g) => {
+                const values = df.where({syllable: this.selectedSyllable, group: g})
+                                 .select('usage')
+                                 .sortBy('usage', true)
+                                 .toArray();
+                return this.computeGroupStats(values, g);
+            });
         },
         computeGroupStats(data: number[], group: string): GroupStats {
             const kde = this.kernelDensityEstimator(this.epanechnikovKernel(.01), this.scale.y.ticks(100));
@@ -325,17 +348,15 @@ export default Vue.component('detailed-usage', {
                         ${item.usage}
                     </div>`;
         },
-        swarm_points(pointSize?: number) {
-            DataModel.getSelectedGroups().map((g) => {
-                if (pointSize === undefined) {
-                    pointSize = this.settings.point_size as number;
-                }
+        swarm_points(data: UsageItem[]) {
+            // console.log(data);
+            this.groupNames.map((g) => {
+                const pointSize = this.settings.point_size as number;
                 const radius2 = (pointSize * 2.5) ** 2;
                 let head: UsageItemQueueNode | null = null;
                 let tail: UsageItemQueueNode | null = null;
-                const indv = this.individualUseageData
-                               .filter((ui) => ui.group === g)
-                               .map((ui) => { ui.jitter = 0; return ui; }) as UsageItemQueueNode[];
+                const indv = data.filter((ui) => ui.group === g)
+                                 .map((ui) => { ui.jitter = 0; return ui; }) as UsageItemQueueNode[];
 
                 const intersects = (x, y) => {
                     const epsilon = 1e-5;
