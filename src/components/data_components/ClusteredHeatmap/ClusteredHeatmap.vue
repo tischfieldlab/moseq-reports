@@ -313,6 +313,19 @@ export default Vue.component('clustered-heatmap', {
         aggregateView(): any {
             return this.$store.getters['dataview/aggregateView'];
         },
+        selectedSyllable: {
+            get(): number {
+                return this.$store.state.dataview.selectedSyllable;
+            },
+            set(event: number) {
+                this.$store.commit('dataview/setSelectedSyllable', event);
+            },
+        },
+    },
+    watch: {
+        selectedSyllable(newValue) {
+            this.showSelectedSyllable(newValue);
+        },
     },
     methods: {
         prepareData() {
@@ -406,9 +419,7 @@ export default Vue.component('clustered-heatmap', {
         setSelectedSyllable(event: Event) {
             const sid = (event.target as SVGRectElement).getAttribute('syllable');
             if (sid !== null) {
-                const realSid = Number.parseInt(sid, 10);
-                this.showSelectedSyllable(realSid);
-                this.$store.commit('dataview/setSelectedSyllable', realSid);
+                this.selectedSyllable = Number.parseInt(sid, 10);
             }
         },
         showSelectedSyllable(id: number) {
