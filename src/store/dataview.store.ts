@@ -31,7 +31,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
     },
     getters: {
         view: (state, getters, rootState) => {
-            // console.log('dataview/view running');
             let dfData: any;
             if (state.countMethod === CountMethod.Usage) {
                 dfData = (rootState as any).datasets.usageByUsage;

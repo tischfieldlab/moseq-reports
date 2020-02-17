@@ -323,6 +323,9 @@ export default Vue.component('clustered-heatmap', {
         },
     },
     watch: {
+        aggregateView() {
+            this.prepareData();
+        },
         selectedSyllable(newValue) {
             this.showSelectedSyllable(newValue);
         },

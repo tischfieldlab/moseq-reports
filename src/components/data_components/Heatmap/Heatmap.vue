@@ -44,6 +44,14 @@ export default Vue.component('heat-map', {
             const win = this.$store.getters.getWindowById(this.id);
             return win.layout;
         },
+        aggregateView(): any {
+            return this.$store.getters['dataview/aggregateView'];
+        },
+    },
+    watch: {
+        aggregateView() {
+            this.createHeatmap();
+        },
     },
     mounted() {
         // watch for resize events, and update the heatmap size accordingly.
@@ -92,7 +100,7 @@ export default Vue.component('heat-map', {
             });
         },
         createHeatmap() {
-            const df = this.$store.getters['dataview/aggregateView'];
+            const df = this.aggregateView;
             if (df === null) {
                 return;
             }
