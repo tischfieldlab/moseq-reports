@@ -1,11 +1,14 @@
 import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
 import { CountMethod } from '@/models/DataModel';
+import Vue from 'vue';
+import DataFrame from 'dataframe-js';
+import { schemeDark2 } from 'd3-scale-chromatic';
+import {scaleOrdinal} from 'd3-scale';
 
 interface DataviewState {
     countMethod: CountMethod;
 
-    availableGroups: string[];
     selectedGroups: string[];
     groupColors: string[];
 
@@ -17,7 +20,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
     state() {
         return {
             countMethod: CountMethod.Usage,
-            availableGroups: [],
             selectedGroups: [],
             groupColors: [],
             selectedSyllable: 0,
@@ -25,21 +27,28 @@ const DataviewModule: Module<DataviewState, RootState> = {
     },
     getters: {
         view: (state, getters, rootState) => {
+            // console.log('dataview/view running');
+            let dfData: any;
+            if (state.countMethod === CountMethod.Usage) {
+                dfData = (rootState as any).datasets.usageByUsage;
+            } else if (state.countMethod === CountMethod.Frames) {
+                dfData = (rootState as any).datasets.usageByFrames;
+            } else {
+                throw new Error('Unknown Count Method ' + state.countMethod);
+            }
+
+            if (dfData === null) {
+                return null;
+            }
+
             const excludeGroups: string[] = [];
-            for (const g of state.availableGroups) {
+            for (const g of getters.availableGroups) {
                 if (!state.selectedGroups.includes(g)) {
                     excludeGroups.push(g);
                 }
             }
 
-            let dfClone: any;
-            if (state.countMethod === CountMethod.Usage) {
-                dfClone = (rootState as any).datasets.usageByUsage;
-            } else if (state.countMethod === CountMethod.Frames) {
-                dfClone = (rootState as any).datasets.usageByFrames;
-            } else {
-                throw new Error('Unknown Count Method ' + state.countMethod);
-            }
+            const dfClone = new DataFrame(dfData.data, dfData.columns);
             return dfClone.filter((row: any) => !excludeGroups.includes(row.get('group')));
         },
         aggregateView: (state, getters) => {
@@ -48,7 +57,14 @@ const DataviewModule: Module<DataviewState, RootState> = {
                                .rename('aggregation', 'usage');
         },
         maxSyllable: (state, getters) => {
-            return getters.view.distinct('syllable').toArray().length;
+            const view = getters.view;
+            if (view === null) {
+                return 0;
+            }
+            return view.distinct('syllable').toArray().length;
+        },
+        availableGroups: (state, getters, rootState) => {
+            return (rootState as any).datasets.groups;
         },
     },
     mutations: {
@@ -59,10 +75,19 @@ const DataviewModule: Module<DataviewState, RootState> = {
             state.selectedSyllable = selectedSyllable;
         },
         setSelectedGroups(state, groups: string[]) {
-            state.selectedGroups = groups;
+            Vue.set(state, 'selectedGroups', [...groups]);
         },
         setSelectedGroupColors(state, colors: string[]) {
-            state.groupColors = colors;
+            Vue.set(state, 'groupColors', [...colors]);
+        },
+    },
+    actions: {
+        initialize(context) {
+            const groups = context.getters.availableGroups;
+            context.commit('setSelectedGroups', groups);
+
+            const colorScale = scaleOrdinal(schemeDark2);
+            context.commit('setSelectedGroupColors', groups.map((g: string) => colorScale(g)));
         },
     },
 };

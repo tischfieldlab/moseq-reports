@@ -48,6 +48,7 @@ export default function LoadDataBundle(filename: string) {
         // LoadCrowdMovies(zip); //for future use
 
         zip.close();
+        store.dispatch('dataview/initialize');
         app.$bvToast.toast('File "' + filename + '" was loaded successfully.', {
             title: 'Data loaded successfully!',
             variant: 'success',
@@ -83,16 +84,11 @@ function LoadSpinogramData(zip) {
 
 function LoadUsageData(zip) {
     EnsureState();
-
     const data1 = jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json');
-    const data1Df = new DataFrame(data1.data, data1.columns);
-    store.commit('datasets/SetUsageByUsage', data1Df);
+    store.commit('datasets/SetUsageByUsage', data1);
 
     const data2 = jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json');
-    const data2Df = new DataFrame(data2.data, data2.columns);
-    store.commit('datasets/SetUsageByFrames', data2Df);
-
-    // DataModel.loadMetadataFile(data1);
+    store.commit('datasets/SetUsageByFrames', data2);
 }
 
 function LoadCrowdMovies(zip) {
