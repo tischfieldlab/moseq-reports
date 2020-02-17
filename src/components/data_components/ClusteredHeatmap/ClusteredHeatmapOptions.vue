@@ -75,7 +75,6 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import {GetInterpolatedScaleOptions} from '@/util/D3ColorProvider';
-import DataModel, { EventType } from '@/models/DataModel';
 
 export enum OrderingType {
     Natural = 'natural',
@@ -97,12 +96,10 @@ export default Vue.component('clustered-heatmap-options', {
     },
     mounted() {
         this.populateGroups();
-        DataModel.subscribe(EventType.GROUPS_CHANGE, this.populateGroups);
     },
     methods: {
         populateGroups() {
-            this.syllable_order_group_value_options = DataModel.getSelectedGroups()
-                                                               .map((g) => ({text: g, value: g}));
+            this.syllable_order_group_value_options = this.selectedGroups.map((g) => ({text: g, value: g}));
             if (this.syllable_order_group_value === undefined) {
                 this.syllable_order_group_value = this.syllable_order_group_value_options[0].value;
             }
@@ -111,6 +108,9 @@ export default Vue.component('clustered-heatmap-options', {
     computed: {
         settings(): any {
             return this.$store.getters.getWindowById(this.id).settings;
+        },
+        selectedGroups(): string[] {
+            return this.$store.state.dataview.selectedGroups;
         },
         colorscale: {
             get(): string {
