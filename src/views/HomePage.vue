@@ -18,7 +18,7 @@
                 </b-tab>
             </b-tabs>
         </b-card>
-        <div id="has-no-metadata-container" :style="{'padding-left': toolbox_width+40+'px', 'width': width+'px', 'padding-top': height/2+'px'}" v-if="!metadataLoaded">
+        <div id="has-no-metadata-container" :style="{'left': toolbox_width+'px', 'width': width+'px', 'top': height/2+'px'}" v-if="!metadataLoaded">
             <h4 style="text-align: center;" id="no-data-text">{{ noDataMessage }} </h4>
         </div>
         <template v-for="w in windows">
