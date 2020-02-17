@@ -185,7 +185,7 @@ function createAddWidgetSubmenu(menu: Menu) {
  *
  * @returns {void}
  */
-function openNewFileButton(): void {
+export function openNewFileButton(): void {
     const path = require('path');
     const fs = require('fs');
 
