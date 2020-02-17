@@ -4,8 +4,6 @@
           <b-form-group style="text-align: left;">
             <b-card-text>
                 <h5>{{ this.syllable }}</h5>
-                <br>
-                <p>Don't worry this is just a test to show it works!</p>
             </b-card-text>
           </b-form-group>
       </b-card>
@@ -20,6 +18,8 @@ import {ComponentRegistration} from '@/store/root.types';
 store.commit('registerComponent', {
     friendly_name: 'Test Syllable',
     component_type: 'test-syllable',
+    init_width: 250,
+    init_height: 175,
 });
 
 export default Vue.component('test-syllable', {
