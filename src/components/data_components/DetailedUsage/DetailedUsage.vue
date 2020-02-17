@@ -66,7 +66,9 @@
                 <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
                 <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
                 <g>
-                    <text transform="rotate(-90)" text-anchor="middle" :y="margin.left / 4" :x="0 - (height/2)">Module Usage</text>
+                    <text transform="rotate(-90)" text-anchor="middle" :y="margin.left / 4" :x="0 - (height/2)">
+                        Module #{{selectedSyllable}} Usage ({{countMethod}})
+                    </text>
                     <text text-anchor="middle" :y="outsideHeight - (margin.bottom / 4)" :x="margin.left + (width / 2)">Group</text>
                 </g>
             </svg>
@@ -267,6 +269,9 @@ export default Vue.component('detailed-usage', {
         },
         selectedSyllable(): number {
             return this.$store.state.dataview.selectedSyllable;
+        },
+        countMethod(): string {
+            return this.$store.state.dataview.countMethod;
         },
         /*individualUseageData(): UsageItem[] {
             const df = this.$store.getters['dataview/view'];
