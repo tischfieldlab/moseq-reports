@@ -31,20 +31,9 @@ export default Vue.component('test-syllable', {
             required: true,
         },
     },
-    data() {
-        return {
-            syllable: DataModel.getSelectedSyllable(),
-        };
-    },
-    mounted() {
-        DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.onSyllableChange);
-    },
-    destroyed() {
-        DataModel.unsubscribe(EventType.SYLLABLE_CHANGE, this.onSyllableChange);
-    },
-    methods: {
-        onSyllableChange(syllable: any) {
-            this.syllable = DataModel.getSelectedSyllable();
+    computed: {
+        syllable(): number {
+            return this.$store.state.dataview.selectedSyllable;
         },
     },
 });
