@@ -128,6 +128,7 @@ export default Vue.extend({
                 this.buildGroups();
             },
         ));
+        this.buildGroups();
     },
     destroyed() {
         this.watchers.forEach((w) => w());
@@ -135,9 +136,10 @@ export default Vue.extend({
     methods: {
         buildGroups() {
             this.groups = []; // Need to reset this so that we don't have duplicate options.
+            const availableGroups = this.$store.getters['dataview/availableGroups'];
             const selectedGroups = this.$store.state.dataview.selectedGroups;
             const colorScale =  this.$store.state.dataview.groupColors;
-            this.$store.getters['dataview/availableGroups'].map((g, i) => {
+            availableGroups.map((g, i) => {
                 const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
                 sgi.color = colorScale[i];
                 this.groups.push(sgi);
