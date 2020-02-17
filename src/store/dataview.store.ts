@@ -6,8 +6,8 @@ import { schemeDark2 } from 'd3-scale-chromatic';
 import {scaleOrdinal} from 'd3-scale';
 
 export enum CountMethod {
-    Usage,
-    Frames,
+    Usage = 'Usage',
+    Frames = 'Frames',
 }
 
 interface DataviewState {
