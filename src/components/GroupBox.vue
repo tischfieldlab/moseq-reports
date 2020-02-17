@@ -3,11 +3,10 @@
         <b-card no-body class="primary_card">
             <b-card-header>Count Method</b-card-header>
             <b-card-body>
-                <b-form-select v-model="selectedCountMethod" :options="countMethods" @change="onCountMethodChange($event)" class="mb-3" />
+                <b-form-select v-model="selectedCountMethod" :options="countMethods" class="mb-3" />
             </b-card-body>
         </b-card>
         <b-card no-body class="primary_card" id="group_selection_container">
-            <!--<b-form-group style="text-align: left;">-->
             <b-card-header>Group Selection</b-card-header>
             <b-card-body>
               <draggable v-model="groups" @change="updateGroups()">
@@ -33,7 +32,7 @@
         <b-card no-body class="primary_card">
             <b-card-header>Syllable Selection</b-card-header>
             <b-card-body>
-                <b-form-select v-model="syllable" :options="syllableIdOptions" @change="onSyllableChange($event)" class="mb-3">
+                <b-form-select v-model="syllable" :options="syllableIdOptions" class="mb-3">
                     <template v-slot:first>
                         <option :value="-1" disabled>Select a Syllable</option>
                     </template>
@@ -48,8 +47,6 @@ import Vue from 'vue';
 import draggable from 'vuedraggable';
 import DataModel, { EventType, CountMethod } from '@/models/DataModel';
 import { Chrome } from 'vue-color';
-import { schemeDark2 } from 'd3-scale-chromatic';
-import {scaleOrdinal} from 'd3-scale';
 import { debounce } from 'ts-debounce';
 
 
@@ -83,13 +80,12 @@ export default Vue.extend({
     data() {
         return {
             groups: [] as SelectableGroupItem[],
-            syllableIdOptions: [] as any,
             colorChangeHandler: (option, event) => {/**/},
             countMethods: [
                 { text: 'Usage', value: CountMethod.Usage },
                 { text: 'Frames', value: CountMethod.Frames },
             ],
-            selectedCountMethod: 'Usage',
+            watchers: Array<(() => void)>(),
         };
     },
     computed: {
@@ -97,8 +93,24 @@ export default Vue.extend({
             get(): number {
                 return this.$store.state.dataview.selectedSyllable;
             },
-            set() {
+            set(event: number) {
                 this.$store.commit('dataview/setSelectedSyllable', event);
+            },
+        },
+        syllableIdOptions() {
+            const max = this.$store.getters['dataview/maxSyllable'];
+            const options: Array<{ value: number, text: string }> = [];
+            for (let i = 0; i < max + 1; i++) {
+                options.push({ value: i, text: i.toString() });
+            }
+            return options;
+        },
+        selectedCountMethod: {
+            get(): CountMethod {
+                return this.$store.state.dataview.countMethod;
+            },
+            set(event: CountMethod) {
+                this.$store.commit('dataview/setCountMethod', event);
             },
         },
     },
@@ -108,53 +120,37 @@ export default Vue.extend({
             this.updateColors();
         }, 250);
 
-        DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.updateSyllable);
-        DataModel.subscribe(EventType.METADATA_LOADED, this.buildGroups);
-        this.buildGroups();
-        this.getsyllableIdOptions();
+        this.watchers.push(this.$store.watch(
+            (state, getters) => {
+                return getters['dataview/availableGroups'];
+            },
+            (newValue: string[], oldValue: string[]) => {
+                this.buildGroups();
+            },
+        ));
+    },
+    destroyed() {
+        this.watchers.forEach((w) => w());
     },
     methods: {
         buildGroups() {
-            const colorScale = scaleOrdinal(schemeDark2);
             this.groups = []; // Need to reset this so that we don't have duplicate options.
             const selectedGroups = this.$store.state.dataview.selectedGroups;
-            this.$store.state.dataview.availableGroups.map((g) => {
+            const colorScale =  this.$store.state.dataview.groupColors;
+            this.$store.getters['dataview/availableGroups'].map((g, i) => {
                 const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
-                sgi.color = colorScale(g);
+                sgi.color = colorScale[i];
                 this.groups.push(sgi);
             });
-            this.updateColors();
         },
         updateGroups() {
             const newGroups = this.groups.filter((g) => g.selected).map((g) => g.name);
-            this.$store.commit('dataview/selectedGroups', newGroups);
-            // DataModel.updateSelectedGroups(newGroups);
+            this.$store.commit('dataview/setSelectedGroups', newGroups);
             this.updateColors();
         },
         updateColors() {
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
             this.$store.commit('dataview/setSelectedGroupColors', colors);
-            // DataModel.updateSelectedGroupColors(colors);
-        },
-        updateSyllable(event: any) {
-            // this.syllable = DataModel.getSelectedSyllable();
-        },
-        onSyllableChange(event: any) {
-            // this.$store.commit('dataview/setSelectedSyllable', event);
-            // DataModel.updateSelectedSyllable(event);
-        },
-        onCountMethodChange(event: any) {
-            this.$store.commit('dataview/setCountMethod', event);
-            // DataModel.updateCountMethod(event);
-        },
-        getsyllableIdOptions() {
-            const max = this.$store.state.dataview.maxSyllable;
-
-            for (let i = 0; i < max + 1; i++) {
-                const val = '' + i;
-                const temp = { value: val, text: val };
-                this.syllableIdOptions.push(temp);
-            }
         },
     },
 });
