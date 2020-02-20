@@ -1,8 +1,11 @@
 <template>
     <div>
         <template v-if="has_data">
-            <svg :width="outsideWidth" :height="outsideHeight" >
-                <g :transform="`translate(${margin.left}, ${margin.top})`" >
+            <svg :width="outsideWidth" :height="outsideHeight">
+                <text class="title" :x="this.outsideWidth / 2" :y="10">
+                    Module #{{ selectedSyllable }} ({{countMethod}}) Spinogram
+                </text>
+                <g :transform="`translate(${margin.left}, ${margin.top})`">
                     <template v-for="(tp, idx) in spinogram_plot">
                         <path 
                             v-bind:key="idx"
@@ -22,8 +25,7 @@
                         transform="rotate(-90)"
                         :y="-45"
                         :x="0 - (height / 2)"
-                        dy="1em"
-                        style="text-anchor:middle;">
+                        dy="1em">
                         Height (mm)
                     </text>
                 </g>
@@ -42,6 +44,7 @@ import {Layout} from '@/store/root.types';
 import * as d3 from 'd3';
 import {line} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
+import { CountMethod } from '../../../store/dataview.store';
 
 interface Spinogram {
     id: number;
@@ -135,8 +138,14 @@ export default Vue.component('spinogram-plots', {
         selectedSyllable(): number {
             return this.$store.state.dataview.selectedSyllable;
         },
+        usageSelectedSyllable(): number {
+            return this.$store.getters['dataview/selectedSyllableAs'](CountMethod.Usage);
+        },
+        countMethod(): string {
+            return this.$store.state.dataview.countMethod;
+        },
         spinogram_data(): Spinogram {
-            return this.$store.state.datasets.spinogram.find((s) => s.id === this.selectedSyllable) as Spinogram;
+            return this.$store.state.datasets.spinogram.find((s) => s.id === this.usageSelectedSyllable) as Spinogram;
         },
         spinogram_plot(): number[][][] {
             return this.spinogram_data.data.map((stp, idx) => {
@@ -168,7 +177,8 @@ path {
     fill:none;
 }
 svg >>> g.x-axis text.label,
-svg >>> g.y-axis text.label {
+svg >>> g.y-axis text.label,
+svg >>> text.title {
     text-anchor:middle;
     fill:#000;
     font-family: Verdana,Arial,sans-serif;
