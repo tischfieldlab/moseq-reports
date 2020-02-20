@@ -30,6 +30,13 @@ const DataviewModule: Module<DataviewState, RootState> = {
         };
     },
     getters: {
+        selectedSyllableAs: (state, getters, rootState) => (countMethod: CountMethod) => {
+            const lmd = (rootState as any).datasets.label_map;
+            const lm = new DataFrame(lmd.data, lmd.columns);
+            const from = state.countMethod.toLowerCase();
+            const to = countMethod.toLowerCase();
+            return lm.find({[from]: state.selectedSyllable}).get(to);
+        },
         view: (state, getters, rootState) => {
             let dfData: any;
             if (state.countMethod === CountMethod.Usage) {
