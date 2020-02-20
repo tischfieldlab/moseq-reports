@@ -3,12 +3,14 @@ import path from 'path';
 import os from 'os';
 import store from '@/store/root.store';
 import StreamZip from 'node-stream-zip';
+import ElectronStore from 'electron-store';
 
 
 import app from '@/main';
 
 interface DataLoaderState {
     bundle: string; // path to the bundle
+    name: string; // basename of the bundle
     path: string; // path to uncompressed data
 }
 
@@ -35,6 +37,7 @@ export default function LoadDataBundle(filename: string) {
     zip.on('ready', () => {
         currentState = {
             bundle: filename,
+            name: path.basename(filename, '.msq'),
             path: fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-')),
         };
         // console.log('Entries read: ' + zip.entriesCount);
