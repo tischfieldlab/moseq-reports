@@ -36,10 +36,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {Layout} from '@/store/root.types';
-import store from '@/store/root.store';
-import SpinogramData from '@/metadata/spinogram.corpus-sorted-usage';
+import RegisterDataComponent from '@/components/data_components/Core';
 
+import {Layout} from '@/store/root.types';
 import * as d3 from 'd3';
 import {line} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
@@ -55,7 +54,7 @@ interface SpinogramTimepoint {
     a: number;
 }
 
-store.commit('registerComponent', {
+RegisterDataComponent({
     friendly_name: 'Spinogram',
     component_type: 'spinogram-plots',
     settings_type: 'spinogram-options',

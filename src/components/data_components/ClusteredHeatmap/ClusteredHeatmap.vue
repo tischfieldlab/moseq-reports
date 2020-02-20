@@ -56,6 +56,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import RegisterDataComponent from '@/components/data_components/Core';
+
 import store from '@/store/root.store';
 import { Layout } from '@/store/root.types';
 import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue';
@@ -68,7 +70,7 @@ import { GetScale } from '@/util/D3ColorProvider';
 
 
 
-store.commit('registerComponent', {
+RegisterDataComponent({
     friendly_name: 'Clustered Usage Heatmap',
     component_type: 'clustered-heatmap',
     settings_type: 'ClusteredHeatmapOptions',

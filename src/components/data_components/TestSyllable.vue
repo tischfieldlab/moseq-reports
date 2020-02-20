@@ -12,10 +12,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import store from '@/store/root.store';
-import {ComponentRegistration} from '@/store/root.types';
+import RegisterDataComponent from '@/components/data_components/Core';
 
-store.commit('registerComponent', {
+RegisterDataComponent({
     friendly_name: 'Test Syllable',
     component_type: 'test-syllable',
     init_width: 250,

@@ -78,6 +78,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import RegisterDataComponent from '@/components/data_components/Core';
+
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { range, histogram, max, min, mean, quantile, median } from 'd3-array';
@@ -115,7 +117,7 @@ interface GroupStats {
     kde: number[][];
 }
 
-store.commit('registerComponent', {
+RegisterDataComponent({
     friendly_name: 'Usage Details',
     component_type: 'detailed-usage',
     settings_type: 'detailed-usage-options',
