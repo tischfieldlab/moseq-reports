@@ -2,6 +2,11 @@ import { expect, assert } from 'chai';
 import { shallowMount, mount } from '@vue/test-utils';
 
 import DataModel, { EventType, MetadataJson } from '@/models/DataModel';
+/*
+
+// 2020-02-21 - JT - disableing these as they do not make much sense right now.
+// DataModel has become deprecated
+
 
 describe('DataModel', () => {
   const meta = require('../data/metadata.json');
@@ -68,3 +73,4 @@ describe('DataModel EventTpye GROUPS_CHANGE', () => {
 });
 
 // TODO: Test the view
+*/
