@@ -7,7 +7,7 @@
                 </b-button>
                 <h6 class="mb-0" style="vertical-align: middle;display:inline-block;">Data Filters</h6>
             </template>
-            <b-collapse id="my-collapse">
+            <b-collapse visible id="my-collapse">
                 <GroupBox />
 
                 <b-input-group prepend="Count Method" class="filter-item">
