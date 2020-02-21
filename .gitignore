@@ -5,7 +5,7 @@ node_modules
 selenium-debug.log
 dist
 /data
-/test_data
+
 
 # package file
 package-lock.json
