@@ -1,23 +1,8 @@
 <template>
     <div class='home' :style="{height: height+'px'}">
-        <b-card id="toolbox_container" no-body :style="{width: toolbox_width+'px', height: height+'px'}">
-            <!--<b-tabs card :style="{}">
-                <b-tab no-body title="Data">-->
-                    <GroupBox />
-                <!--</b-tab>
-                <b-tab no-body title="Tools">
-                    <Toolbox @createComponent="addComponent" />
-                </b-tab>
-                <b-tab no-body title="View">
-                    <b-button pill @click="$store.commit('clearLayout')">Clear Layout</b-button>
-                    <b-button pill @click="$store.dispatch('loadDefaultLayout')">Default Layout</b-button>
-                    <b-button pill @click="$store.dispatch('serializeLayout')">Save Layout</b-button>
-
-                    <input type="file" ref="layout_input" @change="$store.dispatch('loadLayoutFromFile', $event.target.files);$refs.layout_input.value='';" style="display:none;">
-                    <b-button pill @click="$refs.layout_input.click()">Load Layout</b-button>
-                </b-tab>
-            </b-tabs>-->
-        </b-card>
+        <div id="toolbox_container" no-body :style="{width: toolbox_width+'px', height: height+'px'}">
+            <DataFilter />
+        </div>
         <div id="has-no-metadata-container" :style="{'left': toolbox_width+'px', 'width': width+'px', 'top': height/2+'px'}" v-if="!metadataLoaded">
             <h4 style="text-align: center;" id="no-data-text">
                 No data loaded. Please <a href="#" @click="initiateFileOpen">load some data</a> by clicking File > Open File.
@@ -36,8 +21,7 @@ import { debounce } from 'ts-debounce';
 
 import UiCard from '@/components/Window.vue';
 import UiCard2 from '@/components/Window2.vue';
-import GroupBox from '@/components/GroupBox.vue';
-import Toolbox from '@/components/Toolbox.vue';
+import DataFilter from '@/components/DataFilter.vue';
 
 import { DataWindow } from '@/store/root.types';
 import { openNewFileButton } from '@/MenuStrip';
@@ -48,8 +32,7 @@ export default Vue.component('homepage', {
     components: {
         UiCard,
         UiCard2,
-        Toolbox,
-        GroupBox,
+        DataFilter,
     },
     data() {
         return {

@@ -1,45 +1,27 @@
 <template>
-    <div id='groupbox-container' style=''>
-        <b-card no-body class="primary_card">
-            <b-card-header>Count Method</b-card-header>
-            <b-card-body>
-                <b-form-select v-model="selectedCountMethod" :options="countMethods" class="mb-3" />
-            </b-card-body>
-        </b-card>
-        <b-card no-body class="primary_card" id="group_selection_container">
-            <b-card-header>Group Selection</b-card-header>
-            <b-card-body>
-              <draggable v-model="groups" @change="updateGroups()">
-                    <b-card v-for="option in groups" :key="option.name" class="chk-card">
-                        <div :class="{'group-wrap': true, [option.style]: true}">
-                            <b-form-checkbox
-                                switch
-                                @input="updateGroups()"
-                                v-model="option.selected"
-                                :name="option.name">
-                            </b-form-checkbox>
-                            <div class="swatch" :id="option.id" :style="{'background-color': option.color}" />
-                            <b-popover :target="option.id" triggers="click blur" placement="top">
-                                <template v-slot:title>{{ option.name }} Group Color</template>
-                                <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
-                            </b-popover>
-                            <span>{{ option.name }}</span>
-                        </div>
-                    </b-card>
-                </draggable>
-            </b-card-body>
-        </b-card>
-        <b-card no-body class="primary_card">
-            <b-card-header>Syllable Selection</b-card-header>
-            <b-card-body>
-                <b-form-select v-model="syllable" :options="syllableIdOptions" class="mb-3">
-                    <template v-slot:first>
-                        <option :value="-1" disabled>Select a Syllable</option>
-                    </template>
-                </b-form-select>
-            </b-card-body>
-        </b-card>
-    </div>
+    <b-card no-body class="group_selection filter-item">
+        <div class="input-group-text">Group Selection</div>
+        <b-list-group flush>
+            <draggable v-model="groups" @change="updateGroups()">
+                <b-list-group-item v-for="option in groups" :key="option.name">
+                    <div :class="{'group-wrap': true, [option.style]: true}">
+                        <b-form-checkbox
+                            switch
+                            @input="updateGroups()"
+                            v-model="option.selected"
+                            :name="option.name">
+                        </b-form-checkbox>
+                        <div class="swatch" :id="option.id" :style="{'background-color': option.color}" />
+                        <b-popover :target="option.id" triggers="click blur" placement="top">
+                            <template v-slot:title>{{ option.name }} Group Color</template>
+                            <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
+                        </b-popover>
+                        <span>{{ option.name }}</span>
+                    </div>
+                </b-list-group-item>
+            </draggable>
+        </b-list-group>
+    </b-card>
 </template>
 
 <script lang="ts">
@@ -81,38 +63,8 @@ export default Vue.extend({
         return {
             groups: [] as SelectableGroupItem[],
             colorChangeHandler: (option, event) => {/**/},
-            countMethods: [
-                { text: 'Usage', value: CountMethod.Usage },
-                { text: 'Frames', value: CountMethod.Frames },
-            ],
             watchers: Array<(() => void)>(),
         };
-    },
-    computed: {
-        syllable: {
-            get(): number {
-                return this.$store.state.dataview.selectedSyllable;
-            },
-            set(event: number) {
-                this.$store.commit('dataview/setSelectedSyllable', event);
-            },
-        },
-        syllableIdOptions() {
-            const max = this.$store.getters['dataview/maxSyllable'];
-            const options: Array<{ value: number, text: string }> = [];
-            for (let i = 0; i < max + 1; i++) {
-                options.push({ value: i, text: i.toString() });
-            }
-            return options;
-        },
-        selectedCountMethod: {
-            get(): CountMethod {
-                return this.$store.state.dataview.countMethod;
-            },
-            set(event: CountMethod) {
-                this.$store.dispatch('dataview/switchCountMethod', event);
-            },
-        },
     },
     mounted() {
         this.colorChangeHandler = debounce((option, event) => {
@@ -162,14 +114,8 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-.primary_card{
-    margin:10px;
-}
-.primary_card .card-body{
-    padding: 0;
-}
-.chk-card .card-body{
-  padding:0.25rem;
+.list-group-item {
+    padding: 0.5em 0.25em;
 }
 .group-wrap::after{
   content:"\22EE";
@@ -180,14 +126,10 @@ export default Vue.extend({
 .group-wrap.non-selected{
     color:#AAAAAA;
 }
-.card-header{
-    font-weight: bold;
-}
-.card-body{
-    text-align: left;
-}
-.primary_card select{
-    margin:0 !important;
+.group_selection .input-group-text {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    margin: -1px;
 }
 .custom-switch {
     float:left;
@@ -198,5 +140,6 @@ export default Vue.extend({
     float:left;
     border:1px solid #efefef;
     margin: 0 10px 0 5px;
+    border-radius: 24px;
 }
 </style>
