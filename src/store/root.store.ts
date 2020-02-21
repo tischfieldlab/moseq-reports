@@ -42,8 +42,11 @@ const store: StoreOptions<RootState> = {
     },
     mutations: {
         registerComponent(state, payload: ComponentRegistration) {
-            if (state.registry.find((r) => r.component_type === payload.component_type) === undefined) {
+            const loc = state.registry.findIndex((r) => r.component_type === payload.component_type);
+            if (loc === -1) {
                 state.registry.push(payload);
+            } else {
+                state.registry.splice(loc, 1, payload);
             }
         },
         addWindow(state, payload: DataWindow) {
