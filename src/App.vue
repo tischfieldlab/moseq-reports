@@ -11,29 +11,29 @@ import { remote } from 'electron';
 import createMainMenu from '@/MenuStrip';
 
 export default Vue.extend({
-  name: 'App',
-  mounted() {
-    const menu = createMainMenu();
-    remote.Menu.setApplicationMenu(menu);
-  },
+    name: 'App',
+    mounted() {
+        const menu = createMainMenu();
+        remote.Menu.setApplicationMenu(menu);
+    },
 });
 </script>
 
 <style lang="scss">
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
 }
 #nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+    padding: 30px;
+    a {
+        font-weight: bold;
+        color: #2c3e50;
+        &.router-link-exact-active {
+        color: #42b983;
+        }
     }
-  }
 }
 </style>
