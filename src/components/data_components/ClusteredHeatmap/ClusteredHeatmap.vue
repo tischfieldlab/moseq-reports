@@ -77,7 +77,7 @@ RegisterDataComponent({
     init_width: 400,
     init_height: 500,
     default_settings: {
-        syllable_order_type: OrderingType.Natural,
+        syllable_order_type: OrderingType.Cluster,
         syllable_order_group_value: undefined,
         syllable_order_direction: SortOrderDirection.Asc,
         syllable_cluster_distance: 'euclidean',
