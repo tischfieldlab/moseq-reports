@@ -10,7 +10,6 @@
         </div>
         <template v-for="w in windows">
             <UiCard :key="w.id" :id="w.id" />
-            <!--<UiCard2 :key="w.id" :id="w.id" />-->
         </template>
     </div>
 </template>
@@ -20,7 +19,6 @@ import Vue from 'vue';
 import { debounce } from 'ts-debounce';
 
 import UiCard from '@/components/Window.vue';
-import UiCard2 from '@/components/Window2.vue';
 import DataFilter from '@/components/DataFilter.vue';
 
 import { DataWindow } from '@/store/root.types';
@@ -31,7 +29,6 @@ export default Vue.component('homepage', {
     name: 'homepage',
     components: {
         UiCard,
-        UiCard2,
         DataFilter,
     },
     data() {
