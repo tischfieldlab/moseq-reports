@@ -19,6 +19,11 @@ interface DataviewState {
     selectedSyllable: number;
 }
 
+interface SelectedGroupsPayload {
+    groups?: string[];
+    colors?: string[];
+}
+
 const DataviewModule: Module<DataviewState, RootState> = {
     namespaced: true,
     state() {
@@ -51,15 +56,8 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 return null;
             }
 
-            const excludeGroups: string[] = [];
-            for (const g of getters.availableGroups) {
-                if (!state.selectedGroups.includes(g)) {
-                    excludeGroups.push(g);
-                }
-            }
-
             const dfClone = new DataFrame(dfData.data, dfData.columns);
-            return dfClone.filter((row: any) => !excludeGroups.includes(row.get('group')));
+            return dfClone.filter((row: any) => state.selectedGroups.includes(row.get('group')));
         },
         aggregateView: (state, getters) => {
             return getters.view.groupBy('syllable', 'group')
@@ -84,20 +82,28 @@ const DataviewModule: Module<DataviewState, RootState> = {
         setSelectedSyllable(state, selectedSyllable: number) {
             state.selectedSyllable = selectedSyllable;
         },
-        setSelectedGroups(state, groups: string[]) {
-            Vue.set(state, 'selectedGroups', [...groups]);
-        },
-        setSelectedGroupColors(state, colors: string[]) {
-            Vue.set(state, 'groupColors', [...colors]);
+        setSelectedGroups(state, payload: SelectedGroupsPayload) {
+            if (payload.groups) {
+                Vue.set(state, 'selectedGroups', [...payload.groups]);
+            }
+            if (payload.colors) {
+                Vue.set(state, 'groupColors', [...payload.colors]);
+            }
         },
     },
     actions: {
+        switchCountMethod(context, payload: CountMethod) {
+            const newSyllable = context.getters.selectedSyllableAs(payload);
+            context.commit('setCountMethod', payload);
+            context.commit('setSelectedSyllable', newSyllable);
+        },
         initialize(context) {
             const groups = context.getters.availableGroups;
-            context.commit('setSelectedGroups', groups);
-
             const colorScale = scaleOrdinal(schemeDark2);
-            context.commit('setSelectedGroupColors', groups.map((g: string) => colorScale(g)));
+            context.commit('setSelectedGroups', {
+                groups,
+                colors: groups.map((g: string) => colorScale(g)),
+            });
         },
     },
 };

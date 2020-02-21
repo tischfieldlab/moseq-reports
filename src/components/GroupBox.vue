@@ -110,7 +110,7 @@ export default Vue.extend({
                 return this.$store.state.dataview.countMethod;
             },
             set(event: CountMethod) {
-                this.$store.commit('dataview/setCountMethod', event);
+                this.$store.dispatch('dataview/switchCountMethod', event);
             },
         },
     },
@@ -146,13 +146,16 @@ export default Vue.extend({
             });
         },
         updateGroups() {
-            const newGroups = this.groups.filter((g) => g.selected).map((g) => g.name);
-            this.$store.commit('dataview/setSelectedGroups', newGroups);
-            this.updateColors();
+            const groups = this.groups.filter((g) => g.selected).map((g) => g.name);
+            const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
+            this.$store.commit('dataview/setSelectedGroups', {
+                groups,
+                colors,
+            });
         },
         updateColors() {
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-            this.$store.commit('dataview/setSelectedGroupColors', colors);
+            this.$store.commit('dataview/setSelectedGroups', {colors});
         },
     },
 });
