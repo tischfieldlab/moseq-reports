@@ -11,7 +11,7 @@ import {
     hydrateWindow,
     UpdateComponentTitlePayload,
 } from './root.types';
-import { saveFile } from '@/Util';
+import { saveFile } from '@/util/Files';
 import DefaultLayout from '@/DefaultLayout';
 import DatasetsStore from '@/store/datasets.store';
 import DataviewStore from '@/store/dataview.store';

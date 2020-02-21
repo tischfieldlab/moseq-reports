@@ -7,7 +7,7 @@ import Vue from 'vue';
 
 
 import * as Plotly from 'plotly.js-dist';
-import { transpose } from '@/Util';
+import { transpose } from '@/util/Array';
 import {Size, Layout, ComponentRegistration } from '@/store/root.types';
 import store from '@/store/root.store';
 import RegisterDataComponent from '@/components/data_components/Core';
