@@ -7,6 +7,7 @@ import ElectronStore from 'electron-store';
 
 
 import app from '@/main';
+import { deleteFolderRecursive } from '@/util/Files';
 
 interface DataLoaderState {
     bundle: string; // path to the bundle
@@ -19,6 +20,11 @@ let currentState: DataLoaderState|undefined;
 
 export default function LoadDataBundle(filename: string) {
     // console.log('attempting to open ', filename);
+    app.$bvToast.toast('Hang tight... We\'re getting your data ready', {
+        title: 'Loading Data',
+        variant: 'info',
+        toaster: 'b-toaster-bottom-right',
+    });
     CleanState(); // clean any old state
 
     const zip = new StreamZip({
@@ -61,7 +67,7 @@ function CleanState() {
     if (currentState === undefined) {
         return;
     }
-    fs.rmdirSync(currentState.path, {recursive: true});
+    deleteFolderRecursive(currentState.path);
 }
 function EnsureState() {
     if (currentState === undefined) {

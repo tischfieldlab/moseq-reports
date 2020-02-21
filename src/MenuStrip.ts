@@ -190,7 +190,7 @@ export function openNewFileButton(): void {
     const fs = require('fs');
 
     let currDir: string = process.cwd();
-    currDir = path.join(currDir, 'src', 'metadata');
+    currDir = path.join(currDir);
 
     const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
     if (filenames === undefined) { return; }
