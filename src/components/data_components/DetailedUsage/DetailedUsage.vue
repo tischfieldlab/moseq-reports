@@ -154,6 +154,7 @@ export default Vue.component('detailed-usage', {
             (state, getters) => {
                 return {
                     view: getters['dataview/view'],
+                    colors: state.dataview.groupColors,
                     selectedSyllable: state.dataview.selectedSyllable,
                 };
             },
