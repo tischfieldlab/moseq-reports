@@ -1,92 +1,89 @@
 <template>
-    <div id="detail-usage-container" style="display: flex; justify-content: space-between;">
-        <div id='detail-usage-plot'>
-            <svg ref="canvas" :width="outsideWidth" :height="outsideHeight" >
-                <g v-if="settings.show_boxplot" :transform="`translate(${margin.left}, ${margin.top})`">
-                    <template v-for="(node, index) in groupedData" v-on:click="select(index, node)">
-                        <g class="boxplot" v-bind:key="node.StartTime">
-                            <!-- Vertical midline -->
-                            <line 
-                                stroke="#000000"
-                                v-bind:x1="scale.x(node.group) + halfBandwith"
-                                v-bind:y1="scale.y(fences.lower(node))"
-                                v-bind:x2="scale.x(node.group) + halfBandwith"
-                                v-bind:y2="scale.y(fences.upper(node))" />
-                            <!-- the Box of the BoxPlot -->
-                            <rect 
-                                stroke="#000000"
-                                v-bind:width="halfBandwith * 2"
-                                v-bind:height="scale.y(node.q3) - scale.y(node.q1)"
-                                v-bind:x="scale.x(node.group)"
-                                v-bind:y="scale.y(node.q1)"
-                                v-bind:style="{'fill': color(node.group)}" />
-                            <!-- Horizontal Minimum line -->
-                            <line 
-                                stroke="#000000"
-                                v-bind:x1="scale.x(node.group) + quaterBandwith"
-                                v-bind:y1="scale.y(fences.lower(node))"
-                                v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
-                                v-bind:y2="scale.y(fences.lower(node))" />
-                            <!-- Horizontal Median line -->
-                            <line 
-                                stroke="#000000"
-                                v-bind:x1="scale.x(node.group)"
-                                v-bind:y1="scale.y(node.q2)"
-                                v-bind:x2="scale.x(node.group) + (halfBandwith * 2)"
-                                v-bind:y2="scale.y(node.q2)" />
-                            <!-- Horizontal Maximum line -->
-                            <line 
-                                stroke="#000000"
-                                v-bind:x1="scale.x(node.group) + quaterBandwith"
-                                v-bind:y1="scale.y(fences.upper(node))"
-                                v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
-                                v-bind:y2="scale.y(fences.upper(node))" />
-                        </g>
-                    </template>
-                </g>
-                <g v-if="settings.show_violinplot" :transform="`translate(${margin.left}, ${margin.top})`">
-                    <template v-for="(node, index) in groupedData" v-on:click="select(index, node)">
-                        <g class="violin" v-bind:key="index" :transform="`translate(${scale.x(node.group)}, 0)`">
-                            <path :d="violinArea(node.kde)" :style="{'fill': color(node.group)}" />
-                        </g>
-                    </template>
-                </g>
-                <g v-if="settings.show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
-                    <template v-for="(node, index) in individualUseageData" v-on:click="select(index, node)">
-                        <!-- Circles for each node -->
-                        <circle
-                            v-bind:key="node.StartTime"
-                            v-b-tooltip.html :title="point_tooltip(node)"
-                            :r="point_size"
-                            :cx="scale.x(node.group) + node.jitter + halfBandwith"
-                            :cy="scale.y(node.usage)"
-                            :style="{'fill': color(node.group), stroke: '#000000'}" />
-                    </template>
-                </g>
-                <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
-                <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
-                <g>
-                    <text transform="rotate(-90)" text-anchor="middle" :y="margin.left / 4" :x="0 - (height/2)">Module Usage</text>
-                    <text text-anchor="middle" :y="outsideHeight - (margin.bottom / 4)" :x="margin.left + (width / 2)">Group</text>
-                </g>
-            </svg>
-        </div>
+    <div id="detail-usage-container">
+        <svg ref="canvas" :width="outsideWidth" :height="outsideHeight" >
+            <g v-if="settings.show_boxplot" :transform="`translate(${margin.left}, ${margin.top})`">
+                <template v-for="(node) in groupedData">
+                    <g class="boxplot" v-bind:key="node.group">
+                        <!-- Vertical midline -->
+                        <line 
+                            stroke="#000000"
+                            v-bind:x1="scale.x(node.group) + halfBandwith"
+                            v-bind:y1="scale.y(fences.lower(node))"
+                            v-bind:x2="scale.x(node.group) + halfBandwith"
+                            v-bind:y2="scale.y(fences.upper(node))" />
+                        <!-- the Box of the BoxPlot -->
+                        <rect 
+                            stroke="#000000"
+                            v-bind:width="halfBandwith * 2"
+                            v-bind:height="scale.y(node.q3) - scale.y(node.q1)"
+                            v-bind:x="scale.x(node.group)"
+                            v-bind:y="scale.y(node.q1)"
+                            v-bind:style="{'fill': scale.c(node.group)}" />
+                        <!-- Horizontal Minimum line -->
+                        <line 
+                            stroke="#000000"
+                            v-bind:x1="scale.x(node.group) + quaterBandwith"
+                            v-bind:y1="scale.y(fences.lower(node))"
+                            v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
+                            v-bind:y2="scale.y(fences.lower(node))" />
+                        <!-- Horizontal Median line -->
+                        <line 
+                            stroke="#000000"
+                            v-bind:x1="scale.x(node.group)"
+                            v-bind:y1="scale.y(node.q2)"
+                            v-bind:x2="scale.x(node.group) + (halfBandwith * 2)"
+                            v-bind:y2="scale.y(node.q2)" />
+                        <!-- Horizontal Maximum line -->
+                        <line 
+                            stroke="#000000"
+                            v-bind:x1="scale.x(node.group) + quaterBandwith"
+                            v-bind:y1="scale.y(fences.upper(node))"
+                            v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
+                            v-bind:y2="scale.y(fences.upper(node))" />
+                    </g>
+                </template>
+            </g>
+            <g v-if="settings.show_violinplot" :transform="`translate(${margin.left}, ${margin.top})`">
+                <template v-for="(node) in groupedData">
+                    <g class="violin" v-bind:key="node.group" :transform="`translate(${scale.x(node.group)}, 0)`">
+                        <path :d="violinArea(node.kde)" :style="{'fill': scale.c(node.group)}" />
+                    </g>
+                </template>
+            </g>
+            <g v-if="settings.show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
+                <template v-for="(node) in individualUseageData">
+                    <!-- Circles for each node -->
+                    <circle
+                        v-bind:key="node.StartTime"
+                        v-b-tooltip.html :title="point_tooltip(node)"
+                        :r="point_size"
+                        :cx="scale.x(node.group) + node.jitter + halfBandwith"
+                        :cy="scale.y(node.usage)"
+                        :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
+                </template>
+            </g>
+            <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
+            <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
+            <g>
+                <text transform="rotate(-90)" text-anchor="middle" :y="margin.left / 4" :x="0 - (height/2)">
+                    Module #{{selectedSyllable}} Usage ({{countMethod}})
+                </text>
+                <text text-anchor="middle" :y="outsideHeight - (margin.bottom / 4)" :x="margin.left + (width / 2)">Group</text>
+            </g>
+        </svg>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import RegisterDataComponent from '@/components/data_components/Core';
+
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-import { range, histogram, max, min, mean, quantile, median } from 'd3-array';
+import { range, max, min, mean, quantile, median } from 'd3-array';
 import { area, line } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
-import { select } from 'd3-selection';
-import { schemeSet1 } from 'd3-scale-chromatic';
 
-import DataModel, { EventType } from '@/models/DataModel';
-import store from '@/store/root.store';
-import { Layout } from '@/store/root.types';
 import { WhiskerType } from './DetailedUsageOptions.vue';
 
 interface UsageItem {
@@ -114,7 +111,7 @@ interface GroupStats {
     kde: number[][];
 }
 
-store.commit('registerComponent', {
+RegisterDataComponent({
     friendly_name: 'Usage Details',
     component_type: 'detailed-usage',
     settings_type: 'detailed-usage-options',
@@ -122,7 +119,7 @@ store.commit('registerComponent', {
     init_height: 500,
     default_settings: {
         show_points: true,
-        point_size: 3,
+        point_size: 2,
         show_boxplot: true,
         show_violinplot: false,
         boxplot_whiskers: WhiskerType.TUKEY,
@@ -140,30 +137,40 @@ export default Vue.component('detailed-usage', {
         return {
             individualUseageData: Array<UsageItem>(),
             groupedData: Array<GroupStats>(),
+            groupNames: Array<string>(),
+            groupColors: Array<string>(),
             margin: {
                 top: 20,
                 right: 20,
                 bottom: 50,
                 left: 60,
             },
+            watchers: Array<(() => void)>(),
             rotate_labels: false,
         };
     },
     mounted() {
-        this.createView();
-        DataModel.subscribe(EventType.GROUPS_CHANGE, this.createView);
-        DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.createView);
+        this.watchers.push(this.$store.watch(
+            (state, getters) => {
+                return {
+                    view: getters['dataview/view'],
+                    colors: state.dataview.groupColors,
+                    selectedSyllable: state.dataview.selectedSyllable,
+                };
+            },
+            () => this.createView(),
+            {immediate: true},
+        ));
     },
     destroyed() {
-        // unsubscribe from the data model
-        DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.createView);
-        DataModel.unsubscribe(EventType.SYLLABLE_CHANGE, this.createView);
+        // un-watch the store
+        this.watchers.forEach((w) => w());
     },
     computed: {
         settings(): any {
             return this.$store.getters.getWindowById(this.id).settings;
         },
-        layout(): Layout {
+        layout() {
             return this.$store.getters.getWindowById(this.id).layout;
         },
         width(): number {
@@ -202,7 +209,7 @@ export default Vue.component('detailed-usage', {
                 return { x: scaleBand(), y: scaleLinear() };
             }
             const x = scaleBand()
-                .domain(DataModel.getSelectedGroups())
+                .domain(this.groupNames)
                 .rangeRound([0, this.width])
                 .padding(0.2);
             const y = scaleLinear()
@@ -212,11 +219,14 @@ export default Vue.component('detailed-usage', {
             const w = scaleLinear()
                 .domain([-kdeMax, kdeMax])
                 .range([0, x.bandwidth()]);
-            return { x, y, w };
+            const c = scaleOrdinal()
+                .domain(this.groupNames)
+                .range(this.groupColors);
+            return { x, y, w, c };
         },
         point_size(): number {
             const ps = this.settings.point_size;
-            this.swarm_points(ps);
+            this.swarm_points(this.individualUseageData);
             return ps;
         },
         fences() {
@@ -248,23 +258,29 @@ export default Vue.component('detailed-usage', {
                 .y((d) => this.scale.y(d[0]));
             return a;
         },
-        color(): any {
-            return scaleOrdinal(schemeSet1);
+        selectedSyllable(): number {
+            return this.$store.state.dataview.selectedSyllable;
+        },
+        countMethod(): string {
+            return this.$store.state.dataview.countMethod;
         },
     },
     methods: {
         createView() {
-            const df = DataModel.getView();
-            const currSyllable = DataModel.getSelectedSyllable();
-
-            this.individualUseageData = df.where({syllable: currSyllable})
+            const df = this.$store.getters['dataview/view'];
+            if (df === null) {
+                return;
+            }
+            this.groupNames = this.$store.state.dataview.selectedGroups;
+            this.groupColors = this.$store.state.dataview.groupColors;
+            this.individualUseageData = df.where({syllable: this.selectedSyllable})
                                           .select('usage', 'group', 'StartTime')
                                           .sortBy('usage')
                                           .toCollection();
-            this.swarm_points();
+            this.swarm_points(this.individualUseageData);
 
-            this.groupedData = DataModel.getSelectedGroups().map((g) => {
-                const values = df.where({syllable: currSyllable, group: g})
+            this.groupedData = this.groupNames.map((g) => {
+                const values = df.where({syllable: this.selectedSyllable, group: g})
                                  .select('usage')
                                  .sortBy('usage', true)
                                  .toArray();
@@ -302,20 +318,17 @@ export default Vue.component('detailed-usage', {
             return `<div style="text-align:left;">
                         ${item.group}<br />
                         ${new Date(item.StartTime).toLocaleString('en-US')}<br />
-                        ${item.usage}
+                        ${item.usage.toExponential(3)}
                     </div>`;
         },
-        swarm_points(pointSize?: number) {
-            DataModel.getSelectedGroups().map((g) => {
-                if (pointSize === undefined) {
-                    pointSize = this.settings.point_size as number;
-                }
+        swarm_points(data: UsageItem[]) {
+            this.groupNames.map((g) => {
+                const pointSize = this.settings.point_size as number;
                 const radius2 = (pointSize * 2.5) ** 2;
                 let head: UsageItemQueueNode | null = null;
                 let tail: UsageItemQueueNode | null = null;
-                const indv = this.individualUseageData
-                               .filter((ui) => ui.group === g)
-                               .map((ui) => { ui.jitter = 0; return ui; }) as UsageItemQueueNode[];
+                const indv = data.filter((ui) => ui.group === g)
+                                 .map((ui) => { ui.jitter = 0; return ui; }) as UsageItemQueueNode[];
 
                 const intersects = (x, y) => {
                     const epsilon = 1e-5;

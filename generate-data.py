@@ -1,9 +1,15 @@
+import os, argparse, json, sys, glob, subprocess
+import pandas as pd
+import moseq2_extras
 import os, argparse, json
+import zipfile
 
 from moseq2_extras.util import ensure_dir
 from moseq2_viz.util import parse_index
 from moseq2_viz.model.util import parse_model_results, \
         results_to_dataframe
+from moseq2_extras.model import get_syllable_id_mapping
+
 
 METADATAPATH = os.getcwd()
 
@@ -20,49 +26,96 @@ def main():
     parser.set_defaults(indexFile=None, modelFile=None, outputPath=METADATAPATH, filterGroups=[])
     args = parser.parse_args()
 
-    df = convertModelToJson(args)
-    dfGroups = getGroupsFromDataframe(df)
+    max_syllable = 100
 
-    writeMetadataFile(df, dfGroups, args.outputPath)
+    ensure_dir(args.outputPath)
+
+    # write map of syllable id's between various count methods
+    writeSyllableIdMap(args.modelFile, args.outputPath)
+
+    # write out the groups and their preferred ordering
+    writePrefferedGroups(args.indexFile, args.filterGroups, args.outputPath)
+
+    # write out usage data
+    writeUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'usage', args.outputPath)
+    writeUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'frames', args.outputPath)
+    
+    create_spinograms(args.modelFile, args.indexFile, args.outputPath, max_syllable, True, 'usage')
+    
+    archiveData(args.outputPath)
 #end main()
 
-def writeMetadataFile(df, dfGroups, outputPath):
-    ensure_dir(outputPath)
+def archiveData(outputPath):
+    zipf = zipfile.ZipFile('{}.msq'.format(outputPath), 'w', zipfile.ZIP_DEFLATED)
+    
+    for root, _, files in os.walk(outputPath):
+        for file in files:
+            zipf.write(os.path.join(root, file), file)
+    zipf.close()
+#end archiveData()
 
-    outputPath = os.path.join(outputPath, 'metadata.js')
-    with open(outputPath, 'w') as f:
-        f.write('export let dataframeJson = {}\n'.format(df))
-        f.write('export let cohortGroups = {}'.format(dfGroups))
-#end writeMetadataFile
+def writePrefferedGroups(index, groups, outputPath):
+    idx, _ = parse_index(index)
+    known_groups = list(set([f['group'] for f in idx['files']]))
+    known_groups.sort()
+    
+    if groups is None or len(groups) == 0:
+        groups = known_groups
+    
+    final_groups = [g for g in groups if g in known_groups]
 
-def getGroupsFromDataframe(df):
-    jsonObj = json.loads(df)
+    with open(os.path.join(outputPath, 'groups.json'), 'w') as f:
+        json.dump(final_groups, f)
+#end writePrefferedGroups()
 
-    groups = set()
-    for arr in jsonObj['data']:
-        groups.add(arr[1])
+def writeSyllableIdMap(model, outputPath):
+    syllable_mapping = get_syllable_id_mapping(model)
+    sm_df = pd.DataFrame(syllable_mapping)
+    sm_df.to_json(os.path.join(outputPath, "label_map.json"), orient='split')
+#end writeSyllableIdMap()
 
-    groups = list(groups)
-    groups = ', '.join("'" + str(e) + "'" for e in groups)
-    groups = '[' + groups + ']'
+def writeUsageDataframe(model, index, groups, max_syl, sort, count, outputPath):
+    _, sortedIndex = parse_index(index)
+    modelRes = parse_model_results(model)
 
-    return groups
-#end getGroupsFromDataframe()
+    df, _ = results_to_dataframe(modelRes, sortedIndex, max_syllable=max_syl, sort=sort, count=count)
 
-def convertModelToJson(args):
-  _, sortedIndex = parse_index(args.indexFile)
-  modelRes = parse_model_results(args.modelFile)
+    if groups:
+        df = df.loc[df['group'].isin(groups)]
 
-  df, _ = results_to_dataframe(modelRes, sortedIndex, max_syllable=100,
-          sort=True, count='usage')
+    dest = os.path.join(outputPath, 'usage.ms{}.c{}.s{}.json'.format(max_syl, count, sort))
+    df.to_json(dest, orient='split')
+#end writeUsageDataframe()
 
-  if (args.filterGroups):
-    df = df.loc[df['group'].isin(args.filterGroups)]
-
-  dfJson = df.to_json(orient='split')
-
-  return dfJson
-#end createMetadataFile()
+def create_spinograms(model, index, out_dir, max_syl, sort, count):
+    out_dir = ensure_dir(out_dir)
+    
+    #check if spinograms already exist
+    basename = 'spinogram'
+    out_name = "{}.corpus-{}-{}".format(basename,
+                                        'sorted' if sort else 'unsorted',
+                                        count)
+    if len(glob.glob(os.path.join(out_dir, '{}.json'.format(out_name)))) > 0:
+        sys.stderr.write("It appears spinograms already exist. Skipping. \n")
+        return
+    
+    sys.stderr.write("Creating spinograms at {}\n".format(out_dir))
+    spinogram_args = [
+        'spinogram',
+        'plot-corpus',
+        index,
+        model,
+        '--dir', out_dir,
+        '--save-data',
+        '--no-plot',
+        '--max-syllable', str(max_syl),
+        '--name', basename,
+        '--count', count
+    ]
+    if sort:
+        spinogram_args.append('--sort')
+    subprocess.call(spinogram_args)
+#end create_spinograms()
 
 if __name__ == '__main__':
     main()

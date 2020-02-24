@@ -1,13 +1,22 @@
 import DataFrame from 'dataframe-js';
 import Vue from 'vue';
+import store from '@/store/root.store';
+import { CountMethod } from '@/store/dataview.store';
 
 /* tslint:disable */
-const meta = require('../metadata/metadata.js');
-
 export enum EventType {
     GROUPS_CHANGE = 'selectedGroupsChange',
     SYLLABLE_CHANGE = 'selectedSyllableChange',
+    METADATA_LOADED = 'metadataLoaded',
+    GROUP_COLORS_CHANGE = 'groupColorsChange',
 }
+
+
+
+export interface MetadataJson {
+    dataframeJson: any,
+    cohortGroups: string[]
+};
 
 class EventBus extends Vue {
 
@@ -44,6 +53,16 @@ class EventBus extends Vue {
     }
 
 
+    /**
+     * Uses the event system implemented by all Vue components
+     * to remove all of the subscribed functions based off the
+     * passed in event.
+     *
+     * @param {EventType} type      The enum representing the specific
+     *                              event subscribed to.
+     * @param {Function} callback   The function that will be removed.
+     * @memberof EventBus
+     */
     public unsubscribe(type: EventType, callback: Function) {
         this.$off(type, callback);
     }
@@ -52,11 +71,13 @@ class EventBus extends Vue {
 class DataModel {
     private static instance : DataModel;
     
-    private availableGroups     :   Array<string> = [];
+    private countMethod: CountMethod;
+    private availableGroups     :   string[] = [];
     private maxSyllable         :   number = 0;
-    private selectedGroups      :   Array<string> = [];
+    private selectedGroups      :   string[] = [];
+    private groupColors         :   string[] = [];
     private selectedSyallable   :   number = 0;
-    private baseDataframe       :   any = null;
+    // private baseDataframe       :   any = null;
     private aggregateView       :   any = null;
     private eventBus            :   EventBus = new EventBus();
 
@@ -70,15 +91,58 @@ class DataModel {
         return DataModel.instance;
     }
 
+    /**
+     * Creates an instance of DataModel, and tries to load in metadata
+     * from 'metadata/metadata.msq' file if it exists, and will load in
+     * the data to the datamodel. If no file exists at that location,
+     * it will default all datamodel values to null or 0.
+     *
+     * @memberof DataModel
+     */
     private constructor() {
-        this.availableGroups = meta.cohortGroups;
+        this.countMethod = CountMethod.Usage;
+        this.availableGroups = [];
+        this.groupColors = [];
+        // this.baseDataframe = null;
+        this.selectedGroups = [];
+        this.maxSyllable = 100;
+    }
 
-        this.selectedGroups = this.availableGroups;
-        this.baseDataframe = new DataFrame(meta.dataframeJson.data, meta.dataframeJson.columns);
-        
-        this.maxSyllable = this.baseDataframe.filter((row: any) => row.get('syllable')).distinct('syllable').toArray().length;
+    /**
+     * Updates the datamodel and render components based on new metadata json
+     * information read in from a file selected through the UI.
+     *
+     * @param {MetadataJson} jsonFile   The json object that contains the new
+     *                                  metadata information to be loaded in.
+     * @memberof DataModel
+     */
+    public loadMetadataFile(jsonFile: any) {
+        this.availableGroups = (store.state as any).datasets.groups;
+        this.selectedGroups = (store.state as any).datasets.groups;
 
+        this.maxSyllable = this.getBaseDataFrame()
+                               .filter((row: any) => row.get('syllable'))
+                               .distinct('syllable')
+                               .toArray().length;
+
+        // NOTE: THIS NEEDS TO BE FIRST OTHERWISE IT WON'T BE CALLED SYNCHRONOUSLY
         this.updateView();
+
+        this.eventBus.fire(EventType.GROUPS_CHANGE, this.availableGroups);
+        this.eventBus.fire(EventType.SYLLABLE_CHANGE, 0);
+        this.eventBus.fire(EventType.METADATA_LOADED, null);
+    }
+
+    private getBaseDataFrame() {
+        let data;
+        if (this.countMethod === CountMethod.Usage){
+            data = (store.state as any).datasets.usageByUsage;
+        } else if (this.countMethod === CountMethod.Frames) {
+            data = (store.state as any).datasets.usageByFrames;
+        }else {
+            throw new Error('Unknown Count Method '+this.countMethod);
+        }
+        return new DataFrame(data.data, data.columns);
     }
 
     /**
@@ -89,21 +153,21 @@ class DataModel {
      * @memberof DataModel
      */
     private updateView() {
-        let excludeGroups : Array<string> = [];
-        for (var i = 0; i < this.availableGroups.length; i++) {
+        let excludeGroups : string[] = [];
+        for (let i = 0; i < this.availableGroups.length; i++) {
             if (!this.selectedGroups.includes(this.availableGroups[i])) {
                 excludeGroups.push(this.availableGroups[i]);
             }
         }
 
-        var dfClone = this.baseDataframe.toDict();
-        dfClone = new DataFrame(dfClone);
-        for (i = 0; i < excludeGroups.length; i++) {
+        let dfClone = this.getBaseDataFrame();
+        for (let i = 0; i < excludeGroups.length; i++) {
             dfClone = dfClone.filter((row : any) => row.get('group') !== excludeGroups[i]);
         }
 
-        this.aggregateView = dfClone.groupBy('syllable', 'group').aggregate((g: any) => g.stat.mean('usage'))
-                .rename('aggregation', 'usage');
+        this.aggregateView = dfClone.groupBy('syllable', 'group')
+                                    .aggregate((g: any) => g.stat.mean('usage'))
+                                    .rename('aggregation', 'usage');
 
         this.view = dfClone;
     }
@@ -159,11 +223,11 @@ class DataModel {
      * Updates the selected groups based on UI input
      * and fires the GROUPS_CHANGE event.
      *
-     * @param {Array<string>} groups    New list of groups to display
+     * @param {string[]} groups    New list of groups to display
      *                                  and model.
      * @memberof DataModel
      */
-    public updateSelectedGroups(groups : Array<string>) {
+    public updateSelectedGroups(groups : string[]) {
         if (groups === null) {
             throw new Error('Illegal Argument: Argument must not be null.');
         }
@@ -173,6 +237,23 @@ class DataModel {
 
         // NOTE: Fire the event so everyone knows groups changed
         this.eventBus.fire(EventType.GROUPS_CHANGE, groups);
+    }
+
+    public updateSelectedGroupColors(colors: string[]) {
+        this.groupColors = colors;
+        this.eventBus.fire(EventType.GROUP_COLORS_CHANGE, colors);
+    }
+    public getSelectedGroupColors() {
+        return this.groupColors;
+    }
+
+    public updateCountMethod(countMethod: CountMethod) {
+        this.countMethod = countMethod;
+        this.updateView();
+        this.eventBus.fire(EventType.METADATA_LOADED, null);
+    }
+    public getCountMethod() {
+        return this.countMethod;
     }
 
 
@@ -190,7 +271,7 @@ class DataModel {
     /**
      * Returns the list of selected groups.
      *
-     * @returns {Array<string>} The list of selected groups.
+     * @returns {string[]} The list of selected groups.
      * @memberof DataModel
      */
     public getSelectedGroups() {
@@ -201,7 +282,7 @@ class DataModel {
      * Returns the list of all available groups that
      * gets populated from the metadata.json file.
      *
-     * @returns {Array<string>} List of all available groups.
+     * @returns {string[]} List of all available groups.
      * @memberof DataModel
      */
     public getAvailableGroups() {

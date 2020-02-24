@@ -4,6 +4,8 @@ node_modules
 /tests/e2e/reports/
 selenium-debug.log
 dist
+/data
+
 
 # package file
 package-lock.json
@@ -25,3 +27,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+#Electron-builder output
+/dist_electron

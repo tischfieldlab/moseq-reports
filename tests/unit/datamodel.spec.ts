@@ -1,10 +1,15 @@
 import { expect, assert } from 'chai';
 import { shallowMount, mount } from '@vue/test-utils';
 
-import DataModel, { EventType } from '@/models/DataModel';
+import DataModel, { EventType, MetadataJson } from '@/models/DataModel';
+/*
+
+// 2020-02-21 - JT - disableing these as they do not make much sense right now.
+// DataModel has become deprecated
+
 
 describe('DataModel', () => {
-  const meta = require('../data/metadata.js');
+  const meta = require('../data/metadata.json');
   it('checks if data model gets the correct data from the json file.', () => {
     const groups: string[] = meta.cohortGroups;
     assert.deepEqual(groups, DataModel.getAvailableGroups());
@@ -12,7 +17,7 @@ describe('DataModel', () => {
 });
 
 describe('DataModel SelectedGroups', () => {
-  const meta = require('../data/metadata.js');
+  const meta = require('../data/metadata.json');
 
   it('Checks if data model updates groups correctly, and does not change available groups.', () => {
     const correct: string[] = ['+/+_female', '+/CT_female', 'CT/CT_female'];
@@ -26,7 +31,7 @@ describe('DataModel SelectedGroups', () => {
 });
 
 describe('DataModel SelectedSyllable', () => {
-  const meta = require('../data/metadata.js');
+  const meta = require('../data/metadata.json');
 
   it('Checks if data model updates syllable correctly, and does not change max syllable.', () => {
     const correct: number = 11;
@@ -68,3 +73,4 @@ describe('DataModel EventTpye GROUPS_CHANGE', () => {
 });
 
 // TODO: Test the view
+*/

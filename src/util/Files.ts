@@ -1,4 +1,5 @@
-
+import fs from 'fs';
+import pth from 'path';
 
 export function saveFile(name: string, type: string, data: string) {
     if (data != null && navigator.msSaveBlob) {
@@ -18,19 +19,18 @@ export function saveFile(name: string, type: string, data: string) {
     }, 500);
 }
 
-export function transpose(data: number[][]): number[][] {
-    return data[0].map((col, i) => data.map((row) => row[i]));
-}
-
-export declare type Procedure = (...args: any[]) => void;
-export function throttled<F extends Procedure>(delay: number, fn: F) {
-    let lastCall = 0;
-    return (...args) => {
-        const now = new Date().getTime();
-        if (now - lastCall < delay) {
-            return;
-        }
-        lastCall = now;
-        return fn(...args);
-    };
+export function deleteFolderRecursive(path: string) {
+    let files = Array<string>();
+    if (fs.existsSync(path)) {
+        files = fs.readdirSync(path);
+        files.forEach((file, index) => {
+            const curPath = pth.join(path, file);
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
 }
