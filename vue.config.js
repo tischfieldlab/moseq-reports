@@ -6,7 +6,11 @@ module.exports = {
     },
     pluginOptions: {
         electronBuilder: {
-            externals: ['plotly.js-dist', 'hclusterjs']
+            externals: ['plotly.js-dist', 'hclusterjs'],
+            chainWebpackRendererProcess(config) {
+                config.plugins.delete('workbox')
+                config.plugins.delete('pwa')
+            }
         }
     }
 }
