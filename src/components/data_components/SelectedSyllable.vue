@@ -1,13 +1,9 @@
 <template>
-    <div id="testsyllable-container">
-        <b-card class="test-header" title="Current Syllable">
-          <b-form-group style="text-align: left;">
-            <b-card-text>
-                <h5>{{ this.syllable }}</h5>
-            </b-card-text>
-          </b-form-group>
-      </b-card>
-    </div>
+    <b-card title="Current Syllable">
+        <b-card-text>
+            <h5 style="text-align:center;">{{ this.syllable }}</h5>
+        </b-card-text>
+    </b-card>
 </template>
 
 <script lang="ts">
@@ -15,13 +11,13 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/data_components/Core';
 
 RegisterDataComponent({
-    friendly_name: 'Test Syllable',
-    component_type: 'test-syllable',
+    friendly_name: 'Selected Syllable',
+    component_type: 'selected-syllable',
     init_width: 250,
-    init_height: 175,
+    init_height: 155,
 });
 
-export default Vue.component('test-syllable', {
+export default Vue.component('selected-syllable', {
     props: {
         id: {
             type: Number,

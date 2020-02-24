@@ -30,16 +30,16 @@ export default [{
         height: 200,
         position: {
             x: 1090,
-            y: 190,
+            y: 165,
         },
     },
     settings: {},
 }, {
-    type: 'test-syllable',
+    type: 'selected-syllable',
     title: 'Selected Syllable',
     layout: {
         width: 250,
-        height: 175,
+        height: 155,
         position: {
             x: 1090,
             y: 5,
