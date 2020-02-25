@@ -53,7 +53,8 @@ def archiveData(outputPath, ext="msq"):
     
     for root, _, files in os.walk(outputPath):
         for file in files:
-            zipf.write(os.path.join(root, file), file)
+            arcname = os.path.join(os.path.relpath(root, outputPath), file)
+            zipf.write(os.path.join(root, file), arcname=arcname)
     zipf.close()
 #end archiveData()
 
