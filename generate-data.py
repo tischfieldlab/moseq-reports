@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import zipfile
@@ -44,10 +45,11 @@ def main():
     create_crowd_movies(args.modelFile, args.indexFile, os.path.join(args.outputPath, 'crowd_movies'), max_syllable, True, 'usage')
     
     archiveData(args.outputPath)
+    shutil.rmtree(args.outputPath, ignore_errors=True)
 #end main()
 
-def archiveData(outputPath):
-    zipf = zipfile.ZipFile('{}.msq'.format(outputPath), 'w', zipfile.ZIP_DEFLATED)
+def archiveData(outputPath, ext="msq"):
+    zipf = zipfile.ZipFile('{}.{}'.format(outputPath, ext), 'w', zipfile.ZIP_DEFLATED)
     
     for root, _, files in os.walk(outputPath):
         for file in files:
