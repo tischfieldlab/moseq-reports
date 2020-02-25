@@ -40,12 +40,21 @@ export default function LoadDataBundle(filename: string) {
         });
         throw new Error(err);
     });
+    zip.on('extract', (entry, file) => {
+        // tslint:disable-next-line:no-console
+        // console.log(`Extracted ${entry.name} to ${file}`);
+    });
     zip.on('ready', () => {
         currentState = {
             bundle: filename,
             name: path.basename(filename, '.msq'),
             path: fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-')),
         };
+        /*console.log('Entries read: ' + zip.entriesCount);
+        for (const entry of Object.values(zip.entries())) {
+            const desc = (entry as any).isDirectory ? 'directory' : `${(entry as any).size} bytes`;
+            console.log(`Entry ${(entry as any).name}: ${desc}`);
+        }*/
         // console.log('Entries read: ' + zip.entriesCount);
         // console.log('zip ready');
         LoadMetadataData(zip);
@@ -53,7 +62,8 @@ export default function LoadDataBundle(filename: string) {
         LoadSpinogramData(zip);
         LoadCrowdMovies(zip); // TODO: Keshav
 
-        zip.close();
+        // zip.close();
+        store.commit('datasets/SetDataInfo', {name: currentState.name, path: currentState.path});
         store.dispatch('dataview/initialize');
         app.$bvToast.toast('File "' + filename + '" was loaded successfully.', {
             title: 'Data loaded successfully!',
@@ -105,7 +115,7 @@ function LoadCrowdMovies(zip) {
     fs.mkdirSync(dest);
     zip.extract('crowd_movies', dest, (err, count) => {
         // tslint:disable-next-line:no-console
-        console.log(err ? 'Extract error' : `Extracted ${count} crowd movie entries`);
+        console.log(err ? `Extract error: ${err}` : `Extracted ${count} crowd movie entries`);
     });
 }
 
