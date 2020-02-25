@@ -45,12 +45,8 @@ export default [{
             y: 5,
         },
     },
-
-
     settings: {},
-},
-
-{
+}, {
     title: 'Crowd Movies',
     type: 'crowd-movies',
     layout: {
@@ -62,6 +58,4 @@ export default [{
         },
     },
     settings: {},
-},
-
-];
+}];
