@@ -8,6 +8,7 @@ import {scaleOrdinal} from 'd3-scale';
 export enum CountMethod {
     Usage = 'Usage',
     Frames = 'Frames',
+    Raw = 'Raw',
 }
 
 interface DataviewState {

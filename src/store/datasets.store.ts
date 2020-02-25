@@ -3,6 +3,8 @@ import { Module } from 'vuex';
 import Vue from 'vue';
 
 interface DatasetsState {
+    name: string;
+    path: string;
     spinogram: any[];
     usageByUsage: any;
     usageByFrames: any;
@@ -13,6 +15,8 @@ interface DatasetsState {
 const DatasetsModule: Module<DatasetsState, RootState> = {
     namespaced: true,
     state: {
+        name: '',
+        path: '',
         spinogram: [],
         usageByUsage: null,
         usageByFrames: null,
@@ -20,6 +24,10 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         label_map: null,
     },
     mutations: {
+        SetDataInfo(state, {name, path}: {name: string, path: string}) {
+            state.name = name;
+            state.path = path;
+        },
         SetSpinogramData(state, data: []) {
             state.spinogram = data;
         },
