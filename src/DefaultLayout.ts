@@ -1,45 +1,48 @@
 export default [{
-    title: 'Usage heatmap',
-    type: 'heat-map',
+    type: 'clustered-heatmap',
+    title: 'Clustered Usage Heatmap',
     layout: {
-        width: 300,
+        width: 400,
         height: 600,
         position: {
-            x: 260,
-            y: 60,
+            x: 250,
+            y: 5,
         },
     },
-    settings: {
-        style: {
-            colorscale: 'Portland',
-        },
-    },
+    settings: {},
 }, {
     type: 'detailed-usage',
     title: 'Usage Details',
     layout: {
-        width: 900,
+        width: 430,
         height: 600,
         position: {
-            x: 570,
-            y: 60,
+            x: 655,
+            y: 5,
         },
     },
-    settings: {
-        show_points: true,
-        show_boxplot: true,
-        boxplot_whiskers: 0, // Tukey-style
-        show_violinplot: false,
-    },
+    settings: {},
 }, {
+    type: 'spinogram-plots',
+    title: 'Spinogram',
+    layout: {
+        width: 400,
+        height: 200,
+        position: {
+            x: 1090,
+            y: 165,
+        },
+    },
+    settings: {},
+}, {
+    type: 'selected-syllable',
     title: 'Selected Syllable',
-    type: 'test-syllable',
     layout: {
         width: 250,
-        height: 300,
+        height: 155,
         position: {
-            x: 1480,
-            y: 60,
+            x: 1090,
+            y: 5,
         },
     },
 

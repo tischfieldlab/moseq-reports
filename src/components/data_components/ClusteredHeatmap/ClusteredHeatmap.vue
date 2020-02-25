@@ -56,9 +56,10 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import RegisterDataComponent from '@/components/data_components/Core';
+
 import store from '@/store/root.store';
 import { Layout } from '@/store/root.types';
-import DataModel, { EventType } from '@/models/DataModel';
 import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue';
 import hcluster from 'hclusterjs';
 import * as d3 from 'd3';
@@ -69,14 +70,14 @@ import { GetScale } from '@/util/D3ColorProvider';
 
 
 
-store.commit('registerComponent', {
+RegisterDataComponent({
     friendly_name: 'Clustered Usage Heatmap',
     component_type: 'clustered-heatmap',
     settings_type: 'ClusteredHeatmapOptions',
     init_width: 400,
     init_height: 500,
     default_settings: {
-        syllable_order_type: OrderingType.Natural,
+        syllable_order_type: OrderingType.Cluster,
         syllable_order_group_value: undefined,
         syllable_order_direction: SortOrderDirection.Asc,
         syllable_cluster_distance: 'euclidean',
@@ -146,15 +147,10 @@ export default Vue.component('clustered-heatmap', {
             () => this.clusterGroups(),
         ));
         this.prepareData();
-        DataModel.subscribe(EventType.GROUPS_CHANGE, this.prepareData);
-        DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.showSelectedSyllable);
     },
     destroyed() {
         // un-watch the store
         this.watchers.forEach((w) => w());
-        // unsubscribe from the data model
-        DataModel.unsubscribe(EventType.GROUPS_CHANGE, this.prepareData);
-        DataModel.unsubscribe(EventType.SYLLABLE_CHANGE, this.showSelectedSyllable);
     },
     computed: {
         settings(): any {
@@ -247,7 +243,7 @@ export default Vue.component('clustered-heatmap', {
 
                 case OrderingType.Natural:
                 default:
-                    return DataModel.getSelectedGroups();
+                    return this.selectedGroups;
             }
         },
         isGroupsClustered(): boolean {
@@ -262,7 +258,7 @@ export default Vue.component('clustered-heatmap', {
                     return this.clusteredSyllableOrder;
 
                 case OrderingType.Value:
-                    return DataModel.getAggregateView()
+                    return this.aggregateView
                                     .where({group: this.settings.syllable_order_group_value})
                                     .sortBy('usage', this.settings.syllable_order_direction === SortOrderDirection.Asc)
                                     .select('syllable')
@@ -271,7 +267,7 @@ export default Vue.component('clustered-heatmap', {
 
                 case OrderingType.Natural:
                 default:
-                    return DataModel.getAggregateView()
+                    return this.aggregateView
                                     .select('syllable')
                                     .distinct('syllable')
                                     .sortBy('syllable')
@@ -313,19 +309,40 @@ export default Vue.component('clustered-heatmap', {
             }
             return cluster().size([this.dims.rtree.h, this.dims.rtree.w])(this.syllableHierarchy as any).links() as any;
         },
+        selectedGroups(): string[] {
+            return this.$store.state.dataview.selectedGroups;
+        },
+        aggregateView(): any {
+            return this.$store.getters['dataview/aggregateView'];
+        },
+        selectedSyllable: {
+            get(): number {
+                return this.$store.state.dataview.selectedSyllable;
+            },
+            set(event: number) {
+                this.$store.commit('dataview/setSelectedSyllable', event);
+            },
+        },
+    },
+    watch: {
+        aggregateView() {
+            this.prepareData();
+        },
+        selectedSyllable(newValue) {
+            this.showSelectedSyllable(newValue);
+        },
     },
     methods: {
         prepareData() {
-            const groups = DataModel.getSelectedGroups();
-            this.usages = DataModel.getAggregateView().toCollection();
+            this.usages = this.aggregateView.toCollection();
 
-            this.compute_label_stats(groups);
+            this.compute_label_stats(this.selectedGroups);
             this.clusterGroups();
             this.clusterSyllables();
         },
         clusterGroups() {
-            const groups = DataModel.getSelectedGroups();
-            const df = DataModel.getAggregateView().groupBy('group');
+            const groups = this.selectedGroups;
+            const df = this.aggregateView.groupBy('group');
 
             const sylUsage = new Array<SyllableRow>();
             for (const g of df) {
@@ -342,7 +359,7 @@ export default Vue.component('clustered-heatmap', {
                                                                            this.settings.group_cluster_linkage);
         },
         clusterSyllables() {
-            const df = DataModel.getAggregateView();
+            const df = this.aggregateView;
             const syllableIds = df.select('syllable').distinct('syllable').toArray().flat();
 
             const sylUsage = new Array<SyllableRow>();
@@ -407,9 +424,7 @@ export default Vue.component('clustered-heatmap', {
         setSelectedSyllable(event: Event) {
             const sid = (event.target as SVGRectElement).getAttribute('syllable');
             if (sid !== null) {
-                const realSid = Number.parseInt(sid, 10);
-                this.showSelectedSyllable(realSid);
-                DataModel.updateSelectedSyllable(realSid);
+                this.selectedSyllable = Number.parseInt(sid, 10);
             }
         },
         showSelectedSyllable(id: number) {
