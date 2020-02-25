@@ -11,9 +11,10 @@
                 Enter Filepath until syllable_
             </p>
             <div>
-               <div v-if='pathchecker()'>
+               <div v-if="crowd_movie_path">
                    Currently video having a Module not found error if given a path
-                <!-- <video width="320" controls :src="require(this.message + this.word + '.mp4')" type="video/mp4" height="240"  autoplay muted loop/> -->
+                   {{crowd_movie_path}}
+                    <video width="320" controls :src="crowd_movie_path" type="video/mp4" height="240" autoplay muted loop />
                </div>
                <div v-else>
                    No path/Wrong Path
@@ -27,14 +28,13 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import RegisterDataComponent from '@/components/data_components/Core';
+import path from 'path';
+import url from 'url';
+import { CountMethod } from '../../store/dataview.store';
 
-import DataModel, { EventType } from '@/models/DataModel';
-import store from '@/store/root.store';
-
-import {ComponentRegistration} from '@/store/root.types';
-
-store.commit('registerComponent', {
-    friendly_name: 'CrowdMovies',
+RegisterDataComponent({
+    friendly_name: 'Crowd Movies',
     component_type: 'crowd-movies',
 });
 
@@ -46,36 +46,18 @@ export default Vue.component('crowd-movies', {
         },
     },
     data() {
-        return {
-            message: '',
-            syllable: DataModel.getSelectedSyllable(),
-            word: DataModel.getSelectedSyllable().toString(),
-        };
+        return {};
     },
-        mounted() {
-            DataModel.subscribe(EventType.SYLLABLE_CHANGE, this.onSyllableChange);
-            this.$nextTick(() => {
-                this.word = this.word = DataModel.getSelectedSyllable().toString();
-                    });
-    },
-         destroyed() {
-        DataModel.unsubscribe(EventType.SYLLABLE_CHANGE, this.onSyllableChange);
-    },
-    methods: {
-        pathchecker() {
-            if (this.message.includes('syllable_')) {
-            this.word = DataModel.getSelectedSyllable().toString();
-            return true;
-            }
-            return false;
-        },
-        onSyllableChange(syllable: any) {
-            this.syllable = DataModel.getSelectedSyllable();
-            this.word = DataModel.getSelectedSyllable().toString();
+    computed: {
+        crowd_movie_path(): string {
+            const uID = this.$store.getters['dataview/selectedSyllableAs'](CountMethod.Usage);
+            const rID = this.$store.getters['dataview/selectedSyllableAs'](CountMethod.Raw);
+            const fname = `syllable_sorted-id-${uID} (usage)_original-id-${rID}.mp4`;
+            const fpath = path.join(this.$store.state.datasets.path, 'crowd_movies', fname);
+            return url.pathToFileURL(fpath).toString(); // need to return file protocol version of path
         },
     },
 });
-
 </script>
 
 <style lang="scss" scoped>
