@@ -3,6 +3,9 @@ import { Module } from 'vuex';
 import Vue from 'vue';
 
 interface DatasetsState {
+    bundle: string; // path to the bundle
+    name: string; // basename of the bundle
+    path: string; // path to uncompressed data
     spinogram: any[];
     usageByUsage: any;
     usageByFrames: any;
@@ -13,6 +16,9 @@ interface DatasetsState {
 const DatasetsModule: Module<DatasetsState, RootState> = {
     namespaced: true,
     state: {
+        bundle: '',
+        name: '',
+        path: '',
         spinogram: [],
         usageByUsage: null,
         usageByFrames: null,
@@ -20,6 +26,11 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         label_map: null,
     },
     mutations: {
+        SetDataSourceInfo(state, payload: any) {
+            state.bundle = payload.bundle;
+            state.name = payload.name;
+            state.path = payload.path;
+        },
         SetSpinogramData(state, data: []) {
             state.spinogram = data;
         },
