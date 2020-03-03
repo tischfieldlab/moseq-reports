@@ -1,6 +1,27 @@
-language: node_js
-node_js:
-- 9
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode9.4
+      language: node_js
+      node_js:
+        - 12
+      env:
+        - ELECTRON_CACHE=$HOME/.cache/electron
+        - ELECTRON_BUILDER=$HOME/.cache/electron-builder
+    
+    - os: linux
+      services: docker
+      language: node_js
+      node_js:
+        - 12
+
+cache:
+  npm: true
+  directories:
+    - node_modules
+    - $HOME/.cache/electron
+    - $HOME/.cache/electron-builder
+
 script:
 - npm install -g @vue/cli
 - npm install
