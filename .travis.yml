@@ -10,10 +10,20 @@ matrix:
         - ELECTRON_BUILDER=$HOME/.cache/electron-builder
     
     - os: linux
-      services: docker
       language: node_js
       node_js:
         - 12
+      env:
+      - ELECTRON_CACHE=$HOME/.cache/electron
+      - ELECTRON_BUILDER=$HOME/.cache/electron-builder
+    
+    - os: windows
+      language: node_js
+      node_js: 
+        - 12
+      env:
+      - ELECTRON_CACHE=$HOME/.cache/electron
+      - ELECTRON_BUILDER=$HOME/.cache/electron-builder
 
 cache:
   npm: true
@@ -31,9 +41,9 @@ before_deploy:
 - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
 - echo $TRAVIS_TAG
 - git tag $TRAVIS_TAG
-- NODE_OPTIONS=--max-old-space-size=4096 npm run build --modern
-- export RELEASE_NAME=${TRAVIS_TAG}.tar.gz
-- tar czvf ${RELEASE_NAME} dist/
+- npm run electron:build
+- export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
+- tar czvf ${RELEASE_NAME} dist_electron/
 deploy:
   provider: releases
   api_key:
@@ -43,4 +53,4 @@ deploy:
   file: "${RELEASE_NAME}"
   tag_name: "$TRAVIS_TAG"
   on:
-    branch: master
+    branch: travis-update
