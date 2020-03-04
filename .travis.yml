@@ -2,7 +2,6 @@ jobs:
   include:
     - stage: build
       os: osx
-      osx_image: xcode9.4
       language: node_js
       node_js:
         - 12
@@ -10,7 +9,7 @@ jobs:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER=$HOME/.cache/electron-builder
       script:
-        - npm install -g @vue/vli
+        - npm install -g @vue/cli
         - npm install
         - npm run test:unit
       before_deploy:
@@ -43,7 +42,7 @@ jobs:
       - ELECTRON_CACHE=$HOME/.cache/electron
       - ELECTRON_BUILDER=$HOME/.cache/electron-builder
       script:
-        - npm install -g @vue/vli
+        - npm install -g @vue/cli
         - npm install
         - npm run test:unit
       before_deploy:
@@ -76,7 +75,7 @@ jobs:
       - ELECTRON_CACHE=$HOME/.cache/electron
       - ELECTRON_BUILDER=$HOME/.cache/electron-builder
       script:
-        - npm install -g @vue/vli
+        - npm install -g @vue/cli
         - npm install
         - npm run test:unit
       before_deploy:
