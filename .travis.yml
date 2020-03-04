@@ -78,7 +78,7 @@ matrix:
           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
-          - npm run electron:build -l
+          - npm run electron:build -p never
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           - tar czvf ${RELEASE_NAME} dist_electron/
         node_js: 
@@ -94,24 +94,3 @@ matrix:
           draft: false
           on:
             branch: travis-update
-
-
-# # cache:
-# #   npm: true
-# #   directories:
-# #     - node_modules
-# #     - $HOME/.cache/electron
-# #     - $HOME/.cache/electron-builder
-
-# # script:
-# # - npm install -g @vue/cli
-# # - npm install
-# # - npm run test:unit
-# # before_deploy:
-# # - export PACKAGE_VERSION=$(npm run --silent version)
-# # - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-# # - echo $TRAVIS_TAG
-# # - git tag $TRAVIS_TAG
-# # - npm run electron:build
-# # - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
-# # - tar czvf ${RELEASE_NAME} dist_electron/
