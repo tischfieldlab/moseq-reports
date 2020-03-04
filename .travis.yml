@@ -66,10 +66,14 @@ matrix:
             - $HOME/.cache/electron-builder
         services: docker
         script:
+          - sudo apt-get update
+          - sudo apt-get install --yes --no-install-recommends snapd
+          - sudo snap wait system seed.loaded
+          - sudo snap install --classic snapcraft
+          - sudo snap install snapcraft --classic
           - npm install -g @vue/cli
           - npm install
           - npm run test:unit
-          - sudo snap install snapcraft --classic
         before_deploy:
           - export PACKAGE_VERSION=$(npm run --silent version)
           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
