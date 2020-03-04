@@ -31,7 +31,6 @@ jobs:
         draft: true
         on:
           branch: travis-update
-          condition: $TRAVIS_OS_NAME = "linux"
 
     - stage: build
       os: windows
@@ -64,7 +63,6 @@ jobs:
         draft: true
         on:
           branch: travis-update
-          condition: $TRAVIS_OS_NAME = "linux"
 
     - stage: build
       os: linux
@@ -97,7 +95,6 @@ jobs:
         draft: false
         on:
           branch: travis-update
-          condition: $TRAVIS_OS_NAME = "linux"
 
 # cache:
 #   npm: true
