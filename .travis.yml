@@ -58,7 +58,7 @@ matrix:
 
       - os: linux
         language: node_js
-        dist: xenail
+        dist: xenial
             addons:
               snaps:
                 - name: snapcraft
