@@ -59,10 +59,6 @@ matrix:
       - os: linux
         language: node_js
         dist: xenial
-            addons:
-              snaps:
-                - name: snapcraft
-                  confinement: classic
         node_js: 12
         cache:
           directories:
@@ -73,12 +69,12 @@ matrix:
           - npm install -g @vue/cli
           - npm install
           - npm run test:unit
+          - sudo snap install snapcraft --classic
         before_deploy:
           - export PACKAGE_VERSION=$(npm run --silent version)
           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
-          - npm run postinstall
           - npm run electron:build
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           - tar czvf ${RELEASE_NAME} dist_electron/
