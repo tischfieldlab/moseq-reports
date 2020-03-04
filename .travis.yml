@@ -68,7 +68,7 @@ jobs:
         - npm install
         - npm run test:unit
       before_deploy:
-        - snap install snapcraft --classic
+        - sudo snap install snapcraft --classic
         - export PACKAGE_VERSION=$(npm run --silent version)
         - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
         - echo $TRAVIS_TAG
