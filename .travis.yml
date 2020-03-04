@@ -27,7 +27,7 @@ matrix:
           tag_name: "$TRAVIS_TAG"
           draft: true
           on:
-            branch: travis-update
+            branch: master
 
       - os: windows
         language: node_js
@@ -56,7 +56,7 @@ matrix:
           tag_name: "$TRAVIS_TAG"
           draft: true
           on:
-            branch: travis-update
+            branch: master
 
       - os: linux
         language: node_js
@@ -95,4 +95,4 @@ matrix:
           tag_name: "$TRAVIS_TAG"
           draft: false
           on:
-            branch: travis-update
+            branch: master
