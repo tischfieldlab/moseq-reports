@@ -5,9 +5,6 @@ jobs:
       language: node_js
       node_js:
         - 12
-      env:
-        - ELECTRON_CACHE=$HOME/.cache/electron
-        - ELECTRON_BUILDER=$HOME/.cache/electron-builder
       script:
         - npm install -g @vue/cli
         - npm install
@@ -37,9 +34,6 @@ jobs:
       language: node_js
       node_js:
         - 12
-      env:
-      - ELECTRON_CACHE=$HOME/.cache/electron
-      - ELECTRON_BUILDER=$HOME/.cache/electron-builder
       script:
         - npm install -g @vue/cli
         - npm install
@@ -69,9 +63,6 @@ jobs:
       language: node_js
       node_js: 
         - 12
-      env:
-      - ELECTRON_CACHE=$HOME/.cache/electron
-      - ELECTRON_BUILDER=$HOME/.cache/electron-builder
       script:
         - npm install -g @vue/cli
         - npm install
