@@ -73,11 +73,11 @@ matrix:
           - npm install
           - npm run test:unit
         before_deploy:
+          - npm run electron:build
           - export PACKAGE_VERSION=$(npm run --silent version)
           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
-          - npm run electron:build
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           - tar czvf ${RELEASE_NAME} dist_electron/
         node_js: 
