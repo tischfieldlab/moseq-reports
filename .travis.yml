@@ -58,14 +58,12 @@ matrix:
 
       - os: linux
         language: node_js
-        sudo: required
+        cache:
+          directories:
+            - $HOME/.cache/electron
+            - $HOME/.cache/electron-builder
+        services: docker
         script:
-          - sudo apt-get update && sudo apt-get install -y --no-install-recommends software-properties-common && sudo dpkg --add-architecture i386 && curl -L https://dl.winehq.org/wine-builds/winehq.key > winehq.key && sudo apt-key add winehq.key && sudo apt-add-repository https://dl.winehq.org/wine-builds/ubuntu
-          - sudo apt-get update
-          - sudo apt-get -y purge software-properties-common libdbus-glib-1-2 python3-dbus python3-gi python3-pycurl python3-software-properties
-          - sudo apt-get install -y --no-install-recommends winehq-stable
-          # clean
-          - sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* && sudo unlink winehq.key
           - npm install -g @vue/cli
           - npm install
           - npm run test:unit
@@ -74,7 +72,14 @@ matrix:
           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
-          - npm run electron:build
+          - |
+            docker run --rm \
+              --env-file <(env | sed -e 's/\s\s*/,/g' | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|_TOKEN|_KEY|AWS_|STRIP|BUILD_') \
+              -v ${PWD}:/project \
+              -v ~/.cache/electron:/root/.cache/electron \
+              -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+              electronuserland/builder:wine \
+              /bin/bash -c "npm run electron:build"
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           - tar czvf ${RELEASE_NAME} dist_electron/
         node_js: 
