@@ -58,6 +58,11 @@ matrix:
 
       - os: linux
         language: node_js
+        dist: xenail
+            addons:
+              snaps:
+                - name: snapcraft
+                  confinement: classic
         node_js: 12
         cache:
           directories:
@@ -73,14 +78,8 @@ matrix:
           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
-          - |
-            docker run --rm \
-              --env-file <(env | sed -e 's/\s\s*/,/g' | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|_TOKEN|_KEY|AWS_|STRIP|BUILD_') \
-              -v ${PWD}:/project \
-              -v ~/.cache/electron:/root/.cache/electron \
-              -v ~/.cache/electron-builder:/root/.cache/electron-builder \
-              electronuserland/builder:wine \
-              /bin/bash -c "npm run postinstall && npm run electron:build"
+          - npm run postinstall
+          - npm run electron:build
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           - tar czvf ${RELEASE_NAME} dist_electron/
         node_js: 
