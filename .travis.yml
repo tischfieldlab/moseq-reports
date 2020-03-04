@@ -70,7 +70,6 @@ matrix:
           - sudo apt-get install --yes --no-install-recommends snapd
           - sudo snap wait system seed.loaded
           - sudo snap install --classic snapcraft
-          - sudo snap install snapcraft --classic
           - npm install -g @vue/cli
           - npm install
           - npm run test:unit
@@ -79,7 +78,7 @@ matrix:
           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
-          - npm run electron:build
+          - npm run electron:build -l
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           - tar czvf ${RELEASE_NAME} dist_electron/
         node_js: 
