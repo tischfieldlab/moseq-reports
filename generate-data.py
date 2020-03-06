@@ -1,15 +1,18 @@
-import os, argparse, json, sys, glob, subprocess
-import pandas as pd
-import moseq2_extras
-import os, argparse, json
+import argparse
+import glob
+import json
+import os
+import subprocess
+import sys
 import zipfile
 
-from moseq2_extras.util import ensure_dir
-from moseq2_viz.util import parse_index
-from moseq2_viz.model.util import parse_model_results, \
-        results_to_dataframe
+import pandas as pd
 from moseq2_extras.model import get_syllable_id_mapping
+from moseq2_extras.util import ensure_dir, NumpyEncoder
 
+from moseq2_viz.model.util import (get_transition_matrix, parse_model_results,
+                                   results_to_dataframe)
+from moseq2_viz.util import parse_index
 
 METADATAPATH = os.getcwd()
 
@@ -39,9 +42,15 @@ def main():
     # write out usage data
     writeUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'usage', args.outputPath)
     writeUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'frames', args.outputPath)
-    
+
+    # write out transition probabilities
+    writeTransitionMatrix(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'usage', args.outputPath)
+    writeTransitionMatrix(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'frames', args.outputPath)
+
+    # write out spinograms
     create_spinograms(args.modelFile, args.indexFile, args.outputPath, max_syllable, True, 'usage')
     
+    # finally, convert to zip archive
     archiveData(args.outputPath)
 #end main()
 
@@ -86,6 +95,28 @@ def writeUsageDataframe(model, index, groups, max_syl, sort, count, outputPath):
     dest = os.path.join(outputPath, 'usage.ms{}.c{}.s{}.json'.format(max_syl, count, sort))
     df.to_json(dest, orient='split')
 #end writeUsageDataframe()
+
+def writeTransitionMatrix(model, index, groups, max_syl, sort, count, outputPath):
+    _, sorted_index = parse_index(index)
+    model = parse_model_results(model, sort_labels_by_usage=sort, count=count)
+
+    label_uuids = model['keys']
+    labels = model['labels']
+    label_group = []
+
+    for uuid in label_uuids:
+        label_group.append(sorted_index['files'][uuid]['group'])
+
+    trans_mats = {}
+    for g in groups:
+        use_labels = [lbl for lbl, grp in zip(labels, label_group) if grp == g]
+        tm = get_transition_matrix(use_labels, combine=True, max_syllable=max_syl)
+        trans_mats[g] = tm
+
+    dest = os.path.join(outputPath, 'transitions.ms{}.c{}.s{}.json'.format(max_syl, count, sort))
+    with open(dest, 'w') as f:
+        json.dump(trans_mats, f, cls=NumpyEncoder)
+#end writeTransitionProbs()
 
 def create_spinograms(model, index, out_dir, max_syl, sort, count):
     out_dir = ensure_dir(out_dir)
