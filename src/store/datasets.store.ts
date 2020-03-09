@@ -6,6 +6,8 @@ interface DatasetsState {
     spinogram: any[];
     usageByUsage: any;
     usageByFrames: any;
+    transitionsByUsage: any;
+    transitionsByFrames: any;
     groups: string[];
     label_map: any;
 }
@@ -16,6 +18,8 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         spinogram: [],
         usageByUsage: null,
         usageByFrames: null,
+        transitionsByUsage: null,
+        transitionsByFrames: null,
         groups: [],
         label_map: null,
     },
@@ -28,6 +32,12 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         },
         SetUsageByFrames(state, data: any) {
             state.usageByFrames = data;
+        },
+        SetTransitionsByUsage(state, data: any) {
+            state.transitionsByUsage = data;
+        },
+        SetTransitionsByFrames(state, data: any) {
+            state.transitionsByFrames = data;
         },
         SetGroupInfo(state, data: any) {
             Vue.set(state, 'groups', [...data]);

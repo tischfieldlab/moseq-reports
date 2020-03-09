@@ -4,6 +4,7 @@ import Vue from 'vue';
 import DataFrame from 'dataframe-js';
 import { schemeDark2 } from 'd3-scale-chromatic';
 import {scaleOrdinal} from 'd3-scale';
+import rootStore from './root.store';
 
 export enum CountMethod {
     Usage = 'Usage',
@@ -63,6 +64,21 @@ const DataviewModule: Module<DataviewState, RootState> = {
             return getters.view.groupBy('syllable', 'group')
                                .aggregate((g: any) => g.stat.mean('usage'))
                                .rename('aggregation', 'usage');
+        },
+        transitions: (state, getters, rootState) => {
+            let dfData: any;
+            if (state.countMethod === CountMethod.Usage) {
+                dfData = (rootState as any).datasets.transitionsByUsage;
+            } else if (state.countMethod === CountMethod.Frames) {
+                dfData = (rootState as any).datasets.transitionsByFrames;
+            } else {
+                throw new Error('Unknown Count Method ' + state.countMethod);
+            }
+
+            if (dfData === null) {
+                return null;
+            }
+            return dfData;
         },
         maxSyllable: (state, getters) => {
             const view = getters.view;

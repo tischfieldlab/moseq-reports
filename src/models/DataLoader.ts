@@ -50,6 +50,7 @@ export default function LoadDataBundle(filename: string) {
         // console.log('zip ready');
         LoadMetadataData(zip);
         LoadUsageData(zip);
+        LoadTransitionData(zip);
         LoadSpinogramData(zip);
         LoadCrowdMovies(zip); // TODO: Keshav
 
@@ -95,6 +96,15 @@ function LoadUsageData(zip) {
 
     const data2 = jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json');
     store.commit('datasets/SetUsageByFrames', data2);
+}
+
+function LoadTransitionData(zip) {
+    EnsureState();
+    const data1 = jsonParseZipEntry(zip, 'transitions.ms100.cusage.sTrue.json');
+    store.commit('datasets/SetTransitionsByUsage', data1);
+
+    const data2 = jsonParseZipEntry(zip, 'transitions.ms100.cframes.sTrue.json');
+    store.commit('datasets/SetTransitionsByFrames', data2);
 }
 
 function LoadCrowdMovies(zip) {
