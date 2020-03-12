@@ -23,6 +23,9 @@ Vue.use(VueResize);
 import { ToastPlugin } from 'bootstrap-vue';
 Vue.use(ToastPlugin);
 
+import UniqueId from 'vue-unique-id';
+Vue.use(UniqueId);
+
 Vue.config.productionTip = false;
 Vue.config.silent = true;
 
