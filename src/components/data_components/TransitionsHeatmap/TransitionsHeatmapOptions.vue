@@ -3,7 +3,7 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="Colormap">
-                    <b-form-select v-model="colorscale" :options="color_options"></b-form-select>
+                    <b-form-select v-model="abs_colorscale" :options="color_options"></b-form-select>
                 </b-input-group>
             </b-col>
         </b-row>
@@ -17,6 +17,14 @@
             <b-col>
                 <b-input-group prepend="Relative To Group">
                     <b-form-select v-model="relative_diff_group" :options="relative_diff_group_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="show_relative_diff">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Relative Colormap">
+                    <b-form-select v-model="rel_colorscale" :options="color_options"></b-form-select>
                 </b-input-group>
             </b-col>
         </b-row>
@@ -100,15 +108,28 @@ export default Vue.component('transitions-heatmap-options', {
         selectedGroups(): string[] {
             return this.$store.state.dataview.selectedGroups;
         },
-        colorscale: {
+        abs_colorscale: {
             get(): string {
-                return this.settings.colormap;
+                return this.settings.abs_colormap;
             },
             set(value: string) {
                 this.$store.commit('updateComponentSettings', {
                     id: this.id,
                     settings: {
-                        colormap: value,
+                        abs_colormap: value,
+                    },
+                });
+            },
+        },
+        rel_colorscale: {
+            get(): string {
+                return this.settings.rel_colormap;
+            },
+            set(value: string) {
+                this.$store.commit('updateComponentSettings', {
+                    id: this.id,
+                    settings: {
+                        rel_colormap: value,
                     },
                 });
             },

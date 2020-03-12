@@ -48,6 +48,7 @@ export default [{
     settings: {},
 }, {
     type: 'transitions-heatmap',
+    title: 'Transitions Heatmap',
     layout: {
         width: 1200,
         height: 350,
