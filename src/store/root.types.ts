@@ -88,9 +88,9 @@ export function dehydrateWindow(window: DataWindow): DehydratedDataWindow {
     };
 }
 export function hydrateWindow(data: DehydratedDataWindow): DataWindow {
-    const spec = store.getters.getSpecification(data.type);
+    const spec = store.getters.getSpecification(data.type) as ComponentRegistration;
     const win = createDataWindow(spec);
-    win.title = __clone(data.title);
+    win.title = __clone(data.title || spec.friendly_name);
     win.layout = { ...win.layout, ...__clone(data.layout) };
     win.settings = { ...win.settings, ...__clone(data.settings) };
     return win;

@@ -474,7 +474,7 @@ svg >>> g.x-axis.rotate g.tick text {
     transform: translate(-10px,0px) rotate(-45deg);
     text-anchor: end;
 }
-svg >>> path.domain {
+svg >>> g.legend path.domain {
     stroke:none;
 }
 svg >>> g.x-axis text.label,
