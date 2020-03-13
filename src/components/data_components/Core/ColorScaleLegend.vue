@@ -56,3 +56,19 @@ export default Vue.component('color-scale-legend', {
     },
 });
 </script>
+
+<style>
+g.legend text.label {
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 13px;
+    text-anchor:middle;
+    fill:#000;
+}
+g.legend g.tick line {
+    stroke: #888;
+}
+g.legend g.tick text,
+g.legend text.label {
+    fill: #888;
+}
+</style>
