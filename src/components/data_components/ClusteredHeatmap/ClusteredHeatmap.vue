@@ -32,7 +32,12 @@
             <g class="y-axis" v-axis:y="scale" :transform="`translate(${dims.yaxis.x},${dims.yaxis.y})`">
                 <text class="label" :x="-dims.yaxis.h/2" :y="40" transform="rotate(-90)">Module ID</text>
             </g>
-            <ColorScaleLegend :scale="scale.z" :width="dims.legend.w" :height="10" :transform="`translate(${dims.legend.x}, ${dims.legend.y})`" />
+            <ColorScaleLegend
+                :title="`Usage (${countMethod})`"
+                :scale="scale.z"
+                :width="dims.legend.w"
+                :height="10"
+                :transform="`translate(${dims.legend.x}, ${dims.legend.y})`" />
         </svg>
     </div>
 </template>
@@ -307,6 +312,9 @@ export default Vue.component('clustered-heatmap', {
             set(event: number) {
                 this.$store.commit('dataview/setSelectedSyllable', event);
             },
+        },
+        countMethod(): string {
+            return this.$store.state.dataview.countMethod;
         },
     },
     watch: {
