@@ -32,23 +32,7 @@
             <g class="y-axis" v-axis:y="scale" :transform="`translate(${dims.yaxis.x},${dims.yaxis.y})`">
                 <text class="label" :x="-dims.yaxis.h/2" :y="40" transform="rotate(-90)">Module ID</text>
             </g>
-            <g class="legend" :transform="`translate(${dims.legend.x}, ${dims.legend.y})`">
-                <defs>
-                    <linearGradient :id="`color_gradiant_${id}`" x1="0%" x2="100%" y1="0%" y2="0%">
-                        <stop offset="0%" :stop-color="scale.z(scale.z.domain()[0])" />
-                        <stop offset="100%" :stop-color="scale.z(scale.z.domain()[1])" />
-                    </linearGradient>
-                </defs>
-                <rect
-                    :x="-dims.legend.w/2"
-                    :y="0"
-                    :width="dims.legend.w"
-                    :height="10"
-                    :fill="`url(#color_gradiant_${id})`"
-                    />
-                <g v-axis:c="scale" transform="translate(0,10)" />
-                <text class="label" x="0" y="50">Usage</text>
-            </g>
+            <ColorScaleLegend :scale="scale.z" :width="dims.legend.w" :height="10" :transform="`translate(${dims.legend.x}, ${dims.legend.y})`" />
         </svg>
     </div>
 </template>
@@ -66,6 +50,7 @@ import * as d3 from 'd3';
 import { cluster, hierarchy, HierarchyNode, ValueFn, sum } from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/util/D3ColorProvider';
+import ColorScaleLegend from '@/components/data_components/Core/ColorScaleLegend.vue';
 
 
 
@@ -105,6 +90,9 @@ export default Vue.component('clustered-heatmap', {
             type: Number,
             required: true,
         },
+    },
+    components: {
+        ColorScaleLegend,
     },
     data() {
         return {

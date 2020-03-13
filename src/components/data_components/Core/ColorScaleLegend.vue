@@ -14,7 +14,7 @@
             :fill="`url(${$idRef('color-gradiant')})`"
             />
         <g v-axis:c="linearscale" :transform="`translate(0,${height})`" />
-        <text class="label" x="0" :y="height*5">Transition Probability</text>
+        <text class="label" x="0" :y="height + 18 + 20">Transition Probability</text>
     </g>
 </template>
 
