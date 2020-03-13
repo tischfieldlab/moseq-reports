@@ -32,23 +32,7 @@
             <g class="y-axis" v-axis:y="scale" :transform="`translate(${dims.yaxis.x},${dims.yaxis.y})`">
                 <text class="label" :x="-dims.yaxis.h/2" :y="40" transform="rotate(-90)">Module ID</text>
             </g>
-            <g class="legend" :transform="`translate(${dims.legend.x}, ${dims.legend.y})`">
-                <defs>
-                    <linearGradient :id="`color_gradiant_${id}`" x1="0%" x2="100%" y1="0%" y2="0%">
-                        <stop offset="0%" :stop-color="scale.z(scale.z.domain()[0])" />
-                        <stop offset="100%" :stop-color="scale.z(scale.z.domain()[1])" />
-                    </linearGradient>
-                </defs>
-                <rect
-                    :x="-dims.legend.w/2"
-                    :y="0"
-                    :width="dims.legend.w"
-                    :height="10"
-                    :fill="`url(#color_gradiant_${id})`"
-                    />
-                <g v-axis:c="scale" transform="translate(0,10)" />
-                <text class="label" x="0" y="50">Usage</text>
-            </g>
+            <ColorScaleLegend :scale="scale.z" :width="dims.legend.w" :height="10" :transform="`translate(${dims.legend.x}, ${dims.legend.y})`" />
         </svg>
     </div>
 </template>
@@ -66,6 +50,7 @@ import * as d3 from 'd3';
 import { cluster, hierarchy, HierarchyNode, ValueFn, sum } from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/util/D3ColorProvider';
+import ColorScaleLegend from '@/components/data_components/Core/ColorScaleLegend.vue';
 
 
 
@@ -105,6 +90,9 @@ export default Vue.component('clustered-heatmap', {
             type: Number,
             required: true,
         },
+    },
+    components: {
+        ColorScaleLegend,
     },
     data() {
         return {
@@ -292,10 +280,7 @@ export default Vue.component('clustered-heatmap', {
                     Math.min(...this.usages.map((n) => n.usage)),
                     Math.max(...this.usages.map((n) => n.usage)),
                 ]);
-            const c = scaleLinear()
-                .domain(z.domain())
-                .range([-this.dims.legend.w / 2, this.dims.legend.w / 2]);
-            return { x, y, z, c };
+            return { x, y, z };
         },
         groupLinks(): any[] {
             if (this.groupHierarchy === undefined) {
@@ -451,14 +436,9 @@ export default Vue.component('clustered-heatmap', {
             // console.log('axis directive called', el, binding);
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisRight' }[axis];
                 const methodArg = binding.value[axis];
                 const actualAxis = d3[axisMethod](methodArg);
-
-                // if colorbar axis, only show 5 ticks
-                if (axis === 'c') {
-                    actualAxis.ticks(5);
-                }
 
                 // build the axis
                 d3.select(el).call(actualAxis);
@@ -494,12 +474,11 @@ svg >>> g.x-axis.rotate g.tick text {
     transform: translate(-10px,0px) rotate(-45deg);
     text-anchor: end;
 }
-svg >>> path.domain {
+svg >>> g.legend path.domain {
     stroke:none;
 }
 svg >>> g.x-axis text.label,
-svg >>> g.y-axis text.label,
-svg >>> g.legend text.label {
+svg >>> g.y-axis text.label {
     font-family: Verdana,Arial,sans-serif;
     font-size: 13px;
     text-anchor:middle;
@@ -509,16 +488,13 @@ svg >>> g.y-axis g.tick text {
     font-size: 8px;
 }
 svg >>> g.x-axis g.tick line,
-svg >>> g.y-axis g.tick line,
-svg >>> g.legend g.tick line {
+svg >>> g.y-axis g.tick line {
     stroke: #888;
 }
 svg >>> g.heatmap {
     cursor: crosshair;
 }
-svg >>> g.y-axis g.tick text,
-svg >>> g.legend g.tick text,
-svg >>> g.legend text.label {
+svg >>> g.y-axis g.tick {
     fill: #888;
 }
 
