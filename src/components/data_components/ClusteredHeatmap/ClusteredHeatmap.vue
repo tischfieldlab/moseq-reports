@@ -280,10 +280,7 @@ export default Vue.component('clustered-heatmap', {
                     Math.min(...this.usages.map((n) => n.usage)),
                     Math.max(...this.usages.map((n) => n.usage)),
                 ]);
-            const c = scaleLinear()
-                .domain(z.domain())
-                .range([-this.dims.legend.w / 2, this.dims.legend.w / 2]);
-            return { x, y, z, c };
+            return { x, y, z };
         },
         groupLinks(): any[] {
             if (this.groupHierarchy === undefined) {
@@ -439,14 +436,9 @@ export default Vue.component('clustered-heatmap', {
             // console.log('axis directive called', el, binding);
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisRight' }[axis];
                 const methodArg = binding.value[axis];
                 const actualAxis = d3[axisMethod](methodArg);
-
-                // if colorbar axis, only show 5 ticks
-                if (axis === 'c') {
-                    actualAxis.ticks(5);
-                }
 
                 // build the axis
                 d3.select(el).call(actualAxis);
@@ -486,8 +478,7 @@ svg >>> path.domain {
     stroke:none;
 }
 svg >>> g.x-axis text.label,
-svg >>> g.y-axis text.label,
-svg >>> g.legend text.label {
+svg >>> g.y-axis text.label {
     font-family: Verdana,Arial,sans-serif;
     font-size: 13px;
     text-anchor:middle;
@@ -497,16 +488,13 @@ svg >>> g.y-axis g.tick text {
     font-size: 8px;
 }
 svg >>> g.x-axis g.tick line,
-svg >>> g.y-axis g.tick line,
-svg >>> g.legend g.tick line {
+svg >>> g.y-axis g.tick line {
     stroke: #888;
 }
 svg >>> g.heatmap {
     cursor: crosshair;
 }
-svg >>> g.y-axis g.tick text,
-svg >>> g.legend g.tick text,
-svg >>> g.legend text.label {
+svg >>> g.y-axis g.tick {
     fill: #888;
 }
 
