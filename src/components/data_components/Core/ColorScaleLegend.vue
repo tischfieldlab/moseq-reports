@@ -14,7 +14,7 @@
             :fill="`url(${$idRef('color-gradiant')})`"
             />
         <g v-axis:c="linearscale" :transform="`translate(0,${height})`" />
-        <text class="label" x="0" :y="height + 18 + 20">Transition Probability</text>
+        <text class="label" x="0" :y="height + 18 + 20">{{ title }}</text>
     </g>
 </template>
 
@@ -23,6 +23,7 @@ import Vue from 'vue';
 import * as d3 from 'd3';
 import { scaleLinear, ScaleLinear } from 'd3-scale';
 import { axisBottom } from 'd3-axis';
+import { tree } from 'd3';
 
 
 export default Vue.component('color-scale-legend', {
@@ -37,6 +38,10 @@ export default Vue.component('color-scale-legend', {
         },
         height: {
             type: Number,
+            required: true,
+        },
+        title: {
+            type: String,
             required: true,
         },
     },
