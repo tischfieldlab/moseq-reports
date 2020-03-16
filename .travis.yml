@@ -8,9 +8,16 @@ matrix:
         - npm run lint
         - npm run test:unit
         - npm run package
+        - export PACKAGE_VERSION=$(npm run --silent version)
+        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+        - echo $TRAVIS_TAG
+        - git tag $TRAVIS_TAG
       deploy:
         provider: script
-        script: npm run package-cli
+        script: npm run package-ci
+        tag_name: $TRAVIS_TAG
+        skip_cleanup: true
+        draft: false
         on:
           branch: travis-update
 # matrix:
