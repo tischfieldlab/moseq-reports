@@ -129,3 +129,25 @@ function parseJsonContainingNaN(data) {
         return value === '***NaN***' ? NaN : value;
     });
 }
+
+
+
+import http from 'http';
+
+http.createServer((request, response) => {
+    request.addListener('end', () => {
+        if (currentState === undefined || request.url === undefined) {
+            response.writeHead(404).end('No data loaded.');
+            return;
+        } else {
+            const fpath = path.join(currentState.path, decodeURI(request.url));
+            fs.readFile(fpath, (err, data) => {
+                if (err) {
+                    response.writeHead(404).end(JSON.stringify(err));
+                    return;
+                }
+                response.writeHead(200).end(data);
+            });
+        }
+    }).resume();
+}).listen(8989);
