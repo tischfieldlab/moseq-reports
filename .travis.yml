@@ -1,98 +1,110 @@
 matrix:
   include:
-      - os: osx
-        language: node_js
-        node_js:
-          - 12
-        script:
-          - npm install -g @vue/cli
-          - npm install
-          - npm run test:unit
-        before_deploy:
-          # Need to build before tag is set, otherwise electron-builder attempts to publish the build
-          - npm run electron:build
-          - export PACKAGE_VERSION=$(npm run --silent version)
-          - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-          - echo $TRAVIS_TAG
-          - git tag $TRAVIS_TAG
-          - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
-          - tar czvf ${RELEASE_NAME} dist_electron/
-        deploy:
-          provider: releases
-          api_key:
-            secure: NTNjBhh2Fzc8D9T6rFcq8YD8jzIpojHLglKvYvWCQrgo+J8kWfqtWuqrHWQAUjyM7pgwDCoN2UtwviHxXlNvQU+y/c+1orODXAZqvXPMQRcLBcJqsGmOwuBgUosaBvwmAKPGnB4Vun270u3dnHKKAbYN7JKNrI2L4eUcHVEwmuJKEH/Trf4X/uTp68FKZlEJqb6hMEqTZnJCybtY/XQ7qjS/SitojBog2Ub06PGM8dEVZBa/SBq410TqzfnNkYRUN2tCkhBmoD27kVqEcwVGtnp/66P6xMdXW2AsuIOLskMcEYplnT4V1FmlHTJGiMxJzmvUthUKeGiRUPHYrXJDpfofN3FZNPb3UAnjScxa59yLfIk6pRItXSM7Oda4g6FMfjEKSio8+TMdcMFrNLlyBJc2rrGGikYp02ATJUDPTqtUW7JyTMctqn+nfv+3Hm42ssQupFAmSdDLOoQUGQEvlaKQydgXsmHXDUBcH9tSJl+jCaSHqu8K5A62OkD0Kx6tW2fAb0uPuCM6F8Gm0O6TDzphSjwm4lLBCCJoWDsAC9xH8Kw4ydTcTKOShK8s6VckAwfFXVwgieZvJSLYrsqhqIezTidYvg6RP75hE1P+al2k91dThmr1bCl01Idn4o/dXf0RvlBaddNQ+GaJJdTHE+2QKlU9Ol2f2AS+jv7RXLA=
-          skip_cleanup: true
-          file_glob: true
-          file: "${RELEASE_NAME}"
-          tag_name: "$TRAVIS_TAG"
-          draft: true
-          on:
-            branch: master
+    - os: osx
+      language: node_js
+      node_js: 12
+      script:
+        - npm install
+        - npm run lint
+        - npm run test:unit
+        - npm run electron:package-cli
 
-      - os: windows
-        language: node_js
-        node_js:
-          - 12
-        script:
-          - npm install -g @vue/cli
-          - npm install
-          - npm run test:unit
-        before_deploy:
-          # Need to build before tag is set, otherwise electron-builder attempts to publish the build
-          - npm run electron:build
-          - export PACKAGE_VERSION=$(npm run --silent version)
-          - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-          - echo $TRAVIS_TAG
-          - git tag $TRAVIS_TAG
-          - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
-          - tar czvf ${RELEASE_NAME} dist_electron/
-        deploy:
-          provider: releases
-          api_key:
-            secure: NTNjBhh2Fzc8D9T6rFcq8YD8jzIpojHLglKvYvWCQrgo+J8kWfqtWuqrHWQAUjyM7pgwDCoN2UtwviHxXlNvQU+y/c+1orODXAZqvXPMQRcLBcJqsGmOwuBgUosaBvwmAKPGnB4Vun270u3dnHKKAbYN7JKNrI2L4eUcHVEwmuJKEH/Trf4X/uTp68FKZlEJqb6hMEqTZnJCybtY/XQ7qjS/SitojBog2Ub06PGM8dEVZBa/SBq410TqzfnNkYRUN2tCkhBmoD27kVqEcwVGtnp/66P6xMdXW2AsuIOLskMcEYplnT4V1FmlHTJGiMxJzmvUthUKeGiRUPHYrXJDpfofN3FZNPb3UAnjScxa59yLfIk6pRItXSM7Oda4g6FMfjEKSio8+TMdcMFrNLlyBJc2rrGGikYp02ATJUDPTqtUW7JyTMctqn+nfv+3Hm42ssQupFAmSdDLOoQUGQEvlaKQydgXsmHXDUBcH9tSJl+jCaSHqu8K5A62OkD0Kx6tW2fAb0uPuCM6F8Gm0O6TDzphSjwm4lLBCCJoWDsAC9xH8Kw4ydTcTKOShK8s6VckAwfFXVwgieZvJSLYrsqhqIezTidYvg6RP75hE1P+al2k91dThmr1bCl01Idn4o/dXf0RvlBaddNQ+GaJJdTHE+2QKlU9Ol2f2AS+jv7RXLA=
-          skip_cleanup: true
-          file_glob: true
-          file: "${RELEASE_NAME}"
-          tag_name: "$TRAVIS_TAG"
-          draft: true
-          on:
-            branch: master
+# matrix:
+#   include:
+#       - os: osx
+#         language: node_js
+#         node_js:
+#           - 12
+#         script:
+#           - npm install -g @vue/cli
+#           - npm install
+#           - npm run test:unit
+#         before_deploy:
+#           # Need to build before tag is set, otherwise electron-builder attempts to publish the build
+#           - npm run lint
+#           - npm run electron:package-cli
+#           - export PACKAGE_VERSION=$(npm run --silent version)
+#           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+#           - echo $TRAVIS_TAG
+#           - git tag $TRAVIS_TAG
+#           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
+#           - tar czvf ${RELEASE_NAME} dist_electron/
+#         deploy:
+#           provider: releases
+#           api_key:
+#             secure: NTNjBhh2Fzc8D9T6rFcq8YD8jzIpojHLglKvYvWCQrgo+J8kWfqtWuqrHWQAUjyM7pgwDCoN2UtwviHxXlNvQU+y/c+1orODXAZqvXPMQRcLBcJqsGmOwuBgUosaBvwmAKPGnB4Vun270u3dnHKKAbYN7JKNrI2L4eUcHVEwmuJKEH/Trf4X/uTp68FKZlEJqb6hMEqTZnJCybtY/XQ7qjS/SitojBog2Ub06PGM8dEVZBa/SBq410TqzfnNkYRUN2tCkhBmoD27kVqEcwVGtnp/66P6xMdXW2AsuIOLskMcEYplnT4V1FmlHTJGiMxJzmvUthUKeGiRUPHYrXJDpfofN3FZNPb3UAnjScxa59yLfIk6pRItXSM7Oda4g6FMfjEKSio8+TMdcMFrNLlyBJc2rrGGikYp02ATJUDPTqtUW7JyTMctqn+nfv+3Hm42ssQupFAmSdDLOoQUGQEvlaKQydgXsmHXDUBcH9tSJl+jCaSHqu8K5A62OkD0Kx6tW2fAb0uPuCM6F8Gm0O6TDzphSjwm4lLBCCJoWDsAC9xH8Kw4ydTcTKOShK8s6VckAwfFXVwgieZvJSLYrsqhqIezTidYvg6RP75hE1P+al2k91dThmr1bCl01Idn4o/dXf0RvlBaddNQ+GaJJdTHE+2QKlU9Ol2f2AS+jv7RXLA=
+#           skip_cleanup: true
+#           file_glob: true
+#           file: "${RELEASE_NAME}"
+#           tag_name: "$TRAVIS_TAG"
+#           draft: true
+#           on:
+#             branch: master
 
-      - os: linux
-        language: node_js
-        dist: xenial
-        node_js: 12
-        cache:
-          directories:
-            - $HOME/.cache/electron
-            - $HOME/.cache/electron-builder
-        script:
-          - sudo apt-get update
-          - sudo apt-get install --yes --no-install-recommends snapd
-          - sudo snap wait system seed.loaded
-          - sudo snap install --classic snapcraft
-          - npm install -g @vue/cli
-          - npm install
-          - npm run test:unit
-        before_deploy:
-          # Need to build before tag is set, otherwise electron-builder attempts to publish the build
-          - npm run electron:build
-          - export PACKAGE_VERSION=$(npm run --silent version)
-          - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-          - echo $TRAVIS_TAG
-          - git tag $TRAVIS_TAG
-          - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
-          - tar czvf ${RELEASE_NAME} dist_electron/
-        node_js: 
-          - 12
-        deploy:
-          provider: releases
-          api_key:
-            secure: NTNjBhh2Fzc8D9T6rFcq8YD8jzIpojHLglKvYvWCQrgo+J8kWfqtWuqrHWQAUjyM7pgwDCoN2UtwviHxXlNvQU+y/c+1orODXAZqvXPMQRcLBcJqsGmOwuBgUosaBvwmAKPGnB4Vun270u3dnHKKAbYN7JKNrI2L4eUcHVEwmuJKEH/Trf4X/uTp68FKZlEJqb6hMEqTZnJCybtY/XQ7qjS/SitojBog2Ub06PGM8dEVZBa/SBq410TqzfnNkYRUN2tCkhBmoD27kVqEcwVGtnp/66P6xMdXW2AsuIOLskMcEYplnT4V1FmlHTJGiMxJzmvUthUKeGiRUPHYrXJDpfofN3FZNPb3UAnjScxa59yLfIk6pRItXSM7Oda4g6FMfjEKSio8+TMdcMFrNLlyBJc2rrGGikYp02ATJUDPTqtUW7JyTMctqn+nfv+3Hm42ssQupFAmSdDLOoQUGQEvlaKQydgXsmHXDUBcH9tSJl+jCaSHqu8K5A62OkD0Kx6tW2fAb0uPuCM6F8Gm0O6TDzphSjwm4lLBCCJoWDsAC9xH8Kw4ydTcTKOShK8s6VckAwfFXVwgieZvJSLYrsqhqIezTidYvg6RP75hE1P+al2k91dThmr1bCl01Idn4o/dXf0RvlBaddNQ+GaJJdTHE+2QKlU9Ol2f2AS+jv7RXLA=
-          skip_cleanup: true
-          file_glob: true
-          file: "${RELEASE_NAME}"
-          tag_name: "$TRAVIS_TAG"
-          draft: false
-          on:
-            branch: master
+#       - os: windows
+#         language: node_js
+#         node_js:
+#           - 12
+#         script:
+#           - npm install -g @vue/cli
+#           - npm install
+#           - npm run test:unit
+#         before_deploy:
+#           # Need to build before tag is set, otherwise electron-builder attempts to publish the build
+#           - npm run electron:build
+#           - export PACKAGE_VERSION=$(npm run --silent version)
+#           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+#           - echo $TRAVIS_TAG
+#           - git tag $TRAVIS_TAG
+#           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
+#           - tar czvf ${RELEASE_NAME} dist_electron/
+#         deploy:
+#           provider: releases
+#           api_key:
+#             secure: NTNjBhh2Fzc8D9T6rFcq8YD8jzIpojHLglKvYvWCQrgo+J8kWfqtWuqrHWQAUjyM7pgwDCoN2UtwviHxXlNvQU+y/c+1orODXAZqvXPMQRcLBcJqsGmOwuBgUosaBvwmAKPGnB4Vun270u3dnHKKAbYN7JKNrI2L4eUcHVEwmuJKEH/Trf4X/uTp68FKZlEJqb6hMEqTZnJCybtY/XQ7qjS/SitojBog2Ub06PGM8dEVZBa/SBq410TqzfnNkYRUN2tCkhBmoD27kVqEcwVGtnp/66P6xMdXW2AsuIOLskMcEYplnT4V1FmlHTJGiMxJzmvUthUKeGiRUPHYrXJDpfofN3FZNPb3UAnjScxa59yLfIk6pRItXSM7Oda4g6FMfjEKSio8+TMdcMFrNLlyBJc2rrGGikYp02ATJUDPTqtUW7JyTMctqn+nfv+3Hm42ssQupFAmSdDLOoQUGQEvlaKQydgXsmHXDUBcH9tSJl+jCaSHqu8K5A62OkD0Kx6tW2fAb0uPuCM6F8Gm0O6TDzphSjwm4lLBCCJoWDsAC9xH8Kw4ydTcTKOShK8s6VckAwfFXVwgieZvJSLYrsqhqIezTidYvg6RP75hE1P+al2k91dThmr1bCl01Idn4o/dXf0RvlBaddNQ+GaJJdTHE+2QKlU9Ol2f2AS+jv7RXLA=
+#           skip_cleanup: true
+#           file_glob: true
+#           file: "${RELEASE_NAME}"
+#           tag_name: "$TRAVIS_TAG"
+#           draft: true
+#           on:
+#             branch: master
+
+#       - os: linux
+#         language: node_js
+#         dist: xenial
+#         node_js: 12
+#         cache:
+#           directories:
+#             - $HOME/.cache/electron
+#             - $HOME/.cache/electron-builder
+#         script:
+#           - sudo apt-get update
+#           - sudo apt-get install --yes --no-install-recommends snapd
+#           - sudo snap wait system seed.loaded
+#           - sudo snap install --classic snapcraft
+#           - npm install -g @vue/cli
+#           - npm install
+#           - npm run test:unit
+#         before_deploy:
+#           # Need to build before tag is set, otherwise electron-builder attempts to publish the build
+#           - npm run electron:build
+#           - export PACKAGE_VERSION=$(npm run --silent version)
+#           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+#           - echo $TRAVIS_TAG
+#           - git tag $TRAVIS_TAG
+#           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
+#           - tar czvf ${RELEASE_NAME} dist_electron/
+#         node_js: 
+#           - 12
+#         deploy:
+#           provider: releases
+#           api_key:
+#             secure: NTNjBhh2Fzc8D9T6rFcq8YD8jzIpojHLglKvYvWCQrgo+J8kWfqtWuqrHWQAUjyM7pgwDCoN2UtwviHxXlNvQU+y/c+1orODXAZqvXPMQRcLBcJqsGmOwuBgUosaBvwmAKPGnB4Vun270u3dnHKKAbYN7JKNrI2L4eUcHVEwmuJKEH/Trf4X/uTp68FKZlEJqb6hMEqTZnJCybtY/XQ7qjS/SitojBog2Ub06PGM8dEVZBa/SBq410TqzfnNkYRUN2tCkhBmoD27kVqEcwVGtnp/66P6xMdXW2AsuIOLskMcEYplnT4V1FmlHTJGiMxJzmvUthUKeGiRUPHYrXJDpfofN3FZNPb3UAnjScxa59yLfIk6pRItXSM7Oda4g6FMfjEKSio8+TMdcMFrNLlyBJc2rrGGikYp02ATJUDPTqtUW7JyTMctqn+nfv+3Hm42ssQupFAmSdDLOoQUGQEvlaKQydgXsmHXDUBcH9tSJl+jCaSHqu8K5A62OkD0Kx6tW2fAb0uPuCM6F8Gm0O6TDzphSjwm4lLBCCJoWDsAC9xH8Kw4ydTcTKOShK8s6VckAwfFXVwgieZvJSLYrsqhqIezTidYvg6RP75hE1P+al2k91dThmr1bCl01Idn4o/dXf0RvlBaddNQ+GaJJdTHE+2QKlU9Ol2f2AS+jv7RXLA=
+#           skip_cleanup: true
+#           file_glob: true
+#           file: "${RELEASE_NAME}"
+#           tag_name: "$TRAVIS_TAG"
+#           draft: false
+#           on:
+#             branch: master
