@@ -10,7 +10,6 @@
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "NODE_ENV=development vue-cli-service lint",
     "package": "vue-cli-service electron:build --publish never",
-    "package-ci": "vue-cli-service electron:build",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
