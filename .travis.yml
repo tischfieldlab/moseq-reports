@@ -79,8 +79,6 @@ matrix:
           - git tag $TRAVIS_TAG
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           - tar czvf ${RELEASE_NAME} dist_electron/
-        node_js: 
-          - 12
         deploy:
           provider: releases
           api_key:
