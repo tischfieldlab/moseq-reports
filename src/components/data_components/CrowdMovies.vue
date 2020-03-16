@@ -53,8 +53,7 @@ export default Vue.component('crowd-movies', {
             const uID = this.$store.getters['dataview/selectedSyllableAs'](CountMethod.Usage);
             const rID = this.$store.getters['dataview/selectedSyllableAs'](CountMethod.Raw);
             const fname = `syllable_sorted-id-${uID} (usage)_original-id-${rID}.mp4`;
-            const fpath = path.join(this.$store.state.datasets.path, 'crowd_movies', fname);
-            return url.pathToFileURL(fpath).toString(); // need to return file protocol version of path
+            return `http://localhost:8989/crowd_movies/${fname}`;
         },
     },
 });
