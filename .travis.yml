@@ -1,12 +1,15 @@
 matrix:
   include:
-    - os: osx
+    - os: linux
       language: node_js
       node_js: 12
       script:
         - npm install
         - npm run lint
         - npm run test:unit
+        - npm run electron:build
+      if: branch = master
+      script:
         - npm run electron:package-cli
 
 # matrix:
