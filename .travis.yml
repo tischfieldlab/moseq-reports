@@ -7,12 +7,12 @@ matrix:
         - npm install
         - npm run lint
         - npm run test:unit
-        - npm run electron:build
+        - npm run package
       deploy:
         provider: script
         script: npm run package-cli
         on:
-          branch: master
+          branch: travis-update
 # matrix:
 #   include:
 #       - os: osx
