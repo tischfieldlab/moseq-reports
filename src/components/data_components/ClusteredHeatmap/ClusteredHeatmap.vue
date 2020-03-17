@@ -67,6 +67,9 @@ import { cluster, hierarchy, HierarchyNode, ValueFn, sum } from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/util/D3ColorProvider';
 
+import { spawn, Thread, Worker } from 'threads';
+import {ClusterWorker} from './Worker';
+
 
 
 
@@ -99,6 +102,14 @@ interface HeatmapTile {
     usage: number;
 }
 
+let worker: any = null;
+async function setup() {
+    worker = await spawn<ClusterWorker>(new Worker('./Worker.ts'));
+    console.log(worker);
+}
+setup();
+
+
 export default Vue.component('clustered-heatmap', {
     props: {
         id: {
@@ -110,9 +121,9 @@ export default Vue.component('clustered-heatmap', {
         return {
             usages: new Array<HeatmapTile>(),
             clusteredGroupOrder: new Array<string>(),
-            groupHierarchy: undefined,
+            groupHierarchy: undefined as any,
             clusteredSyllableOrder: new Array<string>(),
-            syllableHierarchy: undefined,
+            syllableHierarchy: undefined as any,
             rotate_labels: false,
             margin: {
                 top: 20,
@@ -134,7 +145,7 @@ export default Vue.component('clustered-heatmap', {
                     syllable_cluster_linkage: s.syllable_cluster_linkage,
                 };
             },
-            () => this.clusterSyllables(),
+            () => this.clusterSyllables2(),
         ));
         this.watchers.push(this.$store.watch(
             (state, getters) => {
@@ -144,7 +155,7 @@ export default Vue.component('clustered-heatmap', {
                     group_cluster_linkage: s.group_cluster_linkage,
                 };
             },
-            () => this.clusterGroups(),
+            () => this.clusterGroups2(),
         ));
         this.prepareData();
     },
@@ -334,11 +345,21 @@ export default Vue.component('clustered-heatmap', {
     },
     methods: {
         prepareData() {
+            console.time('fetch aggregateView');
             this.usages = this.aggregateView.toCollection();
+            console.timeEnd('fetch aggregateView');
 
+            console.time('compute_label_stats');
             this.compute_label_stats(this.selectedGroups);
-            this.clusterGroups();
-            this.clusterSyllables();
+            console.timeEnd('compute_label_stats');
+
+            console.time('clusterGroups');
+            this.clusterGroups2();
+            console.timeEnd('clusterGroups');
+
+            console.time('clusterSyllables');
+            this.clusterSyllables2();
+            console.timeEnd('clusterSyllables');
         },
         clusterGroups() {
             const groups = this.selectedGroups;
@@ -373,6 +394,20 @@ export default Vue.component('clustered-heatmap', {
             [this.clusteredSyllableOrder, this.syllableHierarchy] = this.cluster(sylUsage,
                                                                             this.settings.syllable_cluster_distance,
                                                                             this.settings.syllable_cluster_linkage);
+        },
+        async clusterGroups2() {
+            const tree = await (worker as any).clusterGroups(this.aggregateView.toDict(),
+                this.settings.syllable_cluster_distance,
+                this.settings.syllable_cluster_linkage);
+            this.clusteredGroupOrder = this.getDenOrder(tree);
+            this.groupHierarchy = hierarchy(tree);
+        },
+        async clusterSyllables2() {
+            const tree = await (worker as any).clusterSyllables(this.aggregateView.toDict(),
+                this.settings.syllable_cluster_distance,
+                this.settings.syllable_cluster_linkage);
+            this.clusteredSyllableOrder = this.getDenOrder(tree);
+            this.syllableHierarchy = hierarchy(tree);
         },
         cluster(data: any[], distance = 'euclidean', linkage = 'avg', key = 'usage') {
             const clustering = hcluster()
