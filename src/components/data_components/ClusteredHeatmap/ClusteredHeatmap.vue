@@ -66,8 +66,9 @@ import * as d3 from 'd3';
 import { cluster, hierarchy, HierarchyNode, ValueFn, sum } from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/util/D3ColorProvider';
+import {getDendrogramOrder, elbowH, elbowV} from '@/util/D3Clustering';
 
-import { spawn, Thread, Worker } from 'threads';
+import { spawn, Thread, Worker, ModuleThread } from 'threads';
 import {ClusterWorker} from './Worker';
 
 
@@ -102,12 +103,11 @@ interface HeatmapTile {
     usage: number;
 }
 
-let worker: any = null;
-async function setup() {
+let worker: ModuleThread<ClusterWorker> | null = null;
+(async () => {
     worker = await spawn<ClusterWorker>(new Worker('./Worker.ts'));
-    console.log(worker);
-}
-setup();
+})();
+
 
 
 export default Vue.component('clustered-heatmap', {
@@ -344,101 +344,37 @@ export default Vue.component('clustered-heatmap', {
         },
     },
     methods: {
+        elbowH, elbowV,
         prepareData() {
-            console.time('fetch aggregateView');
+            // console.time('fetch aggregateView');
             this.usages = this.aggregateView.toCollection();
-            console.timeEnd('fetch aggregateView');
+            // console.timeEnd('fetch aggregateView');
 
-            console.time('compute_label_stats');
+            // console.time('compute_label_stats');
             this.compute_label_stats(this.selectedGroups);
-            console.timeEnd('compute_label_stats');
+            // console.timeEnd('compute_label_stats');
 
-            console.time('clusterGroups');
+            // console.time('clusterGroups');
             this.clusterGroups2();
-            console.timeEnd('clusterGroups');
+            // console.timeEnd('clusterGroups');
 
-            console.time('clusterSyllables');
+            // console.time('clusterSyllables');
             this.clusterSyllables2();
-            console.timeEnd('clusterSyllables');
-        },
-        clusterGroups() {
-            const groups = this.selectedGroups;
-            const df = this.aggregateView.groupBy('group');
-
-            const sylUsage = new Array<SyllableRow>();
-            for (const g of df) {
-                if (groups.includes(g.groupKey.group)) {
-                    sylUsage.push({
-                        name: g.groupKey.group,
-                        usage: g.group.select('usage').toArray().flat() as [],
-                    });
-                }
-            }
-
-            [this.clusteredGroupOrder, this.groupHierarchy] = this.cluster(sylUsage,
-                                                                           this.settings.group_cluster_distance,
-                                                                           this.settings.group_cluster_linkage);
-        },
-        clusterSyllables() {
-            const df = this.aggregateView;
-            const syllableIds = df.select('syllable').distinct('syllable').toArray().flat();
-
-            const sylUsage = new Array<SyllableRow>();
-            for (const sidg of df.groupBy('syllable')) {
-                sylUsage.push({
-                    name: sidg.groupKey.syllable,
-                    usage: sidg.group.select('usage').toArray().flat() as [],
-                });
-            }
-
-            [this.clusteredSyllableOrder, this.syllableHierarchy] = this.cluster(sylUsage,
-                                                                            this.settings.syllable_cluster_distance,
-                                                                            this.settings.syllable_cluster_linkage);
+            // console.timeEnd('clusterSyllables');
         },
         async clusterGroups2() {
             const tree = await (worker as any).clusterGroups(this.aggregateView.toDict(),
                 this.settings.syllable_cluster_distance,
                 this.settings.syllable_cluster_linkage);
-            this.clusteredGroupOrder = this.getDenOrder(tree);
+            this.clusteredGroupOrder = getDendrogramOrder(tree);
             this.groupHierarchy = hierarchy(tree);
         },
         async clusterSyllables2() {
             const tree = await (worker as any).clusterSyllables(this.aggregateView.toDict(),
                 this.settings.syllable_cluster_distance,
                 this.settings.syllable_cluster_linkage);
-            this.clusteredSyllableOrder = this.getDenOrder(tree);
+            this.clusteredSyllableOrder = getDendrogramOrder(tree);
             this.syllableHierarchy = hierarchy(tree);
-        },
-        cluster(data: any[], distance = 'euclidean', linkage = 'avg', key = 'usage') {
-            const clustering = hcluster()
-                .distance(distance) // support for 'euclidean' and 'angular'
-                .linkage(linkage)   // support for 'avg', 'max' and 'min'
-                .posKey(key)        // object key holding value
-                .data(data);        // pass in an array of objects
-
-            const tree = clustering.tree();
-            return [
-                this.getDenOrder(tree),
-                hierarchy(tree),
-            ];
-        },
-        getDenOrder(tree) {
-            return this.getDenRec(tree, []);
-        },
-        getDenRec(tree, denOrder) {
-            if (typeof tree.children === 'undefined') {
-                denOrder[denOrder.length] = tree.name;
-                return denOrder;
-            }
-            denOrder = this.getDenRec(tree.children[0], denOrder);
-            denOrder = this.getDenRec(tree.children[1], denOrder);
-            return denOrder;
-        },
-        elbowH(d) {
-            return `M${d.source.y},${d.source.x}V${d.target.x}H${d.target.y}`;
-        },
-        elbowV(d) {
-            return `M${d.source.x},${d.source.y}H${d.target.x}V${d.target.y}`;
         },
         compute_label_stats(labels: string[]) {
             const canvas = this.$refs.canvas as SVGSVGElement;

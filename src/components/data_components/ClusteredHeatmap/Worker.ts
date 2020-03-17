@@ -1,7 +1,5 @@
 import { expose } from 'threads/worker';
 import hcluster from 'hclusterjs';
-import { hierarchy } from 'd3';
-
 import DataFrame from 'dataframe-js';
 
 
@@ -22,7 +20,6 @@ const exposedMethods = {
                 usage: g.group.select('usage').toArray().flat() as [],
             });
         }
-
         return cluster(sylUsage, distance, linkage);
     },
     clusterSyllables(df, distance, linkage) {
@@ -34,7 +31,6 @@ const exposedMethods = {
                 usage: sidg.group.select('usage').toArray().flat() as [],
             });
         }
-
         return cluster(sylUsage, distance, linkage);
     },
 };
