@@ -1,11 +1,10 @@
 import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
-import Vue from 'vue';
 import DataFrame from 'dataframe-js';
 import { schemeDark2 } from 'd3-scale-chromatic';
 import {scaleOrdinal} from 'd3-scale';
 import {DataviewWorker} from './dataview.worker';
-import { spawn, Thread, Worker, ModuleThread } from 'threads';
+import { spawn, Worker, ModuleThread } from 'threads';
 import store from './root.store';
 
 
@@ -99,17 +98,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
         setSelectedSyllable(state, selectedSyllable: number) {
             state.selectedSyllable = selectedSyllable;
         },
-        /*setCountMethod(state, countMethod: CountMethod) {
-            state.countMethod = countMethod;
-        },
-        setSelectedGroups(state, payload: SelectedGroupsPayload) {
-            if (payload.groups) {
-                Vue.set(state, 'selectedGroups', [...payload.groups]);
-            }
-            if (payload.colors) {
-                Vue.set(state, 'groupColors', [...payload.colors]);
-            }
-        },*/
     },
     actions: {
         switchCountMethod(context, payload: CountMethod) {
@@ -117,7 +105,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
             context.dispatch('updateView', {
                 countMethod: payload,
             } as DataviewPayload);
-            // context.commit('setCountMethod', payload);
             context.commit('setSelectedSyllable', newSyllable);
         },
         updateSelectedGroups(context, payload: SelectedGroupsPayload) {
@@ -144,8 +131,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
             }
 
             payload.view = await worker.filterGroups(dfData, selectedGroups);
-            // console.log(payload, countMethod, selectedGroups);
-            // console.trace();
             context.commit('setView', payload);
         },
         initialize(context) {
@@ -158,7 +143,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
         },
     },
 };
-// export default DataviewModule;
+
 if ((store.state as any).dataview === undefined) {
     store.registerModule('dataview', DataviewModule, {});
 }
@@ -166,10 +151,7 @@ function bindStore() {
     store.watch(
         (state) => {
             const datasets = (state as any).datasets;
-            // const dataview = (state as any).dataview;
             return {
-                /*countMethod: dataview.countMethod,
-                selectedGroups: dataview.selectedGroups,*/
                 usageByUsage: datasets.usageByUsage,
                 usageByFrames: datasets.usageByFrames,
             };
