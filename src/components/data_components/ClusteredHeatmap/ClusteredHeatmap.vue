@@ -458,11 +458,12 @@ svg >>> g.y-axis g.tick {
 
 svg >>> g.y-axis g.tick.selected text{
     font-weight: bold;
-    font-size: 12px;
+    transform: scale(2);
     fill: #000;
     z-index: 1000;
 }
 svg >>> g.y-axis g.tick.selected line{
     stroke: #000;
+    transform: scaleX(3) scaleY(1.5);
 }
 </style>
