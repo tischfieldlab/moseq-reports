@@ -27,10 +27,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import draggable from 'vuedraggable';
-import { CountMethod } from '@/store/dataview.store';
 import { Chrome } from 'vue-color';
 import { debounce } from 'ts-debounce';
-import store from '@/store/root.store';
 
 
 
@@ -75,20 +73,16 @@ export default Vue.extend({
 
         this.watchers.push(this.$store.watch(
             (state, getters) => {
-                return {
-                    a: getters['dataview/availableGroups'],
-                };
+                return getters['dataview/availableGroups'];
             },
-            () => {
-                this.buildGroups();
-            },
-            {immediate: true},
+            () => { this.buildGroups(); },
+            { immediate: true },
         ));
         this.watchers.push(this.$store.watch(
             (state, getters) => {
                 return {
-                    c: state.dataview.groupColors,
-                    s: state.dataview.selectedGroups,
+                    c: state.dataview.groupColors as string[],
+                    s: state.dataview.selectedGroups as string[],
                 };
             },
             (newValue) => {
@@ -97,12 +91,12 @@ export default Vue.extend({
                         const isSelected = newValue.s.includes(g.name);
                         g.selected = isSelected;
                         if (isSelected) {
-                            g.color = newValue.c[(newValue.s as string[]).indexOf(g.name)];
+                            g.color = newValue.c[newValue.s.indexOf(g.name)];
                         }
                     });
                 }
             },
-            {deep: true},
+            { deep: true },
         ));
     },
     destroyed() {

@@ -57,19 +57,16 @@
 <script lang="ts">
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/data_components/Core';
-
 import store from '@/store/root.store';
 import { Layout } from '@/store/root.types';
 import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue';
-import hcluster from 'hclusterjs';
 import * as d3 from 'd3';
-import { cluster, hierarchy, HierarchyNode, ValueFn, sum } from 'd3';
-import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
+import { cluster, hierarchy, sum } from 'd3';
+import { scaleLinear, scaleBand, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/util/D3ColorProvider';
-import {getDendrogramOrder, elbowH, elbowV} from '@/util/D3Clustering';
-
-import { spawn, Thread, Worker, ModuleThread } from 'threads';
-import {ClusterWorker} from './Worker';
+import { getDendrogramOrder, elbowH, elbowV } from '@/util/D3Clustering';
+import { spawn, Worker, ModuleThread } from 'threads';
+import { ClusterWorker } from './Worker';
 
 
 
@@ -93,10 +90,6 @@ RegisterDataComponent({
     },
 });
 
-interface SyllableRow {
-    name: string;
-    usage: number[];
-}
 interface HeatmapTile {
     group: string;
     syllable: string;
@@ -132,7 +125,6 @@ export default Vue.component('clustered-heatmap', {
                 left: 20,
             },
             label_stats: {count: 0, total: 0, longest: 0},
-            // hover_syllable: -1,
             watchers: Array<(() => void)>(),
         };
     },
@@ -196,9 +188,6 @@ export default Vue.component('clustered-heatmap', {
             if (this.rotate_labels) {
                 const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * this.label_stats.longest;
                 xaxisHeight = xaxisLabelYOffset = rotatedHeight + 10;
-                /*if (!this.isSyllablesClustered) {
-                    rtreeWidth = rotatedHeight - this.margin.left;
-                }*/
             }
 
             const heatHeight = this.height - ctreeHeight - xaxisHeight - legendHeight;
@@ -409,7 +398,6 @@ export default Vue.component('clustered-heatmap', {
     },
     directives: {
         axis(el, binding, vnode) {
-            // console.log('axis directive called', el, binding);
             const axis = binding.arg;
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis];
