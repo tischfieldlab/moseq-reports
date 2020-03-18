@@ -40,6 +40,7 @@
     "vue-resize": "^0.4.5",
     "vue-router": "^3.0.3",
     "vue-typed-mixins": "^0.2.0",
+    "vue-unique-id": "^2.0.0",
     "vuedraggable": "^2.23.2",
     "vuex": "^3.1.2"
   },
