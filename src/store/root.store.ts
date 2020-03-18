@@ -14,7 +14,6 @@ import {
 import { saveFile } from '@/util/Files';
 import DefaultLayout from '@/DefaultLayout';
 import DatasetsStore from '@/store/datasets.store';
-import * as DataviewStore from '@/store/dataview.store';
 
 Vue.use(Vuex);
 
@@ -22,7 +21,6 @@ const store: StoreOptions<RootState> = {
     strict: true,
     modules: {
         datasets: DatasetsStore,
-        // dataview: DataviewStore,
     },
     state: {
         registry: Array<ComponentRegistration>(),

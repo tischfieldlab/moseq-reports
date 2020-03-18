@@ -38,13 +38,10 @@ expose(exposedMethods);
 export type ClusterWorker = typeof exposedMethods;
 
 function cluster(data: any[], distance = 'euclidean', linkage = 'avg', key = 'usage') {
-    const clustering = hcluster()
+    return hcluster()
         .distance(distance) // support for 'euclidean' and 'angular'
         .linkage(linkage)   // support for 'avg', 'max' and 'min'
         .posKey(key)        // object key holding value
-        .data(data);        // pass in an array of objects
-
-    const tree = clustering.tree();
-
-    return tree;
+        .data(data)         // pass in an array of objects
+        .tree();            // finally return the tree
 }

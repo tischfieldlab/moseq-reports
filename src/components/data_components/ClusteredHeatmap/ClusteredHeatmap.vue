@@ -103,7 +103,7 @@ interface HeatmapTile {
     usage: number;
 }
 
-let worker: ModuleThread<ClusterWorker> | null = null;
+let worker: ModuleThread<ClusterWorker>;
 (async () => {
     worker = await spawn<ClusterWorker>(new Worker('./Worker.ts'));
 })();
@@ -145,7 +145,7 @@ export default Vue.component('clustered-heatmap', {
                     syllable_cluster_linkage: s.syllable_cluster_linkage,
                 };
             },
-            () => this.clusterSyllables2(),
+            () => this.clusterSyllables(),
         ));
         this.watchers.push(this.$store.watch(
             (state, getters) => {
@@ -155,7 +155,7 @@ export default Vue.component('clustered-heatmap', {
                     group_cluster_linkage: s.group_cluster_linkage,
                 };
             },
-            () => this.clusterGroups2(),
+            () => this.clusterGroups(),
         ));
         this.prepareData();
     },
@@ -346,46 +346,36 @@ export default Vue.component('clustered-heatmap', {
     methods: {
         elbowH, elbowV,
         prepareData() {
-            // console.time('fetch aggregateView');
             this.usages = this.aggregateView.toCollection();
-            // console.timeEnd('fetch aggregateView');
 
-            // console.time('compute_label_stats');
+            this.clusterGroups();
+            this.clusterSyllables();
             this.compute_label_stats(this.selectedGroups);
-            // console.timeEnd('compute_label_stats');
-
-            // console.time('clusterGroups');
-            this.clusterGroups2();
-            // console.timeEnd('clusterGroups');
-
-            // console.time('clusterSyllables');
-            this.clusterSyllables2();
-            // console.timeEnd('clusterSyllables');
         },
-        async clusterGroups2() {
-            const tree = await (worker as any).clusterGroups(this.aggregateView.toDict(),
+        async clusterGroups() {
+            const tree = await worker.clusterGroups(this.aggregateView.toDict(),
                 this.settings.syllable_cluster_distance,
                 this.settings.syllable_cluster_linkage);
             this.clusteredGroupOrder = getDendrogramOrder(tree);
             this.groupHierarchy = hierarchy(tree);
         },
-        async clusterSyllables2() {
-            const tree = await (worker as any).clusterSyllables(this.aggregateView.toDict(),
+        async clusterSyllables() {
+            const tree = await worker.clusterSyllables(this.aggregateView.toDict(),
                 this.settings.syllable_cluster_distance,
                 this.settings.syllable_cluster_linkage);
             this.clusteredSyllableOrder = getDendrogramOrder(tree);
             this.syllableHierarchy = hierarchy(tree);
         },
         compute_label_stats(labels: string[]) {
-            const canvas = this.$refs.canvas as SVGSVGElement;
             const widths = [] as number[];
+            const canvas = this.$refs.canvas as SVGSVGElement;
+            const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
+            canvas.appendChild(tag);
             for (const label of labels) {
-                const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
                 tag.textContent = label;
-                canvas.appendChild(tag);
                 widths.push(tag.getBBox().width);
-                canvas.removeChild(tag);
             }
+            canvas.removeChild(tag);
             this.label_stats = {
                 count: labels.length,
                 total: sum(widths),
