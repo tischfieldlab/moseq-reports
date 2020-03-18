@@ -30,6 +30,7 @@ import draggable from 'vuedraggable';
 import { CountMethod } from '@/store/dataview.store';
 import { Chrome } from 'vue-color';
 import { debounce } from 'ts-debounce';
+import store from '@/store/root.store';
 
 
 
@@ -74,13 +75,35 @@ export default Vue.extend({
 
         this.watchers.push(this.$store.watch(
             (state, getters) => {
-                return getters['dataview/availableGroups'];
+                return {
+                    a: getters['dataview/availableGroups'],
+                };
             },
-            (newValue: string[], oldValue: string[]) => {
+            () => {
                 this.buildGroups();
             },
+            {immediate: true},
         ));
-        this.buildGroups();
+        this.watchers.push(this.$store.watch(
+            (state, getters) => {
+                return {
+                    c: state.dataview.groupColors,
+                    s: state.dataview.selectedGroups,
+                };
+            },
+            (newValue) => {
+                if (newValue.s && newValue.c) {
+                    this.groups.forEach((g) => {
+                        const isSelected = newValue.s.includes(g.name);
+                        this.$nextTick().then(() => g.selected = isSelected);
+                        if (isSelected) {
+                            g.color = newValue.c[(newValue.s as string[]).indexOf(g.name)];
+                        }
+                    });
+                }
+            },
+            {deep: true},
+        ));
     },
     destroyed() {
         this.watchers.forEach((w) => w());
@@ -100,14 +123,14 @@ export default Vue.extend({
         updateGroups() {
             const groups = this.groups.filter((g) => g.selected).map((g) => g.name);
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-            this.$store.commit('dataview/setSelectedGroups', {
+            this.$store.dispatch('dataview/updateSelectedGroups', {
                 groups,
                 colors,
             });
         },
         updateColors() {
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-            this.$store.commit('dataview/setSelectedGroups', {colors});
+            this.$store.dispatch('dataview/updateSelectedGroups', {colors});
         },
     },
 });

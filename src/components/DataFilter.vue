@@ -15,7 +15,7 @@
                 </b-input-group>
 
                 <b-input-group prepend="Selected Syllable" class="filter-item">
-                    <b-form-select v-model="syllable" :options="syllableIdOptions">
+                    <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions">
                         <!--<template v-slot:first>
                             <option :value="-1" disabled>Select a Syllable</option>
                         </template>-->
@@ -31,6 +31,7 @@ import Vue from 'vue';
 import { CountMethod } from '@/store/dataview.store';
 import { debounce } from 'ts-debounce';
 import GroupBox from '@/components/GroupBox.vue';
+import store from '@/store/root.store';
 
 
 
@@ -52,9 +53,9 @@ export default Vue.extend({
             get(): number {
                 return this.$store.state.dataview.selectedSyllable;
             },
-            set(event: number) {
-                this.$store.commit('dataview/setSelectedSyllable', event);
-            },
+            set: debounce((event: number) => {
+                store.commit('dataview/setSelectedSyllable', event);
+            }, 250),
         },
         syllableIdOptions() {
             const max = this.$store.getters['dataview/maxSyllable'];
