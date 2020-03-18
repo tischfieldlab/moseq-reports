@@ -13,7 +13,7 @@
                         </b-form-checkbox>
                         <div class="swatch" :id="option.id" :style="{'background-color': option.color}" />
                         <b-popover :target="option.id" triggers="click blur" placement="top">
-                            <template v-slot:title>{{ option.name }} Group Color</template>
+                            <template v-slot:title>Group Color ({{ option.name }})</template>
                             <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
                         </b-popover>
                         <span>{{ option.name }}</span>
@@ -71,7 +71,7 @@ export default Vue.extend({
         this.colorChangeHandler = debounce((option, event) => {
             option.color = event.hex;
             this.updateColors();
-        }, 250);
+        }, 100);
 
         this.watchers.push(this.$store.watch(
             (state, getters) => {
@@ -95,7 +95,7 @@ export default Vue.extend({
                 if (newValue.s && newValue.c) {
                     this.groups.forEach((g) => {
                         const isSelected = newValue.s.includes(g.name);
-                        this.$nextTick().then(() => g.selected = isSelected);
+                        g.selected = isSelected;
                         if (isSelected) {
                             g.color = newValue.c[(newValue.s as string[]).indexOf(g.name)];
                         }

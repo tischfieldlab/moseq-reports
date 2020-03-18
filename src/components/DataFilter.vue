@@ -15,11 +15,7 @@
                 </b-input-group>
 
                 <b-input-group prepend="Selected Syllable" class="filter-item">
-                    <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions">
-                        <!--<template v-slot:first>
-                            <option :value="-1" disabled>Select a Syllable</option>
-                        </template>-->
-                    </b-form-select>
+                    <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
                 </b-input-group>
             </b-collapse>
         </b-card>
@@ -55,7 +51,7 @@ export default Vue.extend({
             },
             set: debounce((event: number) => {
                 store.commit('dataview/setSelectedSyllable', event);
-            }, 250),
+            }, 100),
         },
         syllableIdOptions() {
             const max = this.$store.getters['dataview/maxSyllable'];
