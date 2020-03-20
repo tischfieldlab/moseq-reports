@@ -47,7 +47,7 @@ import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
 import {DataWindow, ComponentRegistration, Size, Position, Layout} from '../store/root.types';
 import { toPng, toCanvas } from 'html-to-image';
 import { saveAs } from 'file-saver';
-
+import {saveSvgAsPng} from 'save-svg-as-png';
 
 
 export default Vue.component('ui-window', {
@@ -164,12 +164,20 @@ export default Vue.component('ui-window', {
                 width: this.width * (300 / 96),
                 height: this.height * (300 / 96),
             };
-            toCanvas((this.$refs.body as Vue).$el as HTMLElement/*, options*/)
-                .then((canvas) => {
-                    canvas.toBlob((blob) => {
-                        saveAs(blob as Blob, this.title + '.png');
-                    });
+            const svg = (this.$refs.body as Vue).$el.getElementsByTagName('svg').item(0);
+            if (svg) {
+                saveSvgAsPng(svg, this.title + '.png', {
+                    scale: 4,
+                    encoderOptions: 1,
                 });
+            } else {
+                toCanvas((this.$refs.body as Vue).$el as HTMLElement/*, options*/, {})
+                    .then((canvas) => {
+                        canvas.toBlob((blob) => {
+                            saveAs(blob as Blob, this.title + '.png');
+                        });
+                    });
+            }
         },
     },
 });

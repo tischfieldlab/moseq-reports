@@ -52,10 +52,10 @@
             </g>
             <g v-if="settings.show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
                 <template v-for="(node) in individualUseageData">
-                    <!-- Circles for each node -->
+                    <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
                     <circle
                         v-bind:key="node.StartTime"
-                        v-b-tooltip.html :title="point_tooltip(node)"
+                        
                         :r="point_size"
                         :cx="scale.x(node.group) + node.jitter + halfBandwith"
                         :cy="scale.y(node.usage)"
