@@ -163,7 +163,7 @@ function createMainMenuStrip(): Menu {
  */
 function createAddWidgetSubmenu(menu: Menu) {
     const toolsMenu: MenuItem = menu.items[2];
-    const addWidgetMenu: Menu = toolsMenu.submenu.items[0].submenu;
+    const addWidgetMenu: Menu = toolsMenu.submenu!.items[0].submenu as Menu;
 
     const components: ComponentRegistration[] = store.state.registry;
     for (const component of components) {
