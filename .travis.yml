@@ -78,11 +78,10 @@ matrix:
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
           - npm run package-ci
+          - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
+          - tar czvf ${RELEASE_NAME} dist_electron/
         before_deploy:
           # Need to build before tag is set, otherwise electron-builder attempts to publish the build
-          
-          # - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
-          # - tar czvf ${RELEASE_NAME} dist_electron/
         # deploy:
         #   provider: releases
         #   api_key:

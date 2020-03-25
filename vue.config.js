@@ -12,7 +12,7 @@ module.exports = {
                 config.plugins.delete('pwa')
             },
             builderOptions: {
-                "publish": ['github']
+                // "publish": ['github']
             }
         }
     }
