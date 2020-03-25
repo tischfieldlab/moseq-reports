@@ -9,6 +9,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/data_components/Core';
+import { getNested } from '@/store/root.types';
 
 RegisterDataComponent({
     friendly_name: 'Selected Syllable',
@@ -25,8 +26,11 @@ export default Vue.component('selected-syllable', {
         },
     },
     computed: {
+        datasource(): string {
+            return this.$store.getters.getWindowById(this.id).source.name;
+        },
         syllable(): number {
-            return this.$store.state.dataview.selectedSyllable;
+            return getNested(this.$store.state, this.datasource).selectedSyllable;
         },
     },
 });

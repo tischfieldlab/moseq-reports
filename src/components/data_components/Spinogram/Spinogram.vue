@@ -2,7 +2,7 @@
     <div>
         <template v-if="has_data">
             <svg :width="outsideWidth" :height="outsideHeight">
-                <text class="title" :x="this.outsideWidth / 2" :y="10">
+                <text class="title" :x="this.outsideWidth / 2" :y="20">
                     Module #{{ selectedSyllable }} ({{countMethod}}) Spinogram
                 </text>
                 <g :transform="`translate(${margin.left}, ${margin.top})`">
@@ -40,7 +40,7 @@
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/data_components/Core';
 
-import {Layout} from '@/store/root.types';
+import {Layout, getNested} from '@/store/root.types';
 import * as d3 from 'd3';
 import {line} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
@@ -80,7 +80,7 @@ export default Vue.component('spinogram-plots', {
     data() {
         return {
             margin: {
-                top: 20,
+                top: 30,
                 right: 20,
                 bottom: 45,
                 left: 45,
@@ -88,6 +88,9 @@ export default Vue.component('spinogram-plots', {
         };
     },
     computed: {
+        datasource(): string {
+            return this.$store.getters.getWindowById(this.id).source.name;
+        },
         settings(): any {
             return this.$store.getters.getWindowById(this.id).settings;
         },
@@ -101,10 +104,10 @@ export default Vue.component('spinogram-plots', {
             return this.outsideHeight - this.margin.top - this.margin.bottom;
         },
         outsideWidth(): number {
-            return this.layout.width - 10;
+            return this.layout.width;
         },
         outsideHeight(): number {
-            return this.layout.height - 41;
+            return this.layout.height - 31;
         },
         origin(): any {
             const x = this.margin.left;
@@ -136,13 +139,13 @@ export default Vue.component('spinogram-plots', {
             return this.settings.line_weight;
         },
         selectedSyllable(): number {
-            return this.$store.state.dataview.selectedSyllable;
+            return getNested(this.$store.state, this.datasource).selectedSyllable;
         },
         usageSelectedSyllable(): number {
-            return this.$store.getters['dataview/selectedSyllableAs'](CountMethod.Usage);
+            return this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Usage);
         },
         countMethod(): string {
-            return this.$store.state.dataview.countMethod;
+            return getNested(this.$store.state, this.datasource).countMethod;
         },
         spinogram_data(): Spinogram {
             return this.$store.state.datasets.spinogram.find((s) => s.id === this.usageSelectedSyllable) as Spinogram;

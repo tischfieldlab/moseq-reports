@@ -26,25 +26,35 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         label_map: null,
     },
     mutations: {
-        SetDataSourceInfo(state, payload: any) {
+        SetDataSourceInfo(state, payload: DatasetsState) {
             state.bundle = payload.bundle;
             state.name = payload.name;
             state.path = payload.path;
         },
-        SetSpinogramData(state, data: []) {
-            state.spinogram = data;
+        SetSpinogramData(state, data: DatasetsState) {
+            state.spinogram = data.spinogram;
         },
-        SetUsageByUsage(state, data: any) {
-            state.usageByUsage = data;
+        SetUsageByUsage(state, data: DatasetsState) {
+            state.usageByUsage = data.usageByUsage;
         },
-        SetUsageByFrames(state, data: any) {
-            state.usageByFrames = data;
+        SetUsageByFrames(state, data: DatasetsState) {
+            state.usageByFrames = data.usageByFrames;
         },
-        SetGroupInfo(state, data: any) {
-            Vue.set(state, 'groups', [...data]);
+        SetGroupInfo(state, data: DatasetsState) {
+            Vue.set(state, 'groups', [...data.groups]);
         },
-        SetLabelMap(state, data: any) {
-            state.label_map = data;
+        SetLabelMap(state, data: DatasetsState) {
+            state.label_map = data.label_map;
+        },
+    },
+    actions: {
+        setData(context, payload: DatasetsState) {
+            context.commit('SetDataSourceInfo', payload);
+            context.commit('SetSpinogramData', payload);
+            context.commit('SetUsageByUsage', payload);
+            context.commit('SetUsageByFrames', payload);
+            context.commit('SetGroupInfo', payload);
+            context.commit('SetLabelMap', payload);
         },
     },
 };

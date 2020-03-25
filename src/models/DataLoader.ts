@@ -9,13 +9,6 @@ import ElectronStore from 'electron-store';
 import app from '@/main';
 import { deleteFolderRecursive } from '@/util/Files';
 
-interface DataLoaderState {
-    bundle: string; // path to the bundle
-    name: string; // basename of the bundle
-    path: string; // path to uncompressed data
-}
-
-let currentState: DataLoaderState|undefined;
 
 
 export default function LoadDataBundle(filename: string) {
@@ -40,21 +33,22 @@ export default function LoadDataBundle(filename: string) {
         });
         throw new Error(err);
     });
-    zip.on('ready', () => {
-        currentState = {
+    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
+    zip.on('ready', async () => {
+        const data = {
             bundle: filename,
             name: path.basename(filename, '.msq'),
-            path: fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-')),
+            path: tmpdir,
+            ...LoadMetadataData(zip),
+            ...LoadUsageData(zip),
+            ...LoadSpinogramData(zip),
+            ...LoadCrowdMovies(zip, tmpdir),
         };
-        // console.log('Entries read: ' + zip.entriesCount);
-        // console.log('zip ready');
-        LoadMetadataData(zip);
-        LoadUsageData(zip);
-        LoadSpinogramData(zip);
-        LoadCrowdMovies(zip); // TODO: Keshav
-
+        await store.dispatch('datasets/setData', data);
         zip.close();
-        store.dispatch('dataview/initialize');
+        for (const p of (store.state as any).filters.items) {
+            store.dispatch(`${p}/initialize`);
+        }
         app.$bvToast.toast('File "' + filename + '" was loaded successfully.', {
             title: 'Data loaded successfully!',
             variant: 'success',
@@ -64,49 +58,43 @@ export default function LoadDataBundle(filename: string) {
 }
 
 function CleanState() {
-    if (currentState === undefined) {
+    const datapath = (store.state as any).datasets.path;
+    if (datapath === undefined) {
         return;
     }
-    deleteFolderRecursive(currentState.path);
-}
-function EnsureState() {
-    if (currentState === undefined) {
-        throw new Error('unexpected current state is undefined!');
-    }
+    deleteFolderRecursive(datapath);
 }
 
 function LoadMetadataData(zip) {
-    EnsureState();
-    store.commit('datasets/SetGroupInfo', jsonParseZipEntry(zip, 'groups.json'));
-    store.commit('datasets/SetLabelMap', jsonParseZipEntry(zip, 'label_map.json'));
+    return {
+        groups: jsonParseZipEntry(zip, 'groups.json'),
+        label_map: jsonParseZipEntry(zip, 'label_map.json'),
+    };
 }
 
 function LoadSpinogramData(zip) {
-    EnsureState();
     const data = zip.entryDataSync('spinogram.corpus-sorted-usage.json').toString();
     // TODO: JSON cannot handle NaN here!
-    store.commit('datasets/SetSpinogramData', parseJsonContainingNaN(data));
+    return {
+        spinogram: parseJsonContainingNaN(data),
+    };
 }
 
 function LoadUsageData(zip) {
-    EnsureState();
-    const data1 = jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json');
-    store.commit('datasets/SetUsageByUsage', data1);
-
-    const data2 = jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json');
-    store.commit('datasets/SetUsageByFrames', data2);
+    return {
+        usageByUsage: jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json'),
+        usageByFrames: jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json'),
+    };
 }
 
-function LoadCrowdMovies(zip) {
-    if (currentState === undefined) {
-        throw new Error('unexpected current state is undefined!');
-    }
-    const dest = path.join(currentState.path, 'crowd_movies');
+function LoadCrowdMovies(zip, dir) {
+    const dest = path.join(dir, 'crowd_movies');
     fs.mkdirSync(dest);
     zip.extract('crowd_movies', dest, (err, count) => {
         // tslint:disable-next-line:no-console
         console.log(err ? 'Extract error' : `Extracted ${count} crowd movie entries`);
     });
+    return {};
 }
 
 

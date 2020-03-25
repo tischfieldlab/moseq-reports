@@ -1,7 +1,12 @@
 <template>
-    <div class='home' :style="{height: height+'px'}">
-        <div id="toolbox_container" no-body :style="{width: toolbox_width+'px', height: height+'px'}">
-            <DataFilter />
+    <div class="home" :style="{height: `${height}px`}">
+        <div id="filter_container" :style="{width: `${toolbox_width}px`, height: `${height}px`}">
+            <h3>Data Filters</h3>
+            <div ref="tbx_wrapper">
+                <template v-for="ns in $store.state.filters.items">
+                    <DataFilter :key="ns" :dataview="ns" />
+                </template>
+            </div>
         </div>
         <div id="has-no-metadata-container" :style="{'left': toolbox_width+'px', 'width': width+'px', 'top': height/2+'px'}" v-if="!metadataLoaded">
             <h4 style="text-align: center;" id="no-data-text">
@@ -45,20 +50,21 @@ export default Vue.component('homepage', {
             return this.$store.state.windows;
         },
         metadataLoaded(): boolean {
-            return this.$store.getters['dataview/view'] !== null;
+            return this.$store.state.datasets.usageByUsage !== null;
         },
     },
     watch: {
         metadataLoaded: {
             handler(newState, oldState) {
                 if (!oldState && newState && this.windows.length === 0) {
-                    this.loadDefaultLayout();
+                    this.$nextTick().then(() => this.loadDefaultLayout());
                 }
             },
             deep: true,
         },
     },
     created() {
+        this.$store.dispatch('filters/addFilter');
         this.debouncedResizeHandler = debounce(this.handleResize, 250);
         window.addEventListener('resize', this.debouncedResizeHandler);
     },
@@ -89,16 +95,23 @@ export default Vue.component('homepage', {
 .home{
     background-color:#e9ecef ;
 }
-.tabs{
-    height:100%;
+#filter_container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
 }
-#toolbox_container{
-    height:100%;
-    border-radius:0;
+#filter_container > h3 {
+    background: #c5c5c5;
+    padding: 10px;
+    margin-bottom: 0;
+    font-size: 1.5em;
 }
-#toolbox_container .tabs{
-    overflow: auto;
+#filter_container > div {
+    flex-grow : 1;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
+
 #has-no-metadata-container{
     position: fixed;
     top: 0px;

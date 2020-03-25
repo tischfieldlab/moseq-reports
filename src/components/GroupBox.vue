@@ -11,8 +11,8 @@
                             v-model="option.selected"
                             :name="option.name">
                         </b-form-checkbox>
-                        <div class="swatch" :id="option.id" :style="{'background-color': option.color}" />
-                        <b-popover :target="option.id" triggers="click blur" placement="top">
+                        <div class="swatch" :id="$id(option.id)" :style="{'background-color': option.color}" />
+                        <b-popover :target="$id(option.id)" triggers="click blur" placement="top">
                             <template v-slot:title>Group Color ({{ option.name }})</template>
                             <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
                         </b-popover>
@@ -29,6 +29,8 @@ import Vue from 'vue';
 import draggable from 'vuedraggable';
 import { Chrome } from 'vue-color';
 import { debounce } from 'ts-debounce';
+import { getNested } from '@/store/root.types';
+import deepEqual from 'deep-equal';
 
 
 
@@ -58,6 +60,12 @@ export default Vue.extend({
         draggable,
         'chrome-picker': Chrome,
     },
+    props: {
+        dataview: {
+            type: String,
+            required: true,
+        },
+    },
     data() {
         return {
             groups: [] as SelectableGroupItem[],
@@ -73,7 +81,7 @@ export default Vue.extend({
 
         this.watchers.push(this.$store.watch(
             (state, getters) => {
-                return getters['dataview/availableGroups'];
+                return getters[`${this.dataview}/availableGroups`];
             },
             () => { this.buildGroups(); },
             { immediate: true },
@@ -81,8 +89,8 @@ export default Vue.extend({
         this.watchers.push(this.$store.watch(
             (state, getters) => {
                 return {
-                    c: state.dataview.groupColors as string[],
-                    s: state.dataview.selectedGroups as string[],
+                    c: getNested(state, this.dataview).groupColors as string[],
+                    s: getNested(state, this.dataview).selectedGroups as string[],
                 };
             },
             (newValue) => {
@@ -105,9 +113,9 @@ export default Vue.extend({
     methods: {
         buildGroups() {
             this.groups = []; // Need to reset this so that we don't have duplicate options.
-            const availableGroups = this.$store.getters['dataview/availableGroups'];
-            const selectedGroups = this.$store.state.dataview.selectedGroups;
-            const colorScale =  this.$store.state.dataview.groupColors;
+            const availableGroups = this.$store.getters[`${this.dataview}/availableGroups`];
+            const selectedGroups = getNested(this.$store.state, this.dataview).selectedGroups;
+            const colorScale =  getNested(this.$store.state, this.dataview).groupColors;
             availableGroups.map((g, i) => {
                 const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
                 sgi.color = colorScale[i];
@@ -117,14 +125,18 @@ export default Vue.extend({
         updateGroups() {
             const groups = this.groups.filter((g) => g.selected).map((g) => g.name);
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-            this.$store.dispatch('dataview/updateSelectedGroups', {
-                groups,
-                colors,
-            });
+            if (!deepEqual(groups, getNested(this.$store.state, this.dataview).selectedGroups)) {
+                this.$store.dispatch(`${this.dataview}/updateSelectedGroups`, {
+                    groups,
+                    colors,
+                });
+            }
         },
         updateColors() {
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-            this.$store.dispatch('dataview/updateSelectedGroups', {colors});
+            if (!deepEqual(colors, getNested(this.$store.state, this.dataview).groupColors)) {
+                this.$store.dispatch(`${this.dataview}/updateSelectedGroups`, {colors});
+            }
         },
     },
 });

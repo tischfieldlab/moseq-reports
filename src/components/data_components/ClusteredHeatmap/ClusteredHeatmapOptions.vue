@@ -75,6 +75,7 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import {GetInterpolatedScaleOptions} from '@/util/D3ColorProvider';
+import {getNested} from '@/store/root.types';
 
 export enum OrderingType {
     Natural = 'natural',
@@ -106,11 +107,14 @@ export default Vue.component('clustered-heatmap-options', {
         },
     },
     computed: {
+        datasource(): string {
+            return this.$store.getters.getWindowById(this.id).source.name;
+        },
         settings(): any {
             return this.$store.getters.getWindowById(this.id).settings;
         },
         selectedGroups(): string[] {
-            return this.$store.state.dataview.selectedGroups;
+            return getNested(this.$store.state, this.datasource).selectedGroups;
         },
         colorscale: {
             get(): string {
@@ -264,7 +268,7 @@ export default Vue.component('clustered-heatmap-options', {
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .row{
     margin:10px 0;
 }

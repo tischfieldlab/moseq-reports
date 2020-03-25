@@ -85,6 +85,10 @@ import { area, line } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 
 import { WhiskerType } from './DetailedUsageOptions.vue';
+import LoadingMixin from '@/components/data_components/Core/LoadingMixin';
+import { getNested } from '@/store/root.types';
+
+
 
 interface UsageItem {
     usage: number;
@@ -127,6 +131,7 @@ RegisterDataComponent({
 });
 
 export default Vue.component('detailed-usage', {
+    mixins: [LoadingMixin],
     props: {
         id: {
             type: Number,
@@ -153,9 +158,9 @@ export default Vue.component('detailed-usage', {
         this.watchers.push(this.$store.watch(
             (state, getters) => {
                 return {
-                    view: getters['dataview/view'],
-                    colors: state.dataview.groupColors,
-                    selectedSyllable: state.dataview.selectedSyllable,
+                    view: getters[`${this.datasource}/view`],
+                    colors: getNested(state, this.datasource).groupColors,
+                    selectedSyllable: getNested(state, this.datasource).selectedSyllable,
                 };
             },
             () => this.createView(),
@@ -167,6 +172,9 @@ export default Vue.component('detailed-usage', {
         this.watchers.forEach((w) => w());
     },
     computed: {
+        datasource(): string {
+            return this.$store.getters.getWindowById(this.id).source.name;
+        },
         settings(): any {
             return this.$store.getters.getWindowById(this.id).settings;
         },
@@ -188,10 +196,10 @@ export default Vue.component('detailed-usage', {
             return this.outsideHeight - this.margin.top - this.margin.bottom;
         },
         outsideWidth(): number {
-            return this.layout.width - 10;
+            return this.layout.width;
         },
         outsideHeight(): number {
-            return this.layout.height - 41;
+            return this.layout.height - 31;
         },
         halfBandwith(): number {
             return this.scale.x.bandwidth() / 2;
@@ -259,20 +267,20 @@ export default Vue.component('detailed-usage', {
             return a;
         },
         selectedSyllable(): number {
-            return this.$store.state.dataview.selectedSyllable;
+            return getNested(this.$store.state, this.datasource).selectedSyllable;
         },
         countMethod(): string {
-            return this.$store.state.dataview.countMethod;
+            return getNested(this.$store.state, this.datasource).countMethod;
         },
     },
     methods: {
         createView() {
-            const df = this.$store.getters['dataview/view'];
+            const df = this.$store.getters[`${this.datasource}/view`];
             if (df === null) {
                 return;
             }
-            this.groupNames = this.$store.state.dataview.selectedGroups;
-            this.groupColors = this.$store.state.dataview.groupColors;
+            this.groupNames = getNested(this.$store.state, this.datasource).selectedGroups;
+            this.groupColors = getNested(this.$store.state, this.datasource).groupColors;
             this.individualUseageData = df.where({syllable: this.selectedSyllable})
                                           .select('usage', 'group', 'StartTime')
                                           .sortBy('usage')

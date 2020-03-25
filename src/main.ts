@@ -20,8 +20,6 @@ Vue.use(BootstrapVue);
 import VueResize from 'vue-resize';
 Vue.use(VueResize);
 
-import { ToastPlugin } from 'bootstrap-vue';
-Vue.use(ToastPlugin);
 
 import UniqueId from 'vue-unique-id';
 Vue.use(UniqueId);

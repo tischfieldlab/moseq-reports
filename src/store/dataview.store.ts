@@ -6,6 +6,7 @@ import {scaleOrdinal} from 'd3-scale';
 import {DataviewWorker} from './dataview.worker';
 import { spawn, Worker, ModuleThread } from 'threads';
 import store from './root.store';
+import { getModuleNamespace } from '@/util/Vuex';
 
 
 export enum CountMethod {
@@ -14,6 +15,7 @@ export enum CountMethod {
 }
 
 interface DataviewState {
+    loading: boolean;
     countMethod: CountMethod;
 
     selectedGroups: string[];
@@ -45,6 +47,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
     namespaced: true,
     state() {
         return {
+            loading: false,
             countMethod: CountMethod.Usage,
             selectedGroups: [],
             groupColors: [],
@@ -67,9 +70,14 @@ const DataviewModule: Module<DataviewState, RootState> = {
             return null;
         },
         aggregateView: (state, getters) => {
-            return getters.view.groupBy('syllable', 'group')
-                               .aggregate((g: any) => g.stat.mean('usage'))
-                               .rename('aggregation', 'usage');
+            if (getters.view !== null) {
+                return getters.view
+                              .groupBy('syllable', 'group')
+                              .aggregate((g: any) => g.stat.mean('usage'))
+                              .rename('aggregation', 'usage');
+            } else {
+                return null;
+            }
         },
         maxSyllable: (state, getters) => {
             const view = getters.view;
@@ -83,6 +91,12 @@ const DataviewModule: Module<DataviewState, RootState> = {
         },
     },
     mutations: {
+        setLoading(state, loading: boolean) {
+            state.loading = loading;
+        },
+        setGroupColors(state, groupColors: string[]) {
+            state.groupColors = groupColors;
+        },
         setView(state, payload: DataviewPayload) {
             state.view = payload.view;
             if (payload.countMethod) {
@@ -108,30 +122,42 @@ const DataviewModule: Module<DataviewState, RootState> = {
             context.commit('setSelectedSyllable', newSyllable);
         },
         updateSelectedGroups(context, payload: SelectedGroupsPayload) {
-            context.dispatch('updateView', {
-                selectedGroups: payload.groups,
-                groupColors: payload.colors,
-            } as DataviewPayload);
+            if (payload.groups === undefined && payload.colors !== undefined) {
+                context.commit('setGroupColors', payload.colors);
+            } else {
+                context.dispatch('updateView', {
+                    selectedGroups: payload.groups,
+                    groupColors: payload.colors,
+                } as DataviewPayload);
+            }
         },
         async updateView(context, payload: DataviewPayload) {
-            const countMethod = payload.countMethod || context.state.countMethod;
-            const selectedGroups = payload.selectedGroups || context.state.selectedGroups;
+            context.commit('setLoading', true);
+            try {
+                payload.countMethod = payload.countMethod || context.state.countMethod;
+                payload.selectedGroups = payload.selectedGroups || context.state.selectedGroups;
 
-            let dfData: any;
-            if (countMethod === CountMethod.Usage) {
-                dfData = (context.rootState as any).datasets.usageByUsage;
-            } else if (countMethod === CountMethod.Frames) {
-                dfData = (context.rootState as any).datasets.usageByFrames;
-            } else {
-                throw new Error('Unknown Count Method ' + countMethod);
+                let dfData: any;
+                if (payload.countMethod === CountMethod.Usage) {
+                    dfData = (context.rootState as any).datasets.usageByUsage;
+                } else if (payload.countMethod === CountMethod.Frames) {
+                    dfData = (context.rootState as any).datasets.usageByFrames;
+                } else {
+                    throw new Error('Unknown Count Method ' + payload.countMethod);
+                }
+
+                if (dfData === null) {
+                    return null;
+                }
+
+                payload.view = await worker.filterGroups(dfData, payload.selectedGroups);
+                context.commit('setView', payload);
+            } catch (e) {
+                // tslint:disable-next-line:no-console
+                console.warn(e);
+            } finally {
+                context.commit('setLoading', false);
             }
-
-            if (dfData === null) {
-                return null;
-            }
-
-            payload.view = await worker.filterGroups(dfData, selectedGroups);
-            context.commit('setView', payload);
         },
         initialize(context) {
             const groups = context.getters.availableGroups;
@@ -139,26 +165,20 @@ const DataviewModule: Module<DataviewState, RootState> = {
             context.dispatch('updateView', {
                 selectedGroups: groups,
                 groupColors: groups.map((g: string) => colorScale(g)),
-            } as DataviewPayload).then(() => bindStore());
+            } as DataviewPayload).then(() => bindStore(getModuleNamespace(store, context.state)));
         },
     },
 };
+export default DataviewModule;
 
-if ((store.state as any).dataview === undefined) {
-    store.registerModule('dataview', DataviewModule, {});
-}
-function bindStore() {
-    store.watch(
-        (state) => {
-            const datasets = (state as any).datasets;
-            return {
-                usageByUsage: datasets.usageByUsage,
-                usageByFrames: datasets.usageByFrames,
-            };
+
+function bindStore(name) {
+    store.subscribeAction({
+        after: (action, state) => {
+            if (action.type === 'datasets/setData') {
+                store.dispatch(`${name}/updateView`, {});
+            }
         },
-        async () => {
-            store.dispatch('dataview/updateView', {});
-        },
-    );
+    });
 }
 

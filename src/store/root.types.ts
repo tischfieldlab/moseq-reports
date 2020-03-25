@@ -29,11 +29,16 @@ export interface Layout extends Size {
     position: Position;
 }
 
+export interface DataSource {
+    name: string;
+}
+
 export interface DataWindow {
     spec: ComponentRegistration;
     id: number;
     title: string;
     layout: Layout;
+    source: DataSource;
     settings: object | undefined;
 }
 
@@ -41,6 +46,7 @@ export interface DehydratedDataWindow {
     type: string;
     title: string;
     layout: Layout;
+    source?: DataSource;
     settings: object | undefined;
 }
 
@@ -61,6 +67,10 @@ export interface UpdateComponentTitlePayload {
     id: number;
     title: string;
 }
+export interface UpdateComponentDataSourcePayload {
+    id: number;
+    source: string;
+}
 
 
 export function createDataWindow(componentInfo: ComponentRegistration) {
@@ -75,6 +85,9 @@ export function createDataWindow(componentInfo: ComponentRegistration) {
                 y: 10,
             },
         },
+        source: {
+            name: store.getters['filters/default'],
+        },
         settings: __clone(componentInfo.default_settings || {}), // deep clone
     } as DataWindow;
 }
@@ -84,6 +97,7 @@ export function dehydrateWindow(window: DataWindow): DehydratedDataWindow {
         type: window.spec.component_type,
         title: window.title,
         layout: window.layout,
+        source: window.source,
         settings: window.settings,
     };
 }
@@ -92,6 +106,7 @@ export function hydrateWindow(data: DehydratedDataWindow): DataWindow {
     const win = createDataWindow(spec);
     win.title = __clone(data.title || spec.friendly_name);
     win.layout = { ...win.layout, ...__clone(data.layout) };
+    win.source = { ...win.source, ...__clone(data.source || {}) };
     win.settings = { ...win.settings, ...__clone(data.settings) };
     return win;
 }
@@ -100,4 +115,14 @@ function __clone(obj: any) {
     return JSON.parse(JSON.stringify(obj));
 }
 
+
+export function getNested(theObject: object, path: string, separator: string = '/'): any {
+    try {
+        return path.replace('[', separator).replace(']', '')
+                   .split(separator)
+                   .reduce((obj, property) => obj[property], theObject);
+    } catch (err) {
+        return undefined;
+    }
+}
 

@@ -10,10 +10,13 @@ import {
     DehydratedDataWindow,
     hydrateWindow,
     UpdateComponentTitlePayload,
+    UpdateComponentDataSourcePayload,
 } from './root.types';
 import { saveFile } from '@/util/Files';
 import DefaultLayout from '@/DefaultLayout';
 import DatasetsStore from '@/store/datasets.store';
+import FiltersModule from '@/store/filters.store';
+import { mergeDeep } from '@/util/Object';
 
 Vue.use(Vuex);
 
@@ -21,6 +24,7 @@ const store: StoreOptions<RootState> = {
     strict: true,
     modules: {
         datasets: DatasetsStore,
+        filters: FiltersModule,
     },
     state: {
         registry: Array<ComponentRegistration>(),
@@ -70,15 +74,22 @@ const store: StoreOptions<RootState> = {
                 w.title = payload.title;
             }
         },
+        updateComponentDataSource(state, payload: UpdateComponentDataSourcePayload) {
+            const w = state.windows.find((win) => win.id === payload.id);
+            if (w !== undefined) {
+                w.source.name = payload.source;
+            }
+        },
         updateComponentSettings(state, payload: UpdateComponentSettingsPayload) {
             const w = state.windows.find((win) => win.id === payload.id);
             if (w !== undefined) {
                 if (w.settings === undefined) {
                     w.settings = {};
                 }
-                for (const k of Object.keys(payload.settings)) {
+                mergeDeep(w.settings, payload.settings);
+                /*for (const k of Object.keys(payload.settings)) {
                     Vue.set(w.settings, k, payload.settings[k]);
-                }
+                }*/
             }
         },
         clearLayout(state) {
@@ -100,6 +111,7 @@ const store: StoreOptions<RootState> = {
 
             for (const dh of layout) {
                 context.commit('addWindow', hydrateWindow(dh));
+                await Vue.nextTick();
             }
         },
         loadDefaultLayout(context) {
@@ -126,6 +138,5 @@ const store: StoreOptions<RootState> = {
         },
     },
 };
-
 
 export default new Vuex.Store<RootState>(store);

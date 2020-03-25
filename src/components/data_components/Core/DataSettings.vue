@@ -1,7 +1,16 @@
 <template>
-    <b-form-group label="Data Source" label-class="font-weight-bold pt-0">
-        <b-form-radio v-model="data_source" name="data_source" value="global">Use Global Filters</b-form-radio>
-    </b-form-group>
+    <b-container>
+        <b-row>
+            <b-col cols="10">
+                <b-input-group prepend="Data Source">
+                    <b-form-select v-model="data_source" :options="available_sources" />
+                </b-input-group>
+            </b-col>
+            <b-col cols="1">
+                <b-button @click="add_datasource">add</b-button>
+            </b-col>
+        </b-row>
+    </b-container>
 </template>
 
 
@@ -15,14 +24,33 @@ export default Vue.component('data-settings', {
             required: true,
         },
     },
-    data() {
-        return {
-            data_source: 'global',
-        };
+    computed: {
+        available_sources(): string[] {
+            return this.$store.state.filters.items;
+        },
+        data_source: {
+            get(): string {
+                return this.$store.getters.getWindowById(this.id).source.name;
+            },
+            set(value: string) {
+                this.$store.commit('updateComponentDataSource', {
+                    source: value,
+                    id: this.id,
+                });
+            },
+        },
+    },
+    methods: {
+        add_datasource() {
+            this.$store.dispatch('filters/addFilter');
+        },
     },
 });
 </script>
 
-<style scoped>
 
+<style scoped>
+.row{
+    margin:10px 0;
+}
 </style>

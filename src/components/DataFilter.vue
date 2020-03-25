@@ -2,21 +2,25 @@
     <div>
         <b-card>
             <template v-slot:header>
-                <b-button v-b-toggle.my-collapse variant="link" class="collapse-button text-decoration-none">
-                    <span class="when-opened">&#x25B2;</span> <span class="when-closed">&#x25BC;</span>
+                <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="collapse-button text-decoration-none">
+                    <span class="when-opened">&#x25BC;</span> <span class="when-closed">&#x25B6;</span>
                 </b-button>
-                <h6 class="mb-0" style="vertical-align: middle;display:inline-block;">Data Filters</h6>
+                <h7>{{ dataview }}</h7>
             </template>
-            <b-collapse visible id="my-collapse">
-                <GroupBox />
+            <b-collapse visible :id="$id('filter-collapse')">
+                <b-overlay :show="is_loading" no-fade>
+                    <div class="container">
+                        <GroupBox :dataview="dataview" />
 
-                <b-input-group prepend="Count Method" class="filter-item">
-                    <b-form-select v-model="selectedCountMethod" :options="countMethods" />
-                </b-input-group>
+                        <b-input-group prepend="Count Method" class="filter-item">
+                            <b-form-select v-model="selectedCountMethod" :options="countMethods" />
+                        </b-input-group>
 
-                <b-input-group prepend="Selected Syllable" class="filter-item">
-                    <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
-                </b-input-group>
+                        <b-input-group prepend="Selected Syllable" class="filter-item">
+                            <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
+                        </b-input-group>
+                    </div>
+                </b-overlay>
             </b-collapse>
         </b-card>
     </div>
@@ -27,14 +31,19 @@ import Vue from 'vue';
 import { CountMethod } from '@/store/dataview.store';
 import { debounce } from 'ts-debounce';
 import GroupBox from '@/components/GroupBox.vue';
-import store from '@/store/root.store';
+import { getNested } from '@/store/root.types';
 
 
 
-export default Vue.extend({
-    name: 'datafilter',
+export default Vue.component('datafilter', {
     components: {
         GroupBox,
+    },
+    props: {
+        dataview: {
+            type: String,
+            required: true,
+        },
     },
     data() {
         return {
@@ -45,16 +54,19 @@ export default Vue.extend({
         };
     },
     computed: {
+        is_loading(): boolean {
+            return getNested(this.$store.state, this.dataview).loading;
+        },
         syllable: {
             get(): number {
-                return this.$store.state.dataview.selectedSyllable;
+                return getNested(this.$store.state, this.dataview).selectedSyllable;
             },
-            set: debounce((event: number) => {
-                store.commit('dataview/setSelectedSyllable', event);
-            }, 100),
+            set(event: number) {
+                this.$store.commit(`${this.dataview}/setSelectedSyllable`, event);
+            },
         },
         syllableIdOptions() {
-            const max = this.$store.getters['dataview/maxSyllable'];
+            const max = this.$store.getters[`${this.dataview}/maxSyllable`];
             const options: Array<{ value: number, text: string }> = [];
             for (let i = 0; i < max + 1; i++) {
                 options.push({ value: i, text: i.toString() });
@@ -63,10 +75,10 @@ export default Vue.extend({
         },
         selectedCountMethod: {
             get(): CountMethod {
-                return this.$store.state.dataview.countMethod;
+                return getNested(this.$store.state, this.dataview).countMethod;
             },
             set(event: CountMethod) {
-                this.$store.dispatch('dataview/switchCountMethod', event);
+                this.$store.dispatch(`${this.dataview}/switchCountMethod`, event);
             },
         },
     },
@@ -75,11 +87,12 @@ export default Vue.extend({
 
 <style scoped lang="scss">
 .collapse-button {
-    float:right;
     padding:0;
+    margin-left:-10px;
+    margin-right: 10px;
 }
 .card-body{
-    padding: 0 0.5em;
+    padding: 0;
     min-height: 0;
 }
 .filter-item {
@@ -88,5 +101,8 @@ export default Vue.extend({
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
   display: none;
+}
+.container {
+    padding: 0.5em;
 }
 </style>

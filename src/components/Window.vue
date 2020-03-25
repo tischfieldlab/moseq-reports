@@ -11,10 +11,12 @@
             {{ title }}
         </div>
         <div>
-            <component ref="body" :id="id" :is="spec.component_type" />
+            <b-overlay :show="is_loading" no-fade>
+                <component ref="body" :id="id" :is="spec.component_type" />
+            </b-overlay>
             <b-modal
                 :title="settings_title"
-                v-model="show_modal"
+                v-model="show_settings_modal"
                 header-bg-variant="dark"
                 header-text-variant="light"
                 body-bg-variant="light"
@@ -32,6 +34,9 @@
                         <component v-if="spec.settings_type" ref="modal_component" :id="id" :is="spec.settings_type" />
                         <p v-else class="no-settings text-muted">No settings available for this component</p>
                     </b-tab>
+                    <b-tab title="Snapshots">
+                        <SnapshotSettings :id="id" />
+                    </b-tab>
                 </b-tabs>
 
             </b-modal>
@@ -45,9 +50,8 @@ import Vue, { PropType } from 'vue';
 
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
 import {DataWindow, ComponentRegistration, Size, Position, Layout} from '../store/root.types';
-import { toPng, toCanvas } from 'html-to-image';
-import { saveAs } from 'file-saver';
-import {saveSvgAsPng} from 'save-svg-as-png';
+import { getNested } from '@/store/root.types';
+import Snapshot, {ensureDefaults} from '@/components/data_components/Core/SnapshotHelper';
 
 
 export default Vue.component('ui-window', {
@@ -62,7 +66,8 @@ export default Vue.component('ui-window', {
     },
     data() {
         return {
-            show_modal: false,
+            component_loading: false,
+            show_settings_modal: false,
             watchers: Array<(() => void)>(),
         };
     },
@@ -84,6 +89,12 @@ export default Vue.component('ui-window', {
         },
         position(): number {
             return this.$store.getters.getWindowLayout(this.id).position;
+        },
+        source(): string {
+            return this.$store.getters.getWindowById(this.id).source.name;
+        },
+        is_loading(): boolean {
+            return this.component_loading || getNested(this.$store.state, this.source).loading;
         },
     },
     mounted() {
@@ -113,6 +124,8 @@ export default Vue.component('ui-window', {
         this.$nextTick().then(() => {
             this.addSettingsButton();
         });
+        (this.$refs.body as Vue).$on('start-loading', () => this.component_loading = true);
+        (this.$refs.body as Vue).$on('finish-loading', () => this.component_loading = false);
     },
     beforeDestroy() {
         // un-watch the store
@@ -142,10 +155,10 @@ export default Vue.component('ui-window', {
             const container = document.createElement('div');
 
             const settingsButton = document.createElement('img');
-            settingsButton.src = 'https://static.thenounproject.com/png/333746-200.png';
+            settingsButton.src = '/img/gear.png';
             settingsButton.classList.add('settings-button');
             settingsButton.addEventListener('click', (event) => {
-                this.show_modal = true;
+                this.show_settings_modal = true;
             });
 
             container.appendChild(settingsButton);
@@ -155,35 +168,28 @@ export default Vue.component('ui-window', {
             snapButton.src = '/img/camera.png';
             snapButton.classList.add('snapshot-button');
             snapButton.addEventListener('click', (event) => {
-                this.snapshotContent();
+                this.snapshotContent(event);
             });
             container.appendChild(snapButton);
         },
-        snapshotContent() {
-            const options = {
-                width: this.width * (300 / 96),
-                height: this.height * (300 / 96),
-            };
-            const svg = (this.$refs.body as Vue).$el.getElementsByTagName('svg').item(0);
-            if (svg) {
-                saveSvgAsPng(svg, this.title + '.png', {
-                    scale: 4,
-                    encoderOptions: 1,
-                });
-            } else {
-                toCanvas((this.$refs.body as Vue).$el as HTMLElement/*, options*/, {})
-                    .then((canvas) => {
-                        canvas.toBlob((blob) => {
-                            saveAs(blob as Blob, this.title + '.png');
-                        });
-                    });
-            }
+        async snapshotContent(event: MouseEvent) {
+            ensureDefaults(this.$refs.body as Vue, this.$store);
+            const options = this.$store.getters.getWindowById(this.id).settings.snapshot;
+            await Snapshot(this.$refs.body as Vue, this.title, options);
         },
     },
 });
 </script>
 
 <style lang="scss">
+.jqx-window-content {
+    padding:0px !important;
+}
+.b-overlay-wrap {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
 .UiCard {
   overflow: hidden;
   border: 1px solid #dfdfdf;
