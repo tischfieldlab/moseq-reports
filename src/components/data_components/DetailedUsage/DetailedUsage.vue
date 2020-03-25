@@ -40,6 +40,18 @@
                             v-bind:y1="scale.y(fences.upper(node))"
                             v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
                             v-bind:y2="scale.y(fences.upper(node))" />
+
+                        <g class="outliers">
+                            <template v-for="(node) in individualUseageData">
+                                <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
+                                <path v-if="is_outlier(node)"
+                                    v-bind:key="node.StartTime"
+                                    shape-rendering="geometricPrecision"
+                                    :d="diamond()"
+                                    :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
+                                    :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
+                            </template>
+                        </g>
                     </g>
                 </template>
             </g>
@@ -53,9 +65,16 @@
             <g v-if="settings.show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
                 <template v-for="(node) in individualUseageData">
                     <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
-                    <circle
+                    <path v-if="is_outlier(node)"
                         v-bind:key="node.StartTime"
+                        shape-rendering="geometricPrecision"
+                        :d="diamond()"
+                        :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
+                        :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
                         
+                    <circle v-else
+                        v-bind:key="node.StartTime"
+                        shape-rendering="geometricPrecision"
                         :r="point_size"
                         :cx="scale.x(node.group) + node.jitter + halfBandwith"
                         :cy="scale.y(node.usage)"
@@ -81,7 +100,7 @@ import RegisterDataComponent from '@/components/data_components/Core';
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { range, max, min, mean, quantile, median } from 'd3-array';
-import { area, line } from 'd3-shape';
+import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 
 import { WhiskerType } from './DetailedUsageOptions.vue';
@@ -266,6 +285,13 @@ export default Vue.component('detailed-usage', {
                 .y((d) => this.scale.y(d[0]));
             return a;
         },
+        diamond(): any {
+            // try to match the area of the circle and diamond
+            const d = symbol()
+                .type(symbolDiamond)
+                .size(2 * Math.sqrt(2 * (Math.PI * this.point_size ** 2)));
+            return d;
+        },
         selectedSyllable(): number {
             return getNested(this.$store.state, this.datasource).selectedSyllable;
         },
@@ -321,6 +347,14 @@ export default Vue.component('detailed-usage', {
             return (u: number) => {
                 return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
             };
+        },
+        is_outlier(node: UsageItem): boolean {
+            const group = this.groupedData.find((v) => v.group === node.group);
+            if (group) {
+                return node.usage < this.fences.lower(group)
+                    || node.usage > this.fences.upper(group);
+            }
+            return false;
         },
         point_tooltip(item: UsageItem): string {
             return `<div style="text-align:left;">
