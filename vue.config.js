@@ -10,9 +10,6 @@ module.exports = {
             chainWebpackRendererProcess(config) {
                 config.plugins.delete('workbox')
                 config.plugins.delete('pwa')
-            },
-            builderOptions: {
-                "publish": ['github']
             }
         }
     }
