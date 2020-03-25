@@ -73,13 +73,14 @@ matrix:
           - npm install
           - npm run lint
           - npm run test:unit
-        before_deploy:
-          # Need to build before tag is set, otherwise electron-builder attempts to publish the build
-          - npm run package-ci
           - export PACKAGE_VERSION=$(npm run --silent version)
           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
+          - npm run package-ci
+        before_deploy:
+          # Need to build before tag is set, otherwise electron-builder attempts to publish the build
+          
           # - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           # - tar czvf ${RELEASE_NAME} dist_electron/
         # deploy:
