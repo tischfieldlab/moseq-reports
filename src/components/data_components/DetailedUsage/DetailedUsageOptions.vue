@@ -41,7 +41,7 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from '../Core/WindowOptionsMixin';
+import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
 
 export enum WhiskerType {
     TUKEY,

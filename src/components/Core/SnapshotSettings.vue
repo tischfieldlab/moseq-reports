@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Snapshot, {ensureDefaults} from '@/components/data_components/Core/SnapshotHelper';
+import Snapshot, {ensureDefaults} from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowOptionsMixin from './WindowOptionsMixin';
 import {unnest} from '@/util/Vuex';

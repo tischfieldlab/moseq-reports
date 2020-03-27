@@ -32,7 +32,6 @@ export function ensureDefaults(target: Vue, store: Store<any>) {
 }
 
 export default async function Snapshot(target: Vue, basename: string, options: SnapshotOptions) {
-    // options = { ...defaultOptions(target), ...options };
     const svg = target.$el.getElementsByTagName('svg').item(0);
     let uri: Promise<string>|undefined;
     if (!svg) {

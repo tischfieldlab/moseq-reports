@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 Vue.use(Vuex);
 
-import '@/components/data_components/Core';
+import '@/components/Core';
 
 
 import App from './App.vue';

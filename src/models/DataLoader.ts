@@ -3,8 +3,6 @@ import path from 'path';
 import os from 'os';
 import store from '@/store/root.store';
 import StreamZip from 'node-stream-zip';
-
-
 import { deleteFolderRecursive } from '@/util/Files';
 
 
@@ -75,13 +73,17 @@ function LoadUsageData(zip) {
 }
 
 function LoadCrowdMovies(zip, dir): Promise<object> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const dest = path.join(dir, 'crowd_movies');
         fs.mkdirSync(dest);
         zip.extract('crowd_movies', dest, (err, count) => {
             // tslint:disable-next-line:no-console
             console.log(err ? 'Extract error' : `Extracted ${count} crowd movie entries`);
-            resolve({});
+            if (err) {
+                reject(err);
+            } else {
+                resolve({});
+            }
         });
     });
 }

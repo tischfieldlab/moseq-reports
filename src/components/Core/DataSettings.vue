@@ -18,7 +18,7 @@
 import Vue from 'vue';
 import { unnest } from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from './WindowOptionsMixin';
+import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
 
 export default mixins(WindowOptionsMixin).extend({
     computed: {

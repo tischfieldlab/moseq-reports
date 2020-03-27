@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/data_components/Core';
+import RegisterDataComponent from '@/components/Core';
 
 import {Layout} from '@/store/datawindow.types';
 import * as d3 from 'd3';
@@ -46,8 +46,8 @@ import {line} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
 import { CountMethod } from '../../../store/dataview.store';
 import {unnest} from '@/util/Vuex';
-import LoadingMixin from '../Core/LoadingMixin';
-import WindowMixin from '../Core/WindowMixin';
+import LoadingMixin from '@/components/Core/LoadingMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 import mixins from 'vue-typed-mixins';
 
 

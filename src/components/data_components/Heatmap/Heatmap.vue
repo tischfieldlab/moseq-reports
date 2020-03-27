@@ -10,7 +10,7 @@ import * as Plotly from 'plotly.js-dist';
 import { transpose } from '@/util/Array';
 import { Size, Layout } from '@/store/datawindow.types';
 import store from '@/store/root.store';
-import RegisterDataComponent from '@/components/data_components/Core';
+import RegisterDataComponent from '@/components/Core';
 
 RegisterDataComponent({
     friendly_name: 'Usage Heatmap',

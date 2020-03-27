@@ -6,7 +6,6 @@ import { getModuleNamespace, unnest } from '@/util/Vuex';
 import DataWindowModule from './datawindow.store';
 import { saveFile } from '@/util/Files';
 import DefaultLayout from '@/DefaultLayout';
-import Vue from 'vue';
 import { clone } from '@/util/Object';
 
 interface WindowsState {
@@ -136,6 +135,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
         settings: window.settings,
     };
 }
+
 function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     const spec = store.getters.getSpecification(data.type) as ComponentRegistration;
     const win = createDataWindow(spec);

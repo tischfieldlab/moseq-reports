@@ -23,7 +23,7 @@
 import Vue from 'vue';
 import { Chrome } from 'vue-color';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from '../Core/WindowOptionsMixin';
+import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
 
 export default mixins(WindowOptionsMixin).extend({
     components: {

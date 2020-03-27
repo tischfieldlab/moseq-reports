@@ -77,7 +77,7 @@ import Vue from 'vue';
 import {GetInterpolatedScaleOptions} from '@/util/D3ColorProvider';
 import {unnest} from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from '../Core/WindowOptionsMixin';
+import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
 
 export enum OrderingType {
     Natural = 'natural',

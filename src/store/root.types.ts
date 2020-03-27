@@ -1,4 +1,3 @@
-import store from '@/store/root.store';
 
 export interface RootState {
     registry: ComponentRegistration[];

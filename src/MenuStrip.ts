@@ -5,6 +5,7 @@ import { DehydratedDataWindow } from '@/store/datawindow.types';
 import store from '@/store/root.store';
 import app from '@/main';
 import path from 'path';
+import fs from 'fs';
 
 
 /**
@@ -222,12 +223,11 @@ export function openNewFileButton(): void {
  * @returns {void}
  */
 function loadLayoutFromFile(): void {
-    const fs = require('fs');
-
     const currDir: string = process.cwd();
     const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
     if (filenames === undefined) { return; }
 
-    const content: DehydratedDataWindow[] = JSON.parse(fs.readFileSync(filenames[0])) as DehydratedDataWindow[];
+    const data = fs.readFileSync(filenames[0]).toString();
+    const content: DehydratedDataWindow[] = JSON.parse(data) as DehydratedDataWindow[];
     store.dispatch('datawindows/loadLayout', content);
 }

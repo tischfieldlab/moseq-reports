@@ -95,7 +95,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/data_components/Core';
+import RegisterDataComponent from '@/components/Core';
 
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
@@ -104,10 +104,10 @@ import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 
 import { WhiskerType } from './DetailedUsageOptions.vue';
-import LoadingMixin from '@/components/data_components/Core/LoadingMixin';
+import LoadingMixin from '@/components/Core/LoadingMixin';
 import { unnest } from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '../Core/WindowMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
 
 

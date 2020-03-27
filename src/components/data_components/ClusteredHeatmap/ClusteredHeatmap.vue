@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/data_components/Core';
+import RegisterDataComponent from '@/components/Core';
 import store from '@/store/root.store';
 import { Layout } from '@/store/datawindow.types';
 import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue';
@@ -56,11 +56,11 @@ import { GetScale } from '@/util/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV } from '@/util/D3Clustering';
 import { spawn, Worker, ModuleThread } from 'threads';
 import { ClusterWorker } from './Worker';
-import ColorScaleLegend from '@/components/data_components/Core/ColorScaleLegend.vue';
-import LoadingMixin from '@/components/data_components/Core/LoadingMixin';
+import ColorScaleLegend from '@/components/Core/ColorScaleLegend.vue';
+import LoadingMixin from '@/components/Core/LoadingMixin';
 import { unnest } from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '../Core/WindowMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
 
 

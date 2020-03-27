@@ -1,20 +1,34 @@
-// Globally register all base components for convenience, because they
-// will be used very frequently. Components are registered using the
-// PascalCased version of their file name.
-
 import Vue from 'vue';
 import store from '@/store/root.store';
 import {ComponentRegistration} from '@/store/root.types';
 
-
+// Globally register all base components for convenience, because they
+// will be used very frequently. Components are registered using the
+// PascalCased version of their file name.
 export function DiscoverDataComponents() {
-    // https://webpack.js.org/guides/dependency-management/#require-context
-    const requireComponent = require.context(
-        '@/components/data_components', // Look for files in the current directory
+    // register core components
+    GlobalRegisterVueComponents(require.context(
+        '@/components/Core', // directory path
         true, // Do look in subdirectories
-        /[\w-]+\.vue$/, // Only include "_base-" prefixed .vue files
-    );
+        /[\w-]+\.vue$/, // filename match pattern
+    ));
 
+    // register data components
+    GlobalRegisterVueComponents(require.context(
+        '@/components/data_components', // directory path
+        true, // Do look in subdirectories
+        /[\w-]+\.vue$/, // filename match pattern
+    ));
+}
+DiscoverDataComponents();
+
+
+export default function RegisterDataComponent(meta: ComponentRegistration) {
+    store.commit('registerComponent', meta);
+}
+
+function GlobalRegisterVueComponents(requireComponent: __WebpackModuleApi.RequireContext) {
+    // https://webpack.js.org/guides/dependency-management/#require-context
     // For each matching file name...
     requireComponent.keys().forEach((fileName) => {
         // Get the component config
@@ -31,10 +45,4 @@ export function DiscoverDataComponents() {
         // Globally register the component
         Vue.component(componentName, componentConfig.default || componentConfig);
     });
-}
-DiscoverDataComponents();
-
-
-export default function RegisterDataComponent(meta: ComponentRegistration) {
-    store.commit('registerComponent', meta);
 }

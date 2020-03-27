@@ -52,9 +52,9 @@ import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
 import {ComponentRegistration} from '../store/root.types';
 import {Size, Position, Layout} from '@/store/datawindow.types';
 import { unnest } from '@/util/Vuex';
-import Snapshot, {ensureDefaults} from '@/components/data_components/Core/SnapshotHelper';
+import Snapshot, {ensureDefaults} from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/data_components/Core/WindowMixin.ts';
+import WindowMixin from '@/components/Core/WindowMixin.ts';
 
 export default mixins(WindowMixin).extend({
     components: {
