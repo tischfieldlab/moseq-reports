@@ -64,9 +64,9 @@ const WindowsModule: Module<WindowsState, RootState> = {
         },
         serializeLayout(context) {
             const dehydrated = context.state.items.map((id) => {
-                dehydrateWindow(unnest(context.rootState, id));
+                return dehydrateWindow(unnest(context.rootState, id));
             });
-            const data = JSON.stringify(dehydrated);
+            const data = JSON.stringify(dehydrated, null, '\t');
             saveFile('layout.json', 'data:text/json', data);
         },
         async loadLayout(context, layout: DehydratedDataWindow[]) {
@@ -120,7 +120,7 @@ function createDataWindow(component: ComponentRegistration) {
 }
 
 function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
-    return {
+    const dehydrated = {
         type: window.type,
         title: window.title,
         layout: {
@@ -134,6 +134,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
         source: window.datasource,
         settings: window.settings,
     };
+    return dehydrated;
 }
 
 function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
