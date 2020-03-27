@@ -3,56 +3,43 @@ import path from 'path';
 import os from 'os';
 import store from '@/store/root.store';
 import StreamZip from 'node-stream-zip';
-import ElectronStore from 'electron-store';
 
 
-import app from '@/main';
 import { deleteFolderRecursive } from '@/util/Files';
 
 
 
 export default function LoadDataBundle(filename: string) {
-    // console.log('attempting to open ', filename);
-    app.$bvToast.toast('Hang tight... We\'re getting your data ready', {
-        title: 'Loading Data',
-        variant: 'info',
-        toaster: 'b-toaster-bottom-right',
-    });
-    CleanState(); // clean any old state
+    return new Promise((resolve, reject) => {
+        CleanState(); // clean any old state
+        const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
 
-    const zip = new StreamZip({
-        file: filename,
-        storeEntries: true,
-        skipEntryNameValidation: false,
-    });
-    zip.on('error', (err) => {
-        app.$bvToast.toast(err, {
-            title: 'Error loading data!',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
+        const zip = new StreamZip({
+            file: filename,
+            storeEntries: true,
+            skipEntryNameValidation: false,
         });
-        throw new Error(err);
-    });
-    const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
-    zip.on('ready', async () => {
-        const data = {
-            bundle: filename,
-            name: path.basename(filename, '.msq'),
-            path: tmpdir,
-            ...LoadMetadataData(zip),
-            ...LoadUsageData(zip),
-            ...LoadSpinogramData(zip),
-            ...LoadCrowdMovies(zip, tmpdir),
-        };
-        await store.dispatch('datasets/setData', data);
-        zip.close();
-        for (const p of (store.state as any).filters.items) {
-            store.dispatch(`${p}/initialize`);
-        }
-        app.$bvToast.toast('File "' + filename + '" was loaded successfully.', {
-            title: 'Data loaded successfully!',
-            variant: 'success',
-            toaster: 'b-toaster-bottom-right',
+
+        zip.on('error', (err) => {
+            reject(new Error(err));
+        });
+
+        zip.on('ready', async () => {
+            const data = {
+                bundle: filename,
+                name: path.basename(filename, '.msq'),
+                path: tmpdir,
+                ...LoadMetadataData(zip),
+                ...LoadUsageData(zip),
+                ...LoadSpinogramData(zip),
+                ...await LoadCrowdMovies(zip, tmpdir),
+            };
+            await store.dispatch('datasets/setData', data);
+            zip.close();
+            Promise.allSettled((store.state as any).filters.items.map((item) => {
+                store.dispatch(`${item}/initialize`);
+            }));
+            resolve();
         });
     });
 }
@@ -87,14 +74,16 @@ function LoadUsageData(zip) {
     };
 }
 
-function LoadCrowdMovies(zip, dir) {
-    const dest = path.join(dir, 'crowd_movies');
-    fs.mkdirSync(dest);
-    zip.extract('crowd_movies', dest, (err, count) => {
-        // tslint:disable-next-line:no-console
-        console.log(err ? 'Extract error' : `Extracted ${count} crowd movie entries`);
+function LoadCrowdMovies(zip, dir): Promise<object> {
+    return new Promise((resolve) => {
+        const dest = path.join(dir, 'crowd_movies');
+        fs.mkdirSync(dest);
+        zip.extract('crowd_movies', dest, (err, count) => {
+            // tslint:disable-next-line:no-console
+            console.log(err ? 'Extract error' : `Extracted ${count} crowd movie entries`);
+            resolve({});
+        });
     });
-    return {};
 }
 
 

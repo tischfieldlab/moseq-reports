@@ -1,8 +1,11 @@
-import { remote, Menu, MenuItem, MenuItemConstructorOptions } from 'electron';
+import { remote, Menu, MenuItem } from 'electron';
 import LoadDataBundle from '@/models/DataLoader';
 
 import { DehydratedDataWindow } from '@/store/datawindow.types';
 import store from '@/store/root.store';
+import app from '@/main';
+import path from 'path';
+
 
 /**
  * Creates the main menu strip for the electron app
@@ -184,32 +187,33 @@ function createAddWidgetSubmenu(menu: Menu) {
  * @returns {void}
  */
 export function openNewFileButton(): void {
-    const path = require('path');
-    const fs = require('fs');
-
     let currDir: string = process.cwd();
     currDir = path.join(currDir);
 
     const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
     if (filenames === undefined) { return; }
 
-    LoadDataBundle(filenames[0]);
+    app.$bvToast.toast('Hang tight... We\'re getting your data ready', {
+        title: 'Loading Data',
+        variant: 'info',
+        toaster: 'b-toaster-bottom-right',
+    });
+    new Promise((_) => setTimeout(_, 100))
+        .then(() => LoadDataBundle(filenames[0]))
+        .catch((reason) => {
+            app.$bvToast.toast(reason, {
+                title: 'Error loading data!',
+                variant: 'danger',
+                toaster: 'b-toaster-bottom-right',
+            });
+        }).then(() => {
+            app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
+                title: 'Data loaded successfully!',
+                variant: 'success',
+                toaster: 'b-toaster-bottom-right',
+            });
+        });
 }
-
-/**
- * Creates a new window based off of the menu item clicked on
- * and adds it to the view.
- *
- * @param {number} componentIndex   Index representing what type
- *                                  of widget is going to be created.
- */
-/*function addWindow(componentIndex: number): void {
-    const components: ComponentRegistration[] = store.state.registry;
-    const componentInfo: ComponentRegistration = components[componentIndex];
-
-    const win = createDataWindow(componentInfo);
-    store.dispatch('datawindows/addWindow', win);
-}*/
 
 /**
  * Opens a file dialog for json files pertaining to the layout of the webapp
