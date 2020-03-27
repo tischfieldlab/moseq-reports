@@ -115,7 +115,7 @@ export default mixins(WindowOptionsMixin).extend({
             return this.$parent.$parent.$parent.$parent.$parent.$children[0].$children[0];
         },
         updateQualityStr() {
-            this.quality_str = `${this.snapshot_settings.quality * 100}%`;
+            this.quality_str = `${(this.snapshot_settings.quality as number * 100).toFixed(0)}%`;
         },
         takeSnapshot() {
             this.is_taking_snapshot = true;
