@@ -3,7 +3,7 @@
         <b-row>
             <b-col cols="10">
                 <b-input-group prepend="Data Source">
-                    <b-form-select v-model="data_source" :options="available_sources" />
+                    <b-form-select v-model="datasource" :options="available_sources" />
                 </b-input-group>
             </b-col>
             <b-col cols="1">
@@ -16,24 +16,21 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { unnest } from '@/util/Vuex';
+import mixins from 'vue-typed-mixins';
+import WindowOptionsMixin from './WindowOptionsMixin';
 
-export default Vue.component('data-settings', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(WindowOptionsMixin).extend({
     computed: {
         available_sources(): string[] {
             return this.$store.state.filters.items;
         },
-        data_source: {
+        datasource: {
             get(): string {
-                return this.$store.getters.getWindowById(this.id).source.name;
+                return unnest(this.$store.state, this.id).datasource;
             },
             set(value: string) {
-                this.$store.commit('updateComponentDataSource', {
+                this.$store.commit(`${this.id}/updateComponentDataSource`, {
                     source: value,
                     id: this.id,
                 });

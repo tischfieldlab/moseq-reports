@@ -2,6 +2,7 @@ import { toPng, toSvgDataURL } from 'html-to-image';
 import { saveAs } from 'file-saver';
 import { svgAsDataUri, svgAsPngUri } from 'save-svg-as-png';
 import { Store } from 'vuex';
+import { unnest } from '@/util/Vuex';
 
 interface SnapshotOptions {
     format: string;
@@ -18,10 +19,11 @@ export function defaultOptions(target: Vue): SnapshotOptions {
 }
 
 export function ensureDefaults(target: Vue, store: Store<any>) {
-    const settings = store.getters.getWindowById(target.$props.id).settings;
+    const id = target.$props.id;
+    const settings = unnest(store.state, id).settings;
     if (settings.snapshot === undefined) {
-        store.commit('updateComponentSettings', {
-            id: target.$props.id,
+        store.commit(`${id}/updateComponentSettings`, {
+            id,
             settings: {
                 snapshot: { ...defaultOptions(target) },
             },

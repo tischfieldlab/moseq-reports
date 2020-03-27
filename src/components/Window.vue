@@ -3,9 +3,9 @@
         @resized="onResized($event)"
         @moved="onMoved($event)"
         @close="onClosed($event)"
-        :width="width"
-        :height="height"
-        :position="position"
+        :width="layout.width"
+        :height="layout.height"
+        :position="layout.position"
         :showCollapseButton="true">
         <div>
             {{ title }}
@@ -49,20 +49,16 @@
 import Vue, { PropType } from 'vue';
 
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
-import {DataWindow, ComponentRegistration, Size, Position, Layout} from '../store/root.types';
-import { getNested } from '@/store/root.types';
+import {ComponentRegistration} from '../store/root.types';
+import {Size, Position, Layout} from '@/store/datawindow.types';
+import { unnest } from '@/util/Vuex';
 import Snapshot, {ensureDefaults} from '@/components/data_components/Core/SnapshotHelper';
+import mixins from 'vue-typed-mixins';
+import WindowMixin from '@/components/data_components/Core/WindowMixin.ts';
 
-
-export default Vue.component('ui-window', {
+export default mixins(WindowMixin).extend({
     components: {
         JqxWindow,
-    },
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
     },
     data() {
         return {
@@ -72,54 +68,28 @@ export default Vue.component('ui-window', {
         };
     },
     computed: {
-        spec(): ComponentRegistration {
-            return this.$store.getters.getWindowById(this.id).spec;
-        },
-        title(): string {
-            return this.$store.getters.getWindowById(this.id).title;
-        },
         settings_title(): string {
             return this.title + ' Settings';
         },
-        width(): number {
-            return this.$store.getters.getWindowLayout(this.id).width;
-        },
-        height(): number {
-            return this.$store.getters.getWindowLayout(this.id).height;
-        },
-        position(): number {
-            return this.$store.getters.getWindowLayout(this.id).position;
-        },
-        source(): string {
-            return this.$store.getters.getWindowById(this.id).source.name;
-        },
         is_loading(): boolean {
-            return this.component_loading || getNested(this.$store.state, this.source).loading;
+            const s = unnest(this.$store.state, this.datasource);
+            return this.component_loading || (s && s.loading);
         },
     },
-    mounted() {
-        this.watchers.push(this.$store.watch(
-            (state, getters) => {
-                return getters.getWindowLayout(this.id);
-            },
-            (newValue: Layout, oldValue: Layout) => {
+    watch: {
+        layout: {
+            deep: true,
+            handler(newValue) {
                 (this.$refs.window as any).width = newValue.width;
                 (this.$refs.window as any).height = newValue.height;
                 (this.$refs.window as any).position = newValue.position;
             },
-            {
-                deep: true,
-            },
-        ));
-        this.watchers.push(this.$store.watch(
-            (state, getters) => {
-                return getters.getWindowById(this.id).title;
-            },
-            (newValue: string, oldValue: string) => {
-                (this.$refs.window as any).title = newValue;
-            },
-        ));
-
+        },
+        title(newValue) {
+            (this.$refs.window as any).title = newValue;
+        },
+    },
+    mounted() {
         // Create the settings button on the next tick when the DOM is ready
         this.$nextTick().then(() => {
             this.addSettingsButton();
@@ -134,7 +104,7 @@ export default Vue.component('ui-window', {
     methods: {
         onResized(event: any) {
             const s = event.args as Size;
-            this.$store.commit('updateComponentLayout', {
+            this.$store.commit(`${this.id}/updateComponentLayout`, {
                 id: this.id,
                 width: s.width,
                 height: s.height,
@@ -142,14 +112,14 @@ export default Vue.component('ui-window', {
         },
         onMoved(event: any) {
             const p = event.args as Position;
-            this.$store.commit('updateComponentLayout', {
+            this.$store.commit(`${this.id}/updateComponentLayout`, {
                 id: this.id,
                 position_x: p.x,
                 position_y: p.y,
             });
         },
         onClosed(event: any) {
-            this.$store.commit('removeWindow', this.id);
+            this.$store.dispatch('datawindows/removeWindow', this.id);
         },
         addSettingsButton() {
             const container = document.createElement('div');
@@ -174,7 +144,7 @@ export default Vue.component('ui-window', {
         },
         async snapshotContent(event: MouseEvent) {
             ensureDefaults(this.$refs.body as Vue, this.$store);
-            const options = this.$store.getters.getWindowById(this.id).settings.snapshot;
+            const options = this.settings.snapshot;
             await Snapshot(this.$refs.body as Vue, this.title, options);
         },
     },

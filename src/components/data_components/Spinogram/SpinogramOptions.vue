@@ -22,27 +22,20 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import { Chrome } from 'vue-color';
+import mixins from 'vue-typed-mixins';
+import WindowOptionsMixin from '../Core/WindowOptionsMixin';
 
-export default Vue.component('spinogram-options', {
+export default mixins(WindowOptionsMixin).extend({
     components: {
         'chrome-picker': Chrome,
     },
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
     computed: {
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
         line_color: {
             get(): string {
                 return this.settings.line_color;
             },
             set(value: any) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         line_color: value.hex,
@@ -55,7 +48,7 @@ export default Vue.component('spinogram-options', {
                 return this.settings.line_weight;
             },
             set(value: any) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         line_weight: value,
@@ -63,10 +56,6 @@ export default Vue.component('spinogram-options', {
                 });
             },
         },
-    },
-    data() {
-        return {
-        };
     },
 });
 </script>

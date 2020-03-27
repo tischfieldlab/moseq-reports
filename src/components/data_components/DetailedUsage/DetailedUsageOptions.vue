@@ -40,29 +40,22 @@
 
 <script scoped lang="ts">
 import Vue from 'vue';
+import mixins from 'vue-typed-mixins';
+import WindowOptionsMixin from '../Core/WindowOptionsMixin';
 
 export enum WhiskerType {
     TUKEY,
     MIN_MAX,
 }
 
-export default Vue.component('detailed-usage-options', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(WindowOptionsMixin).extend({
     computed: {
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
         show_points: {
             get(): boolean {
                 return this.settings.show_points;
             },
             set(value: boolean) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         show_points: value,
@@ -75,7 +68,7 @@ export default Vue.component('detailed-usage-options', {
                 return this.settings.point_size;
             },
             set(value: boolean) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         point_size: value,
@@ -88,7 +81,7 @@ export default Vue.component('detailed-usage-options', {
                 return this.settings.show_boxplot;
             },
             set(value: boolean) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         show_boxplot: value,
@@ -101,7 +94,7 @@ export default Vue.component('detailed-usage-options', {
                 return this.settings.boxplot_whiskers;
             },
             set(value: WhiskerType) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         boxplot_whiskers: value,
@@ -119,7 +112,7 @@ export default Vue.component('detailed-usage-options', {
                 return this.settings.show_violinplot;
             },
             set(value: boolean) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         show_violinplot: value,

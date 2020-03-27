@@ -1,7 +1,7 @@
 import { remote, Menu, MenuItem, MenuItemConstructorOptions } from 'electron';
 import LoadDataBundle from '@/models/DataLoader';
 
-import { createDataWindow, ComponentRegistration, DehydratedDataWindow } from '@/store/root.types';
+import { DehydratedDataWindow } from '@/store/datawindow.types';
 import store from '@/store/root.store';
 
 /**
@@ -125,7 +125,7 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Save Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('serializeLayout'); },
+                    click: (): void => { store.dispatch('datawindows/serializeLayout'); },
                 },
                 {
                     label: 'Load Layout',
@@ -138,12 +138,12 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Clear Layout',
                     type: 'normal',
-                    click: (): void => { store.commit('clearLayout'); },
+                    click: (): void => { store.dispatch('datawindows/clearLayout'); },
                 },
                 {
                     label: 'Default Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('loadDefaultLayout'); },
+                    click: (): void => { store.dispatch('datawindows/loadDefaultLayout'); },
                 },
             ],
         },
@@ -165,14 +165,12 @@ function createAddWidgetSubmenu(menu: Menu) {
     const toolsMenu: MenuItem = menu.items[2];
     const addWidgetMenu: Menu = toolsMenu.submenu!.items[0].submenu as Menu;
 
-    const components: ComponentRegistration[] = store.state.registry;
-    for (const component of components) {
+    for (const component of store.state.registry) {
         const newItem: MenuItem = new remote.MenuItem({
             label: component.friendly_name,
             type: 'normal',
             click: (): void => {
-                const win = createDataWindow(component);
-                store.commit('addWindow', win);
+                store.dispatch('datawindows/createWindow', component);
             },
         });
 
@@ -205,13 +203,13 @@ export function openNewFileButton(): void {
  * @param {number} componentIndex   Index representing what type
  *                                  of widget is going to be created.
  */
-function addWindow(componentIndex: number): void {
+/*function addWindow(componentIndex: number): void {
     const components: ComponentRegistration[] = store.state.registry;
     const componentInfo: ComponentRegistration = components[componentIndex];
 
     const win = createDataWindow(componentInfo);
-    store.commit('addWindow', win);
-}
+    store.dispatch('datawindows/addWindow', win);
+}*/
 
 /**
  * Opens a file dialog for json files pertaining to the layout of the webapp
@@ -227,5 +225,5 @@ function loadLayoutFromFile(): void {
     if (filenames === undefined) { return; }
 
     const content: DehydratedDataWindow[] = JSON.parse(fs.readFileSync(filenames[0])) as DehydratedDataWindow[];
-    store.dispatch('loadLayout', content);
+    store.dispatch('datawindows/loadLayout', content);
 }

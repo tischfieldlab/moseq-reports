@@ -75,7 +75,9 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import {GetInterpolatedScaleOptions} from '@/util/D3ColorProvider';
-import {getNested} from '@/store/root.types';
+import {unnest} from '@/util/Vuex';
+import mixins from 'vue-typed-mixins';
+import WindowOptionsMixin from '../Core/WindowOptionsMixin';
 
 export enum OrderingType {
     Natural = 'natural',
@@ -88,13 +90,7 @@ export enum SortOrderDirection {
 }
 
 
-export default Vue.component('clustered-heatmap-options', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(WindowOptionsMixin).extend({
     mounted() {
         this.populateGroups();
     },
@@ -107,21 +103,15 @@ export default Vue.component('clustered-heatmap-options', {
         },
     },
     computed: {
-        datasource(): string {
-            return this.$store.getters.getWindowById(this.id).source.name;
-        },
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
         selectedGroups(): string[] {
-            return getNested(this.$store.state, this.datasource).selectedGroups;
+            return unnest(this.$store.state, this.datasource).selectedGroups;
         },
         colorscale: {
             get(): string {
                 return this.settings.colormap;
             },
             set(value: string) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         colormap: value,
@@ -134,7 +124,7 @@ export default Vue.component('clustered-heatmap-options', {
                 return this.settings.syllable_order_type;
             },
             set(value: OrderingType) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         syllable_order_type: value,
@@ -147,7 +137,7 @@ export default Vue.component('clustered-heatmap-options', {
                 return this.settings.syllable_order_group_value;
             },
             set(value: string) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         syllable_order_group_value: value,
@@ -160,7 +150,7 @@ export default Vue.component('clustered-heatmap-options', {
                 return this.settings.syllable_order_direction;
             },
             set(value: SortOrderDirection) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         syllable_order_direction: value,
@@ -173,7 +163,7 @@ export default Vue.component('clustered-heatmap-options', {
                 return this.settings.syllable_cluster_distance;
             },
             set(value: string) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         syllable_cluster_distance: value,
@@ -186,7 +176,7 @@ export default Vue.component('clustered-heatmap-options', {
                 return this.settings.syllable_cluster_linkage;
             },
             set(value: string) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         syllable_cluster_linkage: value,
@@ -199,7 +189,7 @@ export default Vue.component('clustered-heatmap-options', {
                 return this.settings.group_order_type;
             },
             set(value: OrderingType) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         group_order_type: value,
@@ -212,7 +202,7 @@ export default Vue.component('clustered-heatmap-options', {
                 return this.settings.group_cluster_distance;
             },
             set(value: string) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         group_cluster_distance: value,
@@ -225,7 +215,7 @@ export default Vue.component('clustered-heatmap-options', {
                 return this.settings.group_cluster_linkage;
             },
             set(value: string) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         group_cluster_linkage: value,

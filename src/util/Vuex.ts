@@ -6,3 +6,13 @@ export function getModuleNamespace(store: any, state) {
         return moduleNamespace.slice(0, -1);
     }
 }
+
+export function unnest(theObject: object, path: string, separator: string = '/'): any {
+    try {
+        return path.replace('[', separator).replace(']', '')
+                   .split(separator)
+                   .reduce((obj, property) => obj[property], theObject);
+    } catch (err) {
+        return undefined;
+    }
+}

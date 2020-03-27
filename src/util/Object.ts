@@ -1,4 +1,7 @@
 
+export function clone(obj: any) {
+    return JSON.parse(JSON.stringify(obj));
+}
 
 
 export function isObject(item) {

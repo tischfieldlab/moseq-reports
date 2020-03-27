@@ -105,7 +105,9 @@ import { axisBottom, axisLeft } from 'd3-axis';
 
 import { WhiskerType } from './DetailedUsageOptions.vue';
 import LoadingMixin from '@/components/data_components/Core/LoadingMixin';
-import { getNested } from '@/store/root.types';
+import { unnest } from '@/util/Vuex';
+import mixins from 'vue-typed-mixins';
+import WindowMixin from '../Core/WindowMixin';
 
 
 
@@ -136,8 +138,8 @@ interface GroupStats {
 
 RegisterDataComponent({
     friendly_name: 'Usage Details',
-    component_type: 'detailed-usage',
-    settings_type: 'detailed-usage-options',
+    component_type: 'DetailedUsage',
+    settings_type: 'DetailedUsageOptions',
     init_width: 400,
     init_height: 500,
     default_settings: {
@@ -149,14 +151,7 @@ RegisterDataComponent({
     },
 });
 
-export default Vue.component('detailed-usage', {
-    mixins: [LoadingMixin],
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(LoadingMixin, WindowMixin).extend({
     data() {
         return {
             individualUseageData: Array<UsageItem>(),
@@ -178,8 +173,8 @@ export default Vue.component('detailed-usage', {
             (state, getters) => {
                 return {
                     view: getters[`${this.datasource}/view`],
-                    colors: getNested(state, this.datasource).groupColors,
-                    selectedSyllable: getNested(state, this.datasource).selectedSyllable,
+                    colors: unnest(state, this.datasource).groupColors,
+                    selectedSyllable: unnest(state, this.datasource).selectedSyllable,
                 };
             },
             () => this.createView(),
@@ -191,15 +186,6 @@ export default Vue.component('detailed-usage', {
         this.watchers.forEach((w) => w());
     },
     computed: {
-        datasource(): string {
-            return this.$store.getters.getWindowById(this.id).source.name;
-        },
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
-        layout() {
-            return this.$store.getters.getWindowById(this.id).layout;
-        },
         width(): number {
             const width = this.outsideWidth - this.margin.left - this.margin.right;
             const ls = this.calc_label_stats();
@@ -293,10 +279,10 @@ export default Vue.component('detailed-usage', {
             return d;
         },
         selectedSyllable(): number {
-            return getNested(this.$store.state, this.datasource).selectedSyllable;
+            return unnest(this.$store.state, this.datasource).selectedSyllable;
         },
         countMethod(): string {
-            return getNested(this.$store.state, this.datasource).countMethod;
+            return unnest(this.$store.state, this.datasource).countMethod;
         },
     },
     methods: {
@@ -305,8 +291,8 @@ export default Vue.component('detailed-usage', {
             if (df === null) {
                 return;
             }
-            this.groupNames = getNested(this.$store.state, this.datasource).selectedGroups;
-            this.groupColors = getNested(this.$store.state, this.datasource).groupColors;
+            this.groupNames = unnest(this.$store.state, this.datasource).selectedGroups;
+            this.groupColors = unnest(this.$store.state, this.datasource).groupColors;
             this.individualUseageData = df.where({syllable: this.selectedSyllable})
                                           .select('usage', 'group', 'StartTime')
                                           .sortBy('usage')

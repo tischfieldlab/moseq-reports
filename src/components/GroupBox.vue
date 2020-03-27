@@ -29,7 +29,7 @@ import Vue from 'vue';
 import draggable from 'vuedraggable';
 import { Chrome } from 'vue-color';
 import { debounce } from 'ts-debounce';
-import { getNested } from '@/store/root.types';
+import { unnest } from '@/util/Vuex';
 import deepEqual from 'deep-equal';
 
 
@@ -89,8 +89,8 @@ export default Vue.extend({
         this.watchers.push(this.$store.watch(
             (state, getters) => {
                 return {
-                    c: getNested(state, this.dataview).groupColors as string[],
-                    s: getNested(state, this.dataview).selectedGroups as string[],
+                    c: unnest(state, this.dataview).groupColors as string[],
+                    s: unnest(state, this.dataview).selectedGroups as string[],
                 };
             },
             (newValue) => {
@@ -114,8 +114,8 @@ export default Vue.extend({
         buildGroups() {
             this.groups = []; // Need to reset this so that we don't have duplicate options.
             const availableGroups = this.$store.getters[`${this.dataview}/availableGroups`];
-            const selectedGroups = getNested(this.$store.state, this.dataview).selectedGroups;
-            const colorScale =  getNested(this.$store.state, this.dataview).groupColors;
+            const selectedGroups = unnest(this.$store.state, this.dataview).selectedGroups;
+            const colorScale =  unnest(this.$store.state, this.dataview).groupColors;
             availableGroups.map((g, i) => {
                 const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
                 sgi.color = colorScale[i];
@@ -125,7 +125,7 @@ export default Vue.extend({
         updateGroups() {
             const groups = this.groups.filter((g) => g.selected).map((g) => g.name);
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-            if (!deepEqual(groups, getNested(this.$store.state, this.dataview).selectedGroups)) {
+            if (!deepEqual(groups, unnest(this.$store.state, this.dataview).selectedGroups)) {
                 this.$store.dispatch(`${this.dataview}/updateSelectedGroups`, {
                     groups,
                     colors,
@@ -134,7 +134,7 @@ export default Vue.extend({
         },
         updateColors() {
             const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-            if (!deepEqual(colors, getNested(this.$store.state, this.dataview).groupColors)) {
+            if (!deepEqual(colors, unnest(this.$store.state, this.dataview).groupColors)) {
                 this.$store.dispatch(`${this.dataview}/updateSelectedGroups`, {colors});
             }
         },

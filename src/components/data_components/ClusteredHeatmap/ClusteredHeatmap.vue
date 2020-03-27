@@ -47,7 +47,7 @@
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/data_components/Core';
 import store from '@/store/root.store';
-import { Layout } from '@/store/root.types';
+import { Layout } from '@/store/datawindow.types';
 import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue';
 import * as d3 from 'd3';
 import { cluster, hierarchy, sum } from 'd3';
@@ -58,14 +58,16 @@ import { spawn, Worker, ModuleThread } from 'threads';
 import { ClusterWorker } from './Worker';
 import ColorScaleLegend from '@/components/data_components/Core/ColorScaleLegend.vue';
 import LoadingMixin from '@/components/data_components/Core/LoadingMixin';
-import { getNested } from '@/store/root.types';
+import { unnest } from '@/util/Vuex';
+import mixins from 'vue-typed-mixins';
+import WindowMixin from '../Core/WindowMixin';
 
 
 
 
 RegisterDataComponent({
     friendly_name: 'Clustered Usage Heatmap',
-    component_type: 'clustered-heatmap',
+    component_type: 'ClusteredHeatmap',
     settings_type: 'ClusteredHeatmapOptions',
     init_width: 400,
     init_height: 500,
@@ -95,14 +97,7 @@ let worker: ModuleThread<ClusterWorker>;
 
 
 
-export default Vue.component('clustered-heatmap', {
-    mixins: [LoadingMixin],
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
         ColorScaleLegend,
     },
@@ -127,7 +122,7 @@ export default Vue.component('clustered-heatmap', {
     mounted() {
         this.watchers.push(this.$store.watch(
             (state, getters) => {
-                const s = getters.getWindowById(this.id).settings;
+                const s = unnest(state, this.id).settings;
                 return {
                     syllable_cluster_distance: s.syllable_cluster_distance,
                     syllable_cluster_linkage: s.syllable_cluster_linkage,
@@ -137,7 +132,7 @@ export default Vue.component('clustered-heatmap', {
         ));
         this.watchers.push(this.$store.watch(
             (state, getters) => {
-                const s = getters.getWindowById(this.id).settings;
+                const s = unnest(state, this.id).settings;
                 return {
                     group_cluster_distance: s.group_cluster_distance,
                     group_cluster_linkage: s.group_cluster_linkage,
@@ -152,15 +147,6 @@ export default Vue.component('clustered-heatmap', {
         this.watchers.forEach((w) => w());
     },
     computed: {
-        datasource(): string {
-            return this.$store.getters.getWindowById(this.id).source.name;
-        },
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
-        layout(): Layout {
-            return this.$store.getters.getWindowById(this.id).layout;
-        },
         width(): number {
             return this.outsideWidth - this.margin.left - this.margin.right;
         },
@@ -306,21 +292,21 @@ export default Vue.component('clustered-heatmap', {
             return cluster().size([this.dims.rtree.h, this.dims.rtree.w])(this.syllableHierarchy as any).links() as any;
         },
         selectedGroups(): string[] {
-            return getNested(this.$store.state, this.datasource).selectedGroups;
+            return unnest(this.$store.state, this.datasource).selectedGroups;
         },
         aggregateView(): any {
             return this.$store.getters[`${this.datasource}/aggregateView`];
         },
         selectedSyllable: {
             get(): number {
-                return getNested(this.$store.state, this.datasource).selectedSyllable;
+                return unnest(this.$store.state, this.datasource).selectedSyllable;
             },
             set(event: number) {
                 this.$store.commit(`${this.datasource}/setSelectedSyllable`, event);
             },
         },
         countMethod(): string {
-            return getNested(this.$store.state, this.datasource).countMethod;
+            return unnest(this.$store.state, this.datasource).countMethod;
         },
     },
     watch: {

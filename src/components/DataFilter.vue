@@ -31,7 +31,7 @@ import Vue from 'vue';
 import { CountMethod } from '@/store/dataview.store';
 import { debounce } from 'ts-debounce';
 import GroupBox from '@/components/GroupBox.vue';
-import { getNested } from '@/store/root.types';
+import { unnest } from '@/util/Vuex';
 
 
 
@@ -55,11 +55,11 @@ export default Vue.component('datafilter', {
     },
     computed: {
         is_loading(): boolean {
-            return getNested(this.$store.state, this.dataview).loading;
+            return unnest(this.$store.state, this.dataview).loading;
         },
         syllable: {
             get(): number {
-                return getNested(this.$store.state, this.dataview).selectedSyllable;
+                return unnest(this.$store.state, this.dataview).selectedSyllable;
             },
             set(event: number) {
                 this.$store.commit(`${this.dataview}/setSelectedSyllable`, event);
@@ -75,7 +75,7 @@ export default Vue.component('datafilter', {
         },
         selectedCountMethod: {
             get(): CountMethod {
-                return getNested(this.$store.state, this.dataview).countMethod;
+                return unnest(this.$store.state, this.dataview).countMethod;
             },
             set(event: CountMethod) {
                 this.$store.dispatch(`${this.dataview}/switchCountMethod`, event);

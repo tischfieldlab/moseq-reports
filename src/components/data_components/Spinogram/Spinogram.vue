@@ -40,11 +40,16 @@
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/data_components/Core';
 
-import {Layout, getNested} from '@/store/root.types';
+import {Layout} from '@/store/datawindow.types';
 import * as d3 from 'd3';
 import {line} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
 import { CountMethod } from '../../../store/dataview.store';
+import {unnest} from '@/util/Vuex';
+import LoadingMixin from '../Core/LoadingMixin';
+import WindowMixin from '../Core/WindowMixin';
+import mixins from 'vue-typed-mixins';
+
 
 interface Spinogram {
     id: number;
@@ -59,8 +64,8 @@ interface SpinogramTimepoint {
 
 RegisterDataComponent({
     friendly_name: 'Spinogram',
-    component_type: 'spinogram-plots',
-    settings_type: 'spinogram-options',
+    component_type: 'Spinogram',
+    settings_type: 'SpinogramOptions',
     init_width: 400,
     init_height: 200,
     default_settings: {
@@ -70,13 +75,7 @@ RegisterDataComponent({
 });
 
 
-export default Vue.component('spinogram-plots', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(LoadingMixin, WindowMixin).extend({
     data() {
         return {
             margin: {
@@ -88,15 +87,6 @@ export default Vue.component('spinogram-plots', {
         };
     },
     computed: {
-        datasource(): string {
-            return this.$store.getters.getWindowById(this.id).source.name;
-        },
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
-        layout(): Layout {
-            return this.$store.getters.getWindowById(this.id).layout;
-        },
         width(): number {
             return this.outsideWidth - this.margin.left - this.margin.right;
         },
@@ -139,13 +129,13 @@ export default Vue.component('spinogram-plots', {
             return this.settings.line_weight;
         },
         selectedSyllable(): number {
-            return getNested(this.$store.state, this.datasource).selectedSyllable;
+            return unnest(this.$store.state, this.datasource).selectedSyllable;
         },
         usageSelectedSyllable(): number {
             return this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Usage);
         },
         countMethod(): string {
-            return getNested(this.$store.state, this.datasource).countMethod;
+            return unnest(this.$store.state, this.datasource).countMethod;
         },
         spinogram_data(): Spinogram {
             return this.$store.state.datasets.spinogram.find((s) => s.id === this.usageSelectedSyllable) as Spinogram;

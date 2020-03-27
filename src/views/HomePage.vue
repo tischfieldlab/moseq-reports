@@ -13,8 +13,8 @@
                 No data loaded. Please <a href="#" @click="initiateFileOpen">load some data</a> by clicking File > Open File.
             </h4>
         </div>
-        <template v-for="w in windows">
-            <UiCard :key="w.id" :id="w.id" />
+        <template v-for="wid in windows">
+            <UiCard :key="wid" :id="wid" />
         </template>
     </div>
 </template>
@@ -26,7 +26,6 @@ import { debounce } from 'ts-debounce';
 import UiCard from '@/components/Window.vue';
 import DataFilter from '@/components/DataFilter.vue';
 
-import { DataWindow } from '@/store/root.types';
 import { openNewFileButton } from '@/MenuStrip';
 
 
@@ -46,8 +45,8 @@ export default Vue.component('homepage', {
         };
     },
     computed: {
-        windows(): DataWindow[] {
-            return this.$store.state.windows;
+        windows(): string[] {
+            return this.$store.state.datawindows.items;
         },
         metadataLoaded(): boolean {
             return this.$store.state.datasets.usageByUsage !== null;
@@ -82,7 +81,7 @@ export default Vue.component('homepage', {
             this.width = document.documentElement.clientWidth - this.toolbox_width;
         },
         loadDefaultLayout(): void {
-            this.$store.dispatch('loadDefaultLayout');
+            this.$store.dispatch('datawindows/loadDefaultLayout');
         },
         initiateFileOpen(): void {
             openNewFileButton();

@@ -35,15 +35,12 @@
 <script lang="ts">
 import Vue from 'vue';
 import Snapshot, {ensureDefaults} from '@/components/data_components/Core/SnapshotHelper';
+import mixins from 'vue-typed-mixins';
+import WindowOptionsMixin from './WindowOptionsMixin';
+import {unnest} from '@/util/Vuex';
 
 
-export default Vue.component('snapshot-settings', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(WindowOptionsMixin).extend({
     data() {
         return {
             is_taking_snapshot: false,
@@ -60,18 +57,18 @@ export default Vue.component('snapshot-settings', {
         this.supported_formats = this.getSupportedFormats();
     },
     computed: {
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings.snapshot;
+        snapshot_settings(): any {
+            return this.settings.snapshot;
         },
         title(): string {
-            return this.$store.getters.getWindowById(this.id).title;
+            return unnest(this.$store.state, this.id).title;
         },
         format: {
             get(): string {
-                return this.settings.format;
+                return this.snapshot_settings.format;
             },
             set(value: string) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         snapshot: {
@@ -83,10 +80,10 @@ export default Vue.component('snapshot-settings', {
         },
         quality: {
             get(): number {
-                return this.settings.quality * 100;
+                return this.snapshot_settings.quality * 100;
             },
             set(value: number) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         snapshot: {
@@ -99,10 +96,10 @@ export default Vue.component('snapshot-settings', {
         },
         scale: {
             get(): number {
-                return this.settings.scale;
+                return this.snapshot_settings.scale;
             },
             set(value: number) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         snapshot: {
@@ -118,11 +115,11 @@ export default Vue.component('snapshot-settings', {
             return this.$parent.$parent.$parent.$parent.$parent.$children[0].$children[0];
         },
         updateQualityStr() {
-            this.quality_str = `${this.settings.quality * 100}%`;
+            this.quality_str = `${this.snapshot_settings.quality * 100}%`;
         },
         takeSnapshot() {
             this.is_taking_snapshot = true;
-            this.$nextTick(() => Snapshot(this.getComponent(), this.title, this.settings)
+            this.$nextTick(() => Snapshot(this.getComponent(), this.title, this.snapshot_settings)
                 .finally(() => this.is_taking_snapshot = false));
         },
         getSupportedFormats(): string[] {
