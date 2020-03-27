@@ -53,7 +53,6 @@ export default mixins(WindowOptionsMixin).extend({
         this.updateQualityStr();
     },
     mounted() {
-        // console.log(this.$parent.$parent.$parent.$parent.$parent.$children[0].$children[0]);
         this.supported_formats = this.getSupportedFormats();
     },
     computed: {
@@ -115,7 +114,7 @@ export default mixins(WindowOptionsMixin).extend({
             return this.$parent.$parent.$parent.$parent.$parent.$children[0].$children[0];
         },
         updateQualityStr() {
-            this.quality_str = `${(this.snapshot_settings.quality as number * 100).toFixed(0)}%`;
+            this.quality_str = `${(this.snapshot_settings.quality * 100).toFixed(0)}%`;
         },
         takeSnapshot() {
             this.is_taking_snapshot = true;
@@ -123,11 +122,7 @@ export default mixins(WindowOptionsMixin).extend({
                 .finally(() => this.is_taking_snapshot = false));
         },
         getSupportedFormats(): string[] {
-            const options = ['png'];
-            const svg = this.getComponent().$el.getElementsByTagName('svg').item(0);
-            if (svg) {
-                options.push('svg');
-            }
+            const options = ['png', 'svg'];
             return options;
         },
     },
