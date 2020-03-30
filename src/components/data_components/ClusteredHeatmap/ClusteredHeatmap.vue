@@ -2,9 +2,9 @@
     <div>
         <svg ref="canvas" :width="outsideWidth" :height="outsideHeight">
             <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`" v-on:click="setSelectedSyllable">
-                <template v-for="(node, index) in usages">
+                <template v-for="node in usages">
                     <rect 
-                        :key="index"
+                        :key="`${node.group}-${node.syllable}`"
                         :x="scale.x(node.group)"
                         :y="scale.y(node.syllable)"
                         :width="scale.x.bandwidth()"
@@ -86,7 +86,7 @@ RegisterDataComponent({
 
 interface HeatmapTile {
     group: string;
-    syllable: string;
+    syllable: number;
     usage: number;
 }
 
@@ -106,7 +106,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             usages: new Array<HeatmapTile>(),
             clusteredGroupOrder: new Array<string>(),
             groupHierarchy: undefined as any,
-            clusteredSyllableOrder: new Array<string>(),
+            clusteredSyllableOrder: new Array<number>(),
             syllableHierarchy: undefined as any,
             rotate_labels: false,
             margin: {
@@ -237,27 +237,20 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         isSyllablesClustered(): boolean {
             return this.settings.syllable_order_type === OrderingType.Cluster;
         },
-        syllableOrder(): string[] {
+        syllableOrder(): number[] {
             switch (this.settings.syllable_order_type) {
                 case OrderingType.Cluster:
                     return this.clusteredSyllableOrder;
 
                 case OrderingType.Value:
-                    return this.aggregateView
-                                    .where({group: this.settings.syllable_order_group_value})
-                                    .sortBy('usage', this.settings.syllable_order_direction === SortOrderDirection.Asc)
-                                    .select('syllable')
-                                    .toArray()
-                                    .flat();
+                    return this.usages
+                               .filter((u) => u.group === this.settings.syllable_order_group_value)
+                               .sort((a, b) => a.usage - b.usage)
+                               .map((u) => u.syllable);
 
                 case OrderingType.Natural:
                 default:
-                    return this.aggregateView
-                                    .select('syllable')
-                                    .distinct('syllable')
-                                    .sortBy('syllable')
-                                    .toArray()
-                                    .flat();
+                    return [...new Set(this.usages.map((u) => u.syllable))].sort((a, b) => a - b);
             }
         },
         colormap(): any {
@@ -269,7 +262,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 .range([0, this.dims.heatmap.w])
                 .padding(0);
             const y = scaleBand()
-                .domain(this.syllableOrder)
+                .domain(this.syllableOrder.map((s) => s.toString()))
                 .range([this.dims.heatmap.h, 0])
                 .padding(0);
             const z = scaleSequential(this.colormap)
