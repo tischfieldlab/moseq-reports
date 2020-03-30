@@ -81,13 +81,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 return null;
             }
         },
-        maxSyllable: (state, getters) => {
-            const view = getters.view;
-            if (view === null) {
-                return 0;
-            }
-            return Math.max(...view.distinct('syllable').toArray());
-        },
         availableModuleIds: (state, getters, rootState, rootGetters) => {
             if (state.countMethod === CountMethod.Usage) {
                 return rootGetters['datasets/availableUsageModuleIds'];
