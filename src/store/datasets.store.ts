@@ -1,6 +1,7 @@
 import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
 import Vue from 'vue';
+import DataFrame from 'dataframe-js';
 
 interface DatasetsState {
     bundle: string; // path to the bundle
@@ -24,6 +25,26 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         usageByFrames: null,
         groups: [],
         label_map: null,
+    },
+    getters: {
+        availableUsageModuleIds: (state) => {
+            if (state.usageByUsage === null) {
+                return [];
+            }
+            return new DataFrame(state.usageByUsage.data, state.usageByUsage.columns)
+                .distinct('syllable')
+                .sortBy('syllable')
+                .toArray('syllable');
+        },
+        availableFramesModuleIds: (state) => {
+            if (state.usageByFrames === null) {
+                return [];
+            }
+            return new DataFrame(state.usageByFrames.data, state.usageByFrames.columns)
+                .distinct('syllable')
+                .sortBy('syllable')
+                .toArray('syllable');
+        },
     },
     mutations: {
         SetDataSourceInfo(state, payload: DatasetsState) {

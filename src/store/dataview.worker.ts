@@ -1,11 +1,18 @@
 import { expose } from 'threads/worker';
 import DataFrame from 'dataframe-js';
 
+interface ViewFilters {
+    groups: string[];
+    moduleId: number[];
+}
 
 const exposedMethods = {
-    filterGroups(df, groups: string[]) {
+    filterGroups(df, filters: ViewFilters) {
         df = new DataFrame(df.data, df.columns);
-        df = df.filter((row: any) => groups.includes(row.get('group')));
+        df = df.filter((row: any) => filters.groups.includes(row.get('group')));
+        if (filters.moduleId.length > 0) {
+            df = df.filter((row: any) => filters.moduleId.includes(row.get('syllable')));
+        }
         df = df.toDict();
         return {data: df, columns: Object.getOwnPropertyNames(df)};
     },

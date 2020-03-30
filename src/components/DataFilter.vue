@@ -19,6 +19,8 @@
                         <b-input-group prepend="Selected Syllable" class="filter-item">
                             <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
                         </b-input-group>
+
+                        <SyllableIdFilter :dataview="dataview" />
                     </div>
                 </b-overlay>
             </b-collapse>
@@ -31,6 +33,7 @@ import Vue from 'vue';
 import { CountMethod } from '@/store/dataview.store';
 import { debounce } from 'ts-debounce';
 import GroupBox from '@/components/GroupBox.vue';
+import SyllableIdFilter from '@/components/SyllableIdFilter.vue';
 import { unnest } from '@/util/Vuex';
 
 
@@ -38,6 +41,7 @@ import { unnest } from '@/util/Vuex';
 export default Vue.component('datafilter', {
     components: {
         GroupBox,
+        SyllableIdFilter,
     },
     props: {
         dataview: {
@@ -65,13 +69,17 @@ export default Vue.component('datafilter', {
                 this.$store.commit(`${this.dataview}/setSelectedSyllable`, event);
             },
         },
-        syllableIdOptions() {
-            const max = this.$store.getters[`${this.dataview}/maxSyllable`];
-            const options: Array<{ value: number, text: string }> = [];
-            for (let i = 0; i < max + 1; i++) {
-                options.push({ value: i, text: i.toString() });
+        syllableIdOptions(): number[] {
+            const filtered = unnest(this.$store.state, this.dataview).moduleIdFilter;
+            if (filtered.length === 0) {
+                return this.$store.getters[`${this.dataview}/availableModuleIds`].map((i) => {
+                    return { value: i, text: i.toString() };
+                });
+            } else {
+                return unnest(this.$store.state, this.dataview).moduleIdFilter.map((i) => {
+                    return { value: i, text: i.toString() };
+                });
             }
-            return options;
         },
         selectedCountMethod: {
             get(): CountMethod {
