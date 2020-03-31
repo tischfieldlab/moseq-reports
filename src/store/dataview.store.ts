@@ -179,10 +179,10 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 context.commit('setLoading', false);
             }
         },
-        initialize(context) {
+        async initialize(context) {
             const groups = context.getters.availableGroups;
             const colorScale = scaleOrdinal(schemeDark2);
-            context.dispatch('updateView', {
+            await context.dispatch('updateView', {
                 selectedGroups: groups,
                 groupColors: groups.map((g: string) => colorScale(g)),
             } as DataviewPayload).then(() => bindStore(getModuleNamespace(store, context.state)));
