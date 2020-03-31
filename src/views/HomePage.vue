@@ -8,8 +8,9 @@
                 </template>
             </div>
         </div>
-        <div id="has-no-metadata-container" :style="{'left': toolbox_width+'px', 'width': width+'px', 'top': height/2+'px'}" v-if="!metadataLoaded">
-            <h4 style="text-align: center;" id="no-data-text">
+        <div id="has-no-metadata-container" v-if="!metadataLoaded">
+            <div>&nbsp;</div>
+            <h4>
                 No data loaded. Please <a href="#" @click="initiateFileOpen">load some data</a> by clicking File > Open File.
             </h4>
         </div>
@@ -111,9 +112,25 @@ export default Vue.component('homepage', {
     overflow-x: hidden;
 }
 
-#has-no-metadata-container{
-    position: fixed;
-    top: 0px;
-    padding-right: 40px;
+#has-no-metadata-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: inherit;
+}
+#has-no-metadata-container div {
+    height: 512px;
+    width: 512px;
+    background-color: inherit;
+    background-image: url('/img/mouse.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-blend-mode: overlay;
+    margin-top: -10%;
+}
+#has-no-metadata-container h4 {
+    margin-top: -80px;
 }
 </style>
