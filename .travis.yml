@@ -59,9 +59,6 @@ matrix:
       #       branch: travis-update
 
       - os: linux
-        env:
-          global:
-            - secure: "PZADT8+lOZt0YlIu3GAgrmCT9ju4lDjh3QuG5Z1LUrRxxAfi2MNgUlhXvw0J3VyJeoYeLkpglddFLTHIF4ZX36CyOjL1/14l3XR0KhLZf+ZD0qqkib6yBHNykoOio4WhRMznzfRL42D6Sd3lp3nz5HNoQVYBnLc3JvGYKCv9aHA/FREGEK1BEYY3BfWL6Ow2DOPMydUfaSLJa89B4VrC6M0NOaZFUE0QucLKKhUNhk0czaI4P6+fgUafDJY/QXSTrysV8gQzgSTaMn96h63JDZ7SuZzQ4BsGtU5dbLn4DqSr0ASeXM7Izebfo03TwFlBYLwkP0jlD++QkyaRMhPiARb0eTHBUoI94M9oXCxT08x8eUKKGHb/VzON4MfJS1/soEq0xEeeEth9L/2AW+8b0iIyRXykA/gFmkQuE1w9UFUDRiYVs4zmC2H3o1hae1ByRtdtwyA5YcfLb+E6o0PUsNys79ZiHW5e7qv0gO012oLgRnHZczpjneB2oKGhI6EjBeNyICgv4LzhDSx8V4qEXh9THvqjWqdDTZCGHy6/ts3HO0XpWAbgNEGlzETcVb4mP68LXyQjDwOiVNSIg0SkUiX7zijLIN3VZSADiVXtdHKGafvlnZJc8Vt3ClpSwX230IEtNnb3oYRNggJmtQzQ8oenhjJ9sJCcMIT8R5ihg0o="
         language: node_js
         dist: xenial
         node_js: 12
@@ -80,7 +77,7 @@ matrix:
           - npm run package-ci
           # - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           # - tar czvf ${RELEASE_NAME} dist_electron/
-        before_deploy:
+        # before_deploy:
           # Need to build before tag is set, otherwise electron-builder attempts to publish the build
         # deploy:
         #   provider: releases
