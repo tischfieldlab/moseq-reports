@@ -118,8 +118,10 @@ export default mixins(WindowOptionsMixin).extend({
         },
         takeSnapshot() {
             this.is_taking_snapshot = true;
-            this.$nextTick(() => Snapshot(this.getComponent(), this.title, this.snapshot_settings)
-                .finally(() => this.is_taking_snapshot = false));
+            this.$forceNextTick(() => {
+                Snapshot(this.getComponent(), this.title, this.snapshot_settings)
+                    .finally(() => this.is_taking_snapshot = false);
+            });
         },
         getSupportedFormats(): string[] {
             const options = ['png', 'svg'];

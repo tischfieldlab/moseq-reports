@@ -7,7 +7,12 @@
                 </b-input-group>
             </b-col>
             <b-col cols="1">
-                <b-button @click="add_datasource">add</b-button>
+                <b-button @click="add_datasource">
+                    <b-spinner v-show="is_adding_source" small type="grow"></b-spinner>
+                    <span v-show="!is_adding_source">
+                        add
+                    </span>
+                </b-button>
             </b-col>
         </b-row>
     </b-container>
@@ -21,6 +26,11 @@ import mixins from 'vue-typed-mixins';
 import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
 
 export default mixins(WindowOptionsMixin).extend({
+    data() {
+        return {
+            is_adding_source: false,
+        };
+    },
     computed: {
         available_sources(): string[] {
             return this.$store.state.filters.items;
@@ -39,7 +49,11 @@ export default mixins(WindowOptionsMixin).extend({
     },
     methods: {
         add_datasource() {
-            this.$store.dispatch('filters/addFilter');
+            this.is_adding_source = true;
+            this.$forceNextTick(() => {
+                this.$store.dispatch('filters/addFilter')
+                    .finally(() => this.is_adding_source = false);
+            });
         },
     },
 });
