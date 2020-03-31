@@ -1,6 +1,6 @@
 <template>
     <div class="home" :style="{height: `${height}px`}">
-        <div id="filter_container" :style="{width: `${toolbox_width}px`, height: `${height}px`}">
+        <div v-show="metadataLoaded" id="filter_container" :style="{width: `${toolbox_width}px`, height: `${height}px`}">
             <h3>Data Filters</h3>
             <div ref="tbx_wrapper">
                 <template v-for="ns in $store.state.filters.items">
