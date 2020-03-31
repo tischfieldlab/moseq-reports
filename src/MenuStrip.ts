@@ -199,7 +199,7 @@ export function openNewFileButton(): void {
         variant: 'info',
         toaster: 'b-toaster-bottom-right',
     });
-    new Promise((_) => setTimeout(_, 100))
+    app.$forceNextTick()
         .then(() => LoadDataBundle(filenames[0]))
         .catch((reason) => {
             app.$bvToast.toast(reason, {
