@@ -20,6 +20,8 @@ Vue.use(BootstrapVue);
 import VueResize from 'vue-resize';
 Vue.use(VueResize);
 
+import VueForceNextTick from 'vue-force-next-tick';
+Vue.use(VueForceNextTick);
 
 import UniqueId from 'vue-unique-id';
 Vue.use(UniqueId);
