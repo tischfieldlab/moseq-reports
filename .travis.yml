@@ -28,64 +28,65 @@ matrix:
         draft: false
         on:
           branch: electron-builder-update
-      # - os: windows
-      #   language: node_js
-      #   node_js:
-      #     - 12
-      #   # This is so we fix  the node-gyp bugs... thanks travis :'(
-      #   before_install:
-      #     - npm install --no-optional
-      #   script:
-      #     - npm run lint
-      #     - export PACKAGE_VERSION=$(npm run --silent version)
-      #     - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-      #     - echo $TRAVIS_TAG
-      #     - git tag $TRAVIS_TAG
-      #     - npm run package
-      #     - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
-      #     - mkdir ${RELEASE_NAME}
-      #     - mv dist_electron/*.exe ${RELEASE_NAME}
-      #     - mv dist_electron/*.blockmap ${RELEASE_NAME}
-      #     - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
-      #   deploy:
-      #     provider: releases
-      #     api_key: ${GH_TOKEN}
-      #     skip_cleanup: true
-      #     file_glob: true
-      #     file: ${RELEASE_NAME}.tar.gz
-      #     tag_name: ${TRAVIS_TAG}
-      #     draft: false
-      #     on:
-      #       branch: electron-builder-update
+
+    - os: windows
+      language: node_js
+      node_js:
+        - 12
+      # This is so we fix  the node-gyp bugs... thanks travis :'(
+      before_install:
+        - npm install --no-optional
+      script:
+        - npm run lint
+        - export PACKAGE_VERSION=$(npm run --silent version)
+        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+        - echo $TRAVIS_TAG
+        - git tag $TRAVIS_TAG
+        - npm run package
+        - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
+        - mkdir ${RELEASE_NAME}
+        - mv dist_electron/*.exe ${RELEASE_NAME}
+        - mv dist_electron/*.blockmap ${RELEASE_NAME}
+        - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
+      deploy:
+        provider: releases
+        api_key: ${GH_TOKEN}
+        skip_cleanup: true
+        file_glob: true
+        file: ${RELEASE_NAME}.tar.gz
+        tag_name: ${TRAVIS_TAG}
+        draft: false
+        on:
+          branch: electron-builder-update
       
-      # - os: linux
-      #   language: node_js
-      #   dist: xenial
-      #   node_js: 12
-      #   cache:
-      #     directories:
-      #       - $HOME/.cache/electron
-      #       - $HOME/.cache/electron-builder
-      #   script:
-      #     - npm install
-      #     - npm run lint
-      #     - export PACKAGE_VERSION=$(npm run --silent version)
-      #     - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-      #     - echo $TRAVIS_TAG
-      #     - git tag $TRAVIS_TAG
-      #     - npm run package
-      #     - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
-      #     - mkdir ${RELEASE_NAME}
-      #     - mv dist_electron/*.deb ${RELEASE_NAME}
-      #     - mv dist_electron/*.AppImage ${RELEASE_NAME}
-      #     - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
-      #   deploy:
-      #     provider: releases
-      #     api_key: ${GH_TOKEN}
-      #     skip_cleanup: true
-      #     file_glob: true
-      #     file: ${RELEASE_NAME}.tar.gz
-      #     tag_name: ${TRAVIS_TAG}
-      #     draft: false
-      #     on:
-      #       branch: electron-builder-update
+    - os: linux
+      language: node_js
+      dist: xenial
+      node_js: 12
+      cache:
+        directories:
+          - $HOME/.cache/electron
+          - $HOME/.cache/electron-builder
+      script:
+        - npm install
+        - npm run lint
+        - export PACKAGE_VERSION=$(npm run --silent version)
+        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+        - echo $TRAVIS_TAG
+        - git tag $TRAVIS_TAG
+        - npm run package
+        - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
+        - mkdir ${RELEASE_NAME}
+        - mv dist_electron/*.deb ${RELEASE_NAME}
+        - mv dist_electron/*.AppImage ${RELEASE_NAME}
+        - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
+      deploy:
+        provider: releases
+        api_key: ${GH_TOKEN}
+        skip_cleanup: true
+        file_glob: true
+        file: ${RELEASE_NAME}.tar.gz
+        tag_name: ${TRAVIS_TAG}
+        draft: false
+        on:
+          branch: electron-builder-update
