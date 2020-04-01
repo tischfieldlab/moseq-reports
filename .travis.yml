@@ -45,8 +45,8 @@ matrix:
           - npm run package
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
           - mkdir ${RELEASE_NAME}
-          - copy-item -path dist_electron\*.exe -destination ${RELEASE_NAME}
-          - copy-item -path dist_electron\*.blockmap -destination ${RELEASE_NAME}
+          - mv dist_electron\*.exe ${RELEASE_NAME}
+          - mv dist_electron\*.blockmap ${RELEASE_NAME}
           - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
         deploy:
           provider: releases
