@@ -1,4 +1,4 @@
-import Vue from 'Vue';
+import Vue from 'vue';
 
 declare module 'vue/types/vue' {
     interface Vue {
