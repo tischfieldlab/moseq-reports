@@ -43,7 +43,7 @@ jobs:
         - npm run package
         - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
         - mkdir ${RELEASE_NAME}
-        - mv dist_electron/*.exe ${RELEASE_NAME}
+        - mv dist_electron/*.msi ${RELEASE_NAME}
         - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
       deploy:
         provider: releases
