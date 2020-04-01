@@ -12,7 +12,42 @@ module.exports = {
                 config.plugins.delete('pwa')
             },
             builderOptions: {
-                "publish": ['github']
+                productName: "moseq-reporsts",
+                appId: "org.tischfieldlab.reports",
+                dmg: {
+                    contents: [
+                        {
+                            x: 120,
+                            y: 220
+                        },
+                        {
+                            x: 420,
+                            y: 220,
+                            type: "link",
+                            path: "/Applications"
+                        }
+                    ]
+                },
+                win: {
+                    target: [
+                        "nsis",
+                        "msi"
+                    ]
+                },
+                linux: {
+                    target: [
+                        "deb",
+                        "rpm",
+                        "AppImage"
+                    ],
+                    category: "Development"
+                },
+                publish: {
+                    provider: "github",
+                    owner: "tischfieldlab",
+                    repo: "moseq-reports",
+                    private: true
+                }
             }
         }
     }
