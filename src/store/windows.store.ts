@@ -56,7 +56,7 @@ const WindowsModule: Module<WindowsState, RootState> = {
         },
         removeWindow(context, namespace: string) {
             context.commit('removeWindow', namespace);
-            store.unregisterModule(namespace);
+            store.unregisterModule(namespace.split('/'));
         },
         async clearLayout(context) {
             const rs = context.state.items.map((id) => context.dispatch('removeWindow', id));
