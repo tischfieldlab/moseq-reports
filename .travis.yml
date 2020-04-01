@@ -44,7 +44,19 @@ matrix:
           - npm run package
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
           - mkdir ${RELEASE_NAME}
-          - dir dist_electron/
+          - move dist_electron\*.exe ${RELEASE_NAME}
+          - move dist_electron\*.blockmap ${RELEASE_NAME}
+          - tar czvf ${RELEASE_NAME}.tar.gz ./${RELEASE_NAME}
+          deploy:
+            provider: releases
+            api_key: ${GH_TOKEN}
+            skip_cleanup: true
+            file_glob: true
+            file: ${RELEASE_NAME}.tar.gz
+            tag_name: ${TRAVIS_TAG}
+            draft: false
+            on:
+              branch: electron-builder-update
       
       # - os: linux
       #   language: node_js
