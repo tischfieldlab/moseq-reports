@@ -74,10 +74,11 @@ matrix:
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
           - npm run package
-          - ls dist_electron/*.deb
-          - ls dist_electron/*.AppImage
-          # - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
-          # - tar czvf ${RELEASE_NAME} dist_electron/
+          - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
+          - mkdir ${RELEASE_NAME}
+          - mv dist_electron/*.deb ./${RELEASE_NAME}
+          - mv dist_electron/*.AppImage ./${RELEASE_NAME}
+          - tar czvf ${RELEASE_NAME}.tar.gz ./${RELEASE_NAME}
         # before_deploy:
           # Need to build before tag is set, otherwise electron-builder attempts to publish the build
         # deploy:
