@@ -28,12 +28,6 @@ module.exports = {
                         }
                     ]
                 },
-                win: {
-                    target: [
-                        "nsis",
-                        "msi"
-                    ]
-                },
                 linux: {
                     target: [
                         "deb",
