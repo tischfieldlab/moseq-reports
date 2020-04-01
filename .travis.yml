@@ -1,33 +1,33 @@
 jobs:
   include:
-    - stage: build
-      os: osx
-      language: node_js
-      node_js: 12
-      script:
-        - npm install
-        - npm run lint
-        - export PACKAGE_VERSION=$(npm run --silent version)
-        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-        - echo $TRAVIS_TAG
-        - git tag $TRAVIS_TAG
-        - npm run package
-        - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
-        - mkdir ${RELEASE_NAME}
-        - mv dist_electron/*.dmg ${RELEASE_NAME}
-        - mv dist_electron/*.blockmap ${RELEASE_NAME}
-        - mv dist_electron/*.zip ${RELEASE_NAME}
-        - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        file_glob: true
-        file: ${RELEASE_NAME}.tar.gz
-        tag_name: ${TRAVIS_TAG}
-        draft: true
-        on:
-          branch: electron-builder-update
+    # - stage: build
+    #   os: osx
+    #   language: node_js
+    #   node_js: 12
+    #   script:
+    #     - npm install
+    #     - npm run lint
+    #     - export PACKAGE_VERSION=$(npm run --silent version)
+    #     - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+    #     - echo $TRAVIS_TAG
+    #     - git tag $TRAVIS_TAG
+    #     - npm run package
+    #     - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
+    #     - mkdir ${RELEASE_NAME}
+    #     - mv dist_electron/*.dmg ${RELEASE_NAME}
+    #     - mv dist_electron/*.blockmap ${RELEASE_NAME}
+    #     - mv dist_electron/*.zip ${RELEASE_NAME}
+    #     - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
+    #   deploy:
+    #     provider: releases
+    #     api_key: ${GH_TOKEN}
+    #     skip_cleanup: true
+    #     file_glob: true
+    #     file: ${RELEASE_NAME}.tar.gz
+    #     tag_name: ${TRAVIS_TAG}
+    #     draft: true
+    #     on:
+    #       branch: electron-builder-update
 
     - stage: build
       os: windows
@@ -43,9 +43,10 @@ jobs:
         - npm run package
         - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
         - mkdir ${RELEASE_NAME}
-        - mv dist_electron/*.exe ${RELEASE_NAME}
-        - mv dist_electron/*.blockmap ${RELEASE_NAME}
-        - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
+        - ls dist_electron
+        # - mv dist_electron/*.exe ${RELEASE_NAME}
+        # - mv dist_electron/*.blockmap ${RELEASE_NAME}
+        # - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
       deploy:
         provider: releases
         api_key: ${GH_TOKEN}
@@ -57,32 +58,32 @@ jobs:
         on:
           branch: electron-builder-update
 
-      # Need this to be separate as it is the job that closes the release. Travis
-      # likes to build in parallel, so this job needs to run last.
-    - stage: linux_build
-      os: linux
-      language: node_js
-      node_js: 12
-      script:
-        - npm install
-        - npm run lint
-        - export PACKAGE_VERSION=$(npm run --silent version)
-        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-        - echo $TRAVIS_TAG
-        - git tag $TRAVIS_TAG
-        - npm run package
-        - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
-        - mkdir ${RELEASE_NAME}
-        - mv dist_electron/*.deb ${RELEASE_NAME}
-        - mv dist_electron/*.AppImage ${RELEASE_NAME}
-        - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        file_glob: true
-        file: ${RELEASE_NAME}.tar.gz
-        tag_name: ${TRAVIS_TAG}
-        draft: false
-        on:
-          branch: electron-builder-update
+    #   # Need this to be separate as it is the job that closes the release. Travis
+    #   # likes to build in parallel, so this job needs to run last.
+    # - stage: linux_build
+    #   os: linux
+    #   language: node_js
+    #   node_js: 12
+    #   script:
+    #     - npm install
+    #     - npm run lint
+    #     - export PACKAGE_VERSION=$(npm run --silent version)
+    #     - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+    #     - echo $TRAVIS_TAG
+    #     - git tag $TRAVIS_TAG
+    #     - npm run package
+    #     - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
+    #     - mkdir ${RELEASE_NAME}
+    #     - mv dist_electron/*.deb ${RELEASE_NAME}
+    #     - mv dist_electron/*.AppImage ${RELEASE_NAME}
+    #     - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
+    #   deploy:
+    #     provider: releases
+    #     api_key: ${GH_TOKEN}
+    #     skip_cleanup: true
+    #     file_glob: true
+    #     file: ${RELEASE_NAME}.tar.gz
+    #     tag_name: ${TRAVIS_TAG}
+    #     draft: false
+    #     on:
+    #       branch: electron-builder-update
