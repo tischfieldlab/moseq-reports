@@ -37,11 +37,15 @@ module.exports = {
                 linux: {
                     target: [
                         "deb",
-                        "rpm",
                         "AppImage"
                     ],
                     category: "Development"
                 },
+                // NOTE: This is for app icons stuff when we have them
+                // directories: {
+                //     buildResources: "resources",
+                //     output: "release"
+                // },
                 publish: {
                     provider: "github",
                     owner: "tischfieldlab",
