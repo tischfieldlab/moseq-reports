@@ -44,7 +44,7 @@ matrix:
           - npm run package
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
           - mkdir ${RELEASE_NAME}
-          - ls electron_dist/
+          - dir electron_dist/
       
       # - os: linux
       #   language: node_js
