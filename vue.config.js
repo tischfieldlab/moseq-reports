@@ -41,11 +41,10 @@ module.exports = {
                     ],
                     category: "Development"
                 },
-                // NOTE: This is for app icons stuff when we have them
-                // directories: {
-                //     buildResources: "resources",
-                //     output: "release"
-                // },
+                directories: {
+                    buildResources: "public/img/icons",
+                    output: "dist_electron"
+                },
                 publish: {
                     provider: "github",
                     owner: "tischfieldlab",
