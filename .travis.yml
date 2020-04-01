@@ -33,18 +33,18 @@ matrix:
         language: node_js
         node_js:
           - 12
-          script:
-            - npm install
-            - npm run lint
-            - export PACKAGE_VERSION=$(npm run --silent version)
-            - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-            - echo $TRAVIS_TAG
-            - git tag $TRAVIS_TAG
-            - npm run package
-            - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
-            - mkdir ${RELEASE_NAME}
-            - ls 
-        
+        script:
+          - npm install
+          - npm run lint
+          - export PACKAGE_VERSION=$(npm run --silent version)
+          - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+          - echo $TRAVIS_TAG
+          - git tag $TRAVIS_TAG
+          - npm run package
+          - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
+          - mkdir ${RELEASE_NAME}
+          - ls 
+      
       # - os: linux
       #   language: node_js
       #   dist: xenial
