@@ -73,7 +73,7 @@ matrix:
           - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
-          - npm run package-ci
+          - npm run package-ci -- -c.publish.version=$TRAVIS_TAG
           # - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           # - tar czvf ${RELEASE_NAME} dist_electron/
         # before_deploy:
