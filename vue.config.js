@@ -12,7 +12,7 @@ module.exports = {
                 config.plugins.delete('pwa')
             },
             builderOptions: {
-                productName: "moseq-reporsts",
+                productName: "moseq-reports",
                 appId: "org.tischfieldlab.reports",
                 dmg: {
                     contents: [
