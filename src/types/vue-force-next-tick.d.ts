@@ -1,12 +1,4 @@
-declare module 'dataframe-js';
-declare module 'vue-resize';
-declare module 'vuedraggable';
-
-declare module "*.json" {
-    const value: any;
-    export default value;
-}
-
+import Vue from 'Vue';
 
 declare module 'vue/types/vue' {
     interface Vue {
@@ -29,6 +21,7 @@ declare module 'vue/types/vue' {
         *
         * @param callback function to call
         */
-        $forceNextTick(callback?: Function): Promise<void>|void;
+        $forceNextTick(callback: Function): void;
+        $forceNextTick(): Promise<any>;
     }
 }

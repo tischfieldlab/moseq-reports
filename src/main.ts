@@ -9,6 +9,7 @@ import App from './App.vue';
 import router from './router';
 import store from './store/root.store';
 import './registerServiceWorker';
+import '@/types/vue-force-next-tick';
 
 
 // Bootstrap Stuff
