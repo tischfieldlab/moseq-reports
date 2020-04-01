@@ -83,7 +83,7 @@ jobs:
         file_glob: true
         file: ${RELEASE_NAME}.tar.gz
         tag_name: ${TRAVIS_TAG}
-        draft: true
+        draft: false
         on:
           branch: electron-builder-update
         
