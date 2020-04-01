@@ -74,7 +74,8 @@ matrix:
           - echo $TRAVIS_TAG
           - git tag $TRAVIS_TAG
           - npm run package
-          - ls
+          - ls dist_electron/*.deb
+          - ls dist_electron/*.AppImage
           # - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}.tar.gz
           # - tar czvf ${RELEASE_NAME} dist_electron/
         # before_deploy:
