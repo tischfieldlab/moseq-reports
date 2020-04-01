@@ -38,12 +38,13 @@ module.exports = {
                 win: {
                     target: [
                         "msi"
-                    ]
+                    ],
+                    icon: "public/img/icons/winapp256x256.ico"
                 },
-                directories: {
-                    buildResources: "public/img/icons",
-                    output: "dist_electron"
-                },
+                // directories: {
+                //     buildResources: "public/img/icons",
+                //     output: "dist_electron"
+                // },
                 publish: {
                     provider: "github",
                     owner: "tischfieldlab",
