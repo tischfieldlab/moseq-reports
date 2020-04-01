@@ -35,6 +35,11 @@ module.exports = {
                     ],
                     category: "Development"
                 },
+                win: {
+                    target: [
+                        "msi"
+                    ]
+                },
                 directories: {
                     buildResources: "public/img/icons",
                     output: "dist_electron"
