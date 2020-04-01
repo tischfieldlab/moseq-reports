@@ -27,7 +27,7 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
-          branch: electron-builder-update
+          branch: master
 
     - stage: build
       os: windows
@@ -54,7 +54,7 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
-          branch: electron-builder-update
+          branch: master
 
       # Need this to be separate as it is the job that closes the release. Travis
       # likes to build in parallel, so this job needs to run last.
@@ -84,4 +84,4 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: false
         on:
-          branch: electron-builder-update
+          branch: master
