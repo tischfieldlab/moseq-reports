@@ -1,7 +1,10 @@
 {
   "name": "moseq-reports",
   "version": "0.0.1",
-  "author": "Tischfield Lab",
+  "author": {
+    "name": "Tischfield Lab",
+    "email": "jmc07712@yahoo.com"
+  },
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
