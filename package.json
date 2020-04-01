@@ -21,6 +21,48 @@
   "resolutions": {
     "minimist": "1.2.3"
   },
+  "build": {
+    "productName": "moseq-reports",
+    "appId": "org.tischfield.reports",
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 420,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "AppImage"
+      ],
+      "category": "Development"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "tischfieldlab",
+      "repo": "moseq-reports",
+      "private": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tischfieldlab/moseq-reports.git"
+  },
   "main": "background.js",
   "dependencies": {
     "chai-as-promised": "^7.1.1",
