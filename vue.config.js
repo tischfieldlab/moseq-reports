@@ -44,7 +44,6 @@ module.exports = {
                     owner: "tischfieldlab",
                     repo: "moseq-reports",
                     private: true,
-                    version: "1.0.0"
                 }
             }
         }
