@@ -18,6 +18,16 @@ jobs:
         - mv dist_electron/*.blockmap ${RELEASE_NAME}
         - mv dist_electron/*.zip ${RELEASE_NAME}
         - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
+      deploy:
+        provider: releases
+        api_key: ${GH_TOKEN}
+        skip_cleanup: true
+        file_glob: true
+        file: ${RELEASE_NAME}.tar.gz
+        tag_name: ${TRAVIS_TAG}
+        draft: true
+        on:
+          branch: electron-builder-update
 
     - stage: build
       os: windows
@@ -55,16 +65,6 @@ jobs:
         - mv dist_electron/*.AppImage ${RELEASE_NAME}
         - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
         
-    - stage: deploy
-      if: branch = electron-builder-update
-      provider: releases
-      api_key: ${GH_TOKEN}
-      skip_cleanup: true
-      file_glob: true
-      file: ${RELEASE_NAME}.tar.gz
-      tag_name: ${TRAVIS_TAG}
-      draft: true
-
 # matrix:
 #   include:
 #     - os: osx
