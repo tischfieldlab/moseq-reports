@@ -33,6 +33,7 @@ matrix:
         language: node_js
         node_js:
           - 12
+        # This is so we fix  the node-gyp bugs... thanks travis :'(
         before_install:
           - npm install --no-optional
         script:
@@ -44,9 +45,11 @@ matrix:
           - npm run package
           - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
           - mkdir ${RELEASE_NAME}
-          - move dist_electron\*.exe ${RELEASE_NAME}
-          - move dist_electron\*.blockmap ${RELEASE_NAME}
-          - tar czvf ${RELEASE_NAME}.tar.gz ./${RELEASE_NAME}
+          - cd ${RELEASE_NAME}
+          - move ..\dist_electron\*.exe .
+          - move ..\dist_electron\*.blockmap .
+          - cd ..
+          - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
         deploy:
           provider: releases
           api_key: ${GH_TOKEN}
@@ -76,9 +79,9 @@ matrix:
       #     - npm run package
       #     - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
       #     - mkdir ${RELEASE_NAME}
-      #     - mv dist_electron/*.deb ./${RELEASE_NAME}
-      #     - mv dist_electron/*.AppImage ./${RELEASE_NAME}
-      #     - tar czvf ${RELEASE_NAME}.tar.gz ./${RELEASE_NAME}
+      #     - mv dist_electron/*.deb ${RELEASE_NAME}
+      #     - mv dist_electron/*.AppImage ${RELEASE_NAME}
+      #     - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
       #   deploy:
       #     provider: releases
       #     api_key: ${GH_TOKEN}
