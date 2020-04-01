@@ -50,7 +50,8 @@ module.exports = {
                     provider: "github",
                     owner: "tischfieldlab",
                     repo: "moseq-reports",
-                    private: true
+                    private: true,
+                    version: "1.0.0"
                 }
             }
         }
