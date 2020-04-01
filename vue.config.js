@@ -35,6 +35,12 @@ module.exports = {
                     ],
                     category: "Development"
                 },
+                win: {
+                    target: [
+                        "msi"
+                    ],
+                    icon: "public/img/icons/msapplication-icon-144x144.png"
+                },
                 directories: {
                     buildResources: "public/img/icons",
                     output: "dist_electron"
