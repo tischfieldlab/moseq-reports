@@ -46,7 +46,19 @@ jobs:
         - mv dist_electron/*.exe ${RELEASE_NAME}
         - mv dist_electron/*.blockmap ${RELEASE_NAME}
         - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
+      deploy:
+        provider: releases
+        api_key: ${GH_TOKEN}
+        skip_cleanup: true
+        file_glob: true
+        file: ${RELEASE_NAME}.tar.gz
+        tag_name: ${TRAVIS_TAG}
+        draft: true
+        on:
+          branch: electron-builder-update
 
+      # Need this to be separate as it is the job that closes the release. Travis
+      # likes to build in parallel, so this job needs to run last.
     - stage: linux_build
       os: linux
       language: node_js
@@ -58,12 +70,22 @@ jobs:
         - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
         - echo $TRAVIS_TAG
         - git tag $TRAVIS_TAG
-        - npm run package
+        - npm run electron:build
         - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
         - mkdir ${RELEASE_NAME}
         - mv dist_electron/*.deb ${RELEASE_NAME}
         - mv dist_electron/*.AppImage ${RELEASE_NAME}
         - tar czvf ${RELEASE_NAME}.tar.gz ${RELEASE_NAME}
+      deploy:
+        provider: releases
+        api_key: ${GH_TOKEN}
+        skip_cleanup: true
+        file_glob: true
+        file: ${RELEASE_NAME}.tar.gz
+        tag_name: ${TRAVIS_TAG}
+        draft: true
+        on:
+          branch: electron-builder-update
         
 # matrix:
 #   include:
