@@ -33,6 +33,8 @@ matrix:
         language: node_js
         node_js:
           - 12
+        before_install:
+          - npm install --no-optional
         script:
           - npm install
           - npm run lint
