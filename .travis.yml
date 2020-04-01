@@ -70,7 +70,7 @@ jobs:
         - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
         - echo $TRAVIS_TAG
         - git tag $TRAVIS_TAG
-        - npm run electron:build
+        - npm run package
         - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
         - mkdir ${RELEASE_NAME}
         - mv dist_electron/*.deb ${RELEASE_NAME}
