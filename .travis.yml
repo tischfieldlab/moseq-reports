@@ -1,24 +1,17 @@
-stages:
-  - build
-  - name: deploy
-    if: branch = electron-builder-update
-
 jobs:
   include:
     - os: osx
       language: node_js
       node_js: 12
-      stage: build
-        script:
-          - npm install
-          - npm run lint
+      script:
+        - npm install
+        - npm run lint
     - os: linux
       language: node_js
       node_js: 12
-      stage: build
-        script:
-          - npm install
-          - npm run lint
+      script:
+        - npm install
+        - npm run lint
 
 # matrix:
 #   include:
