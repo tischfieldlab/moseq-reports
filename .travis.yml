@@ -88,4 +88,4 @@ matrix:
           tag_name: ${TRAVIS_TAG}
           draft: false
           on:
-            branch: travis-update
+            branch: electron-builder-update
