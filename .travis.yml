@@ -1,17 +1,19 @@
 jobs:
   include:
-    - os: osx
-      language: node_js
-      node_js: 12
-      script:
-        - npm install
-        - npm run lint
-    - os: linux
-      language: node_js
-      node_js: 12
-      script:
-        - npm install
-        - npm run lint
+    - stage: build
+      os: osx
+        language: node_js
+        node_js: 12
+        script:
+          - npm install
+          - npm run lint
+    - stage: build
+        os: linux
+        language: node_js
+        node_js: 12
+        script:
+          - npm install
+          - npm run lint
 
 # matrix:
 #   include:
