@@ -40,10 +40,10 @@ module.exports = {
                         "msi"
                     ]
                 },
-                // directories: {
-                //     buildResources: "public/img/icons",
-                //     output: "dist_electron"
-                // },
+                directories: {
+                    buildResources: "public/img/icons",
+                    output: "dist_electron"
+                },
                 publish: {
                     provider: "github",
                     owner: "tischfieldlab",
