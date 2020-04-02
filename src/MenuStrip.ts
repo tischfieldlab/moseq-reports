@@ -1,11 +1,10 @@
 import { remote, Menu, MenuItem } from 'electron';
-import LoadDataBundle from '@/models/DataLoader';
 
 import { DehydratedDataWindow } from '@/store/datawindow.types';
 import store from '@/store/root.store';
-import app from '@/main';
 import path from 'path';
 import fs from 'fs';
+import loadDataCommand from '@/commands/LoadData';
 
 
 /**
@@ -194,26 +193,7 @@ export function openNewFileButton(): void {
     const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
     if (filenames === undefined) { return; }
 
-    app.$bvToast.toast('Hang tight... We\'re getting your data ready', {
-        title: 'Loading Data',
-        variant: 'info',
-        toaster: 'b-toaster-bottom-right',
-    });
-    app.$forceNextTick()
-        .then(() => LoadDataBundle(filenames[0]))
-        .catch((reason) => {
-            app.$bvToast.toast(reason, {
-                title: 'Error loading data!',
-                variant: 'danger',
-                toaster: 'b-toaster-bottom-right',
-            });
-        }).then(() => {
-            app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
-                title: 'Data loaded successfully!',
-                variant: 'success',
-                toaster: 'b-toaster-bottom-right',
-            });
-        });
+    loadDataCommand(filenames[0]);
 }
 
 /**
