@@ -4,7 +4,7 @@
             <h3>Data Filters</h3>
             <div ref="tbx_wrapper">
                 <template v-for="ns in $store.state.filters.items">
-                    <DataFilter :key="ns" :dataview="ns" />
+                    <DataFilter :key="ns" :datasource="ns" />
                 </template>
             </div>
         </div>

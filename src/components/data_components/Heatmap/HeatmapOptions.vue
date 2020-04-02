@@ -19,9 +19,9 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
-export default mixins(WindowOptionsMixin).extend({
+export default mixins(WindowMixin).extend({
     computed: {
         colorscale: {
             get(): string {

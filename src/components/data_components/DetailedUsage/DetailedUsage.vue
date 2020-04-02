@@ -279,10 +279,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return d;
         },
         selectedSyllable(): number {
-            return unnest(this.$store.state, this.datasource).selectedSyllable;
+            return this.dataview.selectedSyllable;
         },
         countMethod(): string {
-            return unnest(this.$store.state, this.datasource).countMethod;
+            return this.dataview.countMethod;
         },
     },
     methods: {
@@ -291,8 +291,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             if (df === null) {
                 return;
             }
-            this.groupNames = unnest(this.$store.state, this.datasource).selectedGroups;
-            this.groupColors = unnest(this.$store.state, this.datasource).groupColors;
+            this.groupNames = this.dataview.selectedGroups;
+            this.groupColors = this.dataview.groupColors;
             this.individualUseageData = df.where({syllable: this.selectedSyllable})
                                           .select('usage', 'group', 'StartTime')
                                           .sortBy('usage')

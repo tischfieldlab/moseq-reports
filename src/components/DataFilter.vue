@@ -10,7 +10,7 @@
             <b-collapse visible :id="$id('filter-collapse')">
                 <b-overlay :show="is_loading" no-fade>
                     <div class="container">
-                        <GroupBox :dataview="dataview" />
+                        <GroupBox :datasource="dataview" />
 
                         <b-input-group prepend="Count Method" class="filter-item">
                             <b-form-select v-model="selectedCountMethod" :options="countMethods" />
@@ -20,7 +20,7 @@
                             <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
                         </b-input-group>
 
-                        <SyllableIdFilter :dataview="dataview" />
+                        <SyllableIdFilter :datasource="dataview" />
                     </div>
                 </b-overlay>
             </b-collapse>
@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { CountMethod } from '@/store/dataview.store';
+import { CountMethod, DataviewState } from '@/store/dataview.types';
 import { debounce } from 'ts-debounce';
 import GroupBox from '@/components/GroupBox.vue';
 import SyllableIdFilter from '@/components/SyllableIdFilter.vue';
@@ -44,7 +44,7 @@ export default Vue.component('datafilter', {
         SyllableIdFilter,
     },
     props: {
-        dataview: {
+        datasource: {
             type: String,
             required: true,
         },
@@ -58,35 +58,40 @@ export default Vue.component('datafilter', {
         };
     },
     computed: {
+        dataview(): DataviewState {
+            return unnest(this.$store.state, this.datasource);
+        },
         is_loading(): boolean {
-            return unnest(this.$store.state, this.dataview).loading;
+            return this.dataview && this.dataview.loading;
         },
         syllable: {
             get(): number {
-                return unnest(this.$store.state, this.dataview).selectedSyllable;
+                return this.dataview.selectedSyllable;
             },
             set(event: number) {
-                this.$store.commit(`${this.dataview}/setSelectedSyllable`, event);
+                this.$store.commit(`${this.datasource}/setSelectedSyllable`, event);
             },
         },
-        syllableIdOptions(): number[] {
-            const filtered = unnest(this.$store.state, this.dataview).moduleIdFilter;
+        syllableIdOptions(): Array<{ value: number, text: string }> {
+            const filtered = this.dataview.moduleIdFilter;
             if (filtered.length === 0) {
-                return this.$store.getters[`${this.dataview}/availableModuleIds`].map((i) => {
+                const avail = this.$store.getters[`${this.datasource}/availableModuleIds`];
+                return avail.map((i) => {
                     return { value: i, text: i.toString() };
                 });
             } else {
-                return unnest(this.$store.state, this.dataview).moduleIdFilter.map((i) => {
+                return this.dataview.moduleIdFilter.map((i) => {
                     return { value: i, text: i.toString() };
                 });
             }
+            return [];
         },
         selectedCountMethod: {
             get(): CountMethod {
-                return unnest(this.$store.state, this.dataview).countMethod;
+                return this.dataview.countMethod;
             },
             set(event: CountMethod) {
-                this.$store.dispatch(`${this.dataview}/switchCountMethod`, event);
+                this.$store.dispatch(`${this.datasource}/switchCountMethod`, event);
             },
         },
     },

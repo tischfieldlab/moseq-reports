@@ -44,8 +44,7 @@ import {Layout} from '@/store/datawindow.types';
 import * as d3 from 'd3';
 import {line} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
-import { CountMethod } from '../../../store/dataview.store';
-import {unnest} from '@/util/Vuex';
+import { CountMethod } from '@/store/dataview.types';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
 import mixins from 'vue-typed-mixins';
@@ -129,13 +128,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.settings.line_weight;
         },
         selectedSyllable(): number {
-            return unnest(this.$store.state, this.datasource).selectedSyllable;
+            return this.dataview.selectedSyllable;
         },
         usageSelectedSyllable(): number {
             return this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Usage);
         },
         countMethod(): string {
-            return unnest(this.$store.state, this.datasource).countMethod;
+            return this.dataview.countMethod;
         },
         spinogram_data(): Spinogram {
             return this.$store.state.datasets.spinogram.find((s) => s.id === this.usageSelectedSyllable) as Spinogram;

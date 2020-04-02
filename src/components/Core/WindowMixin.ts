@@ -2,6 +2,7 @@ import Vue from 'vue';
 import { ComponentRegistration } from '@/store/root.types';
 import { DataWindowState, Layout } from '@/store/datawindow.types';
 import {unnest} from '@/util/Vuex';
+import { DataviewState } from '@/store/dataview.types';
 
 
 
@@ -16,28 +17,33 @@ const WindowMixin = Vue.extend({
         subid(): string {
             return this.id.replace('datawindows/', '');
         },
+        $wstate(): DataWindowState {
+            return this.$store.state.datawindows[this.subid] as DataWindowState;
+        },
         spec(): ComponentRegistration {
             return this.$store.getters[`${this.id}/spec`];
         },
         datasource(): string {
-            return unnest(this.$store.state, this.id).datasource;
+            return this.$wstate.datasource;
+        },
+        dataview(): DataviewState {
+            return unnest(this.$store.state, this.datasource);
         },
         settings(): any {
-            return unnest(this.$store.state, this.id).settings;
+            return this.$wstate.settings;
         },
         layout(): Layout {
-            const w = unnest(this.$store.state, this.id) as DataWindowState;
             return {
-                height: w.height,
-                width: w.width,
+                height: this.$wstate.height,
+                width: this.$wstate.width,
                 position: {
-                    x: w.pos_x,
-                    y: w.pos_y,
+                    x: this.$wstate.pos_x,
+                    y: this.$wstate.pos_y,
                 },
             };
         },
         title(): string {
-            return unnest(this.$store.state, this.id).title;
+            return this.$wstate.title;
         },
     },
 });

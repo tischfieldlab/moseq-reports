@@ -23,9 +23,9 @@
 import Vue from 'vue';
 import { Chrome } from 'vue-color';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
-export default mixins(WindowOptionsMixin).extend({
+export default mixins(WindowMixin).extend({
     components: {
         'chrome-picker': Chrome,
     },

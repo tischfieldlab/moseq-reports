@@ -9,7 +9,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
-import { unnest } from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
@@ -24,7 +23,7 @@ RegisterDataComponent({
 export default mixins(LoadingMixin, WindowMixin).extend({
     computed: {
         syllable(): number {
-            return unnest(this.$store.state, this.datasource).selectedSyllable;
+            return this.dataview.selectedSyllable;
         },
     },
 });

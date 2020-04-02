@@ -49,9 +49,7 @@
 import Vue, { PropType } from 'vue';
 
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
-import {ComponentRegistration} from '../store/root.types';
-import {Size, Position, Layout} from '@/store/datawindow.types';
-import { unnest } from '@/util/Vuex';
+import {Size, Position} from '@/store/datawindow.types';
 import Snapshot, {ensureDefaults} from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin.ts';
@@ -72,7 +70,7 @@ export default mixins(WindowMixin).extend({
             return this.title + ' Settings';
         },
         is_loading(): boolean {
-            const s = unnest(this.$store.state, this.datasource);
+            const s = this.dataview;
             return this.component_loading || (s && s.loading);
         },
     },

@@ -2,41 +2,13 @@ import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
 import DataFrame from 'dataframe-js';
 import { schemeDark2 } from 'd3-scale-chromatic';
-import {scaleOrdinal} from 'd3-scale';
-import {DataviewWorker} from './dataview.worker';
+import { scaleOrdinal } from 'd3-scale';
+import { DataviewWorker } from './dataview.worker';
 import { spawn, Worker, ModuleThread } from 'threads';
 import store from './root.store';
 import { getModuleNamespace } from '@/util/Vuex';
+import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload } from '@/store/dataview.types';
 
-
-export enum CountMethod {
-    Usage = 'Usage',
-    Frames = 'Frames',
-}
-
-interface DataviewState {
-    loading: boolean;
-    countMethod: CountMethod;
-
-    selectedGroups: string[];
-    groupColors: string[];
-    moduleIdFilter: number[];
-    selectedSyllable: number;
-    view: any;
-}
-
-interface DataviewPayload {
-    countMethod?: CountMethod;
-    selectedGroups?: string[];
-    groupColors?: string[];
-    moduleIdFilter?: number[];
-    view?: any;
-}
-
-interface SelectedGroupsPayload {
-    groups?: string[];
-    colors?: string[];
-}
 
 let worker: ModuleThread<DataviewWorker>;
 (async () => {

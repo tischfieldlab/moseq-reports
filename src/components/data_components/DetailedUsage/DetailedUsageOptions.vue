@@ -41,14 +41,14 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
 export enum WhiskerType {
     TUKEY,
     MIN_MAX,
 }
 
-export default mixins(WindowOptionsMixin).extend({
+export default mixins(WindowMixin).extend({
     computed: {
         show_points: {
             get(): boolean {

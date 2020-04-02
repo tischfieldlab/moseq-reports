@@ -44,24 +44,12 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {Layout, UpdateComponentLayoutPayload, UpdateComponentTitlePayload, DataWindowState} from '@/store/datawindow.types';
-import { unnest } from '@/util/Vuex';
+import {UpdateComponentLayoutPayload, UpdateComponentTitlePayload} from '@/store/datawindow.types';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
-export default mixins(WindowOptionsMixin).extend({
+export default mixins(WindowMixin).extend({
     computed: {
-        layout(): Layout {
-            const w = unnest(this.$store.state, this.id) as DataWindowState;
-            return {
-                height: w.height,
-                width: w.width,
-                position: {
-                    x: w.pos_x,
-                    y: w.pos_y,
-                },
-            };
-        },
         width: {
             get(): number {
                 return this.layout.width;
@@ -108,7 +96,7 @@ export default mixins(WindowOptionsMixin).extend({
         },
         title: {
             get(): string {
-                return unnest(this.$store.state, this.id).title;
+                return this.$wstate.title;
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentTitle`, {

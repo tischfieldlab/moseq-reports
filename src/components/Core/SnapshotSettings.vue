@@ -36,11 +36,10 @@
 import Vue from 'vue';
 import Snapshot, {ensureDefaults} from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from './WindowOptionsMixin';
-import {unnest} from '@/util/Vuex';
+import WindowMixin from '@/components/Core/WindowMixin';
 
 
-export default mixins(WindowOptionsMixin).extend({
+export default mixins(WindowMixin).extend({
     data() {
         return {
             is_taking_snapshot: false,
@@ -58,9 +57,6 @@ export default mixins(WindowOptionsMixin).extend({
     computed: {
         snapshot_settings(): any {
             return this.settings.snapshot;
-        },
-        title(): string {
-            return unnest(this.$store.state, this.id).title;
         },
         format: {
             get(): string {

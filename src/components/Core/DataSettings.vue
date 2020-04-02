@@ -21,11 +21,10 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { unnest } from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
-export default mixins(WindowOptionsMixin).extend({
+export default mixins(WindowMixin).extend({
     data() {
         return {
             is_adding_source: false,
@@ -37,7 +36,7 @@ export default mixins(WindowOptionsMixin).extend({
         },
         datasource: {
             get(): string {
-                return unnest(this.$store.state, this.id).datasource;
+                return this.datasource;
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentDataSource`, {

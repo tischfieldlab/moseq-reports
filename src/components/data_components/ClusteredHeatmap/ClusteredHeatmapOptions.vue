@@ -75,9 +75,8 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import {GetInterpolatedScaleOptions} from '@/util/D3ColorProvider';
-import {unnest} from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
-import WindowOptionsMixin from '@/components/Core/WindowOptionsMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
 export enum OrderingType {
     Natural = 'natural',
@@ -90,7 +89,7 @@ export enum SortOrderDirection {
 }
 
 
-export default mixins(WindowOptionsMixin).extend({
+export default mixins(WindowMixin).extend({
     mounted() {
         this.populateGroups();
     },
@@ -104,7 +103,7 @@ export default mixins(WindowOptionsMixin).extend({
     },
     computed: {
         selectedGroups(): string[] {
-            return unnest(this.$store.state, this.datasource).selectedGroups;
+            return this.dataview.selectedGroups;
         },
         colorscale: {
             get(): string {

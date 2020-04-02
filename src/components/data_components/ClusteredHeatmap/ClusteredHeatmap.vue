@@ -285,21 +285,21 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return cluster().size([this.dims.rtree.h, this.dims.rtree.w])(this.syllableHierarchy as any).links() as any;
         },
         selectedGroups(): string[] {
-            return unnest(this.$store.state, this.datasource).selectedGroups;
+            return this.dataview.selectedGroups;
         },
         aggregateView(): any {
             return this.$store.getters[`${this.datasource}/aggregateView`];
         },
         selectedSyllable: {
             get(): number {
-                return unnest(this.$store.state, this.datasource).selectedSyllable;
+                return this.dataview.selectedSyllable;
             },
             set(event: number) {
                 this.$store.commit(`${this.datasource}/setSelectedSyllable`, event);
             },
         },
         countMethod(): string {
-            return unnest(this.$store.state, this.datasource).countMethod;
+            return this.dataview.countMethod;
         },
     },
     watch: {

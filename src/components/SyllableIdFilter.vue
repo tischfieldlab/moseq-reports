@@ -11,16 +11,15 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { CountMethod } from '@/store/dataview.store';
+import { CountMethod, DataviewState } from '@/store/dataview.types';
 import { debounce } from 'ts-debounce';
 import { unnest } from '@/util/Vuex';
 import * as rangeParser from 'parse-numeric-range';
 
 
-
 export default Vue.component('syllable-id-filter', {
     props: {
-        dataview: {
+        datasource: {
             type: String,
             required: true,
         },
@@ -32,6 +31,9 @@ export default Vue.component('syllable-id-filter', {
         };
     },
     computed: {
+        dataview(): DataviewState {
+            return unnest(this.$store.state, this.datasource);
+        },
         isValid(): boolean {
             // Overall component validation state
             return false;
@@ -46,14 +48,14 @@ export default Vue.component('syllable-id-filter', {
         },
         module_filter: {
             get(): number[] {
-                return unnest(this.$store.state, this.dataview).moduleIdFilter;
+                return this.dataview.moduleIdFilter || [];
             },
             set(event: number[]) {
-                this.$store.dispatch(`${this.dataview}/updateModuleIdFilters`, event);
+                this.$store.dispatch(`${this.datasource}/updateModuleIdFilters`, event);
             },
         },
         syllableIdOptions() {
-            return this.$store.getters[`${this.dataview}/availableModuleIds`];
+            return this.$store.getters[`${this.datasource}/availableModuleIds`];
         },
     },
     watch: {
