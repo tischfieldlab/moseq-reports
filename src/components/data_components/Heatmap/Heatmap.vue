@@ -8,14 +8,14 @@ import Vue from 'vue';
 
 import * as Plotly from 'plotly.js-dist';
 import { transpose } from '@/util/Array';
-import {Size, Layout, ComponentRegistration } from '@/store/root.types';
+import { Size, Layout } from '@/store/datawindow.types';
 import store from '@/store/root.store';
-import RegisterDataComponent from '@/components/data_components/Core';
+import RegisterDataComponent from '@/components/Core';
 
 RegisterDataComponent({
     friendly_name: 'Usage Heatmap',
-    component_type: 'heat-map',
-    settings_type: 'heatmap-options',
+    component_type: 'Heatmap',
+    settings_type: 'HeatmapOptions',
     init_width: 400,
     init_height: 500,
     default_settings: {
@@ -30,7 +30,7 @@ interface PlotHTMLElement extends HTMLElement  {
 }
 
 
-export default Vue.component('heat-map', {
+export default Vue.extend({
     props: {
         id: {
             type: Number,

@@ -44,26 +44,18 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {Layout, UpdateComponentLayoutPayload, UpdateComponentTitlePayload, DataWindow} from '@/store/root.types';
+import {UpdateComponentLayoutPayload, UpdateComponentTitlePayload} from '@/store/datawindow.types';
+import mixins from 'vue-typed-mixins';
+import WindowMixin from '@/components/Core/WindowMixin';
 
-export default Vue.component('layout-settings', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(WindowMixin).extend({
     computed: {
-        layout(): Layout {
-            const win = this.$store.getters.getWindowById(this.id).layout;
-            return win;
-        },
         width: {
             get(): number {
                 return this.layout.width;
             },
             set(value: number) {
-                this.$store.commit('updateComponentLayout', {
+                this.$store.commit(`${this.id}/updateComponentLayout`, {
                     id: this.id,
                     width: value,
                 } as UpdateComponentLayoutPayload);
@@ -74,7 +66,7 @@ export default Vue.component('layout-settings', {
                 return this.layout.height;
             },
             set(value: number) {
-                this.$store.commit('updateComponentLayout', {
+                this.$store.commit(`${this.id}/updateComponentLayout`, {
                     id: this.id,
                     height: value,
                 } as UpdateComponentLayoutPayload);
@@ -85,7 +77,7 @@ export default Vue.component('layout-settings', {
                 return this.layout.position.x;
             },
             set(value: number) {
-                this.$store.commit('updateComponentLayout', {
+                this.$store.commit(`${this.id}/updateComponentLayout`, {
                     id: this.id,
                     position_x: value,
                 } as UpdateComponentLayoutPayload);
@@ -96,7 +88,7 @@ export default Vue.component('layout-settings', {
                 return this.layout.position.y;
             },
             set(value: number) {
-                this.$store.commit('updateComponentLayout', {
+                this.$store.commit(`${this.id}/updateComponentLayout`, {
                     id: this.id,
                     position_y: value,
                 } as UpdateComponentLayoutPayload);
@@ -104,10 +96,10 @@ export default Vue.component('layout-settings', {
         },
         title: {
             get(): string {
-                return this.$store.getters.getWindowById(this.id).title;
+                return this.$wstate.title;
             },
             set(value: string) {
-                this.$store.commit('updateComponentTitle', {
+                this.$store.commit(`${this.id}/updateComponentTitle`, {
                     id: this.id,
                     title: value,
                 } as UpdateComponentTitlePayload);

@@ -18,24 +18,17 @@
 
 <script scoped lang="ts">
 import Vue from 'vue';
+import mixins from 'vue-typed-mixins';
+import WindowMixin from '@/components/Core/WindowMixin';
 
-export default Vue.component('heatmap-options', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(WindowMixin).extend({
     computed: {
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
         colorscale: {
             get(): string {
                 return this.settings.style.colorscale;
             },
             set(value: string) {
-                this.$store.commit('updateComponentSettings', {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
                         style: {

@@ -40,6 +40,18 @@
                             v-bind:y1="scale.y(fences.upper(node))"
                             v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
                             v-bind:y2="scale.y(fences.upper(node))" />
+
+                        <g class="outliers">
+                            <template v-for="(node) in individualUseageData">
+                                <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
+                                <path v-if="is_outlier(node)"
+                                    v-bind:key="node.StartTime"
+                                    shape-rendering="geometricPrecision"
+                                    :d="diamond()"
+                                    :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
+                                    :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
+                            </template>
+                        </g>
                     </g>
                 </template>
             </g>
@@ -53,9 +65,16 @@
             <g v-if="settings.show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
                 <template v-for="(node) in individualUseageData">
                     <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
-                    <circle
+                    <path v-if="is_outlier(node)"
                         v-bind:key="node.StartTime"
+                        shape-rendering="geometricPrecision"
+                        :d="diamond()"
+                        :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
+                        :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
                         
+                    <circle v-else
+                        v-bind:key="node.StartTime"
+                        shape-rendering="geometricPrecision"
                         :r="point_size"
                         :cx="scale.x(node.group) + node.jitter + halfBandwith"
                         :cy="scale.y(node.usage)"
@@ -76,15 +95,21 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/data_components/Core';
+import RegisterDataComponent from '@/components/Core';
 
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { range, max, min, mean, quantile, median } from 'd3-array';
-import { area, line } from 'd3-shape';
+import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 
 import { WhiskerType } from './DetailedUsageOptions.vue';
+import LoadingMixin from '@/components/Core/LoadingMixin';
+import { unnest } from '@/util/Vuex';
+import mixins from 'vue-typed-mixins';
+import WindowMixin from '@/components/Core/WindowMixin';
+
+
 
 interface UsageItem {
     usage: number;
@@ -113,8 +138,8 @@ interface GroupStats {
 
 RegisterDataComponent({
     friendly_name: 'Usage Details',
-    component_type: 'detailed-usage',
-    settings_type: 'detailed-usage-options',
+    component_type: 'DetailedUsage',
+    settings_type: 'DetailedUsageOptions',
     init_width: 400,
     init_height: 500,
     default_settings: {
@@ -126,13 +151,7 @@ RegisterDataComponent({
     },
 });
 
-export default Vue.component('detailed-usage', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(LoadingMixin, WindowMixin).extend({
     data() {
         return {
             individualUseageData: Array<UsageItem>(),
@@ -153,9 +172,9 @@ export default Vue.component('detailed-usage', {
         this.watchers.push(this.$store.watch(
             (state, getters) => {
                 return {
-                    view: getters['dataview/view'],
-                    colors: state.dataview.groupColors,
-                    selectedSyllable: state.dataview.selectedSyllable,
+                    view: getters[`${this.datasource}/view`],
+                    colors: unnest(state, this.datasource).groupColors,
+                    selectedSyllable: unnest(state, this.datasource).selectedSyllable,
                 };
             },
             () => this.createView(),
@@ -167,12 +186,6 @@ export default Vue.component('detailed-usage', {
         this.watchers.forEach((w) => w());
     },
     computed: {
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
-        layout() {
-            return this.$store.getters.getWindowById(this.id).layout;
-        },
         width(): number {
             const width = this.outsideWidth - this.margin.left - this.margin.right;
             const ls = this.calc_label_stats();
@@ -188,10 +201,10 @@ export default Vue.component('detailed-usage', {
             return this.outsideHeight - this.margin.top - this.margin.bottom;
         },
         outsideWidth(): number {
-            return this.layout.width - 10;
+            return this.layout.width;
         },
         outsideHeight(): number {
-            return this.layout.height - 41;
+            return this.layout.height - 31;
         },
         halfBandwith(): number {
             return this.scale.x.bandwidth() / 2;
@@ -258,21 +271,28 @@ export default Vue.component('detailed-usage', {
                 .y((d) => this.scale.y(d[0]));
             return a;
         },
+        diamond(): any {
+            // try to match the area of the circle and diamond
+            const d = symbol()
+                .type(symbolDiamond)
+                .size(2 * Math.sqrt(2 * (Math.PI * this.point_size ** 2)));
+            return d;
+        },
         selectedSyllable(): number {
-            return this.$store.state.dataview.selectedSyllable;
+            return this.dataview.selectedSyllable;
         },
         countMethod(): string {
-            return this.$store.state.dataview.countMethod;
+            return this.dataview.countMethod;
         },
     },
     methods: {
         createView() {
-            const df = this.$store.getters['dataview/view'];
+            const df = this.$store.getters[`${this.datasource}/view`];
             if (df === null) {
                 return;
             }
-            this.groupNames = this.$store.state.dataview.selectedGroups;
-            this.groupColors = this.$store.state.dataview.groupColors;
+            this.groupNames = this.dataview.selectedGroups;
+            this.groupColors = this.dataview.groupColors;
             this.individualUseageData = df.where({syllable: this.selectedSyllable})
                                           .select('usage', 'group', 'StartTime')
                                           .sortBy('usage')
@@ -313,6 +333,14 @@ export default Vue.component('detailed-usage', {
             return (u: number) => {
                 return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
             };
+        },
+        is_outlier(node: UsageItem): boolean {
+            const group = this.groupedData.find((v) => v.group === node.group);
+            if (group) {
+                return node.usage < this.fences.lower(group)
+                    || node.usage > this.fences.upper(group);
+            }
+            return false;
         },
         point_tooltip(item: UsageItem): string {
             return `<div style="text-align:left;">

@@ -1,8 +1,13 @@
+const ThreadsPlugin = require('threads-plugin');
+
 module.exports = {
     publicPath: '',
     assetsDir: '',
     configureWebpack: {
         devtool: 'source-map',
+        plugins: [
+            new ThreadsPlugin()
+        ],
     },
     pluginOptions: {
         electronBuilder: {
