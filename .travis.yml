@@ -5,6 +5,7 @@ jobs:
       language: node_js
       node_js: 12
       script:
+        - brew install zip
         - npm install
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
@@ -17,7 +18,7 @@ jobs:
         - mv dist_electron/*.dmg ${RELEASE_NAME}
         - mv dist_electron/*.blockmap ${RELEASE_NAME}
         - mv dist_electron/*.zip ${RELEASE_NAME}
-        - zip ${RELEASE_NAME}.zip ${RELEASE_NAME}
+        - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
       deploy:
         provider: releases
         api_key: ${GH_TOKEN}
@@ -34,6 +35,7 @@ jobs:
       language: node_js
       node_js: 12
       script:
+        - choco install zip
         - npm install
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
@@ -44,7 +46,7 @@ jobs:
         - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
         - mkdir ${RELEASE_NAME}
         - mv dist_electron/*.msi ${RELEASE_NAME}
-        - zip ${RELEASE_NAME}.zip ${RELEASE_NAME}
+        - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
       deploy:
         provider: releases
         api_key: ${GH_TOKEN}
@@ -63,6 +65,7 @@ jobs:
       language: node_js
       node_js: 12
       script:
+        - sudo apt install zip
         - npm install
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
@@ -74,7 +77,7 @@ jobs:
         - mkdir ${RELEASE_NAME}
         - mv dist_electron/*.deb ${RELEASE_NAME}
         - mv dist_electron/*.AppImage ${RELEASE_NAME}
-        - zip ${RELEASE_NAME}.zip ${RELEASE_NAME}
+        - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
       deploy:
         provider: releases
         api_key: ${GH_TOKEN}
