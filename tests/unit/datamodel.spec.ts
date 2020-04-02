@@ -1,7 +1,7 @@
 import { expect, assert } from 'chai';
 import { shallowMount, mount } from '@vue/test-utils';
 
-import DataModel, { EventType, MetadataJson } from '@/models/DataModel';
+// import DataModel, { EventType, MetadataJson } from '@/models/DataModel';
 /*
 
 // 2020-02-21 - JT - disableing these as they do not make much sense right now.

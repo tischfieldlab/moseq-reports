@@ -8,25 +8,22 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/data_components/Core';
+import RegisterDataComponent from '@/components/Core';
+import mixins from 'vue-typed-mixins';
+import LoadingMixin from '@/components/Core/LoadingMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
 RegisterDataComponent({
     friendly_name: 'Selected Syllable',
-    component_type: 'selected-syllable',
+    component_type: 'SelectedSyllable',
     init_width: 250,
     init_height: 155,
 });
 
-export default Vue.component('selected-syllable', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(LoadingMixin, WindowMixin).extend({
     computed: {
         syllable(): number {
-            return this.$store.state.dataview.selectedSyllable;
+            return this.dataview.selectedSyllable;
         },
     },
 });

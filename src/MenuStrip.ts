@@ -1,8 +1,12 @@
-import { remote, Menu, MenuItem, MenuItemConstructorOptions } from 'electron';
+import { remote, Menu, MenuItem } from 'electron';
 import LoadDataBundle from '@/models/DataLoader';
 
-import { createDataWindow, ComponentRegistration, DehydratedDataWindow } from '@/store/root.types';
+import { DehydratedDataWindow } from '@/store/datawindow.types';
 import store from '@/store/root.store';
+import app from '@/main';
+import path from 'path';
+import fs from 'fs';
+
 
 /**
  * Creates the main menu strip for the electron app
@@ -125,7 +129,7 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Save Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('serializeLayout'); },
+                    click: (): void => { store.dispatch('datawindows/serializeLayout'); },
                 },
                 {
                     label: 'Load Layout',
@@ -138,12 +142,12 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Clear Layout',
                     type: 'normal',
-                    click: (): void => { store.commit('clearLayout'); },
+                    click: (): void => { store.dispatch('datawindows/clearLayout'); },
                 },
                 {
                     label: 'Default Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('loadDefaultLayout'); },
+                    click: (): void => { store.dispatch('datawindows/loadDefaultLayout'); },
                 },
             ],
         },
@@ -163,16 +167,14 @@ function createMainMenuStrip(): Menu {
  */
 function createAddWidgetSubmenu(menu: Menu) {
     const toolsMenu: MenuItem = menu.items[2];
-    const addWidgetMenu: Menu = toolsMenu.submenu.items[0].submenu;
+    const addWidgetMenu: Menu = toolsMenu.submenu!.items[0].submenu as Menu;
 
-    const components: ComponentRegistration[] = store.state.registry;
-    for (const component of components) {
+    for (const component of store.state.registry) {
         const newItem: MenuItem = new remote.MenuItem({
             label: component.friendly_name,
             type: 'normal',
             click: (): void => {
-                const win = createDataWindow(component);
-                store.commit('addWindow', win);
+                store.dispatch('datawindows/createWindow', component);
             },
         });
 
@@ -186,31 +188,32 @@ function createAddWidgetSubmenu(menu: Menu) {
  * @returns {void}
  */
 export function openNewFileButton(): void {
-    const path = require('path');
-    const fs = require('fs');
-
     let currDir: string = process.cwd();
     currDir = path.join(currDir);
 
     const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
     if (filenames === undefined) { return; }
 
-    LoadDataBundle(filenames[0]);
-}
-
-/**
- * Creates a new window based off of the menu item clicked on
- * and adds it to the view.
- *
- * @param {number} componentIndex   Index representing what type
- *                                  of widget is going to be created.
- */
-function addWindow(componentIndex: number): void {
-    const components: ComponentRegistration[] = store.state.registry;
-    const componentInfo: ComponentRegistration = components[componentIndex];
-
-    const win = createDataWindow(componentInfo);
-    store.commit('addWindow', win);
+    app.$bvToast.toast('Hang tight... We\'re getting your data ready', {
+        title: 'Loading Data',
+        variant: 'info',
+        toaster: 'b-toaster-bottom-right',
+    });
+    app.$forceNextTick()
+        .then(() => LoadDataBundle(filenames[0]))
+        .catch((reason) => {
+            app.$bvToast.toast(reason, {
+                title: 'Error loading data!',
+                variant: 'danger',
+                toaster: 'b-toaster-bottom-right',
+            });
+        }).then(() => {
+            app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
+                title: 'Data loaded successfully!',
+                variant: 'success',
+                toaster: 'b-toaster-bottom-right',
+            });
+        });
 }
 
 /**
@@ -220,12 +223,11 @@ function addWindow(componentIndex: number): void {
  * @returns {void}
  */
 function loadLayoutFromFile(): void {
-    const fs = require('fs');
-
     const currDir: string = process.cwd();
     const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
     if (filenames === undefined) { return; }
 
-    const content: DehydratedDataWindow[] = JSON.parse(fs.readFileSync(filenames[0])) as DehydratedDataWindow[];
-    store.dispatch('loadLayout', content);
+    const data = fs.readFileSync(filenames[0]).toString();
+    const content: DehydratedDataWindow[] = JSON.parse(data) as DehydratedDataWindow[];
+    store.dispatch('datawindows/loadLayout', content);
 }

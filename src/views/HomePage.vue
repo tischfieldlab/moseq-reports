@@ -1,15 +1,21 @@
 <template>
-    <div class='home' :style="{height: height+'px'}">
-        <div id="toolbox_container" no-body :style="{width: toolbox_width+'px', height: height+'px'}">
-            <DataFilter />
+    <div class="home" :style="{height: `${height}px`}">
+        <div v-show="metadataLoaded" id="filter_container" :style="{width: `${toolbox_width}px`, height: `${height}px`}">
+            <h3>Data Filters</h3>
+            <div ref="tbx_wrapper">
+                <template v-for="ns in $store.state.filters.items">
+                    <DataFilter :key="ns" :datasource="ns" />
+                </template>
+            </div>
         </div>
-        <div id="has-no-metadata-container" :style="{'left': toolbox_width+'px', 'width': width+'px', 'top': height/2+'px'}" v-if="!metadataLoaded">
-            <h4 style="text-align: center;" id="no-data-text">
+        <div id="has-no-metadata-container" v-if="!metadataLoaded">
+            <div>&nbsp;</div>
+            <h4>
                 No data loaded. Please <a href="#" @click="initiateFileOpen">load some data</a> by clicking File > Open File.
             </h4>
         </div>
-        <template v-for="w in windows">
-            <UiCard :key="w.id" :id="w.id" />
+        <template v-for="wid in windows">
+            <UiCard :key="wid" :id="wid" />
         </template>
     </div>
 </template>
@@ -21,7 +27,6 @@ import { debounce } from 'ts-debounce';
 import UiCard from '@/components/Window.vue';
 import DataFilter from '@/components/DataFilter.vue';
 
-import { DataWindow } from '@/store/root.types';
 import { openNewFileButton } from '@/MenuStrip';
 
 
@@ -41,24 +46,25 @@ export default Vue.component('homepage', {
         };
     },
     computed: {
-        windows(): DataWindow[] {
-            return this.$store.state.windows;
+        windows(): string[] {
+            return this.$store.state.datawindows.items;
         },
         metadataLoaded(): boolean {
-            return this.$store.getters['dataview/view'] !== null;
+            return this.$store.state.datasets.usageByUsage !== null;
         },
     },
     watch: {
         metadataLoaded: {
             handler(newState, oldState) {
                 if (!oldState && newState && this.windows.length === 0) {
-                    this.loadDefaultLayout();
+                    this.$nextTick().then(() => this.loadDefaultLayout());
                 }
             },
             deep: true,
         },
     },
     created() {
+        this.$store.dispatch('filters/addFilter');
         this.debouncedResizeHandler = debounce(this.handleResize, 250);
         window.addEventListener('resize', this.debouncedResizeHandler);
     },
@@ -76,7 +82,7 @@ export default Vue.component('homepage', {
             this.width = document.documentElement.clientWidth - this.toolbox_width;
         },
         loadDefaultLayout(): void {
-            this.$store.dispatch('loadDefaultLayout');
+            this.$store.dispatch('datawindows/loadDefaultLayout');
         },
         initiateFileOpen(): void {
             openNewFileButton();
@@ -89,19 +95,42 @@ export default Vue.component('homepage', {
 .home{
     background-color:#e9ecef ;
 }
-.tabs{
-    height:100%;
+#filter_container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
 }
-#toolbox_container{
-    height:100%;
-    border-radius:0;
+#filter_container > h3 {
+    background: #c5c5c5;
+    padding: 10px;
+    margin-bottom: 0;
+    font-size: 1.5em;
 }
-#toolbox_container .tabs{
-    overflow: auto;
+#filter_container > div {
+    flex-grow : 1;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
-#has-no-metadata-container{
-    position: fixed;
-    top: 0px;
-    padding-right: 40px;
+
+#has-no-metadata-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: inherit;
+}
+#has-no-metadata-container div {
+    height: 512px;
+    width: 512px;
+    background-color: inherit;
+    background-image: url('/img/mouse.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-blend-mode: overlay;
+    margin-top: -10%;
+}
+#has-no-metadata-container h4 {
+    margin-top: -80px;
 }
 </style>

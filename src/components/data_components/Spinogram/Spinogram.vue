@@ -2,7 +2,7 @@
     <div>
         <template v-if="has_data">
             <svg :width="outsideWidth" :height="outsideHeight">
-                <text class="title" :x="this.outsideWidth / 2" :y="10">
+                <text class="title" :x="this.outsideWidth / 2" :y="20">
                     Module #{{ selectedSyllable }} ({{countMethod}}) Spinogram
                 </text>
                 <g :transform="`translate(${margin.left}, ${margin.top})`">
@@ -38,13 +38,17 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/data_components/Core';
+import RegisterDataComponent from '@/components/Core';
 
-import {Layout} from '@/store/root.types';
+import {Layout} from '@/store/datawindow.types';
 import * as d3 from 'd3';
 import {line} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
-import { CountMethod } from '../../../store/dataview.store';
+import { CountMethod } from '@/store/dataview.types';
+import LoadingMixin from '@/components/Core/LoadingMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
+import mixins from 'vue-typed-mixins';
+
 
 interface Spinogram {
     id: number;
@@ -59,8 +63,8 @@ interface SpinogramTimepoint {
 
 RegisterDataComponent({
     friendly_name: 'Spinogram',
-    component_type: 'spinogram-plots',
-    settings_type: 'spinogram-options',
+    component_type: 'Spinogram',
+    settings_type: 'SpinogramOptions',
     init_width: 400,
     init_height: 200,
     default_settings: {
@@ -70,17 +74,11 @@ RegisterDataComponent({
 });
 
 
-export default Vue.component('spinogram-plots', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(LoadingMixin, WindowMixin).extend({
     data() {
         return {
             margin: {
-                top: 20,
+                top: 30,
                 right: 20,
                 bottom: 45,
                 left: 45,
@@ -88,12 +86,6 @@ export default Vue.component('spinogram-plots', {
         };
     },
     computed: {
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
-        layout(): Layout {
-            return this.$store.getters.getWindowById(this.id).layout;
-        },
         width(): number {
             return this.outsideWidth - this.margin.left - this.margin.right;
         },
@@ -101,10 +93,10 @@ export default Vue.component('spinogram-plots', {
             return this.outsideHeight - this.margin.top - this.margin.bottom;
         },
         outsideWidth(): number {
-            return this.layout.width - 10;
+            return this.layout.width;
         },
         outsideHeight(): number {
-            return this.layout.height - 41;
+            return this.layout.height - 31;
         },
         origin(): any {
             const x = this.margin.left;
@@ -136,13 +128,13 @@ export default Vue.component('spinogram-plots', {
             return this.settings.line_weight;
         },
         selectedSyllable(): number {
-            return this.$store.state.dataview.selectedSyllable;
+            return this.dataview.selectedSyllable;
         },
         usageSelectedSyllable(): number {
-            return this.$store.getters['dataview/selectedSyllableAs'](CountMethod.Usage);
+            return this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Usage);
         },
         countMethod(): string {
-            return this.$store.state.dataview.countMethod;
+            return this.dataview.countMethod;
         },
         spinogram_data(): Spinogram {
             return this.$store.state.datasets.spinogram.find((s) => s.id === this.usageSelectedSyllable) as Spinogram;
