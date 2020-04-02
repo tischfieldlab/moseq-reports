@@ -2,9 +2,9 @@
     <div>
         <svg ref="canvas" :width="outsideWidth" :height="outsideHeight">
             <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`" v-on:click="setSelectedSyllable">
-                <template v-for="(node, index) in usages">
+                <template v-for="node in usages">
                     <rect 
-                        :key="index"
+                        :key="`${node.group}-${node.syllable}`"
                         :x="scale.x(node.group)"
                         :y="scale.y(node.syllable)"
                         :width="scale.x.bandwidth()"
@@ -30,7 +30,7 @@
                 <text class="label" :x="dims.xaxis.w/2" :y="dims.xaxis.ly">Group</text>
             </g>
             <g class="y-axis" v-axis:y="scale" :transform="`translate(${dims.yaxis.x},${dims.yaxis.y})`">
-                <text class="label" :x="-dims.yaxis.h/2" :y="40" transform="rotate(-90)">Module ID</text>
+                <text class="label" :x="-dims.yaxis.h/2" :y="50" transform="rotate(-90)">Module ID ({{countMethod}})</text>
             </g>
             <ColorScaleLegend
                 :title="`Usage (${countMethod})`"
@@ -45,24 +45,29 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/data_components/Core';
-
+import RegisterDataComponent from '@/components/Core';
 import store from '@/store/root.store';
-import { Layout } from '@/store/root.types';
+import { Layout } from '@/store/datawindow.types';
 import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue';
-import hcluster from 'hclusterjs';
 import * as d3 from 'd3';
-import { cluster, hierarchy, HierarchyNode, ValueFn, sum } from 'd3';
-import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
+import { cluster, hierarchy, sum } from 'd3';
+import { scaleLinear, scaleBand, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/util/D3ColorProvider';
-import ColorScaleLegend from '@/components/data_components/Core/ColorScaleLegend.vue';
+import { getDendrogramOrder, elbowH, elbowV } from '@/util/D3Clustering';
+import { spawn, Worker, ModuleThread } from 'threads';
+import { ClusterWorker } from './Worker';
+import ColorScaleLegend from '@/components/Core/ColorScaleLegend.vue';
+import LoadingMixin from '@/components/Core/LoadingMixin';
+import { unnest } from '@/util/Vuex';
+import mixins from 'vue-typed-mixins';
+import WindowMixin from '@/components/Core/WindowMixin';
 
 
 
 
 RegisterDataComponent({
     friendly_name: 'Clustered Usage Heatmap',
-    component_type: 'clustered-heatmap',
+    component_type: 'ClusteredHeatmap',
     settings_type: 'ClusteredHeatmapOptions',
     init_width: 400,
     init_height: 500,
@@ -79,23 +84,20 @@ RegisterDataComponent({
     },
 });
 
-interface SyllableRow {
-    name: string;
-    usage: number[];
-}
 interface HeatmapTile {
     group: string;
-    syllable: string;
+    syllable: number;
     usage: number;
 }
 
-export default Vue.component('clustered-heatmap', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+let worker: ModuleThread<ClusterWorker>;
+(async () => {
+    worker = await spawn<ClusterWorker>(new Worker('./Worker.ts'));
+})();
+
+
+
+export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
         ColorScaleLegend,
     },
@@ -103,9 +105,9 @@ export default Vue.component('clustered-heatmap', {
         return {
             usages: new Array<HeatmapTile>(),
             clusteredGroupOrder: new Array<string>(),
-            groupHierarchy: undefined,
-            clusteredSyllableOrder: new Array<string>(),
-            syllableHierarchy: undefined,
+            groupHierarchy: undefined as any,
+            clusteredSyllableOrder: new Array<number>(),
+            syllableHierarchy: undefined as any,
             rotate_labels: false,
             margin: {
                 top: 20,
@@ -114,14 +116,13 @@ export default Vue.component('clustered-heatmap', {
                 left: 20,
             },
             label_stats: {count: 0, total: 0, longest: 0},
-            // hover_syllable: -1,
             watchers: Array<(() => void)>(),
         };
     },
     mounted() {
         this.watchers.push(this.$store.watch(
             (state, getters) => {
-                const s = getters.getWindowById(this.id).settings;
+                const s = unnest(state, this.id).settings;
                 return {
                     syllable_cluster_distance: s.syllable_cluster_distance,
                     syllable_cluster_linkage: s.syllable_cluster_linkage,
@@ -131,7 +132,7 @@ export default Vue.component('clustered-heatmap', {
         ));
         this.watchers.push(this.$store.watch(
             (state, getters) => {
-                const s = getters.getWindowById(this.id).settings;
+                const s = unnest(state, this.id).settings;
                 return {
                     group_cluster_distance: s.group_cluster_distance,
                     group_cluster_linkage: s.group_cluster_linkage,
@@ -146,12 +147,6 @@ export default Vue.component('clustered-heatmap', {
         this.watchers.forEach((w) => w());
     },
     computed: {
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
-        layout(): Layout {
-            return this.$store.getters.getWindowById(this.id).layout;
-        },
         width(): number {
             return this.outsideWidth - this.margin.left - this.margin.right;
         },
@@ -159,15 +154,15 @@ export default Vue.component('clustered-heatmap', {
             return this.outsideHeight - this.margin.top - this.margin.bottom;
         },
         outsideWidth(): number {
-            return this.layout.width - 10;
+            return this.layout.width;
         },
         outsideHeight(): number {
-            return this.layout.height - 41;
+            return this.layout.height - 31;
         },
         dims(): any {
             const rtreeWidth =  this.isSyllablesClustered ? Math.min(this.width * .10, 50) : 0;
             const ctreeHeight = this.isGroupsClustered ? Math.min(this.height * .10, 50) : 0;
-            const yaxisWidth = 35;
+            const yaxisWidth = 45;
             let xaxisHeight = 45;
             let xaxisLabelYOffset = 40;
             const legendHeight = 50;
@@ -177,10 +172,7 @@ export default Vue.component('clustered-heatmap', {
             this.rotate_labels = this.label_stats.longest > heatWidth / this.label_stats.count;
             if (this.rotate_labels) {
                 const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * this.label_stats.longest;
-                xaxisHeight = xaxisLabelYOffset = rotatedHeight + 10;
-                /*if (!this.isSyllablesClustered) {
-                    rtreeWidth = rotatedHeight - this.margin.left;
-                }*/
+                xaxisHeight = xaxisLabelYOffset = rotatedHeight + 20;
             }
 
             const heatHeight = this.height - ctreeHeight - xaxisHeight - legendHeight;
@@ -245,27 +237,20 @@ export default Vue.component('clustered-heatmap', {
         isSyllablesClustered(): boolean {
             return this.settings.syllable_order_type === OrderingType.Cluster;
         },
-        syllableOrder(): string[] {
+        syllableOrder(): number[] {
             switch (this.settings.syllable_order_type) {
                 case OrderingType.Cluster:
                     return this.clusteredSyllableOrder;
 
                 case OrderingType.Value:
-                    return this.aggregateView
-                                    .where({group: this.settings.syllable_order_group_value})
-                                    .sortBy('usage', this.settings.syllable_order_direction === SortOrderDirection.Asc)
-                                    .select('syllable')
-                                    .toArray()
-                                    .flat();
+                    return this.usages
+                               .filter((u) => u.group === this.settings.syllable_order_group_value)
+                               .sort((a, b) => a.usage - b.usage)
+                               .map((u) => u.syllable);
 
                 case OrderingType.Natural:
                 default:
-                    return this.aggregateView
-                                    .select('syllable')
-                                    .distinct('syllable')
-                                    .sortBy('syllable')
-                                    .toArray()
-                                    .flat();
+                    return [...new Set(this.usages.map((u) => u.syllable))].sort((a, b) => a - b);
             }
         },
         colormap(): any {
@@ -277,7 +262,7 @@ export default Vue.component('clustered-heatmap', {
                 .range([0, this.dims.heatmap.w])
                 .padding(0);
             const y = scaleBand()
-                .domain(this.syllableOrder)
+                .domain(this.syllableOrder.map((s) => s.toString()))
                 .range([this.dims.heatmap.h, 0])
                 .padding(0);
             const z = scaleSequential(this.colormap)
@@ -300,21 +285,21 @@ export default Vue.component('clustered-heatmap', {
             return cluster().size([this.dims.rtree.h, this.dims.rtree.w])(this.syllableHierarchy as any).links() as any;
         },
         selectedGroups(): string[] {
-            return this.$store.state.dataview.selectedGroups;
+            return this.dataview.selectedGroups;
         },
         aggregateView(): any {
-            return this.$store.getters['dataview/aggregateView'];
+            return this.$store.getters[`${this.datasource}/aggregateView`];
         },
         selectedSyllable: {
             get(): number {
-                return this.$store.state.dataview.selectedSyllable;
+                return this.dataview.selectedSyllable;
             },
             set(event: number) {
-                this.$store.commit('dataview/setSelectedSyllable', event);
+                this.$store.commit(`${this.datasource}/setSelectedSyllable`, event);
             },
         },
         countMethod(): string {
-            return this.$store.state.dataview.countMethod;
+            return this.dataview.countMethod;
         },
     },
     watch: {
@@ -326,88 +311,44 @@ export default Vue.component('clustered-heatmap', {
         },
     },
     methods: {
+        elbowH, elbowV,
         prepareData() {
-            this.usages = this.aggregateView.toCollection();
+            if (this.aggregateView !== null) {
+                this.usages = this.aggregateView.toCollection();
 
-            this.compute_label_stats(this.selectedGroups);
-            this.clusterGroups();
-            this.clusterSyllables();
-        },
-        clusterGroups() {
-            const groups = this.selectedGroups;
-            const df = this.aggregateView.groupBy('group');
-
-            const sylUsage = new Array<SyllableRow>();
-            for (const g of df) {
-                if (groups.includes(g.groupKey.group)) {
-                    sylUsage.push({
-                        name: g.groupKey.group,
-                        usage: g.group.select('usage').toArray().flat() as [],
-                    });
-                }
+                this.clusterGroups();
+                this.clusterSyllables();
+                this.compute_label_stats(this.selectedGroups);
             }
-
-            [this.clusteredGroupOrder, this.groupHierarchy] = this.cluster(sylUsage,
-                                                                           this.settings.group_cluster_distance,
-                                                                           this.settings.group_cluster_linkage);
         },
-        clusterSyllables() {
-            const df = this.aggregateView;
-            const syllableIds = df.select('syllable').distinct('syllable').toArray().flat();
-
-            const sylUsage = new Array<SyllableRow>();
-            for (const sidg of df.groupBy('syllable')) {
-                sylUsage.push({
-                    name: sidg.groupKey.syllable,
-                    usage: sidg.group.select('usage').toArray().flat() as [],
-                });
+        async clusterGroups() {
+            if (this.aggregateView !== null) {
+                const tree = await worker.clusterGroups(this.aggregateView.toDict(),
+                    this.settings.syllable_cluster_distance,
+                    this.settings.syllable_cluster_linkage);
+                this.clusteredGroupOrder = getDendrogramOrder(tree);
+                this.groupHierarchy = hierarchy(tree);
             }
-
-            [this.clusteredSyllableOrder, this.syllableHierarchy] = this.cluster(sylUsage,
-                                                                            this.settings.syllable_cluster_distance,
-                                                                            this.settings.syllable_cluster_linkage);
         },
-        cluster(data: any[], distance = 'euclidean', linkage = 'avg', key = 'usage') {
-            const clustering = hcluster()
-                .distance(distance) // support for 'euclidean' and 'angular'
-                .linkage(linkage)   // support for 'avg', 'max' and 'min'
-                .posKey(key)        // object key holding value
-                .data(data);        // pass in an array of objects
-
-            const tree = clustering.tree();
-            return [
-                this.getDenOrder(tree),
-                hierarchy(tree),
-            ];
-        },
-        getDenOrder(tree) {
-            return this.getDenRec(tree, []);
-        },
-        getDenRec(tree, denOrder) {
-            if (typeof tree.children === 'undefined') {
-                denOrder[denOrder.length] = tree.name;
-                return denOrder;
+        async clusterSyllables() {
+            if (this.aggregateView !== null) {
+                const tree = await worker.clusterSyllables(this.aggregateView.toDict(),
+                    this.settings.syllable_cluster_distance,
+                    this.settings.syllable_cluster_linkage);
+                this.clusteredSyllableOrder = getDendrogramOrder(tree);
+                this.syllableHierarchy = hierarchy(tree);
             }
-            denOrder = this.getDenRec(tree.children[0], denOrder);
-            denOrder = this.getDenRec(tree.children[1], denOrder);
-            return denOrder;
-        },
-        elbowH(d) {
-            return `M${d.source.y},${d.source.x}V${d.target.x}H${d.target.y}`;
-        },
-        elbowV(d) {
-            return `M${d.source.x},${d.source.y}H${d.target.x}V${d.target.y}`;
         },
         compute_label_stats(labels: string[]) {
-            const canvas = this.$refs.canvas as SVGSVGElement;
             const widths = [] as number[];
+            const canvas = this.$refs.canvas as SVGSVGElement;
+            const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
+            canvas.appendChild(tag);
             for (const label of labels) {
-                const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
                 tag.textContent = label;
-                canvas.appendChild(tag);
                 widths.push(tag.getBBox().width);
-                canvas.removeChild(tag);
             }
+            canvas.removeChild(tag);
             this.label_stats = {
                 count: labels.length,
                 total: sum(widths),
@@ -441,7 +382,6 @@ export default Vue.component('clustered-heatmap', {
     },
     directives: {
         axis(el, binding, vnode) {
-            // console.log('axis directive called', el, binding);
             const axis = binding.arg;
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisRight' }[axis];
@@ -499,6 +439,10 @@ svg >>> g.x-axis g.tick line,
 svg >>> g.y-axis g.tick line {
     stroke: #888;
 }
+svg >>> g.x-axis .domain,
+svg >>> g.y-axis .domain {
+    stroke: none;
+}
 svg >>> g.heatmap {
     cursor: crosshair;
 }
@@ -508,11 +452,12 @@ svg >>> g.y-axis g.tick {
 
 svg >>> g.y-axis g.tick.selected text{
     font-weight: bold;
-    font-size: 12px;
+    transform: scale(2);
     fill: #000;
     z-index: 1000;
 }
 svg >>> g.y-axis g.tick.selected line{
     stroke: #000;
+    transform: scaleX(3) scaleY(1.5);
 }
 </style>

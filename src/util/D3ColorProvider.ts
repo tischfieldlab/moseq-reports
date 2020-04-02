@@ -17,5 +17,5 @@ export function GetInterpolatedScaleOptions() {
     return options;
 }
 export function GetScale(name: string) {
-    return d3ScaleChromatic[name];
+    return d3ScaleChromatic[name] as (t: number) => string | string[];
 }

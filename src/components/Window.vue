@@ -3,18 +3,20 @@
         @resized="onResized($event)"
         @moved="onMoved($event)"
         @close="onClosed($event)"
-        :width="width"
-        :height="height"
-        :position="position"
+        :width="layout.width"
+        :height="layout.height"
+        :position="layout.position"
         :showCollapseButton="true">
         <div>
             {{ title }}
         </div>
         <div>
-            <component ref="body" :id="id" :is="spec.component_type" />
+            <b-overlay :show="is_loading" no-fade>
+                <component ref="body" :id="id" :is="spec.component_type" />
+            </b-overlay>
             <b-modal
                 :title="settings_title"
-                v-model="show_modal"
+                v-model="show_settings_modal"
                 header-bg-variant="dark"
                 header-text-variant="light"
                 body-bg-variant="light"
@@ -32,6 +34,9 @@
                         <component v-if="spec.settings_type" ref="modal_component" :id="id" :is="spec.settings_type" />
                         <p v-else class="no-settings text-muted">No settings available for this component</p>
                     </b-tab>
+                    <b-tab title="Snapshots">
+                        <SnapshotSettings :id="id" />
+                    </b-tab>
                 </b-tabs>
 
             </b-modal>
@@ -44,75 +49,51 @@
 import Vue, { PropType } from 'vue';
 
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
-import {DataWindow, ComponentRegistration, Size, Position, Layout} from '../store/root.types';
-import { toPng, toCanvas } from 'html-to-image';
-import { saveAs } from 'file-saver';
+import {Size, Position} from '@/store/datawindow.types';
+import Snapshot, {ensureDefaults} from '@/components/Core/SnapshotHelper';
+import mixins from 'vue-typed-mixins';
+import WindowMixin from '@/components/Core/WindowMixin.ts';
 
-
-
-export default Vue.component('ui-window', {
+export default mixins(WindowMixin).extend({
     components: {
         JqxWindow,
     },
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
     data() {
         return {
-            show_modal: false,
+            component_loading: false,
+            show_settings_modal: false,
             watchers: Array<(() => void)>(),
         };
     },
     computed: {
-        spec(): ComponentRegistration {
-            return this.$store.getters.getWindowById(this.id).spec;
-        },
-        title(): string {
-            return this.$store.getters.getWindowById(this.id).title;
-        },
         settings_title(): string {
             return this.title + ' Settings';
         },
-        width(): number {
-            return this.$store.getters.getWindowLayout(this.id).width;
-        },
-        height(): number {
-            return this.$store.getters.getWindowLayout(this.id).height;
-        },
-        position(): number {
-            return this.$store.getters.getWindowLayout(this.id).position;
+        is_loading(): boolean {
+            const s = this.dataview;
+            return this.component_loading || (s && s.loading);
         },
     },
-    mounted() {
-        this.watchers.push(this.$store.watch(
-            (state, getters) => {
-                return getters.getWindowLayout(this.id);
-            },
-            (newValue: Layout, oldValue: Layout) => {
+    watch: {
+        layout: {
+            deep: true,
+            handler(newValue) {
                 (this.$refs.window as any).width = newValue.width;
                 (this.$refs.window as any).height = newValue.height;
                 (this.$refs.window as any).position = newValue.position;
             },
-            {
-                deep: true,
-            },
-        ));
-        this.watchers.push(this.$store.watch(
-            (state, getters) => {
-                return getters.getWindowById(this.id).title;
-            },
-            (newValue: string, oldValue: string) => {
-                (this.$refs.window as any).title = newValue;
-            },
-        ));
-
+        },
+        title(newValue) {
+            (this.$refs.window as any).title = newValue;
+        },
+    },
+    mounted() {
         // Create the settings button on the next tick when the DOM is ready
         this.$nextTick().then(() => {
             this.addSettingsButton();
         });
+        (this.$refs.body as Vue).$on('start-loading', () => this.component_loading = true);
+        (this.$refs.body as Vue).$on('finish-loading', () => this.component_loading = false);
     },
     beforeDestroy() {
         // un-watch the store
@@ -121,7 +102,7 @@ export default Vue.component('ui-window', {
     methods: {
         onResized(event: any) {
             const s = event.args as Size;
-            this.$store.commit('updateComponentLayout', {
+            this.$store.commit(`${this.id}/updateComponentLayout`, {
                 id: this.id,
                 width: s.width,
                 height: s.height,
@@ -129,23 +110,23 @@ export default Vue.component('ui-window', {
         },
         onMoved(event: any) {
             const p = event.args as Position;
-            this.$store.commit('updateComponentLayout', {
+            this.$store.commit(`${this.id}/updateComponentLayout`, {
                 id: this.id,
                 position_x: p.x,
                 position_y: p.y,
             });
         },
         onClosed(event: any) {
-            this.$store.commit('removeWindow', this.id);
+            this.$store.dispatch('datawindows/removeWindow', this.id);
         },
         addSettingsButton() {
             const container = document.createElement('div');
 
             const settingsButton = document.createElement('img');
-            settingsButton.src = 'https://static.thenounproject.com/png/333746-200.png';
+            settingsButton.src = '/img/gear.png';
             settingsButton.classList.add('settings-button');
             settingsButton.addEventListener('click', (event) => {
-                this.show_modal = true;
+                this.show_settings_modal = true;
             });
 
             container.appendChild(settingsButton);
@@ -155,27 +136,28 @@ export default Vue.component('ui-window', {
             snapButton.src = '/img/camera.png';
             snapButton.classList.add('snapshot-button');
             snapButton.addEventListener('click', (event) => {
-                this.snapshotContent();
+                this.snapshotContent(event);
             });
             container.appendChild(snapButton);
         },
-        snapshotContent() {
-            const options = {
-                width: this.width * (300 / 96),
-                height: this.height * (300 / 96),
-            };
-            toCanvas((this.$refs.body as Vue).$el as HTMLElement/*, options*/)
-                .then((canvas) => {
-                    canvas.toBlob((blob) => {
-                        saveAs(blob as Blob, this.title + '.png');
-                    });
-                });
+        async snapshotContent(event: MouseEvent) {
+            ensureDefaults(this.$refs.body as Vue, this.$store);
+            const options = this.settings.snapshot;
+            await Snapshot(this.$refs.body as Vue, this.title, options);
         },
     },
 });
 </script>
 
 <style lang="scss">
+.jqx-window-content {
+    padding:0px !important;
+}
+.b-overlay-wrap {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
 .UiCard {
   overflow: hidden;
   border: 1px solid #dfdfdf;

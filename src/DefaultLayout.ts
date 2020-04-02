@@ -1,5 +1,5 @@
 export default [{
-    type: 'clustered-heatmap',
+    type: 'ClusteredHeatmap',
     title: 'Clustered Usage Heatmap',
     layout: {
         width: 400,
@@ -11,7 +11,7 @@ export default [{
     },
     settings: {},
 }, {
-    type: 'detailed-usage',
+    type: 'DetailedUsage',
     title: 'Usage Details',
     layout: {
         width: 430,
@@ -23,7 +23,7 @@ export default [{
     },
     settings: {},
 }, {
-    type: 'spinogram-plots',
+    type: 'Spinogram',
     title: 'Spinogram',
     layout: {
         width: 400,
@@ -35,7 +35,7 @@ export default [{
     },
     settings: {},
 }, {
-    type: 'selected-syllable',
+    type: 'SelectedSyllable',
     title: 'Selected Syllable',
     layout: {
         width: 250,

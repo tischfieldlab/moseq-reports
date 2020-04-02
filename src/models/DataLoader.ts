@@ -3,119 +3,96 @@ import path from 'path';
 import os from 'os';
 import store from '@/store/root.store';
 import StreamZip from 'node-stream-zip';
-import ElectronStore from 'electron-store';
-
-
-import app from '@/main';
 import { deleteFolderRecursive } from '@/util/Files';
 
-interface DataLoaderState {
-    bundle: string; // path to the bundle
-    name: string; // basename of the bundle
-    path: string; // path to uncompressed data
-}
-
-let currentState: DataLoaderState|undefined;
 
 
 export default function LoadDataBundle(filename: string) {
-    // console.log('attempting to open ', filename);
-    app.$bvToast.toast('Hang tight... We\'re getting your data ready', {
-        title: 'Loading Data',
-        variant: 'info',
-        toaster: 'b-toaster-bottom-right',
-    });
-    CleanState(); // clean any old state
+    return new Promise((resolve, reject) => {
+        CleanState(); // clean any old state
+        const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
 
-    const zip = new StreamZip({
-        file: filename,
-        storeEntries: true,
-        skipEntryNameValidation: false,
-    });
-    zip.on('error', (err) => {
-        app.$bvToast.toast(err, {
-            title: 'Error loading data!',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
+        const zip = new StreamZip({
+            file: filename,
+            storeEntries: true,
+            skipEntryNameValidation: false,
         });
-        throw new Error(err);
-    });
-    zip.on('ready', () => {
-        currentState = {
-            bundle: filename,
-            name: path.basename(filename, '.msq'),
-            path: fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-')),
-        };
-        // console.log('Entries read: ' + zip.entriesCount);
-        // console.log('zip ready');
-        LoadMetadataData(zip);
-        LoadUsageData(zip);
-        LoadTransitionData(zip);
-        LoadSpinogramData(zip);
-        LoadCrowdMovies(zip); // TODO: Keshav
 
-        zip.close();
-        store.dispatch('dataview/initialize');
-        app.$bvToast.toast('File "' + filename + '" was loaded successfully.', {
-            title: 'Data loaded successfully!',
-            variant: 'success',
-            toaster: 'b-toaster-bottom-right',
+        zip.on('error', (err) => {
+            reject(new Error(err));
+        });
+
+        zip.on('ready', async () => {
+            const data = {
+                bundle: filename,
+                name: path.basename(filename, '.msq'),
+                path: tmpdir,
+                ...LoadMetadataData(zip),
+                ...LoadUsageData(zip),
+                ...LoadTransitionData(zip);
+                ...LoadSpinogramData(zip),
+                ...await LoadCrowdMovies(zip, tmpdir),
+            };
+            await store.dispatch('datasets/setData', data);
+            zip.close();
+            Promise.allSettled((store.state as any).filters.items.map((item) => {
+                store.dispatch(`${item}/initialize`);
+            }));
+            resolve();
         });
     });
 }
 
 function CleanState() {
-    if (currentState === undefined) {
+    const datapath = (store.state as any).datasets.path;
+    if (datapath === undefined) {
         return;
     }
-    deleteFolderRecursive(currentState.path);
-}
-function EnsureState() {
-    if (currentState === undefined) {
-        throw new Error('unexpected current state is undefined!');
-    }
+    deleteFolderRecursive(datapath);
 }
 
 function LoadMetadataData(zip) {
-    EnsureState();
-    store.commit('datasets/SetGroupInfo', jsonParseZipEntry(zip, 'groups.json'));
-    store.commit('datasets/SetLabelMap', jsonParseZipEntry(zip, 'label_map.json'));
+    return {
+        groups: jsonParseZipEntry(zip, 'groups.json'),
+        label_map: jsonParseZipEntry(zip, 'label_map.json'),
+    };
 }
 
 function LoadSpinogramData(zip) {
-    EnsureState();
     const data = zip.entryDataSync('spinogram.corpus-sorted-usage.json').toString();
     // TODO: JSON cannot handle NaN here!
-    store.commit('datasets/SetSpinogramData', parseJsonContainingNaN(data));
+    return {
+        spinogram: parseJsonContainingNaN(data),
+    };
 }
 
 function LoadUsageData(zip) {
-    EnsureState();
-    const data1 = jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json');
-    store.commit('datasets/SetUsageByUsage', data1);
-
-    const data2 = jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json');
-    store.commit('datasets/SetUsageByFrames', data2);
+    return {
+        usageByUsage: jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json'),
+        usageByFrames: jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json'),
+    };
 }
 
 function LoadTransitionData(zip) {
-    EnsureState();
-    const data1 = jsonParseZipEntry(zip, 'transitions.ms100.cusage.sTrue.json');
-    store.commit('datasets/SetTransitionsByUsage', data1);
-
-    const data2 = jsonParseZipEntry(zip, 'transitions.ms100.cframes.sTrue.json');
-    store.commit('datasets/SetTransitionsByFrames', data2);
+    return {
+        transitionsByUsage: jsonParseZipEntry(zip, 'transitions.ms100.cusage.sTrue.json'),
+        transitionsByFrames: jsonParseZipEntry(zip, 'transitions.ms100.cframes.sTrue.json'),
+    };
 }
 
-function LoadCrowdMovies(zip) {
-    if (currentState === undefined) {
-        throw new Error('unexpected current state is undefined!');
-    }
-    const dest = path.join(currentState.path, 'crowd_movies');
-    fs.mkdirSync(dest);
-    zip.extract('crowd_movies', dest, (err, count) => {
-        // tslint:disable-next-line:no-console
-        console.log(err ? 'Extract error' : `Extracted ${count} crowd movie entries`);
+function LoadCrowdMovies(zip, dir): Promise<object> {
+    return new Promise((resolve, reject) => {
+        const dest = path.join(dir, 'crowd_movies');
+        fs.mkdirSync(dest);
+        zip.extract('crowd_movies', dest, (err, count) => {
+            // tslint:disable-next-line:no-console
+            console.log(err ? 'Extract error' : `Extracted ${count} crowd movie entries`);
+            if (err) {
+                reject(err);
+            } else {
+                resolve({});
+            }
+        });
     });
 }
 

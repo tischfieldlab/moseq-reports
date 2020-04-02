@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 Vue.use(Vuex);
 
-import '@/components/data_components/Core';
+import '@/components/Core';
 
 
 import App from './App.vue';
@@ -20,8 +20,8 @@ Vue.use(BootstrapVue);
 import VueResize from 'vue-resize';
 Vue.use(VueResize);
 
-import { ToastPlugin } from 'bootstrap-vue';
-Vue.use(ToastPlugin);
+import VueForceNextTick from 'vue-force-next-tick';
+Vue.use(VueForceNextTick);
 
 import UniqueId from 'vue-unique-id';
 Vue.use(UniqueId);
