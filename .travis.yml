@@ -17,13 +17,13 @@ jobs:
         - mv dist_electron/*.dmg ${RELEASE_NAME}
         - mv dist_electron/*.blockmap ${RELEASE_NAME}
         - mv dist_electron/*.zip ${RELEASE_NAME}
-        - zip ${RELEASE_NAME}.zip ${RELEASE_NAME}
+        - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
       deploy:
         provider: releases
         api_key: ${GH_TOKEN}
         skip_cleanup: true
         file_glob: true
-        file: ${RELEASE_NAME}.tar.gz
+        file: ${RELEASE_NAME}.zip
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
@@ -45,13 +45,13 @@ jobs:
         - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
         - mkdir ${RELEASE_NAME}
         - mv dist_electron/*.msi ${RELEASE_NAME}
-        - zip ${RELEASE_NAME}.zip ${RELEASE_NAME}
+        - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
       deploy:
         provider: releases
         api_key: ${GH_TOKEN}
         skip_cleanup: true
         file_glob: true
-        file: ${RELEASE_NAME}.tar.gz
+        file: ${RELEASE_NAME}.zip
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
@@ -76,13 +76,13 @@ jobs:
         - mkdir ${RELEASE_NAME}
         - mv dist_electron/*.deb ${RELEASE_NAME}
         - mv dist_electron/*.AppImage ${RELEASE_NAME}
-        - zip ${RELEASE_NAME}.zip ${RELEASE_NAME}
+        - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
       deploy:
         provider: releases
         api_key: ${GH_TOKEN}
         skip_cleanup: true
         file_glob: true
-        file: ${RELEASE_NAME}.tar.gz
+        file: ${RELEASE_NAME}.zip
         tag_name: ${TRAVIS_TAG}
         draft: false
         on:
