@@ -5,12 +5,12 @@
                 <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="collapse-button text-decoration-none">
                     <span class="when-opened">&#x25BC;</span> <span class="when-closed">&#x25B6;</span>
                 </b-button>
-                <h7>{{ dataview }}</h7>
+                <h7>{{ datasource }}</h7>
             </template>
             <b-collapse visible :id="$id('filter-collapse')">
                 <b-overlay :show="is_loading" no-fade>
                     <div class="container">
-                        <GroupBox :datasource="dataview" />
+                        <GroupBox :datasource="datasource" />
 
                         <b-input-group prepend="Count Method" class="filter-item">
                             <b-form-select v-model="selectedCountMethod" :options="countMethods" />
@@ -20,7 +20,7 @@
                             <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
                         </b-input-group>
 
-                        <SyllableIdFilter :datasource="dataview" />
+                        <SyllableIdFilter :datasource="datasource" />
                     </div>
                 </b-overlay>
             </b-collapse>
