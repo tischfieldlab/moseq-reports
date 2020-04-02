@@ -10,6 +10,49 @@ module.exports = {
             chainWebpackRendererProcess(config) {
                 config.plugins.delete('workbox')
                 config.plugins.delete('pwa')
+            },
+            builderOptions: {
+                productName: "moseq-reports",
+                appId: "org.tischfieldlab.reports",
+                dmg: {
+                    contents: [
+                        {
+                            x: 120,
+                            y: 220
+                        },
+                        {
+                            x: 420,
+                            y: 220,
+                            type: "link",
+                            path: "/Applications"
+                        }
+                    ]
+                },
+                linux: {
+                    target: [
+                        "deb",
+                        "AppImage"
+                    ],
+                    category: "Development"
+                },
+                win: {
+                    // For some reason, this fails on the nsi version... so we are leaving it
+                    // out for the moment...
+                    target: [
+                        "msi"
+                    ],
+                    icon: "public/img/icons/winapp256x256.ico"
+                },
+                // directories: {
+                //     buildResources: "public/img/icons",
+                //     output: "dist_electron"
+                // },
+                publish: {
+                    provider: "github",
+                    owner: "tischfieldlab",
+                    repo: "moseq-reports",
+                    private: true,
+                }
             }
         }
     }
