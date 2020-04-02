@@ -53,19 +53,20 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/data_components/Core';
-import { Layout } from '@/store/root.types';
-
+import RegisterDataComponent from '@/components/Core';
 import * as d3 from 'd3';
 import { GetScale } from '@/util/D3ColorProvider';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
-import {range} from 'd3-array';
-import ColorScaleLegend from '@/components/data_components/Core/ColorScaleLegend.vue';
+import { range } from 'd3-array';
+import ColorScaleLegend from '@/components/Core/ColorScaleLegend.vue';
+import mixins from 'vue-typed-mixins';
+import LoadingMixin from '@/components/Core/LoadingMixin';
+import WindowMixin from '@/components/Core/WindowMixin';
 
 
 RegisterDataComponent({
     friendly_name: 'Transitions Heatmap',
-    component_type: 'transitions-heatmap',
+    component_type: 'TransitionsHeatmap',
     settings_type: 'TransitionsHeatmapOptions',
     init_width: 400,
     init_height: 500,
@@ -75,13 +76,7 @@ RegisterDataComponent({
     },
 });
 
-export default Vue.component('transitions-heatmap', {
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-    },
+export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
         ColorScaleLegend,
     },
@@ -104,12 +99,6 @@ export default Vue.component('transitions-heatmap', {
         };
     },
     computed: {
-        settings(): any {
-            return this.$store.getters.getWindowById(this.id).settings;
-        },
-        layout(): Layout {
-            return this.$store.getters.getWindowById(this.id).layout;
-        },
         outsideWidth(): number {
             return this.layout.width - 10;
         },
@@ -151,7 +140,7 @@ export default Vue.component('transitions-heatmap', {
             return GetScale(this.settings.rel_colormap);
         },
         selectedGroups(): string[] {
-            return this.$store.state.dataview.selectedGroups;
+            return this.dataview.selectedGroups;
         },
         rootGroup(): string {
             return this.settings.relative_diff_group;
@@ -174,8 +163,8 @@ export default Vue.component('transitions-heatmap', {
             return this.scale.absz;
         },
         prepare_data() {
-            const absTrans = JSON.parse(JSON.stringify(this.$store.getters['dataview/transitions']));
-            const relTrans = JSON.parse(JSON.stringify(this.$store.getters['dataview/transitions']));
+            const absTrans = JSON.parse(JSON.stringify(this.$store.getters[`${this.datasource}/transitions`]));
+            const relTrans = JSON.parse(JSON.stringify(absTrans));
             const root = this.selectedGroups[0];
 
             let absVmin = Number.MAX_VALUE;
