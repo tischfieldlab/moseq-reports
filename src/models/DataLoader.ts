@@ -105,11 +105,12 @@ import http from 'http';
 
 http.createServer((request, response) => {
     request.addListener('end', () => {
-        if (currentState === undefined || request.url === undefined) {
+        const currentPath = (store.state as any).datasets.path;
+        if (currentPath === undefined || request.url === undefined) {
             response.writeHead(404).end('No data loaded.');
             return;
         } else {
-            const fpath = path.join(currentState.path, decodeURI(request.url));
+            const fpath = path.join(currentPath, decodeURI(request.url));
             fs.readFile(fpath, (err, data) => {
                 if (err) {
                     response.writeHead(404).end(JSON.stringify(err));
