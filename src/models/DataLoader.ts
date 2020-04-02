@@ -29,7 +29,7 @@ export default function LoadDataBundle(filename: string) {
                 path: tmpdir,
                 ...LoadMetadataData(zip),
                 ...LoadUsageData(zip),
-                ...LoadTransitionData(zip);
+                ...LoadTransitionData(zip),
                 ...LoadSpinogramData(zip),
                 ...await LoadCrowdMovies(zip, tmpdir),
             };
