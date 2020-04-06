@@ -21,12 +21,19 @@ const WindowsModule: Module<WindowsState, RootState> = {
             items: [],
          };
     },
+    getters: {
+        windowsUsingDataView: (state, getters, rootState) => (dataView) => {
+            return state.items.filter((wNamespace) => {
+                return unnest(rootState, wNamespace).datasource === dataView;
+            });
+        },
+    },
     mutations: {
         addWindow(state, namespace: string) {
             state.items.push(namespace);
         },
         removeWindow(state, namespace: string) {
-            const start = state.items.findIndex((id) => id === namespace);
+            const start = state.items.indexOf(namespace);
             state.items.splice(start, 1);
         },
     },
