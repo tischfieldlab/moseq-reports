@@ -11,7 +11,7 @@ import WindowsModule from './windows.store';
 Vue.use(Vuex);
 
 const store: StoreOptions<RootState> = {
-    strict: true,
+    strict: process.env.NODE_ENV !== 'production',
     modules: {
         datasets: DatasetsStore,
         filters: FiltersModule,
