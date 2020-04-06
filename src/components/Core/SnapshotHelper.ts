@@ -8,6 +8,7 @@ interface SnapshotOptions {
     format: string;
     quality: number;
     scale: number;
+    backgroundColor: string;
 }
 
 export function defaultOptions(target: Vue): SnapshotOptions {
@@ -15,6 +16,7 @@ export function defaultOptions(target: Vue): SnapshotOptions {
         format: 'png',
         quality: 1,
         scale: 4,
+        backgroundColor: '#FFFFFF00', // fully transparent white
     };
 }
 
@@ -38,22 +40,26 @@ export default async function Snapshot(target: Vue, basename: string, options: S
         if (options.format === 'png') {
             uri = toPng(target.$el as HTMLElement, {
                 quality: options.quality,
+                backgroundColor: options.backgroundColor,
             });
         } else if (options.format === 'svg') {
             uri = toSvgDataURL(target.$el as HTMLElement, {
                 quality: options.quality,
+                backgroundColor: options.backgroundColor,
             });
         }
     } else {
         if (options.format === 'png') {
-            uri = svgAsPngUri(svg, basename + '.png', {
+            uri = svgAsPngUri(svg, {
                 scale: options.scale,
                 encoderOptions: options.quality,
+                backgroundColor: options.backgroundColor,
             });
         } else if (options.format === 'svg') {
-            uri = svgAsDataUri(svg, basename + '.svg', {
+            uri = svgAsDataUri(svg, {
                 scale: options.scale,
                 encoderOptions: options.quality,
+                backgroundColor: options.backgroundColor,
             });
         }
     }

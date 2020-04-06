@@ -23,6 +23,13 @@
         </b-row>
         <b-row>
             <b-col>
+                <b-input-group prepend="Background Color">
+                    <chrome-picker :value="backgroundColor" @input="backgroundColorChanged" />
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <b-button ref="snapshot_button" @click="takeSnapshot()" class="float-right" :disabled="is_taking_snapshot">
                     <b-spinner v-show="is_taking_snapshot" small type="grow"></b-spinner>
                     Take Snapshot
@@ -37,9 +44,13 @@ import Vue from 'vue';
 import Snapshot, {ensureDefaults} from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
+import { Chrome } from 'vue-color';
 
 
 export default mixins(WindowMixin).extend({
+    components: {
+        'chrome-picker': Chrome,
+    },
     data() {
         return {
             is_taking_snapshot: false,
@@ -104,6 +115,21 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        backgroundColor: {
+            get(): string {
+                return this.snapshot_settings.backgroundColor;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        snapshot: {
+                            backgroundColor: value,
+                        },
+                    },
+                });
+            },
+        },
     },
     methods: {
         getComponent(): Vue {
@@ -122,6 +148,9 @@ export default mixins(WindowMixin).extend({
         getSupportedFormats(): string[] {
             const options = ['png', 'svg'];
             return options;
+        },
+        backgroundColorChanged(event) {
+            this.backgroundColor = event.hex;
         },
     },
 });
