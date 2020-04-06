@@ -36,7 +36,7 @@ export default mixins(WindowMixin).extend({
         },
         datasource: {
             get(): string {
-                return this.datasource;
+                return this.$wstate.datasource;
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentDataSource`, {
