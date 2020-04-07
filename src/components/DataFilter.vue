@@ -2,10 +2,10 @@
     <div>
         <b-card>
             <template v-slot:header>
-                <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="collapse-button text-decoration-none">
-                    <span class="when-opened">&#x25BC;</span> <span class="when-closed">&#x25B6;</span>
+                <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="text-dark collapse-button text-decoration-none">
+                    <span class="when-opened">&#x25BC;</span><span class="when-closed">&#x25B6;</span>
                 </b-button>
-                <b-button variant="link" @click="removeThis" class="remove-button text-decoration-none">
+                <b-button variant="link" @click="removeThis" class="text-dark remove-button text-decoration-none">
                     &#x1F5D9;
                 </b-button>
                 <h7>{{ datasource }}</h7>
