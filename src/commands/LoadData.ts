@@ -3,7 +3,10 @@ import LoadDataBundle from '@/models/DataLoader';
 import store from '@/store/root.store';
 
 
-
+/**
+ * Loads a .MSQ file
+ * @param filename Full path to the file to load
+ */
 export default function(filename: string) {
     // Once the toast that we are loading data is actually shown,
     // then actualy go ahead and load the data. Otherwise the toast
