@@ -27,7 +27,7 @@ import { debounce } from 'ts-debounce';
 import UiCard from '@/components/Window.vue';
 import DataFilter from '@/components/DataFilter.vue';
 
-import { openNewFileButton } from '@/MenuStrip';
+import loadDataCommand from '@/commands/LoadData';
 
 
 export default Vue.component('homepage', {
@@ -85,7 +85,7 @@ export default Vue.component('homepage', {
             this.$store.dispatch('datawindows/loadDefaultLayout');
         },
         initiateFileOpen(): void {
-            openNewFileButton();
+            loadDataCommand();
         },
     },
 });

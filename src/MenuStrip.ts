@@ -1,10 +1,7 @@
 import { remote, Menu, MenuItem } from 'electron';
-
-import { DehydratedDataWindow } from '@/store/datawindow.types';
 import store from '@/store/root.store';
-import path from 'path';
-import fs from 'fs';
 import loadDataCommand from '@/commands/LoadData';
+import loadLayoutCommand from '@/commands/LoadLayout';
 
 
 /**
@@ -40,7 +37,7 @@ function createMainMenuStrip(): Menu {
                     label: 'Open...',
                     type: 'normal',
                     accelerator: 'CmdOrCtrl+O',
-                    click: openNewFileButton,
+                    click: loadDataCommand,
                 },
                 {
                     type: 'separator',
@@ -97,7 +94,7 @@ function createMainMenuStrip(): Menu {
             label: 'Tools',
             submenu: [
                 {
-                    label: 'Add Widget..',
+                    label: 'Add Widget...',
                     type: 'submenu',
                     submenu: [],
                 },
@@ -133,7 +130,7 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Load Layout',
                     type: 'normal',
-                    click: (): void => { loadLayoutFromFile(); },
+                    click: loadLayoutCommand,
                 },
                 {
                     type: 'separator',
@@ -179,35 +176,4 @@ function createAddWidgetSubmenu(menu: Menu) {
 
         addWidgetMenu.append(newItem);
     }
-}
-
-/**
- * Opens a file dialog and reads in the file selected as json.
- *
- * @returns {void}
- */
-export function openNewFileButton(): void {
-    let currDir: string = process.cwd();
-    currDir = path.join(currDir);
-
-    const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
-    if (filenames === undefined) { return; }
-
-    loadDataCommand(filenames[0]);
-}
-
-/**
- * Opens a file dialog for json files pertaining to the layout of the webapp
- * widget windows.
- *
- * @returns {void}
- */
-function loadLayoutFromFile(): void {
-    const currDir: string = process.cwd();
-    const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
-    if (filenames === undefined) { return; }
-
-    const data = fs.readFileSync(filenames[0]).toString();
-    const content: DehydratedDataWindow[] = JSON.parse(data) as DehydratedDataWindow[];
-    store.dispatch('datawindows/loadLayout', content);
 }
