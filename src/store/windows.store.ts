@@ -36,6 +36,9 @@ const WindowsModule: Module<WindowsState, RootState> = {
             const start = state.items.indexOf(namespace);
             state.items.splice(start, 1);
         },
+        clearWindows(state) {
+            state.items = [];
+        },
     },
     actions: {
         createWindow(context, component: ComponentRegistration) {
@@ -65,9 +68,12 @@ const WindowsModule: Module<WindowsState, RootState> = {
             context.commit('removeWindow', namespace);
             store.unregisterModule(namespace.split('/'));
         },
-        async clearLayout(context) {
-            const rs = context.state.items.map((id) => context.dispatch('removeWindow', id));
-            await Promise.allSettled(rs);
+        clearLayout(context) {
+            const namespaces = [...context.state.items];
+            context.commit('clearWindows');
+            for (const namespace of namespaces) {
+                store.unregisterModule(namespace.split('/'));
+            }
         },
         serializeLayout(context) {
             const dehydrated = context.state.items.map((id) => {
