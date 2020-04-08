@@ -2,17 +2,9 @@ import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
 import Vue from 'vue';
 import DataFrame from 'dataframe-js';
+import { DatasetsState } from './datasets.types';
 
-interface DatasetsState {
-    bundle: string; // path to the bundle
-    name: string; // basename of the bundle
-    path: string; // path to uncompressed data
-    spinogram: any[];
-    usageByUsage: any;
-    usageByFrames: any;
-    groups: string[];
-    label_map: any;
-}
+
 
 const DatasetsModule: Module<DatasetsState, RootState> = {
     namespaced: true,

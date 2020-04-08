@@ -6,6 +6,7 @@ import path from 'path';
 import os from 'os';
 import StreamZip from 'node-stream-zip';
 import { deleteFolderRecursive } from '@/util/Files';
+import { DatasetsState } from '@/store/datasets.types';
 
 
 /**
@@ -36,18 +37,31 @@ export function LoadDataFile(filename: string) {
 function beginLoadingProcess(filename: string) {
     app.$forceNextTick()
         .then(() => readDataBundle(filename))
+        .then((data) => store.dispatch('datasets/setData', data))
+        .then(() => {
+            return Promise.allSettled((store.state as any).filters.items.map((item) => {
+                return store.dispatch(`${item}/initialize`);
+            }));
+        })
         .catch((reason) => {
             app.$bvToast.toast(reason, {
                 title: 'Error loading data!',
                 variant: 'danger',
                 toaster: 'b-toaster-bottom-right',
             });
-        }).then(() => {
+        })
+        .then(() => {
             app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
                 title: 'Data loaded successfully!',
                 variant: 'success',
                 toaster: 'b-toaster-bottom-right',
             });
+        })
+        .then(async () => {
+            if ((store.state as any).datawindows.items.length === 0) {
+                await app.$forceNextTick();
+                store.dispatch('datawindows/loadDefaultLayout');
+            }
         });
 }
 
@@ -73,7 +87,7 @@ function showStartLoadingToast() {
 }
 
 function readDataBundle(filename: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<DatasetsState>((resolve, reject) => {
         CleanState(); // clean any old state
         const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
 
@@ -88,7 +102,7 @@ function readDataBundle(filename: string) {
         });
 
         zip.on('ready', async () => {
-            const data = {
+            const data: DatasetsState = {
                 bundle: filename,
                 name: path.basename(filename, '.msq'),
                 path: tmpdir,
@@ -97,12 +111,8 @@ function readDataBundle(filename: string) {
                 ...LoadSpinogramData(zip),
                 ...await LoadCrowdMovies(zip, tmpdir),
             };
-            await store.dispatch('datasets/setData', data);
             zip.close();
-            Promise.allSettled((store.state as any).filters.items.map((item) => {
-                store.dispatch(`${item}/initialize`);
-            }));
-            resolve();
+            resolve(data);
         });
     });
 }

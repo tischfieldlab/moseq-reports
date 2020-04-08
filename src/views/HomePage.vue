@@ -53,19 +53,9 @@ export default Vue.component('homepage', {
             return this.$store.state.datasets.usageByUsage !== null;
         },
     },
-    watch: {
-        metadataLoaded: {
-            handler(newState, oldState) {
-                if (!oldState && newState && this.windows.length === 0) {
-                    this.$nextTick().then(() => this.loadDefaultLayout());
-                }
-            },
-            deep: true,
-        },
-    },
     created() {
         this.$store.dispatch('filters/addFilter');
-        this.debouncedResizeHandler = debounce(this.handleResize, 250);
+        this.debouncedResizeHandler = debounce(this.handleResize, 100);
         window.addEventListener('resize', this.debouncedResizeHandler);
     },
     destroyed() {
@@ -80,9 +70,6 @@ export default Vue.component('homepage', {
         handleResize(): any {
             this.height = document.documentElement.clientHeight;
             this.width = document.documentElement.clientWidth - this.toolbox_width;
-        },
-        loadDefaultLayout(): void {
-            this.$store.dispatch('datawindows/loadDefaultLayout');
         },
         initiateFileOpen(): void {
             loadDataCommand();
