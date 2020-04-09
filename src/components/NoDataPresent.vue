@@ -35,8 +35,13 @@ export default Vue.extend({
 .has-no-data-container img {
     opacity: 0.2;
     margin-top: -10%;
+    pointer-events: none;
 }
 .has-no-data-container h4 {
     margin-top: -80px;
+    pointer-events: none;
+}
+.has-no-data-container h4 a {
+    pointer-events: auto;
 }
 </style>
