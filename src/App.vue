@@ -1,7 +1,6 @@
 <template>
     <div id="app">
         <router-view />
-        <FileDropAcceptor />
     </div>
 </template>
 
@@ -9,13 +8,9 @@
 import Vue from 'vue';
 import { remote } from 'electron';
 import createMainMenu from '@/MenuStrip';
-import FileDropAcceptor from '@/components/FileDropAcceptor.vue';
 
 export default Vue.extend({
     name: 'App',
-    components: {
-        FileDropAcceptor,
-    },
     mounted() {
         const menu = createMainMenu();
         remote.Menu.setApplicationMenu(menu);
