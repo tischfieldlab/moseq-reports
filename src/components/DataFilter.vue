@@ -67,12 +67,24 @@ export default Vue.component('datafilter', {
         is_loading(): boolean {
             return this.dataview && this.dataview.loading;
         },
+        selectedCountMethod: {
+            get(): CountMethod {
+                return this.dataview.countMethod;
+            },
+            set(value: CountMethod) {
+                if (value !== this.selectedCountMethod) {
+                    this.$store.dispatch(`${this.datasource}/switchCountMethod`, value);
+                }
+            },
+        },
         syllable: {
             get(): number {
                 return this.dataview.selectedSyllable;
             },
-            set(event: number) {
-                this.$store.commit(`${this.datasource}/setSelectedSyllable`, event);
+            set(value: number) {
+                if (value !== this.syllable) {
+                    this.$store.commit(`${this.datasource}/setSelectedSyllable`, value);
+                }
             },
         },
         syllableIdOptions(): Array<{ value: number, text: string }> {
@@ -88,14 +100,6 @@ export default Vue.component('datafilter', {
                 });
             }
             return [];
-        },
-        selectedCountMethod: {
-            get(): CountMethod {
-                return this.dataview.countMethod;
-            },
-            set(event: CountMethod) {
-                this.$store.dispatch(`${this.datasource}/switchCountMethod`, event);
-            },
         },
     },
     methods: {
