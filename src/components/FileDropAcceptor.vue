@@ -1,21 +1,28 @@
 <template>
-    <div v-show="is_file_hover" class="file-acceptor-wrapper">
-        <div class="file-acceptor"></div>
-        <b-card bg-variant="primary" text-variant="white" class="text-center">
-            <b-card-text>
-                Drop your <code text-variant="white">.msq</code> Data Bundle or 
-                <code text-variant="white">.json</code> Layout files here!
-            </b-card-text>
-        </b-card>
-    </div>
+    <Portal>
+        <div ref="acceptor" v-show="is_file_hover" class="file-acceptor-wrapper">
+            <div class="file-acceptor"></div>
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
+                <b-card-text>
+                    Drop your <code text-variant="white">.msq</code> Data Bundle or 
+                    <code text-variant="white">.json</code> Layout files here!
+                </b-card-text>
+            </b-card>
+        </div>
+    </Portal>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import { Portal } from '@linusborg/vue-simple-portal';
+
 import {LoadDataFile} from '@/commands/LoadData';
 import {LoadLayoutFile} from '@/commands/LoadLayout';
 
 export default Vue.extend({
+    components: {
+        Portal,
+    },
     data() {
         return {
             is_file_hover: false,
@@ -31,7 +38,8 @@ export default Vue.extend({
             ],
         };
     },
-    mounted() {
+    async mounted() {
+        await this.$nextTick();
         this.watchDrop();
     },
     beforeDestroy() {
@@ -39,8 +47,8 @@ export default Vue.extend({
     },
     methods: {
         watchDrop() {
-            const parent = this.$parent.$el as HTMLElement;
-            const self = this.$el as HTMLElement;
+            const parent = document.body;
+            const self = this.$refs.acceptor as HTMLElement;
 
             parent.addEventListener('dragenter', this.onFileDragEnter);
             parent.addEventListener('dragover', this.dragEventPreventDefault);
@@ -51,8 +59,8 @@ export default Vue.extend({
             self.addEventListener('drop', this.onFileDrop);
         },
         unwatchDrop() {
-            const parent = this.$parent.$el as HTMLElement;
-            const self = this.$el as HTMLElement;
+            const parent = document.body;
+            const self = this.$refs.acceptor as HTMLElement;
 
             parent.removeEventListener('dragenter', this.onFileDragEnter);
             parent.removeEventListener('dragover', this.dragEventPreventDefault);
@@ -98,6 +106,7 @@ export default Vue.extend({
     height: 100%;
     position: fixed;
     top: 0;
+    z-index: 2147483647;
 }
 .file-acceptor {
     width: 100%;
@@ -105,7 +114,6 @@ export default Vue.extend({
     border: 1em dashed #666;
     background: #e9ecef;
     opacity: 0.8;
-    z-index: 99998;
 }
 .file-acceptor-wrapper * {
     pointer-events: none;
