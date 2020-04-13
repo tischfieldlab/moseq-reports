@@ -4,9 +4,9 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import StreamZip from 'node-stream-zip';
 import { deleteFolderRecursive } from '@/util/Files';
 import { DatasetsState } from '@/store/datasets.types';
+import JSZip from 'jszip';
 
 
 /**
@@ -88,32 +88,26 @@ function showStartLoadingToast() {
 
 function readDataBundle(filename: string) {
     return new Promise<DatasetsState>((resolve, reject) => {
-        CleanState(); // clean any old state
-        const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
+        try {
+            CleanState(); // clean any old state
+            const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
+            const rawData = fs.readFileSync(filename);
 
-        const zip = new StreamZip({
-            file: filename,
-            storeEntries: true,
-            skipEntryNameValidation: false,
-        });
-
-        zip.on('error', (err) => {
-            reject(new Error(err));
-        });
-
-        zip.on('ready', async () => {
-            const data: DatasetsState = {
-                bundle: filename,
-                name: path.basename(filename, '.msq'),
-                path: tmpdir,
-                ...LoadMetadataData(zip),
-                ...LoadUsageData(zip),
-                ...LoadSpinogramData(zip),
-                ...await LoadCrowdMovies(zip, tmpdir),
-            };
-            zip.close();
-            resolve(data);
-        });
+            JSZip.loadAsync(rawData).then(async (zip) => {
+                const dataset: DatasetsState = {
+                    bundle: filename,
+                    name: path.basename(filename, '.msq'),
+                    path: tmpdir,
+                    ...await LoadMetadataData(zip),
+                    ...await LoadUsageData(zip),
+                    ...await LoadSpinogramData(zip),
+                    ...await LoadCrowdMovies(zip, tmpdir),
+                };
+                resolve(dataset);
+            });
+        } catch (e) {
+            reject(e);
+        }
     });
 }
 
@@ -125,50 +119,49 @@ function CleanState() {
     deleteFolderRecursive(datapath);
 }
 
-function LoadMetadataData(zip) {
+async function LoadMetadataData(zip: JSZip) {
     return {
-        groups: jsonParseZipEntry(zip, 'groups.json'),
-        label_map: jsonParseZipEntry(zip, 'label_map.json'),
+        groups: await jsonParseZipEntry(zip, 'groups.json'),
+        label_map: await jsonParseZipEntry(zip, 'label_map.json'),
     };
 }
 
-function LoadSpinogramData(zip) {
-    const data = zip.entryDataSync('spinogram.corpus-sorted-usage.json').toString();
+async function LoadSpinogramData(zip: JSZip) {
     // TODO: JSON cannot handle NaN here!
     return {
-        spinogram: parseJsonContainingNaN(data),
+        spinogram: await jsonParseZipEntryContainingNaN(zip, 'spinogram.corpus-sorted-usage.json'),
     };
 }
 
-function LoadUsageData(zip) {
+async function LoadUsageData(zip: JSZip) {
     return {
-        usageByUsage: jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json'),
-        usageByFrames: jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json'),
+        usageByUsage: await jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json'),
+        usageByFrames: await jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json'),
     };
 }
 
-function LoadCrowdMovies(zip, dir): Promise<object> {
-    return new Promise((resolve, reject) => {
-        const dest = path.join(dir, 'crowd_movies');
-        fs.mkdirSync(dest);
-        zip.extract('crowd_movies', dest, (err, count) => {
-            // tslint:disable-next-line:no-console
-            console.log(err ? 'Extract error' : `Extracted ${count} crowd movie entries`);
-            if (err) {
-                reject(err);
-            } else {
-                resolve({});
-            }
-        });
+async function LoadCrowdMovies(zip: JSZip, dir: string) {
+    const dest = path.join(dir, 'crowd_movies');
+    fs.mkdirSync(dest);
+    const waiting = new Array<Promise<unknown>>();
+    zip.folder('crowd_movies').forEach((relativePath, file) => {
+        waiting.push(new Promise((resolve) => {
+            file.nodeStream()
+                .pipe(fs.createWriteStream(path.join(dir, file.name)))
+                .on('finish', () => resolve());
+        }));
     });
+    await Promise.allSettled(waiting);
+    return {};
 }
 
 
-function jsonParseZipEntry(zip, entryName) {
-    const data = zip.entryDataSync(entryName);
+async function jsonParseZipEntry(zip: JSZip, entryName: string) {
+    const data = await zip.file(entryName).async('string');
     return JSON.parse(data);
 }
-function parseJsonContainingNaN(data) {
+async function jsonParseZipEntryContainingNaN(zip: JSZip, entryName: string) {
+    const data = await zip.file(entryName).async('string');
     return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
         return value === '***NaN***' ? NaN : value;
     });

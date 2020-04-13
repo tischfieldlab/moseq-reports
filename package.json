@@ -28,6 +28,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@types/jszip": "^3.1.7",
     "@types/parse-numeric-range": "0.0.0",
     "chai-as-promised": "^7.1.1",
     "core-js": "^3.6.4",
@@ -40,7 +41,7 @@
     "html-to-image": "^0.1.1",
     "jquery": "^3.4.1",
     "jqwidgets-scripts": "^9.0.0",
-    "node-stream-zip": "^1.9.1",
+    "jszip": "^3.3.0",
     "parse-numeric-range": "0.0.2",
     "plotly.js-dist": "^1.52.3",
     "popper.js": "^1.16.1",
