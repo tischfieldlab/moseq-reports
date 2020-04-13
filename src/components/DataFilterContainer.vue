@@ -1,13 +1,21 @@
 <template>
     <div>
-        <div class="button-bar">
+        <div :class="{ 'button-bar': true, 'right': right }">
             <b-icon
                 title="Data Filters"
                 :class="{ active: show_filters }"
                 :icon="show_filters ? 'funnel-fill' : 'funnel'"
                 v-on:click="toggle_filters"></b-icon>
         </div>
-        <b-sidebar id="sidebar-1" :visible="show_filters" no-header title="Data Filters" shadow="lg" :width="`${width}px`">
+        <b-sidebar id="sidebar-1"
+            :visible="show_filters"
+            @change="sidebar_visibility_changed"
+            no-header
+            title="Data Filters"
+            :right="right"
+            shadow="lg"
+            :width="`${width}px`">
+
             <div>
                 <template v-for="ns in filters">
                     <DataFilter :key="ns" :datasource="ns" />
@@ -27,6 +35,10 @@ export default Vue.extend({
         DataFilter,
     },
     props: {
+        right: {
+            type: Boolean,
+            default: false,
+        },
         width: {
             type: Number,
             default: 250,
@@ -50,6 +62,9 @@ export default Vue.extend({
     methods: {
         toggle_filters() {
             this.show_filters = !this.show_filters;
+        },
+        sidebar_visibility_changed(visibility: boolean) {
+            this.show_filters = visibility;
         },
     },
 });
@@ -83,16 +98,25 @@ export default Vue.extend({
     background-color: #ffffff;
     z-index: 1050;
 }
+.button-bar.right {
+    right: 0;
+}
 .button-bar .b-icon {
     width: 48px;
     height: 48px;
     padding: 6px;
     cursor: pointer;
 }
-.button-bar .b-icon.active {
+.button-bar:not(.right) .b-icon.active {
     border-left: 3px solid #2c3e50;
+}
+.button-bar.right .b-icon.active {
+    border-right: 3px solid #2c3e50;
 }
 .b-sidebar:not(.b-sidebar-right) {
     left: 48px;
+}
+.b-sidebar.b-sidebar-right {
+    right: 48px;
 }
 </style>

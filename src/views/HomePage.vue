@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <DataFilterContainer v-show="metadataLoaded" />
+        <DataFilterContainer :right="false" v-show="metadataLoaded" />
         <NoDataPresent v-show="!metadataLoaded" />
         <WindowContainer />
         <FileDropAcceptor />
