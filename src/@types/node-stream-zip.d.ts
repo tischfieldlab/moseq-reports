@@ -1,5 +1,5 @@
 declare module 'node-stream-zip' {
-    import {Stream} from 'stream';
+    import { Stream } from 'stream';
 
     interface StreamZipOptions {
         /**
@@ -7,13 +7,15 @@ declare module 'node-stream-zip' {
          */
         file: string,
         /**
-         * You will be able to work with entries inside zip archive, otherwise the only way to access them is entry event
+         * You will be able to work with entries inside zip archive, 
+         * otherwise the only way to access them is entry event
          * 
          * default: true
          */
         storeEntries?: boolean,
         /**
-         * By default, entry name is checked for malicious characters, like ../ or c:\123, pass this flag to disable validation errors
+         * By default, entry name is checked for malicious characters, 
+         * like ../ or c:\123, pass this flag to disable validation errors
          * 
          * default: false
          */
@@ -26,7 +28,7 @@ declare module 'node-stream-zip' {
         chunkSize?: number
     }
 
-    class ZipEntry {
+    interface ZipEntry {
         name: string
         isDirectory: boolean
         isFile: boolean
