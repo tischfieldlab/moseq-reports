@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <Portal>
         <div :class="{ 'button-bar': true, 'right': right }">
             <b-icon
                 title="Data Filters"
@@ -22,16 +22,18 @@
                 </template>
             </div>
         </b-sidebar>
-    </div>
+    </Portal>
 </template>
 
 
 <script lang="ts">
 import Vue from 'vue';
 import DataFilter from '@/components/DataFilter.vue';
+import { Portal } from '@linusborg/vue-simple-portal';
 
 export default Vue.extend({
     components: {
+        Portal,
         DataFilter,
     },
     props: {
