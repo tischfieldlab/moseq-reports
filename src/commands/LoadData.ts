@@ -88,12 +88,17 @@ function showStartLoadingToast() {
 
 function readDataBundle(filename: string) {
     return new Promise<DatasetsState>((resolve, reject) => {
+        debugger;
         try {
             console.log(JSZip.support);
             CleanState(); // clean any old state
             const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
             const rawData = fs.readFileSync(filename);
-            console.log(rawData);
+            console.log('sync read', rawData);
+            fs.readFile(filename, (err, data) => {
+                console.log('error', err);
+                console.log('data', data);
+            });
 
             JSZip.loadAsync(rawData).then(async (zip) => {
                 console.log(zip);
@@ -108,7 +113,7 @@ function readDataBundle(filename: string) {
                 };
                 console.log(dataset);
                 resolve(dataset);
-            });
+            }, (error) => reject(error));
         } catch (e) {
             reject(e);
         }

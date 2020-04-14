@@ -1,3 +1,9 @@
+import {remote, ipcRenderer} from 'electron';
+if (!(remote.getCurrentWindow() as any).hasReloaded) {
+    ipcRenderer.send("needs-reload");
+}
+
+
 import Vue from 'vue';
 import Vuex from 'vuex';
 Vue.use(Vuex);

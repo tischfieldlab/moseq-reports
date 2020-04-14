@@ -1,7 +1,7 @@
 'use strict';
 declare const __static: any;
 
-import { app, protocol, BrowserWindow, Menu } from 'electron';
+import { ipcMain, app, protocol, BrowserWindow, Menu } from 'electron';
 import path from 'path';
 import {
     createProtocol,
@@ -31,11 +31,13 @@ function createWindow() {
     Menu.setApplicationMenu(menu);
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
-        // Load the url of the dev server if in development mode
-        win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
-        if (!process.env.IS_TEST) {
-            win.webContents.openDevTools();
-        }
+        setTimeout(() => {
+            // Load the url of the dev server if in development mode
+            win!.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
+            if (!process.env.IS_TEST) {
+                win!.webContents.openDevTools();
+            }
+        }, 100);
     } else {
         createProtocol('app');
         // Load the index.html when not in development
@@ -101,3 +103,10 @@ if (isDevelopment) {
         });
     }
 }
+
+ipcMain.on("needs-reload", () => {
+    if(win !== null) {
+        (win as any).hasReloaded = true;
+        win.reload();
+    }
+});
