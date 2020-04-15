@@ -36,6 +36,7 @@ export function LoadDataFile(filename: string) {
 
 function beginLoadingProcess(filename: string) {
     app.$forceNextTick()
+        .then(() => app.$root.$emit('begin-dataset-load'))
         .then(() => readDataBundle(filename))
         .then((data) => store.dispatch('datasets/setData', data))
         .then(() => {
@@ -44,6 +45,7 @@ function beginLoadingProcess(filename: string) {
             }));
         })
         .catch((reason) => {
+            app.$root.$emit('fail-dataset-load');
             app.$bvToast.toast(reason, {
                 title: 'Error loading data!',
                 variant: 'danger',
@@ -51,6 +53,7 @@ function beginLoadingProcess(filename: string) {
             });
         })
         .then(() => {
+            app.$root.$emit('finish-dataset-load');
             app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
                 title: 'Data loaded successfully!',
                 variant: 'success',
