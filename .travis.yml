@@ -27,7 +27,7 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
-          branch: travis-matrix
+          branch: master
 
     - stage: build
       os: windows
@@ -55,7 +55,7 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
-          branch: travis-matrix
+          branch: master
 
       # Need this to be separate as it is the job that closes the release. Travis
       # likes to build in parallel, so this job needs to run last.
@@ -86,8 +86,9 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
-          branch: travis-matrix
+          branch: master
       
+      # This is a dummy job essentially that only takes the release off of draft mode
     - stage: deploy_builds
       os: linux
       language: node_js
@@ -104,4 +105,4 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: false
         on:
-          branch: travis-matrix
+          branch: master
