@@ -48,7 +48,7 @@ export default Vue.extend({
     },
     data() {
         return {
-            show_filters: true,
+            show_filters: false,
         };
     },
     computed: {
