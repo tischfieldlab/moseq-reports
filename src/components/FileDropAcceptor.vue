@@ -78,7 +78,7 @@ export default Vue.extend({
             ev.preventDefault();
         },
         onFileDragEnter(ev: DragEvent) {
-            if (ev && ev.dataTransfer) {
+            if (ev && ev.dataTransfer && ev.composedPath().includes(this.$parent.$el)) {
                 this.is_file_hover = true;
                 ev.preventDefault();
             }
