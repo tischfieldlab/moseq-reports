@@ -104,8 +104,8 @@ if (isDevelopment) {
     }
 }
 
-ipcMain.on("needs-reload", () => {
-    if(win !== null) {
+ipcMain.on('needs-reload', () => {
+    if (win !== null) {
         (win as any).hasReloaded = true;
         win.reload();
     }

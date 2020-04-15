@@ -1,6 +1,6 @@
 import {remote, ipcRenderer} from 'electron';
 if (!(remote.getCurrentWindow() as any).hasReloaded) {
-    ipcRenderer.send("needs-reload");
+    ipcRenderer.send('needs-reload');
 }
 
 

@@ -88,20 +88,12 @@ function showStartLoadingToast() {
 
 function readDataBundle(filename: string) {
     return new Promise<DatasetsState>((resolve, reject) => {
-        debugger;
         try {
-            console.log(JSZip.support);
             CleanState(); // clean any old state
             const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
             const rawData = fs.readFileSync(filename);
-            console.log('sync read', rawData);
-            fs.readFile(filename, (err, data) => {
-                console.log('error', err);
-                console.log('data', data);
-            });
 
             JSZip.loadAsync(rawData).then(async (zip) => {
-                console.log(zip);
                 const dataset: DatasetsState = {
                     bundle: filename,
                     name: path.basename(filename, '.msq'),
@@ -111,7 +103,6 @@ function readDataBundle(filename: string) {
                     ...await LoadSpinogramData(zip),
                     ...await LoadCrowdMovies(zip, tmpdir),
                 };
-                console.log(dataset);
                 resolve(dataset);
             }, (error) => reject(error));
         } catch (e) {
@@ -143,7 +134,6 @@ async function LoadSpinogramData(zip: JSZip) {
 }
 
 async function LoadUsageData(zip: JSZip) {
-    console.log('LoadMetadataData');
     return {
         usageByUsage: await jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json'),
         usageByFrames: await jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json'),
@@ -154,7 +144,6 @@ async function LoadCrowdMovies(zip: JSZip, dir: string) {
     const dest = path.join(dir, 'crowd_movies');
     fs.mkdirSync(dest);
     const waiting = new Array<Promise<unknown>>();
-    console.log('LoadCrowdMovies');
     zip.folder('crowd_movies').forEach((relativePath, file) => {
         waiting.push(new Promise((resolve) => {
             file.nodeStream()
@@ -168,16 +157,16 @@ async function LoadCrowdMovies(zip: JSZip, dir: string) {
 
 
 async function jsonParseZipEntry(zip: JSZip, entryName: string) {
-    const data = zip.file(entryName)
-                    .async('string', (progress) => console.log(progress))
-                    .then((value) => { return JSON.parse(value.toString()); },
-                          (error) => console.log(entryName, error));
-    console.log(entryName, data);
-    return data;
+    return zip.file(entryName)
+                .async('string')
+                .then((value) => JSON.parse(value));
 }
 async function jsonParseZipEntryContainingNaN(zip: JSZip, entryName: string) {
-    const data = await zip.file(entryName).async('string');
-    return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
-        return value === '***NaN***' ? NaN : value;
-    });
+    return zip.file(entryName)
+            .async('string')
+            .then((data) => {
+                return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
+                    return value === '***NaN***' ? NaN : value;
+                });
+            });
 }
