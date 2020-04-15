@@ -1,7 +1,7 @@
 <template>
     <div class="has-no-data-container">
-        <img src="/img/mouse.png" />
-        <h4>
+        <img :style="{visibility: show_background ? 'visible' : 'hidden'}" src="/img/mouse.png" />
+        <h4 :style="{visibility: show_help_text ? 'visible' : 'hidden'}">
             No data loaded. Please 
             <a href="#" @click="initiateFileOpen">load some data</a> 
             by clicking File > Open File.
@@ -15,6 +15,16 @@ import loadDataCommand from '@/commands/LoadData';
 
 
 export default Vue.extend({
+    data() {
+        return {
+            show_help_text: true,
+            show_background: true,
+        };
+    },
+    mounted() {
+        this.$root.$on('begin-dataset-load', () => this.show_help_text = false);
+        this.$root.$on('fail-dataset-load', () => this.show_help_text = true);
+    },
     methods: {
         initiateFileOpen(): void {
             loadDataCommand();

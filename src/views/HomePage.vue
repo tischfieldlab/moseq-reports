@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <DataFilterContainer :right="false" v-show="metadataLoaded" />
-        <NoDataPresent v-show="!metadataLoaded" />
+        <NoDataPresent />
         <WindowContainer />
         <FileDropAcceptor />
     </div>
