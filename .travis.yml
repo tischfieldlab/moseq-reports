@@ -57,9 +57,7 @@ jobs:
         on:
           branch: master
 
-      # Need this to be separate as it is the job that closes the release. Travis
-      # likes to build in parallel, so this job needs to run last.
-    - stage: linux_build
+    - stage: build
       os: linux
       language: node_js
       node_js: 12
@@ -83,6 +81,26 @@ jobs:
         skip_cleanup: true
         file_glob: true
         file: ${RELEASE_NAME}.zip
+        tag_name: ${TRAVIS_TAG}
+        draft: true
+        on:
+          branch: master
+      
+      # Need this to be separate as it is the job that closes the release. Travis
+      # likes to build in parallel, so this job needs to run last.
+    - stage: deploy_builds
+      os: linux
+      language: node_js
+      node_js: 12
+      script:
+        - export PACKAGE_VERSION=$(npm run --silent version)
+        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
+        - echo $TRAVIS_TAG
+        - git tag $TRAVIS_TAG
+      deploy:
+        provider: releases
+        api_key: ${GH_TOKEN}
+        skip_cleanup: true
         tag_name: ${TRAVIS_TAG}
         draft: false
         on:
