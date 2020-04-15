@@ -57,8 +57,6 @@ jobs:
         on:
           branch: master
 
-      # Need this to be separate as it is the job that closes the release. Travis
-      # likes to build in parallel, so this job needs to run last.
     - stage: build
       os: linux
       language: node_js
@@ -88,7 +86,8 @@ jobs:
         on:
           branch: master
       
-      # This is a dummy job essentially that only takes the release off of draft mode
+      # Need this to be separate as it is the job that closes the release. Travis
+      # likes to build in parallel, so this job needs to run last.
     - stage: deploy_builds
       os: linux
       language: node_js
