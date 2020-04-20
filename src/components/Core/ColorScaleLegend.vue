@@ -71,6 +71,7 @@ g.legend text.label {
 }
 g.legend g.tick line {
     stroke: #888;
+    shape-rendering: crispEdges;
 }
 g.legend g.tick text,
 g.legend text.label {

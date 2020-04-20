@@ -10,7 +10,6 @@
                         :width="scale.x.bandwidth()"
                         :height="scale.y.bandwidth()"
                         :fill="scale.z(node.usage)"
-                        shape-rendering="crispEdges"
                         :syllable="node.syllable"
                         
                         /><!-- v-b-tooltip.html :title="heatmap_node_tooltip(node)"-->
@@ -417,6 +416,10 @@ svg >>> .clink {
     fill: none;
     stroke: #aaa;
     stroke-width: 1.5px;
+    shape-rendering: geometricPrecision;
+}
+svg  >>> g.heatmap rect {
+    shape-rendering: crispEdges;
 }
 svg >>> g.x-axis.rotate g.tick text {
     transform: translate(-10px,0px) rotate(-45deg);
@@ -438,6 +441,7 @@ svg >>> g.y-axis g.tick text {
 svg >>> g.x-axis g.tick line,
 svg >>> g.y-axis g.tick line {
     stroke: #888;
+    shape-rendering: crispEdges;
 }
 svg >>> g.x-axis .domain,
 svg >>> g.y-axis .domain {
