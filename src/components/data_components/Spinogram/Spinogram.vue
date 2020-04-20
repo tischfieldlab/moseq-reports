@@ -40,10 +40,9 @@
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 
-import {Layout} from '@/store/datawindow.types';
 import * as d3 from 'd3';
-import {line} from 'd3-shape';
-import {scaleLinear} from 'd3-scale';
+import { line } from 'd3-shape';
+import { scaleLinear } from 'd3-scale';
 import { CountMethod } from '@/store/dataview.types';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';

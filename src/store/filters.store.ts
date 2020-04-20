@@ -21,6 +21,10 @@ const FiltersModule: Module<FiltersState, RootState> = {
         addFilter(state, namespace: string) {
             state.items.push(namespace);
         },
+        removeFilter(state, namespace: string) {
+            const start = state.items.indexOf(namespace);
+            state.items.splice(start, 1);
+        },
     },
     getters: {
         default(state) {
@@ -44,6 +48,16 @@ const FiltersModule: Module<FiltersState, RootState> = {
                 }
                 i++;
             }
+        },
+        removeFilter(context, namespace: string) {
+            context.commit('removeFilter', namespace);
+
+            const winsUsingFilter = context.rootGetters['datawindows/windowsUsingDataView'](namespace);
+            for (const win of winsUsingFilter) {
+                context.commit(`${win}/updateComponentDataSource`, {source: context.getters.default}, {root: true});
+            }
+
+            store.unregisterModule(namespace.split('/'));
         },
     },
 };

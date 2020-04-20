@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { ComponentRegistration } from '@/store/root.types';
 import { DataWindowState, Layout } from '@/store/datawindow.types';
-import {unnest} from '@/util/Vuex';
+import { unnest } from '@/util/Vuex';
 import { DataviewState } from '@/store/dataview.types';
 
 

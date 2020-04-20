@@ -5,7 +5,7 @@ export default [{
         width: 400,
         height: 600,
         position: {
-            x: 250,
+            x: 60,
             y: 5,
         },
     },
@@ -17,7 +17,7 @@ export default [{
         width: 430,
         height: 600,
         position: {
-            x: 655,
+            x: 465,
             y: 5,
         },
     },
@@ -29,7 +29,7 @@ export default [{
         width: 400,
         height: 200,
         position: {
-            x: 1090,
+            x: 900,
             y: 165,
         },
     },
@@ -41,7 +41,7 @@ export default [{
         width: 250,
         height: 155,
         position: {
-            x: 1090,
+            x: 900,
             y: 5,
         },
     },

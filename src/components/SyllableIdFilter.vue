@@ -11,10 +11,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { CountMethod, DataviewState } from '@/store/dataview.types';
-import { debounce } from 'ts-debounce';
+import { DataviewState } from '@/store/dataview.types';
 import { unnest } from '@/util/Vuex';
-import * as rangeParser from 'parse-numeric-range';
+import parsePart from 'parse-numeric-range';
 
 
 export default Vue.component('syllable-id-filter', {
@@ -39,7 +38,7 @@ export default Vue.component('syllable-id-filter', {
             return false;
         },
         tagsAsIds(): number[] {
-            let ids = rangeParser.parse(this.tags.join(',')) as number[];
+            let ids = parsePart(this.tags.join(',')) as number[];
             ids = [...new Set(ids)].sort((a, b) => a - b);
             return ids;
         },
@@ -69,7 +68,7 @@ export default Vue.component('syllable-id-filter', {
     methods: {
         tagValidator(tag) {
             // Individual tag validator function
-            const ids = rangeParser.parse(tag) as number[];
+            const ids = parsePart(tag) as number[];
             if (ids.length <= 0) {
                 return false;
             }
