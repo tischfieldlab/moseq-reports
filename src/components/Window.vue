@@ -91,6 +91,7 @@ export default mixins(WindowMixin).extend({
         // Create the settings button on the next tick when the DOM is ready
         this.$nextTick().then(() => {
             this.addSettingsButton();
+            ensureDefaults(this.$refs.body as Vue, this.$store);
         });
         (this.$refs.body as Vue).$on('start-loading', () => this.component_loading = true);
         (this.$refs.body as Vue).$on('finish-loading', () => this.component_loading = false);
@@ -141,9 +142,7 @@ export default mixins(WindowMixin).extend({
             container.appendChild(snapButton);
         },
         async snapshotContent(event: MouseEvent) {
-            ensureDefaults(this.$refs.body as Vue, this.$store);
-            const options = this.settings.snapshot;
-            await Snapshot(this.$refs.body as Vue, this.title, options);
+            await Snapshot(this.$refs.body as Vue, this.title, this.settings.snapshot);
         },
     },
 });
