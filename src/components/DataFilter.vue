@@ -34,7 +34,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import { CountMethod, DataviewState } from '@/store/dataview.types';
-import { debounce } from 'ts-debounce';
 import GroupBox from '@/components/GroupBox.vue';
 import SyllableIdFilter from '@/components/SyllableIdFilter.vue';
 import { unnest } from '@/util/Vuex';

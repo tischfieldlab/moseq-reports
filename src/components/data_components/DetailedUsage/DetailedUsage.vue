@@ -96,7 +96,7 @@ import RegisterDataComponent from '@/components/Core';
 
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-import { range, max, min, mean, quantile, median } from 'd3-array';
+import { max, min, mean, quantile, median } from 'd3-array';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 

@@ -46,11 +46,11 @@
 
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import Vue from 'vue';
 
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
-import {Size, Position} from '@/store/datawindow.types';
-import Snapshot, {ensureDefaults} from '@/components/Core/SnapshotHelper';
+import { Size, Position } from '@/store/datawindow.types';
+import Snapshot, { ensureDefaults } from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin.ts';
 

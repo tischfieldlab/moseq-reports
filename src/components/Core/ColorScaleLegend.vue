@@ -23,7 +23,6 @@ import Vue from 'vue';
 import * as d3 from 'd3';
 import { scaleLinear, ScaleLinear } from 'd3-scale';
 import { axisBottom } from 'd3-axis';
-import { tree } from 'd3';
 
 
 export default Vue.component('color-scale-legend', {

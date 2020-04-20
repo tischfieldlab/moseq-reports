@@ -11,8 +11,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { CountMethod, DataviewState } from '@/store/dataview.types';
-import { debounce } from 'ts-debounce';
+import { DataviewState } from '@/store/dataview.types';
 import { unnest } from '@/util/Vuex';
 import parsePart from 'parse-numeric-range';
 

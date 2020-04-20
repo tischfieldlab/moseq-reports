@@ -45,12 +45,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
-import store from '@/store/root.store';
-import { Layout } from '@/store/datawindow.types';
 import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue';
 import * as d3 from 'd3';
 import { cluster, hierarchy, sum } from 'd3';
-import { scaleLinear, scaleBand, scaleSequential } from 'd3-scale';
+import { scaleBand, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/util/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV } from '@/util/D3Clustering';
 import { spawn, Worker, ModuleThread } from 'threads';
