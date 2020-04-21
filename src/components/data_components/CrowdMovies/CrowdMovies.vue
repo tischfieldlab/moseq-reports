@@ -35,8 +35,8 @@ import { Layout } from '@/store/datawindow.types';
 RegisterDataComponent({
     friendly_name: 'Crowd Movies',
     component_type: 'CrowdMovies',
-    init_width: 580,
-    init_height: 500,
+    init_width: 400,
+    init_height: 360,
     settings_type: 'CrowdMoviesOptions',
     default_settings: {
         loop: true,
