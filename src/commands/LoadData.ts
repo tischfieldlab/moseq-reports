@@ -148,13 +148,25 @@ async function LoadCrowdMovies(zip: JSZip, dir: string) {
     fs.mkdirSync(dest);
     const waiting = new Array<Promise<unknown>>();
     zip.folder('crowd_movies').forEach((relativePath, file) => {
-        waiting.push(new Promise((resolve) => {
-            file.nodeStream()
-                .pipe(fs.createWriteStream(path.join(dir, file.name)))
-                .on('finish', () => resolve());
+        waiting.push(new Promise((resolve, reject) => {
+            file.async('nodebuffer').then((value: Buffer) => {
+                try {
+                    fs.writeFileSync(path.join(dir, file.name), value);
+                    resolve();
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }));
     });
-    await Promise.allSettled(waiting);
+    await Promise.allSettled(waiting)
+                 .then((values) => {
+                    values.forEach((v) => {
+                        if (v.status === 'rejected') {
+                            throw(v.reason);
+                        }
+                    });
+                 });
     return {};
 }
 
@@ -173,23 +185,3 @@ async function jsonParseZipEntryContainingNaN(zip: JSZip, entryName: string) {
                 });
             });
 }
-
-import http from 'http';
-http.createServer((request, response) => {
-    request.addListener('end', () => {
-        const currentPath = (store.state as any).datasets.path;
-        if (currentPath === undefined || request.url === undefined) {
-            response.writeHead(404).end('No data loaded.');
-            return;
-        } else {
-            const fpath = path.join(currentPath, decodeURI(request.url));
-            fs.readFile(fpath, (err, data) => {
-                if (err) {
-                    response.writeHead(404).end(JSON.stringify(err));
-                    return;
-                }
-                response.writeHead(200).end(data);
-            });
-        }
-    }).resume();
-}).listen(8989);

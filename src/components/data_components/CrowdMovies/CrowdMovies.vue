@@ -19,6 +19,7 @@ import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
+import {CreateCrowdMovieServer}  from './CrowdMoviesServer';
 
 RegisterDataComponent({
     friendly_name: 'Crowd Movies',
@@ -26,6 +27,7 @@ RegisterDataComponent({
     init_width: 580,
     init_height: 500,
 });
+CreateCrowdMovieServer();
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     data() {

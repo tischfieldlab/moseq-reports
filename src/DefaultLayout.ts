@@ -48,13 +48,13 @@ export default [{
     settings: {},
 }, {
     title: 'Crowd Movies',
-    type: 'crowd-movies',
+    type: 'CrowdMovies',
     layout: {
-        width: 580,
-        height: 330,
+        width: 400,
+        height: 400,
         position: {
-            x: 260,
-            y: 680,
+            x: 900,
+            y: 370,
         },
     },
     settings: {},
