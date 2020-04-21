@@ -1,3 +1,9 @@
+import {remote, ipcRenderer} from 'electron';
+if (!(remote.getCurrentWindow() as any).hasReloaded) {
+    ipcRenderer.send('needs-reload');
+}
+
+
 import Vue from 'vue';
 import Vuex from 'vuex';
 Vue.use(Vuex);
@@ -12,10 +18,11 @@ import './registerServiceWorker';
 
 
 // Bootstrap Stuff
-import BootstrapVue from 'bootstrap-vue';
+import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import VueResize from 'vue-resize';
 Vue.use(VueResize);

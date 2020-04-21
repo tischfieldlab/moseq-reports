@@ -46,7 +46,6 @@
                                 <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
                                 <path v-if="is_outlier(node)"
                                     v-bind:key="node.StartTime"
-                                    shape-rendering="geometricPrecision"
                                     :d="diamond()"
                                     :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
                                     :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
@@ -67,14 +66,12 @@
                     <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
                     <path v-if="is_outlier(node)"
                         v-bind:key="node.StartTime"
-                        shape-rendering="geometricPrecision"
                         :d="diamond()"
                         :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
                         :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
                         
                     <circle v-else
                         v-bind:key="node.StartTime"
-                        shape-rendering="geometricPrecision"
                         :r="point_size"
                         :cx="scale.x(node.group) + node.jitter + halfBandwith"
                         :cy="scale.y(node.usage)"
@@ -99,7 +96,7 @@ import RegisterDataComponent from '@/components/Core';
 
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-import { range, max, min, mean, quantile, median } from 'd3-array';
+import { max, min, mean, quantile, median } from 'd3-array';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 
@@ -223,11 +220,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             }
             const x = scaleBand()
                 .domain(this.groupNames)
-                .rangeRound([0, this.width])
+                .range([0, this.width])
                 .padding(0.2);
             const y = scaleLinear()
                 .domain([0, Math.max(...this.individualUseageData.map((i) => i.usage))])
-                .rangeRound([this.height, 0]);
+                .range([this.height, 0]);
             const kdeMax = Math.max(...this.groupedData.map((g) => Math.max(...g.kde.map((k) => k[1]))));
             const w = scaleLinear()
                 .domain([-kdeMax, kdeMax])
@@ -440,9 +437,17 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 
 
 
-<style>
-g.x-axis.rotate g.tick text {
+<style scoped>
+svg >>> g.x-axis.rotate g.tick text {
     transform: translate(-10px,0px) rotate(-45deg);
     text-anchor: end;
+}
+svg >>> line,
+svg >>> rect {
+    shape-rendering: crispEdges;
+}
+svg >>> circle,
+svg >>> path {
+    shape-rendering: geometricPrecision;
 }
 </style>

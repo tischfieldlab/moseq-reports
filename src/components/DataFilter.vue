@@ -2,8 +2,11 @@
     <div>
         <b-card>
             <template v-slot:header>
-                <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="collapse-button text-decoration-none">
-                    <span class="when-opened">&#x25BC;</span> <span class="when-closed">&#x25B6;</span>
+                <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="text-dark collapse-button text-decoration-none">
+                    <span class="when-opened">&#x25BC;</span><span class="when-closed">&#x25B6;</span>
+                </b-button>
+                <b-button variant="link" @click="removeThis" class="text-dark remove-button text-decoration-none">
+                    &#x1F5D9;
                 </b-button>
                 <h7>{{ datasource }}</h7>
             </template>
@@ -31,7 +34,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import { CountMethod, DataviewState } from '@/store/dataview.types';
-import { debounce } from 'ts-debounce';
 import GroupBox from '@/components/GroupBox.vue';
 import SyllableIdFilter from '@/components/SyllableIdFilter.vue';
 import { unnest } from '@/util/Vuex';
@@ -64,12 +66,24 @@ export default Vue.component('datafilter', {
         is_loading(): boolean {
             return this.dataview && this.dataview.loading;
         },
+        selectedCountMethod: {
+            get(): CountMethod {
+                return this.dataview.countMethod;
+            },
+            set(value: CountMethod) {
+                if (value !== this.selectedCountMethod) {
+                    this.$store.dispatch(`${this.datasource}/switchCountMethod`, value);
+                }
+            },
+        },
         syllable: {
             get(): number {
                 return this.dataview.selectedSyllable;
             },
-            set(event: number) {
-                this.$store.commit(`${this.datasource}/setSelectedSyllable`, event);
+            set(value: number) {
+                if (value !== this.syllable) {
+                    this.$store.commit(`${this.datasource}/setSelectedSyllable`, value);
+                }
             },
         },
         syllableIdOptions(): Array<{ value: number, text: string }> {
@@ -86,13 +100,20 @@ export default Vue.component('datafilter', {
             }
             return [];
         },
-        selectedCountMethod: {
-            get(): CountMethod {
-                return this.dataview.countMethod;
-            },
-            set(event: CountMethod) {
-                this.$store.dispatch(`${this.datasource}/switchCountMethod`, event);
-            },
+    },
+    methods: {
+        removeThis() {
+            if (this.$store.getters['filters/default'] === this.datasource) {
+                this.$bvModal.msgBoxOk('You cannot remove the default filter.');
+            } else {
+                this.$bvModal.msgBoxConfirm('Are you sure you want to remove this data filter?', {
+
+                }).then((value) => {
+                    if (value) {
+                        this.$store.dispatch('filters/removeFilter', this.datasource);
+                    }
+                });
+            }
         },
     },
 });
@@ -100,9 +121,18 @@ export default Vue.component('datafilter', {
 
 <style scoped lang="scss">
 .collapse-button {
-    padding:0;
-    margin-left:-10px;
+    padding: 0;
+    margin-left: -10px;
     margin-right: 10px;
+}
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+    display: none;
+}
+.remove-button {
+    float: right;
+    padding: 0;
+    margin-right: -10px;
 }
 .card-body{
     padding: 0;
@@ -111,10 +141,7 @@ export default Vue.component('datafilter', {
 .filter-item {
     margin:10px 0;
 }
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-  display: none;
-}
+
 .container {
     padding: 0.5em;
 }

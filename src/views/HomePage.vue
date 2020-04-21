@@ -1,91 +1,32 @@
 <template>
-    <div class="home" :style="{height: `${height}px`}">
-        <div v-show="metadataLoaded" id="filter_container" :style="{width: `${toolbox_width}px`, height: `${height}px`}">
-            <h3>Data Filters</h3>
-            <div ref="tbx_wrapper">
-                <template v-for="ns in $store.state.filters.items">
-                    <DataFilter :key="ns" :datasource="ns" />
-                </template>
-            </div>
-        </div>
-        <div id="has-no-metadata-container" v-if="!metadataLoaded">
-            <div>&nbsp;</div>
-            <h4>
-                No data loaded. Please <a href="#" @click="initiateFileOpen">load some data</a> by clicking File > Open File.
-            </h4>
-        </div>
-        <template v-for="wid in windows">
-            <UiCard :key="wid" :id="wid" />
-        </template>
+    <div class="home">
+        <DataFilterContainer :right="false" v-show="metadataLoaded" />
+        <NoDataPresent />
+        <WindowContainer />
+        <FileDropAcceptor />
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import { debounce } from 'ts-debounce';
+import DataFilterContainer from '@/components/DataFilterContainer.vue';
+import WindowContainer from '@/components/WindowContainer.vue';
+import NoDataPresent from '@/components/NoDataPresent.vue';
+import FileDropAcceptor from '@/components/FileDropAcceptor.vue';
 
-import UiCard from '@/components/Window.vue';
-import DataFilter from '@/components/DataFilter.vue';
-
-import { openNewFileButton } from '@/MenuStrip';
 
 
 export default Vue.component('homepage', {
     name: 'homepage',
     components: {
-        UiCard,
-        DataFilter,
-    },
-    data() {
-        return {
-            noDataMessage: 'No data loaded. Please load some data by clicking File > Open File.',
-            height: 0,
-            width: 0,
-            toolbox_width: 250,
-            debouncedResizeHandler(this: Window, ev: UIEvent): any { return; },
-        };
+        WindowContainer,
+        DataFilterContainer,
+        NoDataPresent,
+        FileDropAcceptor,
     },
     computed: {
-        windows(): string[] {
-            return this.$store.state.datawindows.items;
-        },
         metadataLoaded(): boolean {
             return this.$store.state.datasets.usageByUsage !== null;
-        },
-    },
-    watch: {
-        metadataLoaded: {
-            handler(newState, oldState) {
-                if (!oldState && newState && this.windows.length === 0) {
-                    this.$nextTick().then(() => this.loadDefaultLayout());
-                }
-            },
-            deep: true,
-        },
-    },
-    created() {
-        this.$store.dispatch('filters/addFilter');
-        this.debouncedResizeHandler = debounce(this.handleResize, 250);
-        window.addEventListener('resize', this.debouncedResizeHandler);
-    },
-    destroyed() {
-        window.removeEventListener('resize', this.debouncedResizeHandler);
-    },
-    mounted() {
-        this.$nextTick().then(() => {
-            this.handleResize();
-        });
-    },
-    methods: {
-        handleResize(): any {
-            this.height = document.documentElement.clientHeight;
-            this.width = document.documentElement.clientWidth - this.toolbox_width;
-        },
-        loadDefaultLayout(): void {
-            this.$store.dispatch('datawindows/loadDefaultLayout');
-        },
-        initiateFileOpen(): void {
-            openNewFileButton();
         },
     },
 });
@@ -93,44 +34,9 @@ export default Vue.component('homepage', {
 
 <style scoped lang="scss">
 .home{
-    background-color:#e9ecef ;
-}
-#filter_container {
-    display: flex;
-    flex-flow: column;
+    background-color:#e9ecef;
     height: 100%;
-}
-#filter_container > h3 {
-    background: #c5c5c5;
-    padding: 10px;
-    margin-bottom: 0;
-    font-size: 1.5em;
-}
-#filter_container > div {
-    flex-grow : 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-#has-no-metadata-container {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: inherit;
-}
-#has-no-metadata-container div {
-    height: 512px;
-    width: 512px;
-    background-color: inherit;
-    background-image: url('/img/mouse.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-blend-mode: overlay;
-    margin-top: -10%;
-}
-#has-no-metadata-container h4 {
-    margin-top: -80px;
+    width: 100%;
+    position: fixed;
 }
 </style>

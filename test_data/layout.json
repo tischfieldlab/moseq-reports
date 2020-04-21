@@ -1,0 +1,76 @@
+[
+	{
+		"type": "ClusteredHeatmap",
+		"title": "Clustered Usage Heatmap",
+		"layout": {
+			"width": 400,
+			"height": 600,
+			"position": {
+				"x": 60,
+				"y": 5
+			}
+		},
+		"source": "filters/dataview-0",
+		"settings": {
+			"syllable_order_type": "cluster",
+			"syllable_order_direction": "asc",
+			"syllable_cluster_distance": "euclidean",
+			"syllable_cluster_linkage": "avg",
+			"group_order_type": "natural",
+			"group_cluster_distance": "euclidean",
+			"group_cluster_linkage": "avg",
+			"colormap": "interpolateViridis"
+		}
+	},
+	{
+		"type": "DetailedUsage",
+		"title": "Usage Details",
+		"layout": {
+			"width": 430,
+			"height": 600,
+			"position": {
+				"x": 465,
+				"y": 5
+			}
+		},
+		"source": "filters/dataview-0",
+		"settings": {
+			"show_points": true,
+			"point_size": 2,
+			"show_boxplot": true,
+			"show_violinplot": false,
+			"boxplot_whiskers": 0
+		}
+	},
+	{
+		"type": "Spinogram",
+		"title": "Spinogram",
+		"layout": {
+			"width": 400,
+			"height": 200,
+			"position": {
+				"x": 900,
+				"y": 165
+			}
+		},
+		"source": "filters/dataview-0",
+		"settings": {
+			"line_color": "#FF0000",
+			"line_weight": 2
+		}
+	},
+	{
+		"type": "SelectedSyllable",
+		"title": "Selected Syllable",
+		"layout": {
+			"width": 250,
+			"height": 155,
+			"position": {
+				"x": 900,
+				"y": 5
+			}
+		},
+		"source": "filters/dataview-0",
+		"settings": {}
+	}
+]

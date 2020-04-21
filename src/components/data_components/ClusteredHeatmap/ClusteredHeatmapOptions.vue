@@ -74,7 +74,7 @@
 
 <script scoped lang="ts">
 import Vue from 'vue';
-import {GetInterpolatedScaleOptions} from '@/util/D3ColorProvider';
+import { GetInterpolatedScaleOptions } from '@/util/D3ColorProvider';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 

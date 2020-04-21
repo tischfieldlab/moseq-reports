@@ -1,11 +1,7 @@
 import { remote, Menu, MenuItem } from 'electron';
-import LoadDataBundle from '@/models/DataLoader';
-
-import { DehydratedDataWindow } from '@/store/datawindow.types';
 import store from '@/store/root.store';
-import app from '@/main';
-import path from 'path';
-import fs from 'fs';
+import loadDataCommand from '@/commands/LoadData';
+import loadLayoutCommand from '@/commands/LoadLayout';
 
 
 /**
@@ -41,7 +37,7 @@ function createMainMenuStrip(): Menu {
                     label: 'Open...',
                     type: 'normal',
                     accelerator: 'CmdOrCtrl+O',
-                    click: openNewFileButton,
+                    click: loadDataCommand,
                 },
                 {
                     type: 'separator',
@@ -98,7 +94,7 @@ function createMainMenuStrip(): Menu {
             label: 'Tools',
             submenu: [
                 {
-                    label: 'Add Widget..',
+                    label: 'Add Widget...',
                     type: 'submenu',
                     submenu: [],
                 },
@@ -134,7 +130,7 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Load Layout',
                     type: 'normal',
-                    click: (): void => { loadLayoutFromFile(); },
+                    click: loadLayoutCommand,
                 },
                 {
                     type: 'separator',
@@ -180,54 +176,4 @@ function createAddWidgetSubmenu(menu: Menu) {
 
         addWidgetMenu.append(newItem);
     }
-}
-
-/**
- * Opens a file dialog and reads in the file selected as json.
- *
- * @returns {void}
- */
-export function openNewFileButton(): void {
-    let currDir: string = process.cwd();
-    currDir = path.join(currDir);
-
-    const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
-    if (filenames === undefined) { return; }
-
-    app.$bvToast.toast('Hang tight... We\'re getting your data ready', {
-        title: 'Loading Data',
-        variant: 'info',
-        toaster: 'b-toaster-bottom-right',
-    });
-    app.$forceNextTick()
-        .then(() => LoadDataBundle(filenames[0]))
-        .catch((reason) => {
-            app.$bvToast.toast(reason, {
-                title: 'Error loading data!',
-                variant: 'danger',
-                toaster: 'b-toaster-bottom-right',
-            });
-        }).then(() => {
-            app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
-                title: 'Data loaded successfully!',
-                variant: 'success',
-                toaster: 'b-toaster-bottom-right',
-            });
-        });
-}
-
-/**
- * Opens a file dialog for json files pertaining to the layout of the webapp
- * widget windows.
- *
- * @returns {void}
- */
-function loadLayoutFromFile(): void {
-    const currDir: string = process.cwd();
-    const filenames = remote.dialog.showOpenDialogSync({properties: ['openFile'], defaultPath: currDir});
-    if (filenames === undefined) { return; }
-
-    const data = fs.readFileSync(filenames[0]).toString();
-    const content: DehydratedDataWindow[] = JSON.parse(data) as DehydratedDataWindow[];
-    store.dispatch('datawindows/loadLayout', content);
 }

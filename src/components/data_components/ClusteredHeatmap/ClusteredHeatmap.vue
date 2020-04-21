@@ -10,7 +10,6 @@
                         :width="scale.x.bandwidth()"
                         :height="scale.y.bandwidth()"
                         :fill="scale.z(node.usage)"
-                        shape-rendering="crispEdges"
                         :syllable="node.syllable"
                         
                         /><!-- v-b-tooltip.html :title="heatmap_node_tooltip(node)"-->
@@ -46,12 +45,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
-import store from '@/store/root.store';
-import { Layout } from '@/store/datawindow.types';
 import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue';
 import * as d3 from 'd3';
 import { cluster, hierarchy, sum } from 'd3';
-import { scaleLinear, scaleBand, scaleSequential } from 'd3-scale';
+import { scaleBand, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/util/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV } from '@/util/D3Clustering';
 import { spawn, Worker, ModuleThread } from 'threads';
@@ -417,6 +414,10 @@ svg >>> .clink {
     fill: none;
     stroke: #aaa;
     stroke-width: 1.5px;
+    shape-rendering: geometricPrecision;
+}
+svg  >>> g.heatmap rect {
+    shape-rendering: crispEdges;
 }
 svg >>> g.x-axis.rotate g.tick text {
     transform: translate(-10px,0px) rotate(-45deg);
@@ -438,6 +439,7 @@ svg >>> g.y-axis g.tick text {
 svg >>> g.x-axis g.tick line,
 svg >>> g.y-axis g.tick line {
     stroke: #888;
+    shape-rendering: crispEdges;
 }
 svg >>> g.x-axis .domain,
 svg >>> g.y-axis .domain {
