@@ -51,7 +51,7 @@ export default [{
     type: 'CrowdMovies',
     layout: {
         width: 400,
-        height: 400,
+        height: 360,
         position: {
             x: 900,
             y: 370,

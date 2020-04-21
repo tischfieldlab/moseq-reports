@@ -1,37 +1,68 @@
 <template>
-    <div v-if="crowd_movie_path">
-        <p class="par">Crowd Movie for Syllable {{selected_syllable}} ({{count_method}}) </p>
-        <div>
-            <video class="vido" controls :src="crowd_movie_path" type="video/mp4" autoplay muted loop />
+    <div class="container">
+        <div v-show="video_loaded">
+            <div class="info">
+                <span>Module {{selected_syllable}} ({{count_method}})</span>
+                <span v-show="settings.playback_rate !== 1.0">{{settings.playback_rate}}x</span>
+            </div>
+            <video ref="video"
+                :src="crowd_movie_path"
+                controls="true"
+                type="video/mp4"
+                autoplay="true"
+                muted="true" />
         </div>
-    </div>
-    <div v-else>
-        No path/Wrong Path
+        <div v-show="!video_loaded" class="no-syllable">
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
+                <b-card-text>
+                    Sorry, there is no crowd movie available for Syllable {{selected_syllable}} ({{count_method}}) 
+                </b-card-text>
+            </b-card>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
-import path from 'path';
-import url from 'url';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
 import {CreateCrowdMovieServer} from './CrowdMoviesServer';
+import { Layout } from '@/store/datawindow.types';
 
 RegisterDataComponent({
     friendly_name: 'Crowd Movies',
     component_type: 'CrowdMovies',
     init_width: 580,
     init_height: 500,
+    settings_type: 'CrowdMoviesOptions',
+    default_settings: {
+        loop: true,
+        playback_rate: 1.0,
+    },
 });
 CreateCrowdMovieServer();
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     data() {
-        return {};
+        return {
+            video_loaded: true,
+        };
+    },
+    mounted() {
+        const video = (this.$refs.video as HTMLMediaElement);
+        video.addEventListener('error', this.hide_video);
+        video.addEventListener('loadedmetadata', this.show_video);
+        this.updateVideoSize();
+        this.updateVideoPlaybackRate();
+        this.updateVideoLooping();
+    },
+    beforeDestroy() {
+        const video = (this.$refs.video as HTMLMediaElement);
+        video.removeEventListener('error', this.hide_video);
+        video.removeEventListener('loadedmetadata', this.show_video);
     },
     computed: {
         selected_syllable(): number {
@@ -47,17 +78,83 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return `http://localhost:8989/crowd_movies/${fname}`;
         },
     },
+    watch: {
+        'layout': {
+            handler(val, oldVal) {
+                this.updateVideoSize();
+            },
+            deep: true,
+        },
+        'settings.playback_rate': 'updateVideoPlaybackRate',
+        'settings.loop': 'updateVideoLooping',
+    },
+    methods: {
+        show_video(ev: Event) {
+            this.video_loaded = true;
+        },
+        hide_video(ev: Event) {
+            this.video_loaded = false;
+        },
+        updateVideoSize() {
+            const video = (this.$refs.video as HTMLVideoElement);
+            const videoRatio = video.videoHeight / video.videoWidth;
+            const windowRatio = this.layout.height / this.layout.width;
+
+            if (Number.isNaN(videoRatio)) {
+                video.width = this.layout.width;
+                return;
+            }
+
+            if (windowRatio < videoRatio) {
+                if (this.layout.height > 50) { /* smallest video height */
+                    video.height = this.layout.height - 32;
+                } else {
+                    video.height = 50;
+                }
+                video.width = video.height / videoRatio;
+            } else {
+                video.width = this.layout.width;
+                video.height = video.width * videoRatio;
+            }
+        },
+        updateVideoPlaybackRate() {
+            const video = (this.$refs.video as HTMLVideoElement);
+            video.playbackRate = this.settings.playback_rate;
+        },
+        updateVideoLooping() {
+            const video = (this.$refs.video as HTMLVideoElement);
+            video.loop = this.settings.loop;
+        },
+    },
 });
 </script>
 
 <style scoped>
-.vido {
-    width: 100%;
-    height: auto;
+.container {
+    padding: 0;
+    background-color: #00007F;
+    max-width: none;
+    overflow: hidden;
+}
+video {
     margin:0;
     padding:0;
 }
-.par {
-    text-align:center;
+.info {
+    position: absolute;
+    color: #ffffff;
+    right: 0;
+    padding: 6px 6px 0 0;
+    text-align: right;
+}
+.info span {
+    display: block;
+}
+.no-syllable .card {
+    width: 75%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 </style>
