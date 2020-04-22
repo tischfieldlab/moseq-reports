@@ -34,7 +34,6 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
-import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
 import { CreateCrowdMovieServer } from './CrowdMoviesServer';
 
@@ -53,7 +52,7 @@ RegisterDataComponent({
 // Create the crowd movie server
 CreateCrowdMovieServer();
 
-export default mixins(LoadingMixin, WindowMixin).extend({
+export default mixins(WindowMixin).extend({
     data() {
         return {
             video_loaded: true,
