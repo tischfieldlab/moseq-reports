@@ -1,29 +1,29 @@
-import os, argparse, json, sys, glob, subprocess
-import pandas as pd
-import moseq2_extras
-import os, argparse, json
+import argparse
+import glob
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
 import zipfile
 
-from moseq2_extras.util import ensure_dir
-from moseq2_viz.util import parse_index
-from moseq2_viz.model.util import parse_model_results, \
-        results_to_dataframe
+import pandas as pd
 from moseq2_extras.model import get_syllable_id_mapping
+from moseq2_extras.util import ensure_dir
 
+from moseq2_viz.model.util import parse_model_results, results_to_dataframe
+from moseq2_viz.util import parse_index
 
-METADATAPATH = os.getcwd()
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', help='Index file to be used to create groups.',
-            dest='indexFile')
-    parser.add_argument('-m', help='Model file to be used to create figures.',
-            dest='modelFile')
-    parser.add_argument('--output', help='The output directory for the metadata.json file to be saved to.',
-            dest='outputPath')
-    parser.add_argument('--filter', nargs='+', dest='filterGroups',
-            help='The list of groups that are desired to be in the report.')
-    parser.set_defaults(indexFile=None, modelFile=None, outputPath=METADATAPATH, filterGroups=[])
+    parser.add_argument('-i', help='Index file to be used to create groups.', dest='indexFile')
+    parser.add_argument('-m', help='Model file to be used to create figures.', dest='modelFile')
+    parser.add_argument('--output', help='The output directory for the metadata.json file to be saved to.', dest='outputPath')
+    parser.add_argument('--filter', nargs='+', dest='filterGroups', help='The list of groups that are desired to be in the report.')
+    parser.set_defaults(indexFile=None, modelFile=None, outputPath=os.getcwd(), filterGroups=[])
     args = parser.parse_args()
 
     max_syllable = 100
@@ -32,25 +32,29 @@ def main():
 
     # write map of syllable id's between various count methods
     writeSyllableIdMap(args.modelFile, args.outputPath)
-
+    
     # write out the groups and their preferred ordering
     writePrefferedGroups(args.indexFile, args.filterGroups, args.outputPath)
 
     # write out usage data
     writeUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'usage', args.outputPath)
     writeUsageDataframe(args.modelFile, args.indexFile, args.filterGroups, max_syllable, True, 'frames', args.outputPath)
-    
+
     create_spinograms(args.modelFile, args.indexFile, args.outputPath, max_syllable, True, 'usage')
+
+    create_crowd_movies(args.modelFile, args.indexFile, os.path.join(args.outputPath, 'crowd_movies'), max_syllable, True, 'usage')
     
     archiveData(args.outputPath)
+    shutil.rmtree(args.outputPath, ignore_errors=True)
 #end main()
 
-def archiveData(outputPath):
-    zipf = zipfile.ZipFile('{}.msq'.format(outputPath), 'w', zipfile.ZIP_DEFLATED)
+def archiveData(outputPath, ext="msq"):
+    zipf = zipfile.ZipFile('{}.{}'.format(outputPath, ext), 'w', zipfile.ZIP_DEFLATED)
     
     for root, _, files in os.walk(outputPath):
         for file in files:
-            zipf.write(os.path.join(root, file), file)
+            arcname = os.path.join(os.path.relpath(root, outputPath), file)
+            zipf.write(os.path.join(root, file), arcname=arcname)
     zipf.close()
 #end archiveData()
 
@@ -116,6 +120,33 @@ def create_spinograms(model, index, out_dir, max_syl, sort, count):
         spinogram_args.append('--sort')
     subprocess.call(spinogram_args)
 #end create_spinograms()
+
+def create_crowd_movies(model, index, out_dir, max_syl, sort, count):
+    out_dir = ensure_dir(out_dir)
+    
+    #check if movies already exist
+    
+    if ((sort and count == 'usage') or not sort) and len(glob.glob(os.path.join(out_dir, '*(usage)*.mp4'))) > 0:
+        sys.stderr.write("It appears crowd movies already exist. Skipping. \n")
+        return
+    elif (sort and count == 'frames') and len(glob.glob(os.path.join(out_dir, '*(frames)*.mp4'))) > 0:
+        sys.stderr.write("It appears crowd movies already exist. Skipping. \n")
+        return
+    
+    sys.stderr.write("Creating crowd movies at {}\n".format(out_dir))
+    args = [
+        'moseq2-viz',
+        'make-crowd-movies',
+        index,
+        model,
+        '--max-syllable', str(max_syl),
+        '--output-dir', out_dir,
+        '--sort', str(sort),
+        '--count', count,
+        '--raw-size', '350', '350'
+    ]
+    subprocess.call(args)
+#end create_crowd_movies()
 
 if __name__ == '__main__':
     main()

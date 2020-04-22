@@ -148,13 +148,25 @@ async function LoadCrowdMovies(zip: JSZip, dir: string) {
     fs.mkdirSync(dest);
     const waiting = new Array<Promise<unknown>>();
     zip.folder('crowd_movies').forEach((relativePath, file) => {
-        waiting.push(new Promise((resolve) => {
-            file.nodeStream()
-                .pipe(fs.createWriteStream(path.join(dir, file.name)))
-                .on('finish', () => resolve());
+        waiting.push(new Promise((resolve, reject) => {
+            file.async('nodebuffer').then((value: Buffer) => {
+                try {
+                    fs.writeFileSync(path.join(dir, file.name), value);
+                    resolve();
+                } catch (e) {
+                    reject(e);
+                }
+            });
         }));
     });
-    await Promise.allSettled(waiting);
+    await Promise.allSettled(waiting)
+                 .then((values) => {
+                    values.forEach((v) => {
+                        if (v.status === 'rejected') {
+                            throw(v.reason);
+                        }
+                    });
+                 });
     return {};
 }
 

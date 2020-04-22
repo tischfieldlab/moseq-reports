@@ -1,6 +1,7 @@
 export enum CountMethod {
     Usage = 'Usage',
     Frames = 'Frames',
+    Raw = 'Raw',
 }
 
 export interface DataviewState {
