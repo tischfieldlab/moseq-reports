@@ -142,7 +142,8 @@ def create_crowd_movies(model, index, out_dir, max_syl, sort, count):
         '--max-syllable', str(max_syl),
         '--output-dir', out_dir,
         '--sort', str(sort),
-        '--count', count
+        '--count', count,
+        '--raw-size', '350', '350'
     ]
     subprocess.call(args)
 #end create_crowd_movies()
