@@ -46,4 +46,16 @@ export default [{
         },
     },
     settings: {},
+}, {
+    title: 'Crowd Movies',
+    type: 'CrowdMovies',
+    layout: {
+        width: 400,
+        height: 360,
+        position: {
+            x: 900,
+            y: 370,
+        },
+    },
+    settings: {},
 }];

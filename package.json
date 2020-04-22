@@ -6,6 +6,9 @@
     "email": "thackray@dls.rutgers.edu"
   },
   "private": true,
+  "engines": {
+    "node": ">=10.12.0"
+  },
   "scripts": {
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
