@@ -50,7 +50,7 @@ export default [{
     title: 'Crowd Movies',
     type: 'CrowdMovies',
     layout: {
-        width: 400,
+        width: 330,
         height: 360,
         position: {
             x: 900,

@@ -29,6 +29,12 @@
                         Height (mm)
                     </text>
                 </g>
+                <ColorScaleLegend
+                    title="Time (ms)"
+                    :scale="scale.t"
+                    :width="100"
+                    :height="10"
+                    :transform="`translate(${width}, 25)`" />
             </svg>
         </template>
         <p v-else>No Data</p>
@@ -42,11 +48,12 @@ import RegisterDataComponent from '@/components/Core';
 
 import * as d3 from 'd3';
 import { line } from 'd3-shape';
-import { scaleLinear } from 'd3-scale';
+import { scaleLinear, scaleSequential } from 'd3-scale';
 import { CountMethod } from '@/store/dataview.types';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
 import mixins from 'vue-typed-mixins';
+import {rgb} from 'd3-color';
 
 
 interface Spinogram {
@@ -58,6 +65,7 @@ interface SpinogramTimepoint {
     x: number[];
     y: number[];
     a: number;
+    t: number;
 }
 
 RegisterDataComponent({
@@ -91,6 +99,15 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         height(): number {
             return this.outsideHeight - this.margin.top - this.margin.bottom;
         },
+        legendHeight(): number {
+            const h = this.height * 0.75;
+            if (h < 25) {
+                return 25;
+            } else if (h > 150) {
+                return 150;
+            }
+            return h;
+        },
         outsideWidth(): number {
             return this.layout.width;
         },
@@ -112,7 +129,19 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             const y = scaleLinear()
                 .domain([0, 100])
                 .rangeRound([this.height, 0]);
-            return { x, y };
+
+            const c = rgb(this.line_color);
+            const a1 = this.spinogram_alphas[0];
+            const a2 = this.spinogram_alphas[this.spinogram_alphas.length - 1];
+            const t = scaleSequential(d3.interpolateRgb(
+                    rgb(c.r, c.g, c.b, a1).toString(),
+                    rgb(c.r, c.g, c.b, a2).toString(),
+                ))
+                .domain([
+                    this.spinogram_times[0],
+                    this.spinogram_times[this.spinogram_times.length - 1],
+                ]);
+            return { x, y, t };
         },
         line(): any {
             const a = line()
@@ -146,6 +175,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         spinogram_alphas(): number[] {
             return this.spinogram_data.data.map((stp, idx) => stp.a);
         },
+        spinogram_times(): number[] {
+            return this.spinogram_data.data.map((stp, idx) => stp.t);
+        },
         has_data(): boolean {
             return this.spinogram_data !== undefined;
         },
@@ -175,5 +207,8 @@ svg >>> text.title {
     font-family: Verdana,Arial,sans-serif;
     font-size: 13px;
 }
-
+svg >>> g.legend text.label {
+    font-size: 10px;
+    transform: translateY(-10px);
+}
 </style>

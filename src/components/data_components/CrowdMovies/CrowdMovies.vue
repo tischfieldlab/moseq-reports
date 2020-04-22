@@ -40,7 +40,7 @@ import { CreateCrowdMovieServer } from './CrowdMoviesServer';
 RegisterDataComponent({
     friendly_name: 'Crowd Movies',
     component_type: 'CrowdMovies',
-    init_width: 400,
+    init_width: 330,
     init_height: 360,
     settings_type: 'CrowdMoviesOptions',
     default_settings: {
