@@ -7,8 +7,8 @@
             </div>
             <video ref="video"
                 :src="crowd_movie_path"
-                controls="true"
                 type="video/mp4"
+                controls="true"
                 autoplay="true"
                 muted="true" />
         </div>
@@ -29,8 +29,7 @@ import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
-import {CreateCrowdMovieServer} from './CrowdMoviesServer';
-import { Layout } from '@/store/datawindow.types';
+import { CreateCrowdMovieServer } from './CrowdMoviesServer';
 
 RegisterDataComponent({
     friendly_name: 'Crowd Movies',
@@ -43,12 +42,15 @@ RegisterDataComponent({
         playback_rate: 1.0,
     },
 });
+
+// Create the crowd movie server
 CreateCrowdMovieServer();
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     data() {
         return {
             video_loaded: true,
+            size_detected: false,
         };
     },
     mounted() {
@@ -91,6 +93,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     methods: {
         show_video(ev: Event) {
             this.video_loaded = true;
+            if (!this.size_detected) {
+                this.updateVideoSize();
+            }
         },
         hide_video(ev: Event) {
             this.video_loaded = false;
@@ -104,6 +109,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 video.width = this.layout.width;
                 return;
             }
+            this.size_detected = true;
 
             if (windowRatio < videoRatio) {
                 if (this.layout.height > 50) { /* smallest video height */
@@ -139,6 +145,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 video {
     margin:0;
     padding:0;
+}
+video:focus {
+    outline: none;
 }
 .info {
     position: absolute;
