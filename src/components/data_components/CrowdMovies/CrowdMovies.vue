@@ -2,8 +2,15 @@
     <div class="container">
         <div v-show="video_loaded">
             <div class="info">
-                <span>Module {{selected_syllable}} ({{count_method}})</span>
-                <span v-show="settings.playback_rate !== 1.0">{{settings.playback_rate}}x</span>
+                <span>
+                    Module {{selected_syllable}} ({{count_method}})
+                </span>
+                <span>
+                    {{current_time.toFixed(2)}} / {{duration.toFixed(2)}} s
+                </span>
+                <span v-show="settings.playback_rate !== 1.0">
+                    {{settings.playback_rate}}x
+                </span>
             </div>
             <video ref="video"
                 :src="crowd_movie_path"
@@ -51,20 +58,21 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         return {
             video_loaded: true,
             size_detected: false,
+            current_time: 0,
+            duration: 0,
         };
     },
     mounted() {
         const video = (this.$refs.video as HTMLMediaElement);
         video.addEventListener('error', this.hide_video);
         video.addEventListener('loadedmetadata', this.show_video);
-        this.updateVideoSize();
-        this.updateVideoPlaybackRate();
-        this.updateVideoLooping();
+        video.addEventListener('timeupdate', this.updateCurrentTime);
     },
     beforeDestroy() {
         const video = (this.$refs.video as HTMLMediaElement);
         video.removeEventListener('error', this.hide_video);
         video.removeEventListener('loadedmetadata', this.show_video);
+        video.removeEventListener('timeupdate', this.updateCurrentTime);
     },
     computed: {
         selected_syllable(): number {
@@ -93,6 +101,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     methods: {
         show_video(ev: Event) {
             this.video_loaded = true;
+            this.duration = (this.$refs.video as HTMLVideoElement).duration;
+            this.updateVideoPlaybackRate();
+            this.updateVideoLooping();
             if (!this.size_detected) {
                 this.updateVideoSize();
             }
@@ -130,6 +141,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         updateVideoLooping() {
             const video = (this.$refs.video as HTMLVideoElement);
             video.loop = this.settings.loop;
+        },
+        updateCurrentTime() {
+            const video = (this.$refs.video as HTMLVideoElement);
+            this.current_time =  video.currentTime;
         },
     },
 });
