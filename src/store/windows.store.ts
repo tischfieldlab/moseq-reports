@@ -4,14 +4,10 @@ import { DehydratedDataWindow, DataWindowState } from './datawindow.types';
 import store from './root.store';
 import { getModuleNamespace, unnest } from '@/util/Vuex';
 import DataWindowModule from './datawindow.store';
-import { saveFile } from '@/util/Files';
-import DefaultLayout from '@/DefaultLayout';
 import { clone } from '@/util/Object';
+import { WindowsState } from './windows.types';
 
-interface WindowsState {
-    basename: string;
-    items: string[];
-}
+
 
 const WindowsModule: Module<WindowsState, RootState> = {
     namespaced: true,
@@ -75,12 +71,11 @@ const WindowsModule: Module<WindowsState, RootState> = {
                 store.unregisterModule(namespace.split('/'));
             }
         },
-        serializeLayout(context) {
+        serializeLayout(context): DehydratedDataWindow[] {
             const dehydrated = context.state.items.map((id) => {
                 return dehydrateWindow(unnest(context.rootState, id));
             });
-            const data = JSON.stringify(dehydrated, null, '\t');
-            saveFile('layout.json', 'data:text/json', data);
+            return dehydrated;
         },
         async loadLayout(context, layout: DehydratedDataWindow[]) {
             // clear out any existing windows
@@ -88,28 +83,6 @@ const WindowsModule: Module<WindowsState, RootState> = {
 
             for (const dh of layout) {
                 context.dispatch('hydrateWindow', dh);
-            }
-        },
-        loadDefaultLayout(context) {
-            context.dispatch('loadLayout', DefaultLayout);
-        },
-        loadLayoutFromFile(context, files: FileList) {
-            // if no file selected, return
-            if (files === null || files.length === 0) { return; }
-
-            // read the file and apply the layout
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (e !== null && e.target !== null) {
-                    const data = JSON.parse(e.target.result as string) as DehydratedDataWindow[];
-                    context.dispatch('loadLayout', data);
-                } else {
-                    throw new Error('On load recieved null when reading selected files.');
-                }
-            };
-            const f = files.item(0);
-            if (f !== null) {
-                reader.readAsText(f);
             }
         },
     },

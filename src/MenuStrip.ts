@@ -1,7 +1,7 @@
 import { remote, Menu, MenuItem } from 'electron';
 import store from '@/store/root.store';
 import loadDataCommand from '@/commands/LoadData';
-import loadLayoutCommand from '@/commands/LoadLayout';
+import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/commands/LoadLayout';
 
 
 /**
@@ -125,7 +125,7 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Save Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('datawindows/serializeLayout'); },
+                    click: (): void => { SaveLayout(); },
                 },
                 {
                     label: 'Load Layout',
@@ -138,12 +138,12 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Clear Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('datawindows/clearLayout'); },
+                    click: (): void => { ClearLayout(); },
                 },
                 {
                     label: 'Default Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('datawindows/loadDefaultLayout'); },
+                    click: (): void => { LoadDefaultLayout(); },
                 },
             ],
         },
