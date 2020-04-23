@@ -1,10 +1,8 @@
 import fs from 'fs';
-import path from 'path';
 import { DehydratedDataWindow } from '@/store/datawindow.types';
 import store from '@/store/root.store';
 import { remote } from 'electron';
 import { saveFile } from '@/util/Files';
-import DefaultLayout from '@/DefaultLayout';
 
 
 export default function() {
@@ -20,8 +18,13 @@ export default function() {
 }
 
 export function LoadDefaultLayout() {
-    // LoadLayoutFile(path.resolve('./default_layout.json'));
-    store.dispatch('datawindows/loadLayout', DefaultLayout);
+    fetch('/default_layout.json')
+    .then((response) => {
+        return response.json();
+    })
+    .then((data) => {
+        store.dispatch('datawindows/loadLayout', data);
+    });
 }
 
 export function LoadLayoutFile(filename: string) {

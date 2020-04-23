@@ -7,6 +7,7 @@ import os from 'os';
 import { deleteFolderRecursive } from '@/util/Files';
 import { DatasetsState } from '@/store/datasets.types';
 import JSZip from 'jszip';
+import {LoadDefaultLayout} from './LoadLayout';
 
 
 /**
@@ -63,7 +64,7 @@ function beginLoadingProcess(filename: string) {
         .then(async () => {
             if ((store.state as any).datawindows.items.length === 0) {
                 await app.$forceNextTick();
-                store.dispatch('datawindows/loadDefaultLayout');
+                LoadDefaultLayout();
             }
         });
 }
