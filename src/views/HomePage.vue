@@ -1,5 +1,6 @@
 <template>
     <div class="home">
+        <vueHeadful :title="title" />
         <DataFilterContainer :right="false" v-show="metadataLoaded" />
         <NoDataPresent />
         <WindowContainer />
@@ -13,7 +14,7 @@ import DataFilterContainer from '@/components/DataFilterContainer.vue';
 import WindowContainer from '@/components/WindowContainer.vue';
 import NoDataPresent from '@/components/NoDataPresent.vue';
 import FileDropAcceptor from '@/components/FileDropAcceptor.vue';
-
+import vueHeadful from 'vue-headful';
 
 
 export default Vue.component('homepage', {
@@ -23,8 +24,17 @@ export default Vue.component('homepage', {
         DataFilterContainer,
         NoDataPresent,
         FileDropAcceptor,
+        vueHeadful,
     },
     computed: {
+        title() {
+            let title = "Moseq Reports";
+            const currFile = this.$store.state.datasets.name;
+            if (currFile) {
+                title += " - " + currFile;
+            }
+            return title;
+        },
         metadataLoaded(): boolean {
             return this.$store.state.datasets.usageByUsage !== null;
         },
