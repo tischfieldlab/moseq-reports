@@ -18,7 +18,7 @@ export default function() {
 }
 
 export function LoadDefaultLayout() {
-    fetch('/default_layout.json')
+    return fetch('/default_layout.json')
     .then((response) => {
         return response.json();
     })
