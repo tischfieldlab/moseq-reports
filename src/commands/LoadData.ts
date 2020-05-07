@@ -45,6 +45,12 @@ function beginLoadingProcess(filename: string) {
                 return store.dispatch(`${item}/initialize`);
             }));
         })
+        .then(async () => {
+            if ((store.state as any).datawindows.items.length === 0) {
+                await app.$forceNextTick();
+                return LoadDefaultLayout();
+            }
+        })
         .catch((reason) => {
             app.$root.$emit('fail-dataset-load');
             app.$bvToast.toast(reason, {
@@ -60,12 +66,6 @@ function beginLoadingProcess(filename: string) {
                 variant: 'success',
                 toaster: 'b-toaster-bottom-right',
             });
-        })
-        .then(async () => {
-            if ((store.state as any).datawindows.items.length === 0) {
-                await app.$forceNextTick();
-                LoadDefaultLayout();
-            }
         });
 }
 
