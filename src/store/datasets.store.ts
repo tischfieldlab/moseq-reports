@@ -23,19 +23,19 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
             if (state.usageByUsage === null) {
                 return [];
             }
-            return new DataFrame(state.usageByUsage.data, state.usageByUsage.columns)
-                .distinct('syllable')
-                .sortBy('syllable')
-                .toArray('syllable');
+            return new DataFrame(state.label_map.data, state.label_map.columns)
+                .where((row) => row.get('usage') >= 0)
+                .sortBy('usage')
+                .toArray('usage');
         },
         availableFramesModuleIds: (state) => {
             if (state.usageByFrames === null) {
                 return [];
             }
-            return new DataFrame(state.usageByFrames.data, state.usageByFrames.columns)
-                .distinct('syllable')
-                .sortBy('syllable')
-                .toArray('syllable');
+            return new DataFrame(state.label_map.data, state.label_map.columns)
+                .where((row) => row.get('frames') >= 0)
+                .sortBy('frames')
+                .toArray('frames');
         },
     },
     mutations: {
