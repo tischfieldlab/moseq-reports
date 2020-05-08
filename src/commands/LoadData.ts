@@ -18,6 +18,10 @@ export default function() {
     const filenames = remote.dialog.showOpenDialogSync({
         properties: ['openFile'],
         defaultPath: process.cwd(),
+        filters: [
+            { name: 'MoSeq Data Files', extensions: ['msq'] },
+            { name: 'All Files', extensions: ['*'] },
+        ],
     });
     if (filenames === undefined) {
         return;
