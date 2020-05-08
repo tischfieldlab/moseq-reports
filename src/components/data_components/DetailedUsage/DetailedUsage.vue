@@ -96,7 +96,7 @@ import RegisterDataComponent from '@/components/Core';
 
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-import { max, min, mean, quantile, median } from 'd3-array';
+import { max, min, mean, quantile, median, sum } from 'd3-array';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 
@@ -163,6 +163,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             },
             watchers: Array<(() => void)>(),
             rotate_labels: false,
+            label_stats: {count: 0, total: 0, longest: 0},
         };
     },
     mounted() {
@@ -185,10 +186,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     computed: {
         width(): number {
             const width = this.outsideWidth - this.margin.left - this.margin.right;
-            const ls = this.calc_label_stats();
-            this.rotate_labels = ls.longest > width / ls.count;
+
+            this.rotate_labels = this.label_stats.longest > width / this.label_stats.count;
             if (this.rotate_labels) {
-                this.margin.bottom = ls.longest + 30;
+                this.margin.bottom = this.label_stats.longest + 30;
             } else {
                 this.margin.bottom = 50;
             }
@@ -303,6 +304,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                                  .toArray();
                 return this.computeGroupStats(values, g);
             });
+            this.compute_label_stats(this.groupNames);
         },
         computeGroupStats(data: number[], group: string): GroupStats {
             const kde = this.kernelDensityEstimator(this.epanechnikovKernel(.01), this.scale.y.ticks(100));
@@ -406,20 +408,21 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 }
             });
         },
-        calc_label_stats() {
-            try {
-                const canvas = this.$refs.canvas as ParentNode;
-                const labels = [...canvas.querySelectorAll('g.x-axis g.tick text')] as SVGTextElement[];
-                const totalWidth = labels.reduce((total: number, e: SVGTextElement) =>  total + e.getBBox().width, 0);
-                return {
-                    count: labels.length,
-                    total: totalWidth,
-                    longest: Math.max(...labels.map((e) => e.getBBox().width)),
-                };
-            } catch (e) {
-                return {count: 0, total: 0, longest: 0};
+        compute_label_stats(labels: string[]) {
+            const widths = [] as number[];
+            const canvas = this.$refs.canvas as SVGSVGElement;
+            const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
+            canvas.appendChild(tag);
+            for (const label of labels) {
+                tag.textContent = label;
+                widths.push(tag.getBBox().width);
             }
-            return {count: 0, total: 0, longest: 0};
+            canvas.removeChild(tag);
+            this.label_stats = {
+                count: labels.length,
+                total: sum(widths),
+                longest: Math.max(...widths),
+            };
         },
     },
     directives: {
