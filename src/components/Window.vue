@@ -3,9 +3,6 @@
         @resized="onResized($event)"
         @moved="onMoved($event)"
         @close="onClosed($event)"
-        :width="layout.width"
-        :height="layout.height"
-        :position="layout.position"
         :showCollapseButton="true">
         <div>
             {{ title }}
@@ -49,7 +46,7 @@
 import Vue from 'vue';
 
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
-import { Size, Position } from '@/store/datawindow.types';
+import { Size, Position, Layout } from '@/store/datawindow.types';
 import Snapshot, { ensureDefaults } from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin.ts';
@@ -60,6 +57,7 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
+            title_offset: 30,
             component_loading: false,
             show_settings_modal: false,
             watchers: Array<(() => void)>(),
@@ -77,10 +75,8 @@ export default mixins(WindowMixin).extend({
     watch: {
         layout: {
             deep: true,
-            handler(newValue) {
-                (this.$refs.window as any).width = newValue.width;
-                (this.$refs.window as any).height = newValue.height;
-                (this.$refs.window as any).position = newValue.position;
+            handler(newValue: Layout) {
+                this.updateWindowLayout(newValue);
             },
         },
         title(newValue) {
@@ -91,6 +87,7 @@ export default mixins(WindowMixin).extend({
         // Create the settings button on the next tick when the DOM is ready
         this.$nextTick().then(() => {
             this.addSettingsButton();
+            this.updateWindowLayout(this.layout);
             ensureDefaults(this.$refs.body as Vue, this.$store);
         });
         (this.$refs.body as Vue).$on('start-loading', () => this.component_loading = true);
@@ -101,6 +98,14 @@ export default mixins(WindowMixin).extend({
         this.watchers.forEach((w) => w());
     },
     methods: {
+        updateWindowLayout(layout: Layout) {
+            (this.$refs.window as any).width = layout.width;
+            (this.$refs.window as any).height = layout.height;
+            (this.$refs.window as any).position = {
+                x: layout.position.x,
+                y: layout.position.y + this.title_offset,
+            } as Position;
+        },
         onResized(event: any) {
             const s = event.args as Size;
             this.$store.commit(`${this.id}/updateComponentLayout`, {
@@ -114,7 +119,7 @@ export default mixins(WindowMixin).extend({
             this.$store.commit(`${this.id}/updateComponentLayout`, {
                 id: this.id,
                 position_x: p.x,
-                position_y: p.y,
+                position_y: clamp(p.y - this.title_offset, 0),
             });
         },
         onClosed(event: any) {
@@ -146,6 +151,16 @@ export default mixins(WindowMixin).extend({
         },
     },
 });
+
+function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
+    if (min && value < min) {
+        return min;
+    }
+    if (max && value > max) {
+        return max;
+    }
+    return value;
+}
 </script>
 
 <style lang="scss">

@@ -1,6 +1,6 @@
 <template>
     <Portal>
-        <div :class="{ 'button-bar': true, 'right': right }">
+        <div :class="{ 'button-bar': true, 'shadow-lg': !show_filters, 'right': right }">
             <b-icon
                 title="Data Filters"
                 :class="{ active: show_filters }"
@@ -13,8 +13,7 @@
             no-header
             title="Data Filters"
             :right="right"
-            shadow="lg"
-            :width="`${width}px`">
+            shadow="lg">
 
             <div>
                 <template v-for="ns in filters">
@@ -40,10 +39,6 @@ export default Vue.extend({
         right: {
             type: Boolean,
             default: false,
-        },
-        width: {
-            type: Number,
-            default: 250,
         },
     },
     data() {
@@ -73,31 +68,15 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.filter_container {
-    display: flex;
-    flex-flow: column;
-    height: 100%;
-}
-.filter_container > h3 {
-    background: #c5c5c5;
-    padding: 10px;
-    margin-bottom: 0;
-    font-size: 1.5em;
-}
-.filter_container > div {
-    flex-grow : 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
 .button-bar {
     display: flex;
     position: fixed;
     justify-content: center;
     padding-top: 12px;
     width: 48px;
-    top: 0;
+    top: 30px;
     bottom: 0;
-    background-color: #ffffff;
+    background-color: #f8f9fa;
     z-index: 1050;
 }
 .button-bar.right {
@@ -114,6 +93,9 @@ export default Vue.extend({
 }
 .button-bar.right .b-icon.active {
     border-right: 3px solid #2c3e50;
+}
+.b-sidebar {
+    top:30px;
 }
 .b-sidebar:not(.b-sidebar-right) {
     left: 48px;

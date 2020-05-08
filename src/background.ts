@@ -22,6 +22,8 @@ function createWindow() {
         icon: path.join(__static, 'img', 'mouse.png'),
         width: 800,
         height: 600,
+        frame: false,
+        backgroundColor: '#FFFFFF',
         webPreferences: {
             nodeIntegration: true,
         },
