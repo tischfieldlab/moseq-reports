@@ -35,7 +35,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
             const lm = new DataFrame(lmd.data, lmd.columns);
             const from = state.countMethod.toLowerCase();
             const to = countMethod.toLowerCase();
-            const result = lm.find({[from]: state.selectedSyllable}).get(to) || -1;
+            const result = lm.find({[from]: state.selectedSyllable}).get(to);
             return result;
         },
         view: (state) => {
