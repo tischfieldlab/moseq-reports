@@ -78,13 +78,13 @@
                         :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
                 </template>
             </g>
-            <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
-            <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
-            <g>
-                <text transform="rotate(-90)" text-anchor="middle" :y="margin.left / 4" :x="0 - (height/2)">
+            <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
+                <text class="label" :y="xAxisLabelYPos" :x="(width / 2)">Group</text>
+            </g>
+            <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`">
+                <text class="label" transform="rotate(-90)" :y="-45" :x="0 - (height/2)">
                     Module #{{selectedSyllable}} Usage ({{countMethod}})
                 </text>
-                <text text-anchor="middle" :y="outsideHeight - (margin.bottom / 4)" :x="margin.left + (width / 2)">Group</text>
             </g>
         </svg>
     </div>
@@ -161,6 +161,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 bottom: 50,
                 left: 60,
             },
+            xAxisLabelYPos: 45,
             watchers: Array<(() => void)>(),
             rotate_labels: false,
             label_stats: {count: 0, total: 0, longest: 0},
@@ -189,10 +190,12 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 
             this.rotate_labels = this.label_stats.longest > width / this.label_stats.count;
             if (this.rotate_labels) {
-                this.margin.bottom = this.label_stats.longest + 30;
+                const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * this.label_stats.longest;
+                this.xAxisLabelYPos = rotatedHeight + 20;
             } else {
-                this.margin.bottom = 50;
+                this.xAxisLabelYPos = 45;
             }
+            this.margin.bottom = this.xAxisLabelYPos + 20;
             return width;
         },
         height(): number {
@@ -441,6 +444,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 
 
 <style scoped>
+svg >>> g.x-axis text.label,
+svg >>> g.y-axis text.label {
+    text-anchor:middle;
+    fill:#000;
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 12px;
+}
 svg >>> g.x-axis.rotate g.tick text {
     transform: translate(-10px,0px) rotate(-45deg);
     text-anchor: end;
