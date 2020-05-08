@@ -36,6 +36,10 @@ Vue.use(UniqueId);
 Vue.config.productionTip = false;
 Vue.config.silent = true;
 
+import {CreateTitleBar} from './WindowChrome';
+CreateTitleBar();
+
+
 const vm = new Vue({
     router,
     store,

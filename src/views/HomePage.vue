@@ -13,7 +13,7 @@ import DataFilterContainer from '@/components/DataFilterContainer.vue';
 import WindowContainer from '@/components/WindowContainer.vue';
 import NoDataPresent from '@/components/NoDataPresent.vue';
 import FileDropAcceptor from '@/components/FileDropAcceptor.vue';
-
+import {UpdateTitle} from '@/WindowChrome';
 
 
 export default Vue.component('homepage', {
@@ -25,8 +25,24 @@ export default Vue.component('homepage', {
         FileDropAcceptor,
     },
     computed: {
+        title() {
+            let title = 'Moseq Reports';
+            const currFile = this.$store.state.datasets.name;
+            if (currFile) {
+                title += ' - ' + currFile;
+            }
+            return title;
+        },
         metadataLoaded(): boolean {
             return this.$store.state.datasets.usageByUsage !== null;
+        },
+    },
+    watch: {
+        title: {
+            handler() {
+                UpdateTitle(this.title);
+            },
+            immediate: true,
         },
     },
 });

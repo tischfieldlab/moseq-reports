@@ -6,15 +6,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { remote } from 'electron';
-import createMainMenu from '@/MenuStrip';
 
 export default Vue.extend({
     name: 'App',
-    mounted() {
-        const menu = createMainMenu();
-        remote.Menu.setApplicationMenu(menu);
-    },
 });
 </script>
 
