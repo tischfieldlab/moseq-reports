@@ -1,9 +1,8 @@
 <template>
-    <b-card title="Current Syllable">
-        <b-card-text>
-            <h5 style="text-align:center;">{{ this.syllable }}</h5>
-        </b-card-text>
-    </b-card>
+    <div class="content">
+        <h3>Current Syllable</h3>
+        <h5>{{ this.syllable }} ({{this.countMethod}})</h5>
+    </div>
 </template>
 
 <script lang="ts">
@@ -25,10 +24,21 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         syllable(): number {
             return this.dataview.selectedSyllable;
         },
+        countMethod(): string {
+            return this.dataview.countMethod.toLowerCase();
+        },
     },
 });
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+.content {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
 </style>

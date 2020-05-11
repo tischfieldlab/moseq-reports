@@ -78,13 +78,13 @@
                         :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
                 </template>
             </g>
-            <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`" />
-            <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`" />
-            <g>
-                <text transform="rotate(-90)" text-anchor="middle" :y="margin.left / 4" :x="0 - (height/2)">
+            <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
+                <text class="label" :y="xAxisLabelYPos" :x="(width / 2)">Group</text>
+            </g>
+            <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`">
+                <text class="label" transform="rotate(-90)" :y="-45" :x="0 - (height/2)">
                     Module #{{selectedSyllable}} Usage ({{countMethod}})
                 </text>
-                <text text-anchor="middle" :y="outsideHeight - (margin.bottom / 4)" :x="margin.left + (width / 2)">Group</text>
             </g>
         </svg>
     </div>
@@ -96,7 +96,7 @@ import RegisterDataComponent from '@/components/Core';
 
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-import { max, min, mean, quantile, median } from 'd3-array';
+import { max, min, mean, quantile, median, sum } from 'd3-array';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 
@@ -161,8 +161,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 bottom: 50,
                 left: 60,
             },
+            xAxisLabelYPos: 45,
             watchers: Array<(() => void)>(),
             rotate_labels: false,
+            label_stats: {count: 0, total: 0, longest: 0},
         };
     },
     mounted() {
@@ -185,13 +187,15 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     computed: {
         width(): number {
             const width = this.outsideWidth - this.margin.left - this.margin.right;
-            const ls = this.calc_label_stats();
-            this.rotate_labels = ls.longest > width / ls.count;
+
+            this.rotate_labels = this.label_stats.longest > width / this.label_stats.count;
             if (this.rotate_labels) {
-                this.margin.bottom = ls.longest + 30;
+                const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * this.label_stats.longest;
+                this.xAxisLabelYPos = rotatedHeight + 20;
             } else {
-                this.margin.bottom = 50;
+                this.xAxisLabelYPos = 45;
             }
+            this.margin.bottom = this.xAxisLabelYPos + 20;
             return width;
         },
         height(): number {
@@ -303,6 +307,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                                  .toArray();
                 return this.computeGroupStats(values, g);
             });
+            this.compute_label_stats(this.groupNames);
         },
         computeGroupStats(data: number[], group: string): GroupStats {
             const kde = this.kernelDensityEstimator(this.epanechnikovKernel(.01), this.scale.y.ticks(100));
@@ -406,20 +411,21 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 }
             });
         },
-        calc_label_stats() {
-            try {
-                const canvas = this.$refs.canvas as ParentNode;
-                const labels = [...canvas.querySelectorAll('g.x-axis g.tick text')] as SVGTextElement[];
-                const totalWidth = labels.reduce((total: number, e: SVGTextElement) =>  total + e.getBBox().width, 0);
-                return {
-                    count: labels.length,
-                    total: totalWidth,
-                    longest: Math.max(...labels.map((e) => e.getBBox().width)),
-                };
-            } catch (e) {
-                return {count: 0, total: 0, longest: 0};
+        compute_label_stats(labels: string[]) {
+            const widths = [] as number[];
+            const canvas = this.$refs.canvas as SVGSVGElement;
+            const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
+            canvas.appendChild(tag);
+            for (const label of labels) {
+                tag.textContent = label;
+                widths.push(tag.getBBox().width);
             }
-            return {count: 0, total: 0, longest: 0};
+            canvas.removeChild(tag);
+            this.label_stats = {
+                count: labels.length,
+                total: sum(widths),
+                longest: Math.max(...widths),
+            };
         },
     },
     directives: {
@@ -438,6 +444,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 
 
 <style scoped>
+svg >>> g.x-axis text.label,
+svg >>> g.y-axis text.label {
+    text-anchor:middle;
+    fill:#000;
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 12px;
+}
 svg >>> g.x-axis.rotate g.tick text {
     transform: translate(-10px,0px) rotate(-45deg);
     text-anchor: end;

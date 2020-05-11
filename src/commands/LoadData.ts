@@ -7,6 +7,7 @@ import os from 'os';
 import { deleteFolderRecursive } from '@/util/Files';
 import { DatasetsState } from '@/store/datasets.types';
 import JSZip from 'jszip';
+import {LoadDefaultLayout} from './LoadLayout';
 
 
 /**
@@ -17,6 +18,10 @@ export default function() {
     const filenames = remote.dialog.showOpenDialogSync({
         properties: ['openFile'],
         defaultPath: process.cwd(),
+        filters: [
+            { name: 'MoSeq Data Files', extensions: ['msq'] },
+            { name: 'All Files', extensions: ['*'] },
+        ],
     });
     if (filenames === undefined) {
         return;
@@ -44,13 +49,11 @@ function beginLoadingProcess(filename: string) {
                 return store.dispatch(`${item}/initialize`);
             }));
         })
-        .catch((reason) => {
-            app.$root.$emit('fail-dataset-load');
-            app.$bvToast.toast(reason, {
-                title: 'Error loading data!',
-                variant: 'danger',
-                toaster: 'b-toaster-bottom-right',
-            });
+        .then(async () => {
+            if ((store.state as any).datawindows.items.length === 0) {
+                await app.$forceNextTick();
+                return LoadDefaultLayout();
+            }
         })
         .then(() => {
             app.$root.$emit('finish-dataset-load');
@@ -60,11 +63,15 @@ function beginLoadingProcess(filename: string) {
                 toaster: 'b-toaster-bottom-right',
             });
         })
-        .then(async () => {
-            if ((store.state as any).datawindows.items.length === 0) {
-                await app.$forceNextTick();
-                store.dispatch('datawindows/loadDefaultLayout');
-            }
+        .catch((reason) => {
+            /* tslint:disable-next-line:no-console */
+            console.error(reason);
+            app.$root.$emit('fail-dataset-load');
+            app.$bvToast.toast(reason.toString(), {
+                title: 'Error loading data!',
+                variant: 'danger',
+                toaster: 'b-toaster-bottom-right',
+            });
         });
 }
 
@@ -97,16 +104,20 @@ function readDataBundle(filename: string) {
             const rawData = fs.readFileSync(filename);
 
             JSZip.loadAsync(rawData).then(async (zip) => {
-                const dataset: DatasetsState = {
-                    bundle: filename,
-                    name: path.basename(filename, '.msq'),
-                    path: tmpdir,
-                    ...await LoadMetadataData(zip),
-                    ...await LoadUsageData(zip),
-                    ...await LoadSpinogramData(zip),
-                    ...await LoadCrowdMovies(zip, tmpdir),
-                };
-                resolve(dataset);
+                try {
+                    const dataset: DatasetsState = {
+                        bundle: filename,
+                        name: path.basename(filename, '.msq'),
+                        path: tmpdir,
+                        ...await LoadMetadataData(zip),
+                        ...await LoadUsageData(zip),
+                        ...await LoadSpinogramData(zip),
+                        ...await LoadCrowdMovies(zip, tmpdir),
+                    };
+                    resolve(dataset);
+                } catch (e) {
+                    reject(e);
+                }
             }, (error) => reject(error));
         } catch (e) {
             reject(e);
@@ -172,16 +183,22 @@ async function LoadCrowdMovies(zip: JSZip, dir: string) {
 
 
 async function jsonParseZipEntry(zip: JSZip, entryName: string) {
-    return zip.file(entryName)
-                .async('string')
+    const entry = zip.file(entryName);
+    if (entry !== null) {
+        return entry.async('string')
                 .then((value) => JSON.parse(value));
+    }
+    return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
 }
 async function jsonParseZipEntryContainingNaN(zip: JSZip, entryName: string) {
-    return zip.file(entryName)
-            .async('string')
+    const entry = zip.file(entryName);
+    if (entry !== null) {
+        return entry.async('string')
             .then((data) => {
                 return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
                     return value === '***NaN***' ? NaN : value;
                 });
             });
+    }
+    return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
 }

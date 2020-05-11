@@ -46,10 +46,12 @@ export default Vue.extend({
     opacity: 0.2;
     margin-top: -10%;
     pointer-events: none;
+    user-select: none;
 }
 .has-no-data-container h4 {
     margin-top: -80px;
     pointer-events: none;
+    user-select: none;
 }
 .has-no-data-container h4 a {
     pointer-events: auto;

@@ -1,7 +1,7 @@
-import { remote, Menu, MenuItem } from 'electron';
-import store from '@/store/root.store';
+import { remote, Menu } from 'electron';
 import loadDataCommand from '@/commands/LoadData';
-import loadLayoutCommand from '@/commands/LoadLayout';
+import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/commands/LoadLayout';
+import {AvailableComponents, CreateComponent} from '@/commands/Windows';
 
 
 /**
@@ -15,20 +15,18 @@ import loadLayoutCommand from '@/commands/LoadLayout';
  *                      the main menu strip for the app.
  */
 export default function createMainMenu(): Menu {
-    const menu: Menu = createMainMenuStrip();
-    createAddWidgetSubmenu(menu);
-    return menu;
+    return remote.Menu.buildFromTemplate(createMainMenuStripOptions());
 }
 
 /**
- * Creates the main menu strip for the electron app.
+ * Creates the main menu constructor options
  *
  * @export
- * @returns {Menu}      Electron menu to be made the main
+ * @returns {Electron.MenuItemConstructorOptions[]}      Electron menu to be made the main
  *                      menu strip for the app.
  */
-function createMainMenuStrip(): Menu {
-    const menu: Menu = remote.Menu.buildFromTemplate([
+function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
+    return [
         // ********************** FILE MENU **********************
         {
             label: 'File',
@@ -96,7 +94,14 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Add Widget...',
                     type: 'submenu',
-                    submenu: [],
+                    submenu: AvailableComponents()
+                            .map((cr) => {
+                                return {
+                                    label: cr.friendly_name,
+                                    type: 'normal',
+                                    click: () => CreateComponent(cr),
+                                } as Electron.MenuItemConstructorOptions;
+                            }),
                 },
                 {
                     type: 'separator',
@@ -125,7 +130,7 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Save Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('datawindows/serializeLayout'); },
+                    click: (): void => { SaveLayout(); },
                 },
                 {
                     label: 'Load Layout',
@@ -138,42 +143,14 @@ function createMainMenuStrip(): Menu {
                 {
                     label: 'Clear Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('datawindows/clearLayout'); },
+                    click: (): void => { ClearLayout(); },
                 },
                 {
                     label: 'Default Layout',
                     type: 'normal',
-                    click: (): void => { store.dispatch('datawindows/loadDefaultLayout'); },
+                    click: (): void => { LoadDefaultLayout(); },
                 },
             ],
         },
-    ]);
-
-    return menu;
-}
-
-/**
- * Populates the 'Add Widget...' menu with the components and their
- * registration information dynamically. A click event gets generated
- * that links the component registration information to the buttons
- * properly without relying on the order.
- *
- * @param {Menu} menu   The main menu strip that will get updated and
- *                      changed based on all component registrations.
- */
-function createAddWidgetSubmenu(menu: Menu) {
-    const toolsMenu: MenuItem = menu.items[2];
-    const addWidgetMenu: Menu = toolsMenu.submenu!.items[0].submenu as Menu;
-
-    for (const component of store.state.registry) {
-        const newItem: MenuItem = new remote.MenuItem({
-            label: component.friendly_name,
-            type: 'normal',
-            click: (): void => {
-                store.dispatch('datawindows/createWindow', component);
-            },
-        });
-
-        addWidgetMenu.append(newItem);
-    }
+    ];
 }

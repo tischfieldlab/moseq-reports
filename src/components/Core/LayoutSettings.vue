@@ -29,12 +29,12 @@
             </b-col>
             <b-col>
                 <b-input-group prepend="X">
-                    <b-form-input type="number" debounce="500" v-model.number="position_x" />
+                    <b-form-input type="number" debounce="500" min="0" v-model.number="position_x" />
                 </b-input-group>
             </b-col>
             <b-col>
                 <b-input-group prepend="Y">
-                    <b-form-input type="number" debounce="500" v-model.number="position_y" />
+                    <b-form-input type="number" debounce="500" min="0" v-model.number="position_y" />
                 </b-input-group>
             </b-col>
         </b-row>
