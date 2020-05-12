@@ -1,137 +1,32 @@
 <template>
-    <div id="detail-usage-container">
-        <svg ref="canvas" :width="outsideWidth" :height="outsideHeight" >
-            <g v-if="settings.show_boxplot" :transform="`translate(${margin.left}, ${margin.top})`">
-                <template v-for="(node) in groupedData">
-                    <g class="boxplot" v-bind:key="node.group">
-                        <!-- Vertical midline -->
-                        <line 
-                            stroke="#000000"
-                            v-bind:x1="scale.x(node.group) + halfBandwith"
-                            v-bind:y1="scale.y(fences.lower(node))"
-                            v-bind:x2="scale.x(node.group) + halfBandwith"
-                            v-bind:y2="scale.y(fences.upper(node))" />
-                        <!-- the Box of the BoxPlot -->
-                        <rect 
-                            stroke="#000000"
-                            v-bind:width="halfBandwith * 2"
-                            v-bind:height="scale.y(node.q3) - scale.y(node.q1)"
-                            v-bind:x="scale.x(node.group)"
-                            v-bind:y="scale.y(node.q1)"
-                            v-bind:style="{'fill': scale.c(node.group)}" />
-                        <!-- Horizontal Minimum line -->
-                        <line 
-                            stroke="#000000"
-                            v-bind:x1="scale.x(node.group) + quaterBandwith"
-                            v-bind:y1="scale.y(fences.lower(node))"
-                            v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
-                            v-bind:y2="scale.y(fences.lower(node))" />
-                        <!-- Horizontal Median line -->
-                        <line 
-                            stroke="#000000"
-                            v-bind:x1="scale.x(node.group)"
-                            v-bind:y1="scale.y(node.q2)"
-                            v-bind:x2="scale.x(node.group) + (halfBandwith * 2)"
-                            v-bind:y2="scale.y(node.q2)" />
-                        <!-- Horizontal Maximum line -->
-                        <line 
-                            stroke="#000000"
-                            v-bind:x1="scale.x(node.group) + quaterBandwith"
-                            v-bind:y1="scale.y(fences.upper(node))"
-                            v-bind:x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
-                            v-bind:y2="scale.y(fences.upper(node))" />
-
-                        <g class="outliers">
-                            <template v-for="(node) in individualUseageData">
-                                <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
-                                <path v-if="is_outlier(node)"
-                                    v-bind:key="node.StartTime"
-                                    :d="diamond()"
-                                    :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
-                                    :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
-                            </template>
-                        </g>
-                    </g>
-                </template>
-            </g>
-            <g v-if="settings.show_violinplot" :transform="`translate(${margin.left}, ${margin.top})`">
-                <template v-for="(node) in groupedData">
-                    <g class="violin" v-bind:key="node.group" :transform="`translate(${scale.x(node.group)}, 0)`">
-                        <path :d="violinArea(node.kde)" :style="{'fill': scale.c(node.group)}" />
-                    </g>
-                </template>
-            </g>
-            <g v-if="settings.show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
-                <template v-for="(node) in individualUseageData">
-                    <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
-                    <path v-if="is_outlier(node)"
-                        v-bind:key="node.StartTime"
-                        :d="diamond()"
-                        :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
-                        :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
-                        
-                    <circle v-else
-                        v-bind:key="node.StartTime"
-                        :r="point_size"
-                        :cx="scale.x(node.group) + node.jitter + halfBandwith"
-                        :cy="scale.y(node.usage)"
-                        :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
-                </template>
-            </g>
-            <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
-                <text class="label" :y="xAxisLabelYPos" :x="(width / 2)">Group</text>
-            </g>
-            <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`">
-                <text class="label" transform="rotate(-90)" :y="-45" :x="0 - (height/2)">
-                    Module #{{selectedSyllable}} Usage ({{countMethod}})
-                </text>
-            </g>
-        </svg>
-    </div>
+    <box-plot
+        :width="this.outsideWidth"
+        :height="this.outsideHeight - 31"
+        :data="individualUseageData"
+        value_name="usage"
+        group_name="group"
+        :groupLabels="groupNames"
+        :groupColors="groupColors"
+        :whisker_type="settings.boxplot_whiskers"
+        :show_boxplot="settings.show_boxplot"
+        :show_points="settings.show_points"
+        :show_violinplot="settings.show_violinplot"
+        :point_size="settings.point_size"
+        :xAxisTitle="Group"
+        :yAxisTitle="`Module #${selectedSyllable} Usage (${countMethod})`"
+    />
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
-
-import * as d3 from 'd3';
-import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-import { max, min, mean, quantile, median, sum } from 'd3-array';
-import { area, line, symbol, symbolDiamond } from 'd3-shape';
-import { axisBottom, axisLeft } from 'd3-axis';
-
-import { WhiskerType } from './DetailedUsageOptions.vue';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import { unnest } from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
+import BoxPlot from '@/components/Charts/BoxPlot/BoxPlot.vue';
+import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 
-
-interface UsageItem {
-    usage: number;
-    group: string;
-    StartTime: string;
-    jitter: number;
-}
-
-interface UsageItemQueueNode extends UsageItem {
-    next: UsageItemQueueNode | null;
-}
-
-interface GroupStats {
-    group: string;
-    count: number;
-    min: number;
-    max: number;
-    mean: number;
-    median: number;
-    q1: number;
-    q2: number;
-    q3: number;
-    iqr: number;
-    kde: number[][];
-}
 
 RegisterDataComponent({
     friendly_name: 'Usage Details',
@@ -149,135 +44,15 @@ RegisterDataComponent({
 });
 
 export default mixins(LoadingMixin, WindowMixin).extend({
-    data() {
-        return {
-            individualUseageData: Array<UsageItem>(),
-            groupedData: Array<GroupStats>(),
-            groupNames: Array<string>(),
-            groupColors: Array<string>(),
-            margin: {
-                top: 20,
-                right: 20,
-                bottom: 50,
-                left: 60,
-            },
-            xAxisLabelYPos: 45,
-            watchers: Array<(() => void)>(),
-            rotate_labels: false,
-            label_stats: {count: 0, total: 0, longest: 0},
-        };
-    },
-    mounted() {
-        this.watchers.push(this.$store.watch(
-            (state, getters) => {
-                return {
-                    view: getters[`${this.datasource}/view`],
-                    colors: unnest(state, this.datasource).groupColors,
-                    selectedSyllable: unnest(state, this.datasource).selectedSyllable,
-                };
-            },
-            () => this.createView(),
-            {immediate: true},
-        ));
-    },
-    destroyed() {
-        // un-watch the store
-        this.watchers.forEach((w) => w());
+    components: {
+        BoxPlot,
     },
     computed: {
-        width(): number {
-            const width = this.outsideWidth - this.margin.left - this.margin.right;
-
-            this.rotate_labels = this.label_stats.longest > width / this.label_stats.count;
-            if (this.rotate_labels) {
-                const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * this.label_stats.longest;
-                this.xAxisLabelYPos = rotatedHeight + 20;
-            } else {
-                this.xAxisLabelYPos = 45;
-            }
-            this.margin.bottom = this.xAxisLabelYPos + 20;
-            return width;
-        },
-        height(): number {
-            return this.outsideHeight - this.margin.top - this.margin.bottom;
-        },
         outsideWidth(): number {
             return this.layout.width;
         },
         outsideHeight(): number {
             return this.layout.height - 31;
-        },
-        halfBandwith(): number {
-            return this.scale.x.bandwidth() / 2;
-        },
-        quaterBandwith(): number {
-            return this.scale.x.bandwidth() / 4;
-        },
-        origin(): any {
-            const x = this.margin.left;
-            const y = this.height + this.margin.top;
-            return { x, y };
-        },
-        scale(): any {
-            if (this.individualUseageData === undefined) {
-                return { x: scaleBand(), y: scaleLinear() };
-            }
-            const x = scaleBand()
-                .domain(this.groupNames)
-                .range([0, this.width])
-                .padding(0.2);
-            const y = scaleLinear()
-                .domain([0, Math.max(...this.individualUseageData.map((i) => i.usage))])
-                .range([this.height, 0]);
-            const kdeMax = Math.max(...this.groupedData.map((g) => Math.max(...g.kde.map((k) => k[1]))));
-            const w = scaleLinear()
-                .domain([-kdeMax, kdeMax])
-                .range([0, x.bandwidth()]);
-            const c = scaleOrdinal()
-                .domain(this.groupNames)
-                .range(this.groupColors);
-            return { x, y, w, c };
-        },
-        point_size(): number {
-            const ps = this.settings.point_size;
-            this.swarm_points(this.individualUseageData);
-            return ps;
-        },
-        fences() {
-            switch (this.settings.boxplot_whiskers) {
-                case WhiskerType.MIN_MAX:
-                    return {
-                        lower: (gs: GroupStats) => gs.min,
-                        upper: (gs: GroupStats) => gs.max,
-                    };
-                case WhiskerType.TUKEY:
-                    return {
-                        lower: (gs: GroupStats) => Math.max(gs.q1 - (1.5 * gs.iqr), gs.min),
-                        upper: (gs: GroupStats) => Math.min(gs.q3 + (1.5 * gs.iqr), gs.max),
-                    };
-                default:
-                    throw new Error(`Unsupported Whisker Type ${this.settings.boxplot_whiskers}!`);
-            }
-        },
-        violinArea(): any {
-            const a = area()
-                .x0((d) => this.scale.w(d[1]))
-                .x1((d) => this.scale.w(-d[1]))
-                .y((d) => this.scale.y(d[0]));
-            return a;
-        },
-        violinLine(): any {
-            const a = line()
-                .x((d) => this.scale.w(d[1]))
-                .y((d) => this.scale.y(d[0]));
-            return a;
-        },
-        diamond(): any {
-            // try to match the area of the circle and diamond
-            const d = symbol()
-                .type(symbolDiamond)
-                .size(2 * Math.sqrt(2 * (Math.PI * this.point_size ** 2)));
-            return d;
         },
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
@@ -285,158 +60,30 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
-    },
-    methods: {
-        createView() {
+        groupNames(): string[] {
+            return this.dataview.selectedGroups;
+        },
+        groupColors(): string[] {
+            return this.dataview.groupColors;
+        },
+        individualUseageData(): any {
             const df = this.$store.getters[`${this.datasource}/view`];
             if (df === null) {
                 return;
             }
-            this.groupNames = this.dataview.selectedGroups;
-            this.groupColors = this.dataview.groupColors;
-            this.individualUseageData = df.where({syllable: this.selectedSyllable})
-                                          .select('usage', 'group', 'StartTime')
-                                          .sortBy('usage')
-                                          .toCollection();
-            this.swarm_points(this.individualUseageData);
-
-            this.groupedData = this.groupNames.map((g) => {
-                const values = df.where({syllable: this.selectedSyllable, group: g})
-                                 .select('usage')
-                                 .sortBy('usage', true)
-                                 .toArray();
-                return this.computeGroupStats(values, g);
-            });
-            this.compute_label_stats(this.groupNames);
+            return df.where({syllable: this.selectedSyllable})
+                    .select('usage', 'group', 'StartTime')
+                    .sortBy('usage');
         },
-        computeGroupStats(data: number[], group: string): GroupStats {
-            const kde = this.kernelDensityEstimator(this.epanechnikovKernel(.01), this.scale.y.ticks(100));
-            const gstats = {
-                group,
-                count: data.length,
-                min: min(data) as number,
-                max: max(data) as number,
-                mean: mean(data) as number,
-                median: median(data) as number,
-                q1: quantile(data, 0.25) as number,
-                q2: quantile(data, 0.5) as number,
-                q3: quantile(data, 0.75) as number,
-                kde: kde(data),
-            } as GroupStats;
-            gstats.iqr = gstats.q1 - gstats.q3;
-            return gstats as GroupStats;
-        },
-        kernelDensityEstimator(kernel: (u: number) => number, x: number[]): (sample: number[]) => number[][] {
-            return (sample: number[]) => {
-                return x.map((y) => [y, mean(sample, (v: number) => kernel(y - v))]) as number[][];
-            };
-        },
-        epanechnikovKernel(scale: number): (u: number) => number {
-            return (u: number) => {
-                return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
-            };
-        },
-        is_outlier(node: UsageItem): boolean {
-            const group = this.groupedData.find((v) => v.group === node.group);
-            if (group) {
-                return node.usage < this.fences.lower(group)
-                    || node.usage > this.fences.upper(group);
-            }
-            return false;
-        },
-        point_tooltip(item: UsageItem): string {
+    },
+    methods: {
+        /*point_tooltip(item: UsageItem): string {
             return `<div style="text-align:left;">
                         ${item.group}<br />
                         ${new Date(item.StartTime).toLocaleString('en-US')}<br />
                         ${item.usage.toExponential(3)}
                     </div>`;
-        },
-        swarm_points(data: UsageItem[]) {
-            this.groupNames.map((g) => {
-                const pointSize = this.settings.point_size as number;
-                const radius2 = (pointSize * 2.5) ** 2;
-                let head: UsageItemQueueNode | null = null;
-                let tail: UsageItemQueueNode | null = null;
-                const indv = data.filter((ui) => ui.group === g)
-                                 .map((ui) => { ui.jitter = 0; return ui; }) as UsageItemQueueNode[];
-
-                const intersects = (x, y) => {
-                    const epsilon = 1e-5;
-                    let item = head;
-                    while (item) {
-                        const dx = (item.jitter - x) ** 2;
-                        const dy = (this.scale.y(item.usage) - this.scale.y(y)) ** 2;
-                        if (radius2 - epsilon >= dx + dy) {
-                            return true;
-                        }
-                        item = item.next;
-                    }
-                    return false;
-                };
-
-                for (const b of indv) {
-                    // Remove circles from the queue that can’t intersect the new circle b.
-                    while (head && this.scale.y(head.usage) < (this.scale.y(b.usage) - radius2)) {
-                        head = head.next;
-                    }
-                    // Choose the minimum non-intersecting tangent.
-                    b.jitter = 0;
-                    if (intersects(b.jitter, b.usage)) {
-                        let a = head;
-                        b.jitter = Infinity;
-                        do {
-                            const dy = Math.sqrt(radius2 - (this.scale.y(a!.usage) - this.scale.y(b.usage)) ** 2);
-                            const j = a!.jitter + dy;
-
-                            if (j < b.jitter) {
-                                if (!intersects(j, b.usage)) {
-                                    b.jitter = j;
-                                } else if (j < b.jitter && !intersects(-j, b.usage)) {
-                                    b.jitter = -j;
-                                }
-                            }
-                            a = a!.next;
-                        } while (a);
-                        if (b.jitter === Infinity) {
-                            // console.log('Got Infinity?', b);
-                        }
-                    }
-                    // Add b to the queue.
-                    b.next = null;
-                    if (head === null) {
-                        head = tail = b;
-                    } else {
-                        tail = tail!.next = b;
-                    }
-                }
-            });
-        },
-        compute_label_stats(labels: string[]) {
-            const widths = [] as number[];
-            const canvas = this.$refs.canvas as SVGSVGElement;
-            const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
-            canvas.appendChild(tag);
-            for (const label of labels) {
-                tag.textContent = label;
-                widths.push(tag.getBBox().width);
-            }
-            canvas.removeChild(tag);
-            this.label_stats = {
-                count: labels.length,
-                total: sum(widths),
-                longest: Math.max(...widths),
-            };
-        },
-    },
-    directives: {
-        axis(el, binding) {
-            const axis = binding.arg;
-            if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis];
-                const methodArg = binding.value[axis];
-                d3.select(el).call(d3[axisMethod](methodArg));
-            }
-        },
+        },*/
     },
 });
 </script>
@@ -444,23 +91,5 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 
 
 <style scoped>
-svg >>> g.x-axis text.label,
-svg >>> g.y-axis text.label {
-    text-anchor:middle;
-    fill:#000;
-    font-family: Verdana,Arial,sans-serif;
-    font-size: 12px;
-}
-svg >>> g.x-axis.rotate g.tick text {
-    transform: translate(-10px,0px) rotate(-45deg);
-    text-anchor: end;
-}
-svg >>> line,
-svg >>> rect {
-    shape-rendering: crispEdges;
-}
-svg >>> circle,
-svg >>> path {
-    shape-rendering: geometricPrecision;
-}
+
 </style>
