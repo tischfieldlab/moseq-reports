@@ -1,7 +1,7 @@
 <template>
     <box-plot
-        :width="this.outsideWidth"
-        :height="this.outsideHeight - 31"
+        :width="this.layout.width"
+        :height="this.layout.height - 31"
         :data="individualUseageData"
         value_name="usage"
         group_name="group"
@@ -12,7 +12,7 @@
         :show_points="settings.show_points"
         :show_violinplot="settings.show_violinplot"
         :point_size="settings.point_size"
-        :xAxisTitle="Group"
+        xAxisTitle="Group"
         :yAxisTitle="`Module #${selectedSyllable} Usage (${countMethod})`"
     />
 </template>
@@ -24,7 +24,7 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import BoxPlot from '@/components/Charts/BoxPlot/BoxPlot.vue';
+import BoxPlot from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
 import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 
 
@@ -48,12 +48,6 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         BoxPlot,
     },
     computed: {
-        outsideWidth(): number {
-            return this.layout.width;
-        },
-        outsideHeight(): number {
-            return this.layout.height - 31;
-        },
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
         },

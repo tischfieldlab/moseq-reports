@@ -6,9 +6,9 @@ export enum WhiskerType {
 }
 
 export interface DataPoint {
-    usage: number;
+    id: string;
+    value: number;
     group: string;
-    StartTime: string;
     jitter: number;
 }
 

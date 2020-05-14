@@ -1,105 +1,12 @@
-<template>
-    <svg ref="canvas" :width="width" :height="height" >
-        <g v-if="show_boxplot" :transform="`translate(${margin.left}, ${margin.top})`">
-            <template v-for="(node) in groupedData">
-                <g class="boxplot" :key="node.group">
-                    <!-- Vertical midline -->
-                    <line 
-                        stroke="#000000"
-                        :x1="scale.x(node.group) + halfBandwith"
-                        :y1="scale.y(fences.lower(node))"
-                        :x2="scale.x(node.group) + halfBandwith"
-                        :y2="scale.y(fences.upper(node))" />
-                    <!-- the Box of the BoxPlot -->
-                    <rect 
-                        stroke="#000000"
-                        :width="halfBandwith * 2"
-                        :height="scale.y(node.q3) - scale.y(node.q1)"
-                        :x="scale.x(node.group)"
-                        :y="scale.y(node.q1)"
-                        :style="{'fill': scale.c(node.group)}" />
-                    <!-- Horizontal Minimum line -->
-                    <line 
-                        stroke="#000000"
-                        :x1="scale.x(node.group) + quaterBandwith"
-                        :y1="scale.y(fences.lower(node))"
-                        :x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
-                        :y2="scale.y(fences.lower(node))" />
-                    <!-- Horizontal Median line -->
-                    <line 
-                        stroke="#000000"
-                        :x1="scale.x(node.group)"
-                        :y1="scale.y(node.q2)"
-                        :x2="scale.x(node.group) + (halfBandwith * 2)"
-                        :y2="scale.y(node.q2)" />
-                    <!-- Horizontal Maximum line -->
-                    <line 
-                        stroke="#000000"
-                        :x1="scale.x(node.group) + quaterBandwith"
-                        :y1="scale.y(fences.upper(node))"
-                        :x2="scale.x(node.group) + (halfBandwith + quaterBandwith)"
-                        :y2="scale.y(fences.upper(node))" />
-
-                    <g class="outliers">
-                        <template v-for="(node) in points">
-                            <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
-                            <path v-if="is_outlier(node)"
-                                :key="node.StartTime"
-                                :d="diamond()"
-                                :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
-                                :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
-                        </template>
-                    </g>
-                </g>
-            </template>
-        </g>
-        <g v-if="show_violinplot" :transform="`translate(${margin.left}, ${margin.top})`">
-            <template v-for="(node) in groupedData">
-                <g class="violin" :key="node.group" :transform="`translate(${scale.x(node.group)}, 0)`">
-                    <path :d="violinArea(node.kde)" :style="{'fill': scale.c(node.group)}" />
-                </g>
-            </template>
-        </g>
-        <g v-if="show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
-            <template v-for="(node) in points">
-                <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
-                <path v-if="is_outlier(node)"
-                    :key="node.StartTime"
-                    :d="diamond()"
-                    :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.usage)})`"
-                    :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
-                    
-                <circle v-else
-                    :key="node.StartTime"
-                    :r="point_size"
-                    :cx="scale.x(node.group) + node.jitter + halfBandwith"
-                    :cy="scale.y(node.usage)"
-                    :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
-            </template>
-        </g>
-        <g :class="{'x-axis':true, 'rotate': rotate_labels }" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
-            <text class="label" :y="xAxisLabelYPos" :x="(innerWidth / 2)">
-                {{xAxisTitle}}
-            </text>
-        </g>
-        <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`">
-            <text class="label" transform="rotate(-90)" :y="-45" :x="0 - (innerHeight/2)">
-                {{yAxisTitle}}
-            </text>
-        </g>
-    </svg>
-</template>
 
 <script lang="ts">
 import Vue from 'vue';
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-import { max, min, mean, quantile, median, sum } from 'd3-array';
+import { max, min, mean, quantile, median, sum, extent } from 'd3-array';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { WhiskerType, GroupStats, DataPoint, DataPointQueueNode } from './BoxPlot.types';
-
-
 
 
 export default Vue.extend({
@@ -113,6 +20,10 @@ export default Vue.extend({
             type: String,
         },
         group_name: {
+            required: true,
+            type: String,
+        },
+        id_name: {
             required: true,
             type: String,
         },
@@ -179,6 +90,9 @@ export default Vue.extend({
             label_stats: {count: 0, total: 0, longest: 0},
         };
     },
+    beforeDestroy() {
+        this.watchers.forEach((unwatch) => unwatch());
+    },
     computed: {
         innerWidth(): number {
             const width = this.width - this.margin.left - this.margin.right;
@@ -215,16 +129,20 @@ export default Vue.extend({
                 .domain(this.groupLabels as string[])
                 .range([0, this.innerWidth])
                 .padding(0.2);
+
             const y = scaleLinear()
-                .domain([0, Math.max(...this.points.map((i) => i.usage))])
+                .domain([0, max(this.points.map((i) => i.value)) as number])
                 .range([this.innerHeight, 0]);
+
             const kdeMax = Math.max(...this.groupedData.map((g) => Math.max(...g.kde.map((k) => k[1]))));
             const w = scaleLinear()
                 .domain([-kdeMax, kdeMax])
                 .range([0, x.bandwidth()]);
+
             const c = scaleOrdinal()
                 .domain(this.groupLabels as string[])
                 .range(this.groupColors as string[]);
+
             return { x, y, w, c };
         },
         fences() {
@@ -267,13 +185,18 @@ export default Vue.extend({
     watch: {
         data: {
             handler(newData) {
+                if (newData === null) {
+                    return;
+                }
+                newData = newData.rename(this.value_name, 'value');
+                newData = newData.rename(this.id_name, 'id');
                 this.points = newData.toCollection();
                 this.swarm_points(this.points);
 
                 this.groupedData = (this.groupLabels as string[]).map((g) => {
                     const values = newData.where({[this.group_name]: g})
-                                    .select(this.value_name)
-                                    .sortBy(this.value_name, true)
+                                    .select('value')
+                                    .sortBy('value', true)
                                     .toArray();
                     return this.computeGroupStats(values, g);
                 });
@@ -319,16 +242,16 @@ export default Vue.extend({
         is_outlier(node: DataPoint): boolean {
             const group = this.groupedData.find((v) => v.group === node.group);
             if (group) {
-                return node.usage < this.fences.lower(group)
-                    || node.usage > this.fences.upper(group);
+                return node.value < this.fences.lower(group)
+                    || node.value > this.fences.upper(group);
             }
             return false;
         },
         point_tooltip(item: DataPoint): string {
             return `<div style="text-align:left;">
                         ${item.group}<br />
-                        ${new Date(item.StartTime).toLocaleString('en-US')}<br />
-                        ${item.usage.toExponential(3)}
+                        ${item.id}<br />
+                        ${item.value.toExponential(3)}
                     </div>`;
         },
         swarm_points(data: DataPoint[]) {
@@ -345,7 +268,7 @@ export default Vue.extend({
                     let item = head;
                     while (item) {
                         const dx = (item.jitter - x) ** 2;
-                        const dy = (this.scale.y(item.usage) - this.scale.y(y)) ** 2;
+                        const dy = (this.scale.y(item.value) - this.scale.y(y)) ** 2;
                         if (radius2 - epsilon >= dx + dy) {
                             return true;
                         }
@@ -356,22 +279,22 @@ export default Vue.extend({
 
                 for (const b of indv) {
                     // Remove circles from the queue that can’t intersect the new circle b.
-                    while (head && this.scale.y(head.usage) < (this.scale.y(b.usage) - radius2)) {
+                    while (head && this.scale.y(head.value) < (this.scale.y(b.value) - radius2)) {
                         head = head.next;
                     }
                     // Choose the minimum non-intersecting tangent.
                     b.jitter = 0;
-                    if (intersects(b.jitter, b.usage)) {
+                    if (intersects(b.jitter, b.value)) {
                         let a = head;
                         b.jitter = Infinity;
                         do {
-                            const dy = Math.sqrt(radius2 - (this.scale.y(a!.usage) - this.scale.y(b.usage)) ** 2);
+                            const dy = Math.sqrt(radius2 - (this.scale.y(a!.value) - this.scale.y(b.value)) ** 2);
                             const j = a!.jitter + dy;
 
                             if (j < b.jitter) {
-                                if (!intersects(j, b.usage)) {
+                                if (!intersects(j, b.value)) {
                                     b.jitter = j;
-                                } else if (j < b.jitter && !intersects(-j, b.usage)) {
+                                } else if (j < b.jitter && !intersects(-j, b.value)) {
                                     b.jitter = -j;
                                 }
                             }
@@ -392,60 +315,8 @@ export default Vue.extend({
             });
         },
         compute_label_stats(labels: string[]) {
-            const canvas = this.$refs.canvas as SVGSVGElement;
-            if (canvas === undefined) {
-                // if canvas is not available yet (i.e. before fully mounted)
-                // then schedule the calculation for the next tick
-                this.$nextTick(() => this.compute_label_stats(labels));
-                return;
-            }
-            const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
-            canvas.appendChild(tag);
-            const widths = labels.map((l) => {
-                tag.textContent = l;
-                return tag.getBBox().width;
-            });
-            canvas.removeChild(tag);
-            this.label_stats = {
-                count: labels.length,
-                total: sum(widths),
-                longest: Math.max(...widths),
-            };
-        },
-    },
-    directives: {
-        axis(el, binding) {
-            const axis = binding.arg;
-            if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis];
-                const methodArg = binding.value[axis];
-                d3.select(el).call(d3[axisMethod](methodArg));
-            }
+            // abstract implementation
         },
     },
 });
 </script>
-
-
-
-<style scoped>
-svg >>> g.x-axis text.label,
-svg >>> g.y-axis text.label {
-    text-anchor:middle;
-    fill:#000;
-    font-family: Verdana,Arial,sans-serif;
-    font-size: 12px;
-}
-svg >>> g.x-axis.rotate g.tick text {
-    transform: translate(-10px,0px) rotate(-45deg);
-    text-anchor: end;
-}
-svg >>> line,
-svg >>> rect {
-    shape-rendering: crispEdges;
-}
-svg >>> circle,
-svg >>> path {
-    shape-rendering: geometricPrecision;
-}
-</style>
