@@ -58,7 +58,7 @@ export default mixins(WindowMixin).extend({
     data() {
         return {
             title_offset: 30,
-            component_loading: false,
+            component_loading: 0,
             show_settings_modal: false,
             watchers: Array<(() => void)>(),
         };
@@ -69,7 +69,7 @@ export default mixins(WindowMixin).extend({
         },
         is_loading(): boolean {
             const s = this.dataview;
-            return this.component_loading || (s && s.loading);
+            return this.component_loading > 0 || (s && s.loading);
         },
     },
     watch: {
@@ -90,8 +90,10 @@ export default mixins(WindowMixin).extend({
             this.updateWindowLayout(this.layout);
             ensureDefaults(this.$refs.body as Vue, this.$store);
         });
-        (this.$refs.body as Vue).$on('start-loading', () => this.component_loading = true);
-        (this.$refs.body as Vue).$on('finish-loading', () => this.component_loading = false);
+        (this.$refs.body as Vue).$on('start-loading', () => this.component_loading++);
+        (this.$refs.body as Vue).$on('finish-loading', () => {
+            this.component_loading = clamp(this.component_loading - 1, 0);
+        });
     },
     beforeDestroy() {
         // un-watch the store
