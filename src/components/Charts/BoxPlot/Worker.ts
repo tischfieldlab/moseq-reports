@@ -1,7 +1,7 @@
 import { expose } from 'threads/worker';
 import { groupby } from '@/util/Array';
 import { scaleLinear } from 'd3-scale';
-import { max, min, mean, quantile, median } from 'd3-array';
+import { max, mean, quantile, extent } from 'd3-array';
 import { GroupStats, DataPoint, DataPointQueueNode } from './BoxPlot.types';
 
 
@@ -12,12 +12,14 @@ interface LinearScale {
 
 
 const exposedMethods = {
-    prepareData(points: DataPoint[], height: number, pointSize: number, groupLabels: string[]) {
+    prepareData(points: DataPoint[], height: number, pointSize: number, groupLabels: string[], swarmPoints: boolean) {
         const y = scaleLinear()
             .domain([0, max(points.map((i) => i.value)) as number])
             .range([height, 0]);
 
-        exposedMethods.swarm_points(points, groupLabels, {domain: y.domain(), range: y.range()}, pointSize);
+        if (swarmPoints) {
+            exposedMethods.swarm_points(points, groupLabels, {domain: y.domain(), range: y.range()}, pointSize);
+        }
 
         const groupedData = Object.entries(groupby(points, (p) => p.group, groupLabels))
             .sort((a, b) => a[0].localeCompare(b[0]))
@@ -35,20 +37,17 @@ const exposedMethods = {
         };
     },
     computeGroupStats(data: number[], group: string, scaleY): GroupStats {
-        data = data.sort((a, b) => b - a);
+        data = data.filter((v) => typeof v === 'number').sort((a, b) => b - a);
         const kde = kernelDensityEstimator(epanechnikovKernel(.01), scaleY.ticks(100));
         const gstats = {
             group,
             count: data.length,
-            min: min(data) as number,
-            max: max(data) as number,
-            mean: mean(data) as number,
-            median: median(data) as number,
             q1: quantile(data, 0.25) as number,
             q2: quantile(data, 0.5) as number,
             q3: quantile(data, 0.75) as number,
             kde: kde(data),
         } as GroupStats;
+        [gstats.min, gstats.max] = extent(data) as [number, number];
         gstats.iqr = gstats.q1 - gstats.q3;
         return gstats as GroupStats;
     },

@@ -130,7 +130,6 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                     ['velocity_2d_mm', 'value'],
                     'group',
                 ]);
-                console.log(this.individualUseageData);
             },
             immediate: true,
         },

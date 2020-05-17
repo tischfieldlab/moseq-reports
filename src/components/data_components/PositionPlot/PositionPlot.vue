@@ -44,7 +44,7 @@ RegisterDataComponent({
     component_type: 'PositionPlot',
     settings_type: 'PositionPlotOptions',
     init_width: 400,
-    init_height: 500,
+    init_height: 380,
     default_settings: {
         show_points: false,
         point_size: 2,

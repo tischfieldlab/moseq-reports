@@ -20,8 +20,8 @@ protocol.registerSchemesAsPrivileged(
         privileges: {
             secure: true,
             standard: true,
-            supportFetchAPI: true
-        }
+            supportFetchAPI: true,
+        },
     }]);
 
 function createWindow() {

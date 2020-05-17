@@ -1,6 +1,7 @@
 import { expose } from 'threads/worker';
 // tslint:disable no-eval
 const fs = eval('require(\'fs\')');
+import {ascending} from 'd3-array';
 
 
 const cache = {};

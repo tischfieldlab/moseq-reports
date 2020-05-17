@@ -148,12 +148,8 @@ export default Vue.extend({
         },
         scale(): any {
             if (this.data === null) {
-                return { x: scaleLinear(), y: scaleLinear(), g: scaleBand() };
+                return { x: scaleLinear(), y: scaleLinear(), c: scaleSequential(this.colormap) };
             }
-            const g = scaleBand()
-                .domain(this.groupLabels as string[])
-                .range([this.margin.left, this.innerSize.w])
-                .padding(0.2);
 
             const gl = gridLayout()
                 .size([this.innerSize.w, this.innerSize.h])

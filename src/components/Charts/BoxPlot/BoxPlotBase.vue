@@ -18,6 +18,8 @@ if (module.hot) {
 let worker: ModuleThread<BoxPlotWorker>;
 (async () => {
     worker = await spawn<BoxPlotWorker>(new Worker('./Worker.ts'));
+    // Thread.errors(worker).subscribe(error => console.log('Thread error:', error));
+    // Thread.events(worker).subscribe(event => console.log('Thread event:', event));
 })();
 
 
@@ -196,18 +198,20 @@ export default Vue.extend({
                 if (newData === null) {
                     return;
                 }
-                const result = await worker.prepareData(newData as any[],
-                                                    this.innerHeight,
-                                                    this.point_size,
-                                                    this.groupLabels as string[]);
-                if (result !== undefined) {
-                    this.points = result.points;
-                    this.groupedData = result.groupedData,
-                    this.domainY = result.domainY;
-                    this.domainKde = result.domainKde,
-                    this.compute_label_stats(this.groupLabels as string[]);
-                }
-                console.log(result);
+                worker.prepareData(newData as any[],
+                            this.innerHeight,
+                            this.point_size,
+                            this.groupLabels as string[],
+                            this.show_points)
+                    .then((result) => {
+                        if (result !== undefined) {
+                            this.points = result.points;
+                            this.groupedData = result.groupedData,
+                            this.domainY = result.domainY;
+                            this.domainKde = result.domainKde,
+                            this.compute_label_stats(this.groupLabels as string[]);
+                        }
+                    });
             },
             immediate: true,
         },
