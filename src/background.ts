@@ -14,7 +14,15 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 let win: BrowserWindow | null;
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true, standard: true } }]);
+protocol.registerSchemesAsPrivileged(
+    [{
+        scheme: 'app',
+        privileges: {
+            secure: true,
+            standard: true,
+            supportFetchAPI: true
+        }
+    }]);
 
 function createWindow() {
     // Create the browser window.
@@ -30,9 +38,6 @@ function createWindow() {
             sandbox: false,
         },
     }) as BrowserWindow;
-
-    const menu = new Menu();
-    Menu.setApplicationMenu(menu);
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         setTimeout(() => {
