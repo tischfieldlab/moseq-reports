@@ -7,63 +7,72 @@ import Vue from 'vue';
 import BoxPlotBase from './BoxPlotBase.vue';
 import { GroupStats, DataPoint } from './BoxPlot.types';
 import { sum } from 'd3-array';
+import { debounce } from 'ts-debounce';
+import mixins from 'vue-typed-mixins';
+import {sample} from '@/util/Array';
 
 
-export default BoxPlotBase.extend({
+export default mixins(BoxPlotBase).extend({
     data() {
         return {
             vueCanvas: null as CanvasRenderingContext2D | null,
+            debouncedDraw: () => {/**/},
         };
     },
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;
         this.vueCanvas = c.getContext('2d');
+        this.debouncedDraw = debounce(this.draw, 100);
 
         Object.keys(this.$props).forEach((key) => {
             this.watchers.push(this.$watch(key, () => {
-                this.draw();
+                this.debouncedDraw();
             }));
         });
         Object.keys(this.$data).forEach((key) => {
             this.watchers.push(this.$watch(key, () => {
-                this.draw();
+                this.debouncedDraw();
             }));
         });
-        this.draw();
+        this.debouncedDraw();
     },
     methods: {
         draw() {
-            if (this.vueCanvas === null) {
-                return; // bail out
-            }
-            this.vueCanvas.save();
-            // clear canvas
-            this.vueCanvas.clearRect(0, 0, this.width, this.height);
-
-            this.vueCanvas.translate(this.margin.left, this.margin.top);
-
-            if (this.show_boxplot) {
-                for (const node of this.groupedData) {
-                    this.drawBoxPlotNode(this.vueCanvas, node);
+            this.$emit('start-loading');
+            this.$forceNextTick().then(() => {
+                if (this.vueCanvas === null) {
+                    return; // bail out
                 }
-            }
-            if (this.show_violinplot) {
-                for (const node of this.groupedData) {
-                    this.drawViolinNode(this.vueCanvas, node);
-                }
-            }
-            if (this.show_points) {
-                for (const node of this.points) {
-                    if (this.is_outlier(node)) {
-                        this.drawOutlierPointNode(this.vueCanvas, node);
-                    } else {
-                        this.drawPointNode(this.vueCanvas, node);
+                this.vueCanvas.save();
+                // clear canvas
+                this.vueCanvas.clearRect(0, 0, this.width, this.height);
+
+                this.vueCanvas.translate(this.margin.left, this.margin.top);
+
+                if (this.show_boxplot) {
+                    for (const node of this.groupedData) {
+                        this.drawBoxPlotNode(this.vueCanvas, node);
                     }
                 }
-            }
-            this.drawAxisX(this.vueCanvas);
-            this.drawAxisY(this.vueCanvas);
-            this.vueCanvas.restore();
+                if (this.show_violinplot) {
+                    for (const node of this.groupedData) {
+                        this.drawViolinNode(this.vueCanvas, node);
+                    }
+                }
+                if (this.actuallyShowPoints) {
+                    for (const node of this.points) {
+                        if (this.is_outlier(node)) {
+                            this.drawOutlierPointNode(this.vueCanvas, node);
+                        } else {
+                            this.drawPointNode(this.vueCanvas, node);
+                        }
+                    }
+                }
+                this.drawAxisX(this.vueCanvas);
+                this.drawAxisY(this.vueCanvas);
+                this.vueCanvas.restore();
+                this.$emit('finish-loading');
+            });
         },
         drawBoxPlotNode(ctx: CanvasRenderingContext2D, node: GroupStats) {
             // Vertical midline
@@ -147,8 +156,8 @@ export default BoxPlotBase.extend({
         },
         drawAxisX(ctx: CanvasRenderingContext2D) {
             ctx.beginPath();
-            ctx.moveTo(0, this.innerHeight);
-            ctx.lineTo(this.innerWidth, this.innerHeight);
+            ctx.moveTo(this.scale.x.range()[0], this.scale.y.range()[0]);
+            ctx.lineTo(this.scale.x.range()[1], this.scale.y.range()[0]);
 
             // iterate over our x domain values
             this.scale.x.domain().forEach((d) => {
@@ -195,8 +204,8 @@ export default BoxPlotBase.extend({
         drawAxisY(ctx: CanvasRenderingContext2D) {
             ctx.beginPath();
 
-            ctx.moveTo(0, this.innerHeight);
-            ctx.lineTo(0, 0);
+            ctx.moveTo(this.scale.x.range()[0], this.scale.y.range()[0]);
+            ctx.lineTo(this.scale.x.range()[0], this.scale.y.range()[1]);
 
             // iterate over our x domain values
             this.scale.y.ticks().forEach((d) => {

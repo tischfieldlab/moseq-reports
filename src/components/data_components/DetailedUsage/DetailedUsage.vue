@@ -3,8 +3,6 @@
         :width="this.layout.width"
         :height="this.layout.height - 31"
         :data="individualUseageData"
-        value_name="usage"
-        group_name="group"
         :groupLabels="groupNames"
         :groupColors="groupColors"
         :whisker_type="settings.boxplot_whiskers"
@@ -67,7 +65,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             }
             return df.where({syllable: this.selectedSyllable})
                     .select('usage', 'group', 'StartTime')
-                    .sortBy('usage');
+                    .sortBy('usage')
+                    .rename('usage', 'value')
+                    .rename('StartTime', 'id')
+                    .toCollection();
         },
     },
     methods: {

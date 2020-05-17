@@ -145,6 +145,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
         line(): any {
             const a = line()
+                .defined(([x, y]) => !Number.isNaN(x) && !Number.isNaN(y))
                 .x((d) => this.scale.x(d[0]))
                 .y((d) => this.scale.y(d[1]));
             return a;

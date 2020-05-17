@@ -113,6 +113,7 @@ function readDataBundle(filename: string) {
                         ...await LoadUsageData(zip),
                         ...await LoadSpinogramData(zip),
                         ...await LoadCrowdMovies(zip, tmpdir),
+                        ...await LoadScalarsData(zip, tmpdir),
                     };
                     resolve(dataset);
                 } catch (e) {
@@ -159,6 +160,33 @@ async function LoadCrowdMovies(zip: JSZip, dir: string) {
     fs.mkdirSync(dest);
     const waiting = new Array<Promise<unknown>>();
     zip.folder('crowd_movies').forEach((relativePath, file) => {
+        waiting.push(new Promise((resolve, reject) => {
+            file.async('nodebuffer').then((value: Buffer) => {
+                try {
+                    fs.writeFileSync(path.join(dir, file.name), value);
+                    resolve();
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        }));
+    });
+    await Promise.allSettled(waiting)
+                 .then((values) => {
+                    values.forEach((v) => {
+                        if (v.status === 'rejected') {
+                            throw(v.reason);
+                        }
+                    });
+                 });
+    return {};
+}
+
+async function LoadScalarsData(zip: JSZip, dir: string) {
+    const dest = path.join(dir, 'scalars');
+    fs.mkdirSync(dest);
+    const waiting = new Array<Promise<unknown>>();
+    zip.folder('scalars').forEach((relativePath, file) => {
         waiting.push(new Promise((resolve, reject) => {
             file.async('nodebuffer').then((value: Buffer) => {
                 try {

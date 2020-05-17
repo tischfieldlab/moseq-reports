@@ -7,6 +7,18 @@ import { max, min, mean, quantile, median, sum, extent } from 'd3-array';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { WhiskerType, GroupStats, DataPoint, DataPointQueueNode } from './BoxPlot.types';
+import {groupby} from '@/util/Array';
+import { spawn, Thread, Worker, ModuleThread } from 'threads';
+import { BoxPlotWorker } from './Worker';
+
+
+if (module.hot) {
+    module.hot?.addDisposeHandler(async () => await Thread.terminate(worker));
+}
+let worker: ModuleThread<BoxPlotWorker>;
+(async () => {
+    worker = await spawn<BoxPlotWorker>(new Worker('./Worker.ts'));
+})();
 
 
 export default Vue.extend({
@@ -14,18 +26,6 @@ export default Vue.extend({
         data: {
             required: true,
             type: Array,
-        },
-        value_name: {
-            required: true,
-            type: String,
-        },
-        group_name: {
-            required: true,
-            type: String,
-        },
-        id_name: {
-            required: true,
-            type: String,
         },
         width: {
             required: true,
@@ -88,6 +88,8 @@ export default Vue.extend({
             watchers: Array<(() => void)>(),
             rotate_labels: false,
             label_stats: {count: 0, total: 0, longest: 0},
+            domainY: [0, 0],
+            domainKde: [0, 0],
         };
     },
     beforeDestroy() {
@@ -96,7 +98,6 @@ export default Vue.extend({
     computed: {
         innerWidth(): number {
             const width = this.width - this.margin.left - this.margin.right;
-
             this.rotate_labels = this.label_stats.longest > width / this.label_stats.count;
             if (this.rotate_labels) {
                 const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * this.label_stats.longest;
@@ -131,12 +132,11 @@ export default Vue.extend({
                 .padding(0.2);
 
             const y = scaleLinear()
-                .domain([0, max(this.points.map((i) => i.value)) as number])
+                .domain(this.domainY)
                 .range([this.innerHeight, 0]);
 
-            const kdeMax = Math.max(...this.groupedData.map((g) => Math.max(...g.kde.map((k) => k[1]))));
             const w = scaleLinear()
-                .domain([-kdeMax, kdeMax])
+                .domain(this.domainKde)
                 .range([0, x.bandwidth()]);
 
             const c = scaleOrdinal()
@@ -181,38 +181,50 @@ export default Vue.extend({
                 .size(2 * Math.sqrt(2 * (Math.PI * this.point_size ** 2)));
             return d;
         },
+        actuallyShowPoints(): boolean {
+            const tooMany = this.points.length > 10000;
+            if (tooMany) {
+                // tslint:disable-next-line:no-console
+                console.warn(`Too many points (${this.points.length}): disableing show points`);
+            }
+            return this.show_points && !tooMany;
+        },
     },
     watch: {
         data: {
-            handler(newData) {
+            async handler(newData: DataPoint[]) {
                 if (newData === null) {
                     return;
                 }
-                newData = newData.rename(this.value_name, 'value');
-                newData = newData.rename(this.id_name, 'id');
-                this.points = newData.toCollection();
-                this.swarm_points(this.points);
-
-                this.groupedData = (this.groupLabels as string[]).map((g) => {
-                    const values = newData.where({[this.group_name]: g})
-                                    .select('value')
-                                    .sortBy('value', true)
-                                    .toArray();
-                    return this.computeGroupStats(values, g);
-                });
-                this.compute_label_stats(this.groupLabels as string[]);
+                const result = await worker.prepareData(newData as any[],
+                                                    this.innerHeight,
+                                                    this.point_size,
+                                                    this.groupLabels as string[]);
+                if (result !== undefined) {
+                    this.points = result.points;
+                    this.groupedData = result.groupedData,
+                    this.domainY = result.domainY;
+                    this.domainKde = result.domainKde,
+                    this.compute_label_stats(this.groupLabels as string[]);
+                }
+                console.log(result);
             },
             immediate: true,
         },
         width() {
             this.compute_label_stats(this.groupLabels as string[]);
         },
-        point_size(newValue) {
-            this.swarm_points(this.points);
+        async point_size(newValue) {
+            const result = await worker.swarm_points(this.points,
+                                                     this.groupLabels  as string[],
+                                                     {domain: this.scale.y.domain(), range: this.scale.y.range()},
+                                                     this.point_size);
+            this.points = result;
         },
     },
     methods: {
-        computeGroupStats(data: number[], group: string): GroupStats {
+        /*computeGroupStats(data: number[], group: string): GroupStats {
+            data = data.sort((a, b) => b - a);
             const kde = this.kernelDensityEstimator(this.epanechnikovKernel(.01), this.scale.y.ticks(100));
             const gstats = {
                 group,
@@ -238,7 +250,7 @@ export default Vue.extend({
             return (u: number) => {
                 return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
             };
-        },
+        },*/
         is_outlier(node: DataPoint): boolean {
             const group = this.groupedData.find((v) => v.group === node.group);
             if (group) {
@@ -253,7 +265,7 @@ export default Vue.extend({
                         ${item.id}<br />
                         ${item.value.toExponential(3)}
                     </div>`;
-        },
+        }, /*
         swarm_points(data: DataPoint[]) {
             this.groupLabels.map((g) => {
                 const pointSize = this.point_size as number;
@@ -313,7 +325,7 @@ export default Vue.extend({
                     }
                 }
             });
-        },
+        },*/
         compute_label_stats(labels: string[]) {
             // abstract implementation
         },

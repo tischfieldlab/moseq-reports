@@ -60,7 +60,7 @@
                 </g>
             </template>
         </g>
-        <g v-if="show_points" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
+        <g v-if="actuallyShowPoints" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
             <template v-for="(node) in points">
                 <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
                 <path v-if="is_outlier(node)"
@@ -96,10 +96,12 @@ import * as d3 from 'd3';
 import { axisBottom, axisLeft } from 'd3-axis';
 import BoxPlotBase from './BoxPlotBase.vue';
 import { sum } from 'd3-array';
+import mixins from 'vue-typed-mixins';
 
 
 
-export default BoxPlotBase.extend({
+
+export default mixins(BoxPlotBase).extend({
     methods: {
         compute_label_stats(labels: string[]) {
             const canvas = this.$refs.canvas as SVGSVGElement;

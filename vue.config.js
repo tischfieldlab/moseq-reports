@@ -6,7 +6,9 @@ module.exports = {
     configureWebpack: {
         devtool: 'source-map',
         plugins: [
-            new ThreadsPlugin()
+            new ThreadsPlugin({
+                target: 'electron-node-worker'
+            })
         ],
     },
     pluginOptions: {
