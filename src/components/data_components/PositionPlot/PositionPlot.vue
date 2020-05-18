@@ -6,6 +6,8 @@
             :data="individualUseageData"
             :groupLabels="groupNames"
             :groupColors="groupColors"
+            :resolution="settings.resolution"
+            :colorscale="settings.colormap"
             :legendTitle="`Relative Occupancy`"
             :title="`Occupancy while in Module ${selectedSyllable} (${countMethod})`"
             xAxisTitle="Group"
@@ -50,11 +52,8 @@ RegisterDataComponent({
     init_width: 400,
     init_height: 380,
     default_settings: {
-        show_points: false,
-        point_size: 2,
-        show_boxplot: true,
-        show_violinplot: false,
-        boxplot_whiskers: WhiskerType.TUKEY,
+        resolution: 2,
+        colormap: 'interpolateBuPu',
     },
 });
 

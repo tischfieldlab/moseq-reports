@@ -34,6 +34,16 @@ export default mixins(LoadingMixin).extend({
             required: true,
             type: Number,
         },
+        resolution: {
+            required: true,
+            type: Number,
+            default: 10,
+        },
+        colorscale: {
+            required: true,
+            type: String,
+            default: 'interpolateBuPu',
+        },
         groupLabels: {
             required: true,
             type: Array, /* Array<string> */
@@ -84,16 +94,13 @@ export default mixins(LoadingMixin).extend({
     },
     computed: {
         colormap(): any {
-            return GetScale('interpolateBuPu');
+            return GetScale(this.colorscale);
         },
         innerSize(): {w: number, h: number} {
             return {
                 w: this.width - this.margin.left - this.margin.right,
                 h: this.height - this.margin.top - this.margin.bottom,
             };
-        },
-        resolution(): number {
-            return 10;
         },
         hexWidth(): number {
             return this.resolution * 2 * Math.sin(Math.PI / 3);

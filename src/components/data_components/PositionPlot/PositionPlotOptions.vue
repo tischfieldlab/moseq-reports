@@ -1,39 +1,18 @@
 <template>
     <b-container fluid>
         <b-row>
-             <label class="font-weight-bold pt-0">Plot Element Visibility</label>
-        </b-row>
-        <b-row>
-            <b-form-checkbox v-model="show_points" switch>
-                Show Individual Data Points
-            </b-form-checkbox>
-        </b-row>
-        <b-row v-show="show_points">
-            <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Point Size">
-                    <b-form-input type="number" v-model="point_size" min="1" max="10" ></b-form-input>
+                <b-input-group prepend="Colormap">
+                    <b-form-select v-model="colorscale" :options="color_options"></b-form-select>
                 </b-input-group>
             </b-col>
         </b-row>
         <b-row>
-            <b-form-checkbox v-model="show_boxplot" switch>
-                Show Boxplot
-            </b-form-checkbox>
-        </b-row>
-        <b-row v-show="show_boxplot">
-            <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Whiskers">
-                    <b-form-select v-model="boxplot_whiskers" :options="whisker_options"></b-form-select>
-                    <div class="figure-caption">{{ boxplot_whisker_description }}</div>
+                <b-input-group prepend="Resolution">
+                    <b-form-input type="number" v-model="resolution" min="1" max="10" ></b-form-input>
                 </b-input-group>
             </b-col>
-        </b-row>
-        <b-row>
-            <b-form-checkbox v-model="show_violinplot" switch>
-                Show Violin Plot
-            </b-form-checkbox>
         </b-row>
     </b-container>
 </template>
@@ -42,80 +21,33 @@
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
+import { GetInterpolatedScaleOptions } from '@/components/Charts/D3ColorProvider';
 
-export enum WhiskerType {
-    TUKEY,
-    MIN_MAX,
-}
 
 export default mixins(WindowMixin).extend({
     computed: {
-        show_points: {
-            get(): boolean {
-                return this.settings.show_points;
+        resolution: {
+            get(): number {
+                return this.settings.resolution;
             },
-            set(value: boolean) {
+            set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        show_points: value,
+                        resolution: value,
                     },
                 });
             },
         },
-        point_size: {
-            get(): boolean {
-                return this.settings.point_size;
-            },
-            set(value: boolean) {
-                this.$store.commit(`${this.id}/updateComponentSettings`, {
-                    id: this.id,
-                    settings: {
-                        point_size: value,
-                    },
-                });
-            },
-        },
-        show_boxplot: {
-            get(): boolean {
-                return this.settings.show_boxplot;
-            },
-            set(value: boolean) {
-                this.$store.commit(`${this.id}/updateComponentSettings`, {
-                    id: this.id,
-                    settings: {
-                        show_boxplot: value,
-                    },
-                });
-            },
-        },
-        boxplot_whiskers: {
-            get(): WhiskerType {
-                return this.settings.boxplot_whiskers;
-            },
-            set(value: WhiskerType) {
-                this.$store.commit(`${this.id}/updateComponentSettings`, {
-                    id: this.id,
-                    settings: {
-                        boxplot_whiskers: value,
-                    },
-                });
-            },
-        },
-        boxplot_whisker_description: {
+        colorscale: {
             get(): string {
-                return this.whisker_options.find((wo) => wo.value === this.boxplot_whiskers)!.description;
+                return this.settings.colormap;
             },
-        },
-        show_violinplot: {
-            get(): boolean {
-                return this.settings.show_violinplot;
-            },
-            set(value: boolean) {
+            set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        show_violinplot: value,
+                        colormap: value,
                     },
                 });
             },
@@ -123,17 +55,7 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
-            whisker_options: [
-                {
-                    value: WhiskerType.TUKEY,
-                    text: 'Tukey',
-                    description: 'Whiskers extend up to 1.5 * IQR from 25th and 75th percentile',
-                }, {
-                    value: WhiskerType.MIN_MAX,
-                    text: 'Min/Max',
-                    description: 'Whiskers extend to min and max data points',
-                },
-            ],
+            color_options: GetInterpolatedScaleOptions(),
         };
     },
 });
