@@ -199,6 +199,7 @@ export default mixins(BoxPlotBase).extend({
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = 'black';
+            ctx.font = '13px Verdana';
             ctx.fillText(this.xAxisTitle, this.innerWidth / 2, this.innerHeight + this.xAxisLabelYPos);
         },
         drawAxisY(ctx: CanvasRenderingContext2D) {
@@ -231,6 +232,7 @@ export default mixins(BoxPlotBase).extend({
             ctx.rotate(-Math.PI / 2);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
+            ctx.font = '13px Verdana';
             ctx.fillText(this.yAxisTitle, -this.innerHeight / 2, -45);
             ctx.restore();
         },
