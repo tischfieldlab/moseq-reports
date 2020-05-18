@@ -13,8 +13,15 @@ interface LinearScale {
 
 const exposedMethods = {
     prepareData(points: DataPoint[], height: number, pointSize: number, groupLabels: string[], swarmPoints: boolean) {
+        const yExtent = extent(points.map((i) => i.value));
+        if (yExtent[0] as number > 0) {
+            yExtent[0] = 0;
+        }
+        if (yExtent[1] as number < 0) {
+            yExtent[1] = 0;
+        }
         const y = scaleLinear()
-            .domain([0, max(points.map((i) => i.value)) as number])
+            .domain(yExtent as number[])
             .range([height, 0]);
 
         if (swarmPoints) {
