@@ -227,34 +227,6 @@ export default Vue.extend({
         },
     },
     methods: {
-        /*computeGroupStats(data: number[], group: string): GroupStats {
-            data = data.sort((a, b) => b - a);
-            const kde = this.kernelDensityEstimator(this.epanechnikovKernel(.01), this.scale.y.ticks(100));
-            const gstats = {
-                group,
-                count: data.length,
-                min: min(data) as number,
-                max: max(data) as number,
-                mean: mean(data) as number,
-                median: median(data) as number,
-                q1: quantile(data, 0.25) as number,
-                q2: quantile(data, 0.5) as number,
-                q3: quantile(data, 0.75) as number,
-                kde: kde(data),
-            } as GroupStats;
-            gstats.iqr = gstats.q1 - gstats.q3;
-            return gstats as GroupStats;
-        },
-        kernelDensityEstimator(kernel: (u: number) => number, x: number[]): (sample: number[]) => number[][] {
-            return (sample: number[]) => {
-                return x.map((y) => [y, mean(sample, (v: number) => kernel(y - v))]) as number[][];
-            };
-        },
-        epanechnikovKernel(scale: number): (u: number) => number {
-            return (u: number) => {
-                return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
-            };
-        },*/
         is_outlier(node: DataPoint): boolean {
             const group = this.groupedData.find((v) => v.group === node.group);
             if (group) {
@@ -269,67 +241,7 @@ export default Vue.extend({
                         ${item.id}<br />
                         ${item.value.toExponential(3)}
                     </div>`;
-        }, /*
-        swarm_points(data: DataPoint[]) {
-            this.groupLabels.map((g) => {
-                const pointSize = this.point_size as number;
-                const radius2 = (pointSize * 2.5) ** 2;
-                let head: DataPointQueueNode | null = null;
-                let tail: DataPointQueueNode | null = null;
-                const indv = data.filter((ui) => ui.group === g)
-                                 .map((ui) => { ui.jitter = 0; return ui; }) as DataPointQueueNode[];
-
-                const intersects = (x, y) => {
-                    const epsilon = 1e-5;
-                    let item = head;
-                    while (item) {
-                        const dx = (item.jitter - x) ** 2;
-                        const dy = (this.scale.y(item.value) - this.scale.y(y)) ** 2;
-                        if (radius2 - epsilon >= dx + dy) {
-                            return true;
-                        }
-                        item = item.next;
-                    }
-                    return false;
-                };
-
-                for (const b of indv) {
-                    // Remove circles from the queue that can’t intersect the new circle b.
-                    while (head && this.scale.y(head.value) < (this.scale.y(b.value) - radius2)) {
-                        head = head.next;
-                    }
-                    // Choose the minimum non-intersecting tangent.
-                    b.jitter = 0;
-                    if (intersects(b.jitter, b.value)) {
-                        let a = head;
-                        b.jitter = Infinity;
-                        do {
-                            const dy = Math.sqrt(radius2 - (this.scale.y(a!.value) - this.scale.y(b.value)) ** 2);
-                            const j = a!.jitter + dy;
-
-                            if (j < b.jitter) {
-                                if (!intersects(j, b.value)) {
-                                    b.jitter = j;
-                                } else if (j < b.jitter && !intersects(-j, b.value)) {
-                                    b.jitter = -j;
-                                }
-                            }
-                            a = a!.next;
-                        } while (a);
-                        if (b.jitter === Infinity) {
-                            // console.log('Got Infinity?', b);
-                        }
-                    }
-                    // Add b to the queue.
-                    b.next = null;
-                    if (head === null) {
-                        head = tail = b;
-                    } else {
-                        tail = tail!.next = b;
-                    }
-                }
-            });
-        },*/
+        },
         compute_label_stats(labels: string[]) {
             // abstract implementation
         },

@@ -2,7 +2,7 @@
 import Vue from 'vue';
 import { hexbin } from 'd3-hexbin';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
-import { GetScale } from '@/util/D3ColorProvider';
+import { GetScale } from '@/components/Charts/D3ColorProvider';
 import { spawn, Thread, Worker, ModuleThread } from 'threads';
 import { HexbinWorker } from './Worker';
 import gridLayout from '@/components/Charts/D3Layout';

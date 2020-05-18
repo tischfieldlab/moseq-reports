@@ -49,8 +49,8 @@ import { OrderingType, SortOrderDirection } from './ClusteredHeatmapOptions.vue'
 import * as d3 from 'd3';
 import { cluster, hierarchy, sum } from 'd3';
 import { scaleBand, scaleSequential } from 'd3-scale';
-import { GetScale } from '@/util/D3ColorProvider';
-import { getDendrogramOrder, elbowH, elbowV } from '@/util/D3Clustering';
+import { GetScale } from '@/components/Charts/D3ColorProvider';
+import { getDendrogramOrder, elbowH, elbowV } from '@/components/Charts/D3Clustering';
 import { spawn, Worker, ModuleThread } from 'threads';
 import { ClusterWorker } from './Worker';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
