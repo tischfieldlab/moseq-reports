@@ -90,9 +90,13 @@ export default mixins(WindowMixin).extend({
             this.updateWindowLayout(this.layout);
             ensureDefaults(this.$refs.body as Vue, this.$store);
         });
-        (this.$refs.body as Vue).$on('start-loading', () => this.component_loading++);
+        (this.$refs.body as Vue).$on('start-loading', () => {
+            this.component_loading++;
+            console.log('start', this, this.component_loading);
+        });
         (this.$refs.body as Vue).$on('finish-loading', () => {
             this.component_loading = clamp(this.component_loading - 1, 0);
+            console.log('end', this, this.component_loading);
         });
     },
     beforeDestroy() {

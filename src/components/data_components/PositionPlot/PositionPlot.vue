@@ -6,6 +6,8 @@
             :data="individualUseageData"
             :groupLabels="groupNames"
             :groupColors="groupColors"
+            :legendTitle="`Relative Occupancy of Module ${selectedSyllable} (${countMethod})`"
+            :title="`Occupancy while in Module ${selectedSyllable} (${countMethod})`"
             xAxisTitle="Group"
             yAxisTitle="velocity_2d_mm"
         />
@@ -26,7 +28,7 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import HexBinPlot from '@/components/Charts/HexBinPlot/HexBinPlot.vue';
+import HexBinPlot from '@/components/Charts/HexBinPlot/HexBinPlotCanvas.vue';
 import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 
 import { CountMethod } from '@/store/dataview.types';
@@ -86,12 +88,14 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     watch: {
         data_path: {
             async handler(newValue) {
+                this.$emit('start-loading');
                 this.individualUseageData = await LoadData(newValue[0], [
                     ['uuid', 'id'],
                     ['centroid_x_mm', 'x'],
                     ['centroid_y_mm', 'y'],
                     'group',
                 ]);
+                this.$emit('finish-loading');
             },
             immediate: true,
         },

@@ -1,49 +1,3 @@
-<template>
-    <svg ref="canvas" :width="width" :height="height" >
-        <g :transform="`translate(${margin.left},${margin.top})`">
-            <g
-                v-for="cell in scale.gl"
-                :key="cell.data"
-                :data-group="cell.data"
-                :transform="`translate(${cell.pos.x},${cell.pos.y})`"
-                class="group">
-
-                <!--<rect
-                    :x="(-hexWidth / 2) - 1"
-                    :y="-hexHeight / 2 - 3"
-                    :width="cell.pos.width + hexWidth + 2"
-                    :height="cell.pos.height + hexHeight + 2"
-                    stroke="#666"
-                    fill="transparent" />-->
-
-                <text
-                    :x="cell.pos.width / 2"
-                    :y="cell.pos.height+(cell.pos.paddingY / 2)"
-                    class="label">
-                    {{cell.data}}
-                </text>
-
-                <template v-for="h in binned[cell.data]">
-                    <path
-                        :key="h.x+h.y"
-                        :d="hexbin.hexagon()"
-                        :transform="`translate(${h.x},${h.y})`"
-                        :fill="scale.c(h.z)"
-                        :data-z="h.z"
-                        stroke="#000"
-                        stroke-opacity="0.1" />
-                </template>
-            </g>
-        </g>
-        <ColorScaleLegend
-                :title="`Relative Occupancy of Module`"
-                :scale="scale.c"
-                :width="200"
-                :height="10"
-                :transform="`translate(${width / 2},${this.height-60})`" />
-    </svg>
-</template>
-
 <script lang="ts">
 import Vue from 'vue';
 import { debounce } from 'ts-debounce';
@@ -56,19 +10,21 @@ import { spawn, Thread, Worker, ModuleThread } from 'threads';
 import { HexbinWorker } from './Worker';
 import gridLayout from '@/util/D3Layout';
 import ColorScaleLegend from '@/components/Core/ColorScaleLegend.vue';
+import LoadingMixin from '@/components/Core/LoadingMixin';
+import mixins from 'vue-typed-mixins';
 
+
+
+if (module.hot) {
+    module.hot?.addDisposeHandler(async () => await Thread.terminate(worker));
+}
 let worker: ModuleThread<HexbinWorker>;
 (async () => {
     worker = await spawn<HexbinWorker>(new Worker('./Worker.ts'));
 })();
-if (module.hot) {
-    module.hot?.addDisposeHandler(async () => await Thread.terminate(worker));
-}
 
-export default Vue.extend({
-    components: {
-        ColorScaleLegend,
-    },
+
+export default mixins(LoadingMixin).extend({
     props: {
         data: {
             required: true,
@@ -86,6 +42,16 @@ export default Vue.extend({
             required: true,
             type: Array, /* Array<string> */
             default: () => new Array<string>(),
+        },
+        title: {
+            required: true,
+            type: String,
+            default: 'title',
+        },
+        legendTitle: {
+            required: true,
+            type: String,
+            default: 'title',
         },
     },
     data() {
@@ -147,22 +113,22 @@ export default Vue.extend({
                     .size([this.scale.x.range()[1], this.scale.y.range()[0]]);
         },
         scale(): any {
-            if (this.data === null) {
-                return { x: scaleLinear(), y: scaleLinear(), c: scaleSequential(this.colormap) };
-            }
-
             const gl = gridLayout()
                 .size([this.innerSize.w, this.innerSize.h])
-                .padding(0.3)
+                .padding([0.3, 0.5])
                 .aspect(1.0)(this.groupLabels);
+
+            if (this.data === null) {
+                return { x: scaleLinear(), y: scaleLinear(), c: scaleSequential(this.colormap), gl };
+            }
 
             const x = scaleLinear()
                 .domain(this.domainX)
-                .range([0, gl[0].pos.width]);
+                .range([0, gl[0].pos.width - 20]);
 
             const y = scaleLinear()
                 .domain(this.domainY)
-                .range([gl[0].pos.height, 0]);
+                .range([gl[0].pos.height - 20, 0]);
 
             const c = scaleSequential(this.colormap)
                 .domain([0, this.zmax]);
@@ -189,19 +155,20 @@ export default Vue.extend({
                 return;
             }
             this.$emit('start-loading');
-            this.$nextTick().then(async () => {
-                const result = await worker.binData(this.data as any[],
-                                                    this.groupLabels as string[],
-                                                    this.scale.x.range()[1],
-                                                    this.resolution);
-                if (result !== undefined) {
-                    this.binned = result.binned;
-                    this.zmax = result.zmax;
-                    this.domainX = result.domainX;
-                    this.domainY = result.domainY;
-                }
-                this.$emit('finish-loading');
-            });
+
+            worker.binData(this.data as any[],
+                        this.groupLabels as string[],
+                        this.scale.x.range()[1],
+                        this.resolution)
+                .then((result) => {
+                    if (result !== undefined) {
+                        this.binned = result.binned;
+                        this.zmax = result.zmax;
+                        this.domainX = result.domainX;
+                        this.domainY = result.domainY;
+                    }
+                    this.$emit('finish-loading');
+                });
         },
     },
 });
@@ -212,7 +179,8 @@ export default Vue.extend({
 g.group {
     border: 1px solid #666;
 }
-text.label {
+text.label,
+text.title {
     text-anchor:middle;
 }
 </style>

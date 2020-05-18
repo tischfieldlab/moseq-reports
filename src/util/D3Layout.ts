@@ -4,11 +4,12 @@
 export default function gridLayout() {
     let numCells = 1;
     let aspect = 1;
-    let padding = 0;
+    let paddingX = 0;
+    let paddingY = 0;
     let widthTotal = 550;
     let heightTotal = 300;
 
-    function grid(d) {
+    function grid(d): GridCell[] {
         numCells = d.length;
 
         const widthIndividual = Math.sqrt(aspect * widthTotal * heightTotal / numCells);
@@ -21,7 +22,7 @@ export default function gridLayout() {
         let maxNx = Math.ceil(widthTotal / widthIndividual);
         let minNy = Math.ceil(numCells / maxNx);
 
-        while (widthTotal / maxNx / aspect * minNy > heightTotal ) {
+        while (widthTotal / maxNx / aspect * minNy > heightTotal) {
             maxNx += 1;
             minNy = Math.ceil(numCells / maxNx);
         }
@@ -52,21 +53,24 @@ export default function gridLayout() {
         console.log('heightI', heightI);
         */
 
-        return d.map(function(d1, i) {
-            const paddingX = widthI * padding;
-            const paddingY = heightI * padding;
+        const cells = d.map(function(d1, i) {
+            const actualPaddingX = widthI * paddingX;
+            const actualPaddingY = heightI * paddingY;
             return {
                 pos: {
-                    x: widthI * (i % numX) + (paddingX / 2),
-                    y: heightI * Math.floor(i / numX) + (paddingY / 2),
-                    width: widthI - paddingX,
-                    height: heightI - paddingY,
-                    paddingX,
-                    paddingY,
+                    x: widthI * (i % numX) + (actualPaddingX / 2),
+                    y: heightI * Math.floor(i / numX) + (actualPaddingY / 2),
+                    width: widthI - actualPaddingX,
+                    height: heightI - actualPaddingY,
+                    paddingX: actualPaddingX,
+                    paddingY: actualPaddingY,
                 },
                 data: d1,
             };
         });
+        cells.width = widthTotal;
+        cells.height = heightTotal;
+        return cells;
     }
 
     grid.size = function(_) {
@@ -90,12 +94,25 @@ export default function gridLayout() {
 
     grid.padding = function(_) {
         if (!arguments.length) {
-            return padding;
+            return [paddingX, paddingY];
         } else {
-            padding = _;
+            paddingX = _[0];
+            paddingY = _[1];
         }
         return grid;
     };
 
     return grid;
+}
+
+export interface GridCell {
+    pos: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        paddingX: number;
+        paddingY: number;
+    };
+    data: string;
 }
