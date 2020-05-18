@@ -196,11 +196,13 @@ export default mixins(BoxPlotBase).extend({
                 });
             }
 
+            ctx.save();
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = 'black';
             ctx.font = '13px Verdana';
             ctx.fillText(this.xAxisTitle, this.innerWidth / 2, this.innerHeight + this.xAxisLabelYPos);
+            ctx.restore();
         },
         drawAxisY(ctx: CanvasRenderingContext2D) {
             ctx.beginPath();
@@ -224,8 +226,9 @@ export default mixins(BoxPlotBase).extend({
             ctx.textBaseline = 'middle';
             ctx.fillStyle = 'black';
 
+            const tickFormat = this.scale.y.tickFormat(undefined, '.1e');
             this.scale.y.ticks().forEach((d, i) => {
-                ctx.fillText(d, -9, this.scale.y(d));
+                ctx.fillText(tickFormat(d), -9, this.scale.y(d));
             });
 
             ctx.save();
@@ -233,7 +236,7 @@ export default mixins(BoxPlotBase).extend({
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.font = '13px Verdana';
-            ctx.fillText(this.yAxisTitle, -this.innerHeight / 2, -45);
+            ctx.fillText(this.yAxisTitle, -this.innerHeight / 2, -50);
             ctx.restore();
         },
         compute_label_stats(labels: string[]) {
