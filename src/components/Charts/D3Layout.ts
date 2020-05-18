@@ -68,8 +68,8 @@ export default function gridLayout() {
                 data: d1,
             };
         });
-        cells.width = widthTotal;
-        cells.height = heightTotal;
+        cells.width = widthI * numX;
+        cells.height = heightI * numY;
         return cells;
     }
 
