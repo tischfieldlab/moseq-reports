@@ -1,12 +1,12 @@
 <template>
     <div>
-        <HexBinPlot
+        <HexBinPlotCanvas
             :width="this.layout.width"
             :height="this.layout.height - 31"
             :data="individualUseageData"
             :groupLabels="groupNames"
             :groupColors="groupColors"
-            :legendTitle="`Relative Occupancy of Module ${selectedSyllable} (${countMethod})`"
+            :legendTitle="`Relative Occupancy`"
             :title="`Occupancy while in Module ${selectedSyllable} (${countMethod})`"
             xAxisTitle="Group"
             yAxisTitle="velocity_2d_mm"
@@ -28,7 +28,9 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import HexBinPlot from '@/components/Charts/HexBinPlot/HexBinPlotCanvas.vue';
+import HexBinPlotCanvas from '@/components/Charts/HexBinPlot/HexBinPlotCanvas.vue';
+import HexBinPlotSVG from '@/components/Charts/HexBinPlot/HexBinPlotSVG.vue';
+
 import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 
 import { CountMethod } from '@/store/dataview.types';
@@ -58,7 +60,8 @@ RegisterDataComponent({
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
-        HexBinPlot,
+        HexBinPlotCanvas,
+        HexBinPlotSVG,
     },
     data() {
         return {
