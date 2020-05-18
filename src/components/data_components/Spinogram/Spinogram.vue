@@ -54,6 +54,7 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
 import mixins from 'vue-typed-mixins';
 import {rgb} from 'd3-color';
+import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
 
 
 interface Spinogram {
@@ -82,6 +83,9 @@ RegisterDataComponent({
 
 
 export default mixins(LoadingMixin, WindowMixin).extend({
+    components: {
+        ColorScaleLegend,
+    },
     data() {
         return {
             margin: {
