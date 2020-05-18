@@ -34,6 +34,12 @@
                         stroke-opacity="0.1" />
                 </template>
             </g>
+            <ColorScaleLegend
+                :title="legendTitle"
+                :scale="scale.c"
+                :width="200"
+                :height="10"
+                :transform="`translate(${width / 2},${scale.gl.height + 20})`" />
         </g>
         <text
             :x="width / 2"
@@ -41,28 +47,12 @@
             class="title">
             {{title}}
         </text>
-        <ColorScaleLegend
-                :title="legendTitle"
-                :scale="scale.c"
-                :width="200"
-                :height="10"
-                :transform="`translate(${width / 2},${scale.gl.height + 20})`" />
     </svg>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import { debounce } from 'ts-debounce';
-import { hexbin } from 'd3-hexbin';
-import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
-import { max, min, mean, quantile, median, sum, extent } from 'd3-array';
-import { GetScale } from '@/util/D3ColorProvider';
-import { groupby } from '@/util/Array';
-import { spawn, Thread, Worker, ModuleThread } from 'threads';
-import { HexbinWorker } from './Worker';
-import gridLayout from '@/util/D3Layout';
-import ColorScaleLegend from '@/components/Core/ColorScaleLegend.vue';
-import LoadingMixin from '@/components/Core/LoadingMixin';
+import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
 import mixins from 'vue-typed-mixins';
 import HexBinPlotBase from './HexBinPlotBase.vue';
 

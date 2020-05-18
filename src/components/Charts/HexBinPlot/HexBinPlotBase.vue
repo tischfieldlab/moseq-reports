@@ -1,15 +1,11 @@
 <script lang="ts">
 import Vue from 'vue';
-import { debounce } from 'ts-debounce';
 import { hexbin } from 'd3-hexbin';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
-import { max, min, mean, quantile, median, sum, extent } from 'd3-array';
 import { GetScale } from '@/util/D3ColorProvider';
-import { groupby } from '@/util/Array';
 import { spawn, Thread, Worker, ModuleThread } from 'threads';
 import { HexbinWorker } from './Worker';
-import gridLayout from '@/util/D3Layout';
-import ColorScaleLegend from '@/components/Core/ColorScaleLegend.vue';
+import gridLayout from '@/components/Charts/D3Layout';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 
