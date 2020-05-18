@@ -12,7 +12,7 @@
             :show_violinplot="settings.show_violinplot"
             :point_size="settings.point_size"
             xAxisTitle="Group"
-            yAxisTitle="velocity_2d_mm"
+            :yAxisTitle="`${metricTitle} (${metricUnits})`"
         />
         <div v-show="individualUseageData === null" class="no-data">
             <b-card bg-variant="primary" text-variant="white" class="text-center">
@@ -36,11 +36,7 @@ import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 
 import { CountMethod } from '@/store/dataview.types';
 import path from 'path';
-import fs from 'fs';
 import {LoadData} from '@/components/Core/DataLoader/DataLoader';
-
-
-
 
 
 
@@ -103,6 +99,15 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         };
     },
     computed: {
+        currentMetric(): string {
+            return 'velocity_2d_mm';
+        },
+        metricUnits(): string {
+            return this.availableMetrics[this.currentMetric].units;
+        },
+        metricTitle(): string {
+            return this.availableMetrics[this.currentMetric].title;
+        },
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
         },
@@ -127,7 +132,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             async handler(newValue) {
                 this.individualUseageData = await LoadData(newValue[0], [
                     ['uuid', 'id'],
-                    ['velocity_2d_mm', 'value'],
+                    [this.currentMetric, 'value'],
                     'group',
                 ]);
             },
