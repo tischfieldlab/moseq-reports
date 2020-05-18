@@ -47,6 +47,7 @@ RegisterDataComponent({
     init_width: 400,
     init_height: 500,
     default_settings: {
+        metric: 'velocity_2d_mm',
         show_points: false,
         point_size: 2,
         show_boxplot: true,
@@ -100,7 +101,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     computed: {
         currentMetric(): string {
-            return 'velocity_2d_mm';
+            return this.settings.metric;
         },
         metricUnits(): string {
             return this.availableMetrics[this.currentMetric].units;
@@ -124,7 +125,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             const rID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Raw);
             const pth = this.$store.state.datasets.path;
             const base = `usage_scalars_${rID}`;
-            return [path.join(pth, 'scalars', `${base}.json`), base];
+            return [path.join(pth, 'scalars', `${base}.json`), base, this.currentMetric];
         },
     },
     watch: {

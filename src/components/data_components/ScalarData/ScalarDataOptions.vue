@@ -1,20 +1,14 @@
 <template>
     <b-container fluid>
         <b-row>
-             <label class="font-weight-bold pt-0">Plot Element Visibility</label>
-        </b-row>
-        <b-row>
-            <b-form-checkbox v-model="show_points" switch>
-                Show Individual Data Points
-            </b-form-checkbox>
-        </b-row>
-        <b-row v-show="show_points">
-            <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Point Size">
-                    <b-form-input type="number" v-model="point_size" min="1" max="10" ></b-form-input>
+                <b-input-group prepend="Metric">
+                    <b-form-select v-model="metric" :options="metric_options"></b-form-select>
                 </b-input-group>
             </b-col>
+        </b-row>
+        <b-row>
+             <label class="font-weight-bold pt-0">Plot Element Visibility</label>
         </b-row>
         <b-row>
             <b-form-checkbox v-model="show_boxplot" switch>
@@ -42,23 +36,21 @@
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
+import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
+import {availableMetrics} from './ScalarData.types';
 
-export enum WhiskerType {
-    TUKEY,
-    MIN_MAX,
-}
 
 export default mixins(WindowMixin).extend({
     computed: {
-        show_points: {
-            get(): boolean {
-                return this.settings.show_points;
+        metric: {
+            get(): string {
+                return this.settings.metric;
             },
-            set(value: boolean) {
+            set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        show_points: value,
+                        metric: value,
                     },
                 });
             },
@@ -134,6 +126,8 @@ export default mixins(WindowMixin).extend({
                     description: 'Whiskers extend to min and max data points',
                 },
             ],
+            metric_options: Object.entries(availableMetrics)
+                                  .map(([metric, info]) => ({value: metric, text: info.title})),
         };
     },
 });
