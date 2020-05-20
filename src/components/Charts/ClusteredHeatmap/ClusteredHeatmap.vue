@@ -421,8 +421,8 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-svg >>> .rlink,
-svg >>> .clink {
+svg >>> g.rtree path.rlink,
+svg >>> g.ctree path.clink {
     fill: none;
     stroke: #aaa;
     stroke-width: 1.5px;
