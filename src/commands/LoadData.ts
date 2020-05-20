@@ -6,7 +6,6 @@ import path from 'path';
 import os from 'os';
 import { deleteFolderRecursive } from '@/util/Files';
 import { DatasetsState } from '@/store/datasets.types';
-// import JSZip from 'jszip';
 import {LoadDefaultLayout} from './LoadLayout';
 import StreamZip from 'node-stream-zip';
 
@@ -112,6 +111,7 @@ function readDataBundle(filename: string) {
             });
             zip.on('ready', async () => {
                 try {
+                    ExtractDirectory(zip, null, tmpdir);
                     const dataset: DatasetsState = {
                         bundle: filename,
                         name: path.basename(filename, '.msq'),
@@ -163,18 +163,27 @@ async function LoadUsageData(zip: StreamZip) {
 }
 
 async function LoadCrowdMovies(zip: StreamZip, dir: string) {
-    return ExtractDirectory(zip, 'crowd_movies', dir);
+    return {}; // ExtractDirectory(zip, 'crowd_movies', dir);
 }
 
 async function LoadScalarsData(zip: StreamZip, dir: string) {
-    return ExtractDirectory(zip, 'scalars', dir);
+    return {}; // ExtractDirectory(zip, 'scalars', dir);
 }
 
-async function ExtractDirectory(zip: StreamZip, dirname: string, basedest: string): Promise<object> {
-    const dest = path.join(basedest, dirname);
-    fs.mkdirSync(dest);
+async function ExtractDirectory(zip: StreamZip, dirname: string|null, basedest: string): Promise<object> {
+    let dest: string;
+    if (dirname !== null) {
+        dest = path.join(basedest, dirname);
+        fs.mkdirSync(dest);
+    } else {
+        dest = basedest;
+    }
     return new Promise((resolve, reject) => {
-        zip.extract(dirname, dest, (err) => reject(err));
+        zip.extract(dirname as string, dest, (err) => {
+            if (err !== null) {
+                reject(err);
+            }
+        });
         resolve({});
     });
 }
