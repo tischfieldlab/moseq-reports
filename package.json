@@ -45,7 +45,7 @@
     "html-to-image": "^0.1.1",
     "jquery": "^3.5.1",
     "jqwidgets-scripts": "^9.0.0",
-    "jszip": "^3.3.0",
+    "node-stream-zip": "^1.11.1",
     "parse-numeric-range": "^1.1.0",
     "popper.js": "^1.16.1",
     "register-service-worker": "^1.7.1",

@@ -6,8 +6,9 @@ import path from 'path';
 import os from 'os';
 import { deleteFolderRecursive } from '@/util/Files';
 import { DatasetsState } from '@/store/datasets.types';
-import JSZip from 'jszip';
+// import JSZip from 'jszip';
 import {LoadDefaultLayout} from './LoadLayout';
+import StreamZip from 'node-stream-zip';
 
 
 /**
@@ -101,9 +102,15 @@ function readDataBundle(filename: string) {
         try {
             CleanState(); // clean any old state
             const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
-            const rawData = fs.readFileSync(filename);
 
-            JSZip.loadAsync(rawData).then(async (zip) => {
+            const zip = new StreamZip({
+                file: filename,
+                storeEntries: true,
+            });
+            zip.on('error', (err) => {
+                reject(err);
+            });
+            zip.on('ready', async () => {
                 try {
                     const dataset: DatasetsState = {
                         bundle: filename,
@@ -119,7 +126,7 @@ function readDataBundle(filename: string) {
                 } catch (e) {
                     reject(e);
                 }
-            }, (error) => reject(error));
+            });
         } catch (e) {
             reject(e);
         }
@@ -134,99 +141,58 @@ function CleanState() {
     deleteFolderRecursive(datapath);
 }
 
-async function LoadMetadataData(zip: JSZip) {
+async function LoadMetadataData(zip: StreamZip) {
     return {
         groups: await jsonParseZipEntry(zip, 'groups.json'),
         label_map: await jsonParseZipEntry(zip, 'label_map.json'),
     };
 }
 
-async function LoadSpinogramData(zip: JSZip) {
+async function LoadSpinogramData(zip: StreamZip) {
     // TODO: JSON cannot handle NaN here!
     return {
         spinogram: await jsonParseZipEntryContainingNaN(zip, 'spinogram.corpus-sorted-usage.json'),
     };
 }
 
-async function LoadUsageData(zip: JSZip) {
+async function LoadUsageData(zip: StreamZip) {
     return {
         usageByUsage: await jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json'),
         usageByFrames: await jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json'),
     };
 }
 
-async function LoadCrowdMovies(zip: JSZip, dir: string) {
-    const dest = path.join(dir, 'crowd_movies');
-    fs.mkdirSync(dest);
-    const waiting = new Array<Promise<unknown>>();
-    zip.folder('crowd_movies').forEach((relativePath, file) => {
-        waiting.push(new Promise((resolve, reject) => {
-            file.async('nodebuffer').then((value: Buffer) => {
-                try {
-                    fs.writeFileSync(path.join(dir, file.name), value);
-                    resolve();
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        }));
-    });
-    await Promise.allSettled(waiting)
-                 .then((values) => {
-                    values.forEach((v) => {
-                        if (v.status === 'rejected') {
-                            throw(v.reason);
-                        }
-                    });
-                 });
-    return {};
+async function LoadCrowdMovies(zip: StreamZip, dir: string) {
+    return ExtractDirectory(zip, 'crowd_movies', dir);
 }
 
-async function LoadScalarsData(zip: JSZip, dir: string) {
-    const dest = path.join(dir, 'scalars');
+async function LoadScalarsData(zip: StreamZip, dir: string) {
+    return ExtractDirectory(zip, 'scalars', dir);
+}
+
+async function ExtractDirectory(zip: StreamZip, dirname: string, basedest: string): Promise<object> {
+    const dest = path.join(basedest, dirname);
     fs.mkdirSync(dest);
-    const waiting = new Array<Promise<unknown>>();
-    zip.folder('scalars').forEach((relativePath, file) => {
-        waiting.push(new Promise((resolve, reject) => {
-            file.async('nodebuffer').then((value: Buffer) => {
-                try {
-                    fs.writeFileSync(path.join(dir, file.name), value);
-                    resolve();
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        }));
+    return new Promise((resolve, reject) => {
+        zip.extract(dirname, dest, (err) => reject(err));
+        resolve({});
     });
-    await Promise.allSettled(waiting)
-                 .then((values) => {
-                    values.forEach((v) => {
-                        if (v.status === 'rejected') {
-                            throw(v.reason);
-                        }
-                    });
-                 });
-    return {};
 }
 
 
-async function jsonParseZipEntry(zip: JSZip, entryName: string) {
-    const entry = zip.file(entryName);
+async function jsonParseZipEntry(zip: StreamZip, entryName: string) {
+    const entry = zip.entryDataSync(entryName);
     if (entry !== null) {
-        return entry.async('string')
-                .then((value) => JSON.parse(value));
+        return JSON.parse(entry.toString());
     }
     return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
 }
-async function jsonParseZipEntryContainingNaN(zip: JSZip, entryName: string) {
-    const entry = zip.file(entryName);
+async function jsonParseZipEntryContainingNaN(zip: StreamZip, entryName: string) {
+    const entry = zip.entryDataSync(entryName);
     if (entry !== null) {
-        return entry.async('string')
-            .then((data) => {
-                return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
+        return JSON.parse(entry.toString().replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
                     return value === '***NaN***' ? NaN : value;
                 });
-            });
     }
     return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
 }
