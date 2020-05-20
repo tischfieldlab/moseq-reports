@@ -38,8 +38,7 @@ import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 import { CountMethod } from '@/store/dataview.types';
 import path from 'path';
 import fs from 'fs';
-import DataFrame from 'dataframe-js';
-import {LoadData} from '@/components/Core/DataLoader/DataLoader';
+import LoadData from '@/components/Core/DataLoader/DataLoader';
 
 
 

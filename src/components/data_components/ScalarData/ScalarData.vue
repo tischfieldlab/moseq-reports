@@ -36,7 +36,7 @@ import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 
 import { CountMethod } from '@/store/dataview.types';
 import path from 'path';
-import {LoadData} from '@/components/Core/DataLoader/DataLoader';
+import LoadData from '@/components/Core/DataLoader/DataLoader';
 
 
 
