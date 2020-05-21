@@ -25,7 +25,7 @@ export default mixins(ColorScaleLegendBase).extend({
 
         cxt.save();
         cxt.translate(this.x - (this.width / 2), this.y);
-        cxt.clearRect(-20, 0, this.width + 20, this.height + 50);
+        cxt.clearRect(-20, 0, this.width + 30, this.height + 50);
 
         // Colorbar
         let grad;

@@ -82,7 +82,7 @@ export default mixins(HexBinPlotBase).extend({
                 }
                 this.canvas.cxt.save();
                 // clear canvas
-                this.canvas.cxt.clearRect(0, 0, this.width, this.scale.gl.height);
+                this.canvas.cxt.clearRect(0, 0, this.width, this.scale.gl.height + this.margin.top);
 
                 // Plot title
                 this.canvas.cxt.textAlign = 'center';
