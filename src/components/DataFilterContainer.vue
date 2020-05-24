@@ -95,7 +95,8 @@ export default Vue.extend({
     border-right: 3px solid #2c3e50;
 }
 .b-sidebar {
-    top:30px;
+    top: 30px;
+    height: calc(100vh - 30px) !important;
 }
 .b-sidebar:not(.b-sidebar-right) {
     left: 48px;
