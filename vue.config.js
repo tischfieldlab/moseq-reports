@@ -46,7 +46,8 @@ module.exports = {
                     target: [
                         "msi"
                     ],
-                    icon: "public/img/icons/winapp256x256.ico"
+                    icon: "public/img/icons/winapp256x256.ico",
+                    certificateSubjectName: "Rutgers, The State University of New Jersey"
                 },
                 // directories: {
                 //     buildResources: "public/img/icons",
