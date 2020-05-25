@@ -1,8 +1,5 @@
 jobs:
   env:
-    global:
-      - WIN_CSC_LINK=${CSC_LINK}
-      - WIN_CSC_KEY_PASSWORD=${CSC_KEY_PASSWORD}
   include:
     - stage: build
       os: osx
@@ -11,6 +8,9 @@ jobs:
       script:
         - npm install
         - npm run lint
+        # Decode the package file for sigining
+        - echo $CSC_LINK | base64 --decode > cert.p12
+        - CSC_LINK=$(cat cert.p12)
         - export PACKAGE_VERSION=$(npm run --silent version)
         - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
         - echo $TRAVIS_TAG
@@ -41,6 +41,9 @@ jobs:
         - choco install zip
         - npm install
         - npm run lint
+        # Decode the package file for sigining
+        - echo $CSC_LINK | base64 --decode > cert.p12
+        - CSC_LINK=$(cat cert.p12)
         - export PACKAGE_VERSION=$(npm run --silent version)
         - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
         - echo $TRAVIS_TAG
@@ -69,6 +72,9 @@ jobs:
         - sudo apt install zip
         - npm install
         - npm run lint
+        # Decode the package file for sigining
+        - echo $CSC_LINK | base64 --decode > cert.p12
+        - CSC_LINK=$(cat cert.p12)
         - export PACKAGE_VERSION=$(npm run --silent version)
         - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
         - echo $TRAVIS_TAG
