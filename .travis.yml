@@ -6,8 +6,8 @@ jobs:
       language: node_js
       node_js: 12
       before_install:
-        - unset CSC_LINK=
-        - unset CSC_KEY_PASSWORD=
+        - unset CSC_LINK
+        - unset CSC_KEY_PASSWORD
       script:
         - npm install
         - npm run lint
@@ -71,8 +71,8 @@ jobs:
       language: node_js
       node_js: 12
       before_install:
-        - unset CSC_LINK=
-        - unset CSC_KEY_PASSWORD=
+        - unset CSC_LINK
+        - unset CSC_KEY_PASSWORD
       script:
         - sudo apt install zip
         - npm install
