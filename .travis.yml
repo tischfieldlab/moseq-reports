@@ -1,4 +1,8 @@
 jobs:
+  env:
+    global:
+      - WIN_CSC_LINK=${CSC_LINK}
+      - WIN_CSC_KEY_PASSWORD=${CSC_KEY_PASSWORD}
   include:
     - stage: build
       os: osx
