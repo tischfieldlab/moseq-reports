@@ -6,8 +6,8 @@ jobs:
       language: node_js
       node_js: 12
       before_install:
-        - CSC_LINK=
-        - CSC_KEY_PASSWORD=
+        - unset CSC_LINK=
+        - unset CSC_KEY_PASSWORD=
       script:
         - npm install
         - npm run lint
@@ -38,6 +38,7 @@ jobs:
       language: node_js
       node_js: 12
       before_install:
+        # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
         - echo $CSC_LINK | base64 --decode > cert.p12
         - certutil -p $CSC_KEY_PASSWORD -importpfx ./cert.p12
         - CSC_LINK=./cert.p12
@@ -70,8 +71,8 @@ jobs:
       language: node_js
       node_js: 12
       before_install:
-        - CSC_LINK=
-        - CSC_KEY_PASSWORD=
+        - unset CSC_LINK=
+        - unset CSC_KEY_PASSWORD=
       script:
         - sudo apt install zip
         - npm install
