@@ -5,6 +5,9 @@ jobs:
       os: osx
       language: node_js
       node_js: 12
+      before_install:
+        - CSC_LINK=
+        - CSC_KEY_PASSWORD=
       script:
         - npm install
         - npm run lint
@@ -28,7 +31,7 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
-          branch: master
+          branch: code-sign
 
     - stage: build
       os: windows
@@ -60,12 +63,15 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
-          branch: master
+          branch: code-sign
 
     - stage: build
       os: linux
       language: node_js
       node_js: 12
+       before_install:
+        - CSC_LINK=
+        - CSC_KEY_PASSWORD=
       script:
         - sudo apt install zip
         - npm install
@@ -89,7 +95,7 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: true
         on:
-          branch: master
+          branch: code-sign
       
       # Need this to be separate as it is the job that closes the release. Travis
       # likes to build in parallel, so this job needs to run last.
@@ -109,4 +115,4 @@ jobs:
         tag_name: ${TRAVIS_TAG}
         draft: false
         on:
-          branch: master
+          branch: code-sign
