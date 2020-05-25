@@ -37,6 +37,7 @@ jobs:
       before_install:
         - echo $CSC_LINK | base64 --decode > cert.p12
         - certutil -p $CSC_KEY_PASSWORD -importpfx ./cert.p12
+        - CSC_LINK=./cert.p12
       script:
         - choco install zip
         - npm install
