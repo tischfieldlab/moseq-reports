@@ -36,7 +36,7 @@ jobs:
       node_js: 12
       before_install:
         - echo $CSC_LINK | base64 --decode > cert.p12
-        - certutil -p $CSC_PASSWORD -importfx ./cert.p12
+        - certutil -p $CSC_KEY_PASSWORD -importfx ./cert.p12
       script:
         - choco install zip
         - npm install
