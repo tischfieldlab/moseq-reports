@@ -27,7 +27,7 @@
                     <path
                         :key="h.x+h.y"
                         :d="hexbin.hexagon()"
-                        :transform="`translate(${h.x+(cell.pos.paddingX/2)},${h.y+20})`"
+                        :transform="`translate(${h.x},${h.y+20})`"
                         :fill="scale.c(h.z)"
                         :data-z="h.z"
                         stroke="#000"

@@ -13,12 +13,12 @@
         :rowClusterLinkage="this.settings.syllable_cluster_linkage"
         :rowOrderValue="this.settings.syllable_order_group_value"
         :rowOrderDirection="this.settings.syllable_order_direction"
-        xAxisTitle="Group"
-        :yAxisTitle="`Module ID (${countMethod})`"
-        :legendTitle="`Usage (${countMethod})`"
-        columnKey="group"
-        rowKey="syllable"
-        valueKey="usage"
+        :xAxisTitle="`Destination Module (${countMethod})`"
+        :yAxisTitle="`Source Module (${countMethod})`"
+        :legendTitle="`Behavioral Distance`"
+        columnKey="sink"
+        rowKey="source"
+        valueKey="value"
         :selectedRow="selectedSyllable"
         @heatmapClick="onHeatmapClick"
     />
@@ -41,9 +41,9 @@ import { Operation } from '../../Core/DataLoader/DataLoader.types';
 
 
 RegisterDataComponent({
-    friendly_name: 'Clustered Usage Heatmap',
-    component_type: 'ClusteredHeatmap',
-    settings_type: 'ClusteredHeatmapOptions',
+    friendly_name: 'Behavioral Distance Heatmap',
+    component_type: 'BehavioralDistanceHeatmap',
+    settings_type: 'BehavioralDistanceHeatmapOptions',
     init_width: 400,
     init_height: 500,
     default_settings: {
@@ -52,7 +52,7 @@ RegisterDataComponent({
         syllable_order_direction: SortOrderDirection.Asc,
         syllable_cluster_distance: 'euclidean',
         syllable_cluster_linkage: 'avg',
-        group_order_type: OrderingType.Natural,
+        group_order_type: OrderingType.Cluster,
         group_cluster_distance: 'euclidean',
         group_cluster_linkage: 'avg',
         colormap: 'interpolateViridis',
@@ -66,12 +66,16 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
-            aggregateView: [],
+            aggregateView: [] as Readonly<any[]>,
         };
     },
     computed: {
-        selectedGroups(): string[] {
-            return this.dataview.selectedGroups;
+        selectedGroups(): any[] {
+            if (this.dataview.moduleIdFilter.length === 0) {
+                return this.$store.getters[`${this.datasource}/availableModuleIds`];
+            } else {
+                return this.dataview.moduleIdFilter;
+            }
         },
         selectedSyllable: {
             get(): number {
@@ -87,9 +91,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         dataset(): [string, Operation[]] {
             let ds;
             if (this.countMethod === CountMethod.Usage) {
-                ds = this.$store.getters[`datasets/resolve`]('usage_usage');
+                ds = this.$store.getters[`datasets/resolve`]('behave_dist_usage');
             } else if (this.countMethod === CountMethod.Frames) {
-                ds = this.$store.getters[`datasets/resolve`]('usage_frames');
+                ds = this.$store.getters[`datasets/resolve`]('behave_dist_frames');
             } else {
                 throw new Error(`Count method ${this.countMethod} is not supported`);
             }
@@ -103,27 +107,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 ds,
                 [
                     {
-                        type: 'map',
-                        columns: [
-                            ['usage', 'usage'],
-                            ['group', 'group'],
-                            ['syllable', 'syllable'],
-                        ],
-                    },
-                    {
-                        type: 'filter',
-                        filters: {
-                            group: this.dataview.selectedGroups,
-                            syllable: syllables,
-                        },
-                    },
-                    {
-                        type: 'aggregate',
-                        groupby: ['syllable', 'group'],
-                        aggregate: {
-                            usage: 'mean',
-                        },
-                    },
+                        type: 'pluck',
+                        column: 'ar[init]',
+                    }
                 ],
             ];
         },
@@ -131,8 +117,26 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     watch: {
         dataset: {
             handler(): any {
-                LoadData(...this.dataset)
-                .then((data) => this.aggregateView = data);
+                LoadData(this.dataset[0], this.dataset[1], true)
+                .then((data: number[][]) => {
+                    return data.flatMap((vals, sidx) => {
+                        return vals.map((value, didx) => {
+                            return {
+                                source: sidx,
+                                sink: didx,
+                                value: value,
+                            };
+                        });
+                    });
+                })
+                .then((data) => {
+                    return data.filter((v) => {
+                        return this.selectedGroups.includes(v.source)
+                            && this.selectedGroups.includes(v.sink);
+                    });
+                })
+                // .then((data) => { console.log(data); return data;})
+                .then((data) => this.aggregateView = Object.freeze(data));
             },
             immediate: true,
         },

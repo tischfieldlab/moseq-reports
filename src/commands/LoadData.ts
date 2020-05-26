@@ -98,33 +98,38 @@ function showStartLoadingToast() {
 
 function readDataBundle(filename: string) {
     return new Promise<DatasetsState>((resolve, reject) => {
+        let zip;
         try {
             CleanState(); // clean any old state
             const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
 
-            const zip = new StreamZip({
+            zip = new StreamZip({
                 file: filename,
                 storeEntries: true,
             });
             zip.on('error', (err) => {
+                zip.close();
                 reject(err);
             });
             zip.on('ready', async () => {
                 try {
-                    ExtractDirectory(zip, null, tmpdir);
+                    // await ExtractDirectory(zip, null, tmpdir);
                     const dataset: DatasetsState = {
                         bundle: filename,
                         name: path.basename(filename, '.msq'),
                         path: tmpdir,
+                        ...await LoadManifest(zip),
                         ...await LoadMetadataData(zip),
-                        ...await LoadUsageData(zip),
-                        ...await LoadSpinogramData(zip),
-                        ...await LoadCrowdMovies(zip, tmpdir),
-                        ...await LoadScalarsData(zip, tmpdir),
+                        // ...await LoadUsageData(zip),
+                        // ...await LoadSpinogramData(zip),
+                        // ...await LoadCrowdMovies(zip, tmpdir),
+                        // ...await LoadScalarsData(zip, tmpdir),
                     };
                     resolve(dataset);
                 } catch (e) {
                     reject(e);
+                } finally {
+                    zip.close();
                 }
             });
         } catch (e) {
@@ -140,7 +145,11 @@ function CleanState() {
     }
     deleteFolderRecursive(datapath);
 }
-
+async function LoadManifest(zip: StreamZip) {
+    return {
+        manifest: await jsonParseZipEntry(zip, 'manifest.json'),
+    };
+}
 async function LoadMetadataData(zip: StreamZip) {
     return {
         groups: await jsonParseZipEntry(zip, 'groups.json'),
@@ -183,8 +192,8 @@ async function ExtractDirectory(zip: StreamZip, dirname: string|null, basedest: 
             if (err !== null) {
                 reject(err);
             }
+            resolve({});
         });
-        resolve({});
     });
 }
 
@@ -192,16 +201,16 @@ async function ExtractDirectory(zip: StreamZip, dirname: string|null, basedest: 
 async function jsonParseZipEntry(zip: StreamZip, entryName: string) {
     const entry = zip.entryDataSync(entryName);
     if (entry !== null) {
-        return JSON.parse(entry.toString());
+        return Promise.resolve(JSON.parse(entry.toString()));
     }
     return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
 }
 async function jsonParseZipEntryContainingNaN(zip: StreamZip, entryName: string) {
     const entry = zip.entryDataSync(entryName);
     if (entry !== null) {
-        return JSON.parse(entry.toString().replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
+        return Promise.resolve(JSON.parse(entry.toString().replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
                     return value === '***NaN***' ? NaN : value;
-                });
+                }));
     }
     return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
 }

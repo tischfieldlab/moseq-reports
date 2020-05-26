@@ -49,6 +49,10 @@ export default mixins(LoadingMixin).extend({
             type: Array, /* Array<string> */
             default: () => new Array<string>(),
         },
+        useGroups: {
+            type: Boolean,
+            default: false,
+        },
         title: {
             required: true,
             type: String,
@@ -119,7 +123,7 @@ export default mixins(LoadingMixin).extend({
             const gl = gridLayout()
                 .size([this.innerSize.w, this.innerSize.h])
                 .padding([0.3, 0.5])
-                .aspect(1.0)(this.groupLabels);
+                .aspect(1.0)(this.useGroups ? this.groupLabels : ['Overall']);
 
             if (this.data === null) {
                 return { x: scaleLinear(), y: scaleLinear(), c: scaleSequential(this.colormap), gl };
@@ -160,7 +164,7 @@ export default mixins(LoadingMixin).extend({
             this.$emit('start-loading');
 
             worker.binData(this.data as any[],
-                        this.groupLabels as string[],
+                        this.useGroups ? this.groupLabels as string[] : null,
                         this.scale.x.range()[1],
                         this.resolution)
                 .then((result) => {

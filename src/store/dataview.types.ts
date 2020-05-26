@@ -1,3 +1,5 @@
+import { SortSpec } from '@/components/Core/DataLoader/DataLoader.types';
+
 export enum CountMethod {
     Usage = 'Usage',
     Frames = 'Frames',
@@ -12,6 +14,8 @@ export interface DataviewState {
     moduleIdFilter: number[];
     selectedSyllable: number;
     view: any;
+    viewSpecs: {};
+    views: {};
 }
 
 export interface DataviewPayload {
@@ -25,4 +29,12 @@ export interface DataviewPayload {
 export interface SelectedGroupsPayload {
     groups?: string[];
     colors?: string[];
+}
+
+export interface DataViewSpec {
+    dataset: string;
+    dependOn: string[];
+    columns: Array<string|[string, string]>;
+    sorting?: SortSpec|undefined;
+    filter?: {[key: string]: any[]}|undefined;
 }

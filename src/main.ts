@@ -33,6 +33,9 @@ Vue.use(VueForceNextTick);
 import UniqueId from 'vue-unique-id';
 Vue.use(UniqueId);
 
+import AsyncComputed from 'vue-async-computed';
+Vue.use(AsyncComputed);
+
 Vue.config.productionTip = false;
 Vue.config.silent = true;
 

@@ -159,10 +159,10 @@ export default mixins(WindowMixin).extend({
 });
 
 function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
-    if (min && value < min) {
+    if (value < min) {
         return min;
     }
-    if (max && value > max) {
+    if (value > max) {
         return max;
     }
     return value;

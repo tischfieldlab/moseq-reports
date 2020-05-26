@@ -6,13 +6,14 @@
                     Module #{{ selectedSyllable }} ({{countMethod}}) Spinogram
                 </text>
                 <g :transform="`translate(${margin.left}, ${margin.top})`">
-                    <template v-for="(tp, idx) in spinogram_plot">
+                    <template v-for="(tp, idx) in spinogram_data">
                         <path 
                             v-bind:key="idx"
-                            :d="line(tp)"
+                            :d="line(tp.xy)"
                             :stroke="line_color"
                             :stroke-width="line_weight"
-                            :style="{opacity:spinogram_alphas[idx]}" />
+                            :style="{opacity:tp.a}"
+                            :data-time="tp.t" />
                     </template>
                 </g>
                 <g class="x-axis" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
@@ -55,6 +56,9 @@ import WindowMixin from '@/components/Core/WindowMixin';
 import mixins from 'vue-typed-mixins';
 import {rgb} from 'd3-color';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
+import LoadData from '@/components/Core/DataLoader/DataLoader';
+import { extent } from 'd3';
+import { Operation } from '../../Core/DataLoader/DataLoader.types';
 
 
 interface Spinogram {
@@ -65,6 +69,7 @@ interface Spinogram {
 interface SpinogramTimepoint {
     x: number[];
     y: number[];
+    xy: number[][];
     a: number;
     t: number;
 }
@@ -88,6 +93,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
+            spinogram_data: [] as Readonly<SpinogramTimepoint[]>,
             margin: {
                 top: 30,
                 right: 20,
@@ -124,8 +130,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return { x, y };
         },
         scale(): any {
-            if (this.spinogram_plot === undefined) {
-                return { x: scaleLinear(), y: scaleLinear() };
+            if (this.spinogram_data === undefined || this.spinogram_data.length === 0) {
+                return { x: scaleLinear(), y: scaleLinear(), t: scaleSequential((n) => n) };
             }
             const x = scaleLinear()
                 .domain([0, 200])
@@ -135,16 +141,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 .rangeRound([this.height, 0]);
 
             const c = rgb(this.line_color);
-            const a1 = this.spinogram_alphas[0];
-            const a2 = this.spinogram_alphas[this.spinogram_alphas.length - 1];
+            const ae = extent(this.spinogram_data.map((tp) => tp.a)) as [number, number];
+            const te = extent(this.spinogram_data.map((tp) => tp.t)) as [number, number];
             const t = scaleSequential(d3.interpolateRgb(
-                    rgb(c.r, c.g, c.b, a1).toString(),
-                    rgb(c.r, c.g, c.b, a2).toString(),
+                    rgb(c.r, c.g, c.b, ae[0]).toString(),
+                    rgb(c.r, c.g, c.b, ae[1]).toString(),
                 ))
-                .domain([
-                    this.spinogram_times[0],
-                    this.spinogram_times[this.spinogram_times.length - 1],
-                ]);
+                .domain(te);
             return { x, y, t };
         },
         line(): any {
@@ -164,27 +167,48 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.dataview.selectedSyllable;
         },
         usageSelectedSyllable(): number {
+            const x = this.selectedSyllable + 0;
             return this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Usage);
         },
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        spinogram_data(): Spinogram {
-            return this.$store.state.datasets.spinogram.find((s) => s.id === this.usageSelectedSyllable) as Spinogram;
-        },
-        spinogram_plot(): number[][][] {
-            return this.spinogram_data.data.map((stp, idx) => {
-                return stp.x.map((tpx, jdx) => [ tpx, stp.y[jdx] ]);
-            });
-        },
-        spinogram_alphas(): number[] {
-            return this.spinogram_data.data.map((stp, idx) => stp.a);
-        },
-        spinogram_times(): number[] {
-            return this.spinogram_data.data.map((stp, idx) => stp.t);
-        },
         has_data(): boolean {
             return this.spinogram_data !== undefined;
+        },
+        dataspec(): [string, Operation[]] {
+            return [
+                this.$store.getters[`datasets/resolve`]('spinograms'),
+                [
+                    {
+                        type: 'map',
+                    },
+                    {
+                        type: 'filter',
+                        filters: {
+                            id: [this.usageSelectedSyllable],
+                        },
+                    },
+                ],
+            ];
+        },
+    },
+    watch: {
+        dataspec: {
+            handler() {
+                LoadData(...this.dataspec)
+                .then((data: any[]) => {
+                    if (data && data.length > 0) {
+                        const d = data[0].data;
+                        d.forEach((stp, idx) => {
+                            stp.xy = stp.x.map((tpx, jdx) => [ tpx, stp.y[jdx] ]);
+                        });
+                        return d;
+                    }
+                })
+                .then((data) => { this.spinogram_data = data; });
+            },
+            immediate: true,
         },
     },
     directives: {

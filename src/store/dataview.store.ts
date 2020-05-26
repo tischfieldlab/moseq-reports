@@ -3,17 +3,14 @@ import { Module } from 'vuex';
 import DataFrame from 'dataframe-js';
 import { schemeDark2 } from 'd3-scale-chromatic';
 import { scaleOrdinal } from 'd3-scale';
-import { DataviewWorker } from './dataview.worker';
-import { spawn, Worker, ModuleThread } from 'threads';
 import store from './root.store';
 import { getModuleNamespace } from '@/util/Vuex';
-import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload } from '@/store/dataview.types';
+import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, DataViewSpec } from '@/store/dataview.types';
+import Vue from 'vue';
+import LoadData from '@/components/Core/DataLoader/DataLoader';
 
 
-let worker: ModuleThread<DataviewWorker>;
-(async () => {
-    worker = await spawn<DataviewWorker>(new Worker('./dataview.worker.ts'));
-})();
+
 
 
 const DataviewModule: Module<DataviewState, RootState> = {
@@ -27,6 +24,8 @@ const DataviewModule: Module<DataviewState, RootState> = {
             moduleIdFilter: [],
             selectedSyllable: 0,
             view: null,
+            viewSpecs: {},
+            views: {},
         };
     },
     getters: {
@@ -42,22 +41,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 return -5;
             }
         },
-        view: (state) => {
-            if (state.view !== null) {
-                return new DataFrame(state.view.data, state.view.columns);
-            }
-            return null;
-        },
-        aggregateView: (_, getters) => {
-            if (getters.view !== null) {
-                return getters.view
-                              .groupBy('syllable', 'group')
-                              .aggregate((g: any) => g.stat.mean('usage'))
-                              .rename('aggregation', 'usage');
-            } else {
-                return null;
-            }
-        },
         availableModuleIds: (state, getters, rootState, rootGetters) => {
             if (state.countMethod === CountMethod.Usage) {
                 return rootGetters['datasets/availableUsageModuleIds'];
@@ -71,6 +54,16 @@ const DataviewModule: Module<DataviewState, RootState> = {
         },
     },
     mutations: {
+        /*mountDataset(state, spec: DataViewSpec) {;
+            const name = JSON.stringify(spec);
+            if (!(name in state.views)) {
+                Vue.set(state.viewSpecs, name, spec);
+            }
+            return name;
+        },
+        updateDataset(state, payload: {name: string, data: any}) {
+            Vue.set(state.views, payload.name, payload.data);
+        },*/
         setLoading(state, loading: boolean) {
             state.loading = loading;
         },
@@ -78,7 +71,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
             state.groupColors = groupColors;
         },
         setView(state, payload: DataviewPayload) {
-            state.view = payload.view;
+            // state.view = payload.view;
             if (payload.countMethod) {
                 state.countMethod = payload.countMethod;
             }
@@ -124,30 +117,22 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 } as DataviewPayload);
             }
         },
+        /*updateViews(context) {
+            for (const name in context.state.viewSpecs) {
+                const spec = context.state.viewSpecs[name] as DataViewSpec;
+                const filter = !spec.filter ? undefined : Object.entries(spec.filter).map(([name, vals]) => )
+                context.commit('updateDataset', {
+                    name,
+                    data: LoadData(spec.dataset, spec.columns, spec.sorting, spec.filter),
+                });
+            }
+        },*/
         async updateView(context, payload: DataviewPayload) {
             context.commit('setLoading', true);
             try {
                 payload.countMethod = payload.countMethod || context.state.countMethod;
                 payload.selectedGroups = payload.selectedGroups || context.state.selectedGroups;
                 payload.moduleIdFilter = payload.moduleIdFilter || context.state.moduleIdFilter;
-
-                let dfData: any;
-                if (payload.countMethod === CountMethod.Usage) {
-                    dfData = (context.rootState as any).datasets.usageByUsage;
-                } else if (payload.countMethod === CountMethod.Frames) {
-                    dfData = (context.rootState as any).datasets.usageByFrames;
-                } else {
-                    throw new Error('Unknown Count Method ' + payload.countMethod);
-                }
-
-                if (dfData === null) {
-                    return null;
-                }
-
-                payload.view = await worker.filterGroups(dfData, {
-                    groups: payload.selectedGroups,
-                    moduleId: payload.moduleIdFilter,
-                });
                 context.commit('setView', payload);
             } catch (e) {
                 // tslint:disable-next-line:no-console

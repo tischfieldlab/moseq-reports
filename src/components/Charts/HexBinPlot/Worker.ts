@@ -1,8 +1,8 @@
 import { expose } from 'threads/worker';
 import { hexbin } from 'd3-hexbin';
 import { groupby } from '@/util/Array';
-import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
-import { max, min, mean, quantile, median, sum, extent } from 'd3-array';
+import { scaleLinear } from 'd3-scale';
+import { extent } from 'd3-array';
 
 interface Observation {
     x: number;
@@ -13,7 +13,7 @@ interface Observation {
 
 
 const exposedMethods = {
-    binData(data: Observation[], groupLabels: string[], width: number, resolution: number) {
+    binData(data: Observation[], groupLabels: string[]|null, width: number, resolution: number) {
         const x = scaleLinear()
             .domain(extent(data, (d: any) => d.x) as [number, number])
             .range([0, width]);
@@ -28,7 +28,12 @@ const exposedMethods = {
             .radius(resolution)
             .size([width, width]);
 
-        const groupedData = groupby(data, (p: any) => p.group, groupLabels);
+        let groupedData: {[group: string]: Observation[]};
+        if (groupLabels === null) {
+            groupedData = groupby(data, (p: any) => 'Overall', ['Overall']);
+        } else {
+            groupedData = groupby(data, (p: any) => p.group, groupLabels);
+        }
         const binned = Object.fromEntries(Object.entries(groupedData)
                             .map(([gl, gvals]) => {
                                 const h = hexer(gvals);

@@ -24,7 +24,8 @@ import WindowMixin from '@/components/Core/WindowMixin';
 
 import BoxPlot from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
 import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
-
+import LoadData from '@/components/Core/DataLoader/DataLoader';
+import { CountMethod } from '../../../store/dataview.types';
 
 RegisterDataComponent({
     friendly_name: 'Usage Details',
@@ -58,17 +59,41 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         groupColors(): string[] {
             return this.dataview.groupColors;
         },
-        individualUseageData(): any {
-            const df = this.$store.getters[`${this.datasource}/view`];
-            if (df === null) {
-                return;
+        dataset(): string {
+            if (this.countMethod === CountMethod.Usage) {
+                return this.$store.getters[`datasets/resolve`]('usage_usage');
+            } else if (this.countMethod === CountMethod.Frames) {
+                return this.$store.getters[`datasets/resolve`]('usage_frames');
+            } else {
+                throw new Error(`Count method ${this.countMethod} is not supported`);
             }
-            return df.where({syllable: this.selectedSyllable})
-                    .select('usage', 'group', 'StartTime')
-                    .sortBy('usage')
-                    .rename('usage', 'value')
-                    .rename('StartTime', 'id')
-                    .toCollection();
+        },
+    },
+    asyncComputed: {
+        individualUseageData(): any {
+            return LoadData(this.dataset, [
+                {
+                    type: 'map',
+                    columns: [
+                        ['usage', 'value'],
+                        ['group', 'group'],
+                        ['StartTime', 'id'],
+                        ['syllable', 'syllable'],
+                    ],
+                },
+                {
+                    type: 'filter',
+                    filters: {
+                        syllable: [this.selectedSyllable],
+                        group: this.dataview.selectedGroups,
+                    },
+                },
+                {
+                    type: 'sort',
+                    column: 'value',
+                    direction: 'asc',
+                },
+            ]);
         },
     },
     methods: {

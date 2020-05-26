@@ -7,7 +7,8 @@ module.exports = {
         devtool: 'source-map',
         plugins: [
             new ThreadsPlugin({
-                target: 'electron-node-worker'
+                target: 'electron-node-worker',
+                globalObject: 'self',
             })
         ],
     },

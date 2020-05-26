@@ -37,6 +37,7 @@ import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 import { CountMethod } from '@/store/dataview.types';
 import path from 'path';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
+import { Operation } from '../../Core/DataLoader/DataLoader.types';
 
 
 
@@ -121,21 +122,30 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         groupColors(): string[] {
             return this.dataview.groupColors;
         },
-        data_path(): string[] {
+        dataspec(): [string, Operation[]] {
             const rID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Raw);
-            const pth = this.$store.state.datasets.path;
-            const base = `usage_scalars_${rID}`;
-            return [path.join(pth, 'scalars', `${base}.json`), base, this.currentMetric];
+            return [
+                this.$store.getters[`datasets/resolve`](`scalars/${rID}`),
+                [
+                    {
+                        type: 'map',
+                        columns: [
+                            ['uuid', 'id'],
+                            [this.currentMetric, 'value'],
+                            'group',
+                        ],
+                    },
+                ],
+            ];
         },
     },
     watch: {
-        data_path: {
+        dataspec: {
             async handler(newValue) {
-                this.individualUseageData = await LoadData(newValue[0], [
-                    ['uuid', 'id'],
-                    [this.currentMetric, 'value'],
-                    'group',
-                ]);
+                this.$emit('start-loading');
+                LoadData(newValue[0], newValue[1])
+                .then((data) => this.individualUseageData = data)
+                .then(() => this.$emit('finish-loading'));
             },
             immediate: true,
         },

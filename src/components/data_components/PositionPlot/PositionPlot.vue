@@ -1,9 +1,10 @@
 <template>
     <div>
-        <HexBinPlotCanvas
+        <HexBinPlotSVG
             :width="this.layout.width"
             :height="this.layout.height - 31"
             :data="individualUseageData"
+            :useGroups="useGroups"
             :groupLabels="groupNames"
             :groupColors="groupColors"
             :resolution="settings.resolution"
@@ -39,6 +40,7 @@ import { CountMethod } from '@/store/dataview.types';
 import path from 'path';
 import fs from 'fs';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
+import { PositionPlotMode } from './PositionPlotOptions.vue';
 
 
 
@@ -51,6 +53,7 @@ RegisterDataComponent({
     init_width: 400,
     init_height: 380,
     default_settings: {
+        mode: PositionPlotMode.Overall,
         resolution: 2,
         colormap: 'interpolateBuPu',
     },
@@ -73,30 +76,40 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
+        useGroups(): boolean {
+            return this.settings.mode === PositionPlotMode.Grouped;
+        },
         groupNames(): string[] {
             return this.dataview.selectedGroups;
         },
         groupColors(): string[] {
             return this.dataview.groupColors;
         },
-        data_path(): string[] {
+        dataspec(): string[] {
             const rID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Raw);
-            const pth = this.$store.state.datasets.path;
-            const base = `usage_scalars_${rID}`;
-            return [path.join(pth, 'scalars', `${base}.json`), base];
+            return [
+                this.$store.getters[`datasets/resolve`](`scalars/${rID}`),
+                [
+                    {
+                        type: 'map',
+                        columns: [
+                            ['uuid', 'id'],
+                            ['centroid_x_mm', 'x'],
+                            ['centroid_y_mm', 'y'],
+                            'group',
+                        ],
+                    },
+                ],
+            ];
         },
     },
     watch: {
-        data_path: {
-            async handler(newValue) {
+        dataspec: {
+            handler(newValue) {
                 this.$emit('start-loading');
-                this.individualUseageData = await LoadData(newValue[0], [
-                    ['uuid', 'id'],
-                    ['centroid_x_mm', 'x'],
-                    ['centroid_y_mm', 'y'],
-                    'group',
-                ]);
-                this.$emit('finish-loading');
+                LoadData(newValue[0], newValue[1])
+                .then((data) => this.individualUseageData = data)
+                .then(() => this.$emit('finish-loading'));
             },
             immediate: true,
         },
