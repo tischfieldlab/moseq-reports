@@ -108,7 +108,7 @@ jobs:
         - export PACKAGE_VERSION=$(npm run --silent version)
         - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
         - echo $TRAVIS_TAG
-        - git tag $TRAVIS_TAG
+        - git tag ${PACKAGE_VERSION}
       deploy:
         provider: releases
         api_key: ${GH_TOKEN}
