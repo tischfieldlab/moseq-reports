@@ -109,7 +109,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                     {
                         type: 'pluck',
                         column: 'ar[init]',
-                    }
+                    },
                 ],
             ];
         },
@@ -124,7 +124,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                             return {
                                 source: sidx,
                                 sink: didx,
-                                value: value,
+                                value,
                             };
                         });
                     });
