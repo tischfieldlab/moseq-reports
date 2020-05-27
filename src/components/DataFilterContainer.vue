@@ -94,14 +94,14 @@ export default Vue.extend({
 .button-bar.right .b-icon.active {
     border-right: 3px solid #2c3e50;
 }
-.b-sidebar {
+.b-sidebar-outer >>> .b-sidebar {
     top: 30px;
     height: calc(100vh - 30px) !important;
 }
-.b-sidebar:not(.b-sidebar-right) {
+.b-sidebar-outer >>> .b-sidebar:not(.b-sidebar-right) {
     left: 48px;
 }
-.b-sidebar.b-sidebar-right {
+.b-sidebar-outer >>> .b-sidebar.b-sidebar-right {
     right: 48px;
 }
 </style>
