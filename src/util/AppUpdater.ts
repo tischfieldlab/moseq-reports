@@ -1,31 +1,32 @@
 import { autoUpdater } from 'electron-updater';
 
 class AppUpdater {
-	private static instance: AppUpdater;
 
-	private log: any = require('electron-log');
+    public static getInstance(): AppUpdater {
+        if (!AppUpdater.instance) {
+            AppUpdater.instance = new AppUpdater();
+        }
 
-	private constructor() {
-		
-		if (process.env.NODE_ENV === 'production')
-			this.log.transports.file.level = 'info';
-		else
-			this.log.transports.file.level = 'debug';
-		autoUpdater.logger = this.log;
-	}
+        return AppUpdater.instance;
+    }
+    private static instance: AppUpdater;
 
-	public static getInstance(): AppUpdater {
-		if (!AppUpdater.instance) {
-			AppUpdater.instance = new AppUpdater();
-		}
+    private log: any = require('electron-log');
 
-		return AppUpdater.instance;
-	}
+    private constructor() {
 
-	public checkForUpdates(): void {
-		this.log.info('Checking for updates...');
-		autoUpdater.checkForUpdatesAndNotify();
-	}
+        if (process.env.NODE_ENV === 'production') {
+            this.log.transports.file.level = 'info';
+        } else {
+            this.log.transports.file.level = 'debug';
+        }
+        autoUpdater.logger = this.log;
+    }
+
+    public checkForUpdates(): void {
+        this.log.info('Checking for updates...');
+        autoUpdater.checkForUpdatesAndNotify();
+    }
 }
 
 export const Updater: AppUpdater = AppUpdater.getInstance();

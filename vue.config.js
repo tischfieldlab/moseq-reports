@@ -48,8 +48,8 @@ module.exports = {
                         "msi"
                     ],
                     icon: "public/img/icons/winapp256x256.ico",
-                    // certificateSubjectName: "Rutgers, The State University of New Jersey",
-                    certificateFile: "test.pfx",
+                    certificateSubjectName: "Rutgers, The State University of New Jersey",
+                    // certificateFile: "test.pfx",
                     publish: ["github"]
                 },
                 // directories: {
