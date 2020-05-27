@@ -86,7 +86,7 @@ export default Vue.component('datafilter', {
                 }
             },
         },
-        syllableIdOptions(): Array<{ value: number, text: string }> {
+        syllableIdOptions(): { value: number, text: string }[] {
             const filtered = this.dataview.moduleIdFilter;
             if (filtered.length === 0) {
                 const avail = this.$store.getters[`${this.datasource}/availableModuleIds`];

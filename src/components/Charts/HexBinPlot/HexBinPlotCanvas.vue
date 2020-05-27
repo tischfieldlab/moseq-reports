@@ -58,7 +58,7 @@ export default mixins(HexBinPlotBase).extend({
     },
     methods: {
         getLabelFontSize(cxt: CanvasRenderingContext2D, maxWidth: number, labels: string[], fontFace: string) {
-            const maxLabel = (labels.map((l) => [l, cxt.measureText(l)]) as Array<[string, TextMetrics]>)
+            const maxLabel = (labels.map((l) => [l, cxt.measureText(l)]) as [string, TextMetrics][])
                                    .reduce((prev, current) => prev[1].width > current[1].width ? prev : current)
                                    [0];
             cxt.save();

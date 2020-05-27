@@ -30,7 +30,7 @@ export interface FilterOperation {
 }
 export interface MapOperation {
     type: 'map';
-    columns?: Array<string|[string, string]>;
+    columns?: (string|[string, string])[];
 }
 export interface AggregateOperation {
     type: 'aggregate';

@@ -34,7 +34,7 @@ export interface SelectedGroupsPayload {
 export interface DataViewSpec {
     dataset: string;
     dependOn: string[];
-    columns: Array<string|[string, string]>;
+    columns: (string|[string, string])[];
     sorting?: SortSpec|undefined;
     filter?: {[key: string]: any[]}|undefined;
 }
