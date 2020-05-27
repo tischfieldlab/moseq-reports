@@ -185,7 +185,7 @@ async function LoadCrowdMovies(zip: JSZip, dir: string) {
 async function jsonParseZipEntry(zip: JSZip, entryName: string) {
     const entry = zip.file(entryName);
     if (entry !== null) {
-        return entry.async('string')
+        return entry.async('text')
                 .then((value) => JSON.parse(value));
     }
     return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
@@ -193,7 +193,7 @@ async function jsonParseZipEntry(zip: JSZip, entryName: string) {
 async function jsonParseZipEntryContainingNaN(zip: JSZip, entryName: string) {
     const entry = zip.file(entryName);
     if (entry !== null) {
-        return entry.async('string')
+        return entry.async('text')
             .then((data) => {
                 return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
                     return value === '***NaN***' ? NaN : value;
