@@ -22,16 +22,16 @@ jobs:
         - mv dist_electron/*.blockmap ${RELEASE_NAME}
         - mv dist_electron/*.zip ${RELEASE_NAME}
         - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        file_glob: true
-        file: ${RELEASE_NAME}.zip
-        tag_name: ${TRAVIS_TAG}
-        draft: true
-        on:
-          branch: auto-update
+      # deploy:
+      #   provider: releases
+      #   api_key: ${GH_TOKEN}
+      #   skip_cleanup: true
+      #   file_glob: true
+      #   file: ${RELEASE_NAME}.zip
+      #   tag_name: ${TRAVIS_TAG}
+      #   draft: true
+      #   on:
+      #     branch: auto-update
 
     - stage: build
       os: windows
@@ -55,16 +55,16 @@ jobs:
         - mkdir ${RELEASE_NAME}
         - mv dist_electron/*.msi ${RELEASE_NAME}
         - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        file_glob: true
-        file: ${RELEASE_NAME}.zip
-        tag_name: ${TRAVIS_TAG}
-        draft: true
-        on:
-          branch: auto-update
+      # deploy:
+      #   provider: releases
+      #   api_key: ${GH_TOKEN}
+      #   skip_cleanup: true
+      #   file_glob: true
+      #   file: ${RELEASE_NAME}.zip
+      #   tag_name: ${TRAVIS_TAG}
+      #   draft: true
+      #   on:
+      #     branch: auto-update
 
     - stage: build
       os: linux
@@ -87,16 +87,16 @@ jobs:
         - mv dist_electron/*.deb ${RELEASE_NAME}
         - mv dist_electron/*.AppImage ${RELEASE_NAME}
         - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        file_glob: true
-        file: ${RELEASE_NAME}.zip
-        tag_name: ${TRAVIS_TAG}
-        draft: true
-        on:
-          branch: auto-update
+      # deploy:
+      #   provider: releases
+      #   api_key: ${GH_TOKEN}
+      #   skip_cleanup: true
+      #   file_glob: true
+      #   file: ${RELEASE_NAME}.zip
+      #   tag_name: ${TRAVIS_TAG}
+      #   draft: true
+      #   on:
+      #     branch: auto-update
       
       # Need this to be separate as it is the job that closes the release. Travis
       # likes to build in parallel, so this job needs to run last.
@@ -113,7 +113,7 @@ jobs:
         provider: releases
         api_key: ${GH_TOKEN}
         skip_cleanup: true
-        tag_name: ${TRAVIS_TAG}
+        tag_name: ${PACKAGE_VERSION}
         draft: false
         on:
           branch: auto-update
