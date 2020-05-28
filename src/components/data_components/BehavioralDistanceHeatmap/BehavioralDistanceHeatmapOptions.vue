@@ -2,6 +2,13 @@
     <b-container fluid>
         <b-row>
             <b-col>
+                <b-input-group prepend="Behavioral Distance Metric">
+                    <b-form-select v-model="distance_metric" :options="method_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <b-input-group prepend="Colormap">
                     <b-form-select v-model="colorscale" :options="color_options"></b-form-select>
                 </b-input-group>
@@ -9,63 +16,95 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-input-group prepend="Syllable Ordering">
-                    <b-form-select v-model="syllable_order_type" :options="syllable_order_options"></b-form-select>
+                <b-input-group prepend="Row Ordering">
+                    <b-form-select v-model="row_order_type" :options="row_order_options"></b-form-select>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="syllable_order_type === 'value'">
+        <b-row v-show="row_order_type === 'value'">
             <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Sort Group">
-                    <b-form-select v-model="syllable_order_group_value" :options="syllable_order_group_value_options"></b-form-select>
+                <b-input-group prepend="Sort by Syllable">
+                    <b-form-select v-model="row_order_col_value" :options="group_options"></b-form-select>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="syllable_order_type === 'value'">
+        <b-row v-show="row_order_type === 'value'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Direction">
-                    <b-form-select v-model="syllable_order_direction" :options="syllable_order_direction_options"></b-form-select>
+                    <b-form-select v-model="row_order_direction" :options="order_direction_options"></b-form-select>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="syllable_order_type === 'cluster'">
+        <b-row v-show="row_order_type === 'cluster'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Distance">
-                    <b-form-select v-model="syllable_cluster_distance" :options="cluster_distance_options"></b-form-select>
+                    <b-form-select v-model="row_cluster_distance" :options="cluster_distance_options"></b-form-select>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="syllable_order_type === 'cluster'">
+        <b-row v-show="row_order_type === 'cluster'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Linkage">
-                    <b-form-select v-model="syllable_cluster_linkage" :options="cluster_linkage_options"></b-form-select>
+                    <b-form-select v-model="row_cluster_linkage" :options="cluster_linkage_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="row_order_type === 'dataset'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Dataset">
+                    <DatasetPicker v-model="row_order_dataset" :dataview="dataview" :owner="subid" />
                 </b-input-group>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
-                <b-input-group prepend="Group Ordering">
-                    <b-form-select v-model="group_order_type" :options="group_order_options"></b-form-select>
+                <b-input-group prepend="Column Ordering">
+                    <b-form-select v-model="column_order_type" :options="column_order_options"></b-form-select>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="group_order_type === 'cluster'">
+        <b-row v-show="column_order_type === 'value'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Sort by Syllable">
+                    <b-form-select v-model="column_order_row_value" :options="group_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="column_order_type === 'value'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Direction">
+                    <b-form-select v-model="column_order_direction" :options="order_direction_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="column_order_type === 'cluster'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Distance">
-                    <b-form-select v-model="group_cluster_distance" :options="cluster_distance_options"></b-form-select>
+                    <b-form-select v-model="column_cluster_distance" :options="cluster_distance_options"></b-form-select>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="group_order_type === 'cluster'">
+        <b-row v-show="column_order_type === 'cluster'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Linkage">
-                    <b-form-select v-model="group_cluster_linkage" :options="cluster_linkage_options"></b-form-select>
+                    <b-form-select v-model="column_cluster_linkage" :options="cluster_linkage_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="column_order_type === 'dataset'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Dataset">
+                    <DatasetPicker v-model="column_order_dataset" :dataview="dataview" :owner="subid" />
                 </b-input-group>
             </b-col>
         </b-row>
@@ -77,33 +116,44 @@ import Vue from 'vue';
 import { GetInterpolatedScaleOptions } from '@/components/Charts/D3ColorProvider';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-
-export enum OrderingType {
-    Natural = 'natural',
-    Value = 'value',
-    Cluster = 'cluster',
-}
-export enum SortOrderDirection {
-    Asc = 'asc',
-    Dec = 'dec',
-}
+import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import DatasetPicker from '@/components/DatasetPicker.vue';
+import { CountMethod } from '../../../store/dataview.types';
+import LoadData from '@/components/Core/DataLoader/DataLoader';
 
 
 export default mixins(WindowMixin).extend({
-    mounted() {
-        this.populateGroups();
+    components: {
+        DatasetPicker,
     },
-    methods: {
-        populateGroups() {
-            this.syllable_order_group_value_options = this.selectedGroups.map((g) => ({text: g, value: g}));
-            if (this.syllable_order_group_value === undefined) {
-                this.syllable_order_group_value = this.syllable_order_group_value_options[0].value;
-            }
-        },
+    watch: {
+        method_options_spec:{
+            async handler(newValue) {
+                this.method_options = await LoadData(this.method_options_spec[0], this.method_options_spec[1]);
+            },
+            immediate: true,
+        }
     },
     computed: {
-        selectedGroups(): string[] {
-            return this.dataview.selectedGroups;
+        method_options_spec(): any[] {
+            let ds;
+            if (this.dataview.countMethod === CountMethod.Usage) {
+                ds = this.$store.getters[`datasets/resolve`]('behave_dist_usage');
+            } else if (this.dataview.countMethod === CountMethod.Frames) {
+                ds = this.$store.getters[`datasets/resolve`]('behave_dist_frames');
+            } else {
+                throw new Error(`Count method ${this.dataview.countMethod} is not supported`);
+            }
+            return [ds, [{ type: 'keys' }]];
+        },
+        group_options(): string[] {
+            let vals;
+            if (this.dataview.moduleIdFilter.length === 0) {
+                vals = this.$store.getters[`${this.datasource}/availableModuleIds`];
+            } else {
+                vals = this.dataview.moduleIdFilter;
+            }
+            return vals.map((g) => ({text: g, value: g}));
         },
         colorscale: {
             get(): string {
@@ -118,106 +168,171 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        syllable_order_type: {
-            get(): OrderingType {
-                return this.settings.syllable_order_type;
-            },
-            set(value: OrderingType) {
-                this.$store.commit(`${this.id}/updateComponentSettings`, {
-                    id: this.id,
-                    settings: {
-                        syllable_order_type: value,
-                    },
-                });
-            },
-        },
-        syllable_order_group_value: {
+        distance_metric: {
             get(): string {
-                return this.settings.syllable_order_group_value;
+                return this.settings.distance_metric;
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        syllable_order_group_value: value,
+                        distance_metric: value,
                     },
                 });
             },
         },
-        syllable_order_direction: {
+        row_order_type: {
+            get(): OrderingType {
+                return this.settings.row_order_type;
+            },
+            set(value: OrderingType) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        row_order_type: value,
+                    },
+                });
+            },
+        },
+        row_order_col_value: {
+            get(): string {
+                return this.settings.row_order_col_value;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        row_order_col_value: value,
+                    },
+                });
+            },
+        },
+        row_order_direction: {
             get(): SortOrderDirection {
-                return this.settings.syllable_order_direction;
+                return this.settings.row_order_direction;
             },
             set(value: SortOrderDirection) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        syllable_order_direction: value,
+                        row_order_direction: value,
                     },
                 });
             },
         },
-        syllable_cluster_distance: {
+        row_cluster_distance: {
             get(): string {
-                return this.settings.syllable_cluster_distance;
+                return this.settings.row_cluster_distance;
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        syllable_cluster_distance: value,
+                        row_cluster_distance: value,
                     },
                 });
             },
         },
-        syllable_cluster_linkage: {
+        row_cluster_linkage: {
             get(): string {
-                return this.settings.syllable_cluster_linkage;
+                return this.settings.row_cluster_linkage;
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        syllable_cluster_linkage: value,
+                        row_cluster_linkage: value,
                     },
                 });
             },
         },
-        group_order_type: {
+        row_order_dataset: {
+            get(): string {
+                return this.settings.row_order_dataset;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        row_order_dataset: value,
+                    },
+                });
+            },
+        },
+        column_order_type: {
             get(): OrderingType {
-                return this.settings.group_order_type;
+                return this.settings.column_order_type;
             },
             set(value: OrderingType) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        group_order_type: value,
+                        column_order_type: value,
                     },
                 });
             },
         },
-        group_cluster_distance: {
+        column_order_row_value: {
             get(): string {
-                return this.settings.group_cluster_distance;
+                return this.settings.column_order_row_value;
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        group_cluster_distance: value,
+                        column_order_row_value: value,
                     },
                 });
             },
         },
-        group_cluster_linkage: {
+        column_order_direction: {
+            get(): SortOrderDirection {
+                return this.settings.column_order_direction;
+            },
+            set(value: SortOrderDirection) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        column_order_direction: value,
+                    },
+                });
+            },
+        },
+        column_cluster_distance: {
             get(): string {
-                return this.settings.group_cluster_linkage;
+                return this.settings.column_cluster_distance;
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        group_cluster_linkage: value,
+                        column_cluster_distance: value,
+                    },
+                });
+            },
+        },
+        column_cluster_linkage: {
+            get(): string {
+                return this.settings.column_cluster_linkage;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        column_cluster_linkage: value,
+                    },
+                });
+            },
+        },
+        column_order_dataset: {
+            get(): string {
+                return this.settings.column_order_dataset;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        column_order_dataset: value,
                     },
                 });
             },
@@ -225,14 +340,15 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
+            method_options: [] as string[],
             color_options: GetInterpolatedScaleOptions(),
-            syllable_order_options: [
+            row_order_options: [
                 { text: 'Syllable ID', value: OrderingType.Natural },
-                { text: 'Syllable Value', value: OrderingType.Value },
+                { text: 'Distance Value', value: OrderingType.Value },
                 { text: 'Clustered', value: OrderingType.Cluster },
+                { text: 'Dataset', value: OrderingType.Dataset },
             ],
-            syllable_order_group_value_options: new Array<{text: string, value: string}>(),
-            syllable_order_direction_options: [
+            order_direction_options: [
                 { text: 'Ascending', value: SortOrderDirection.Asc },
                 { text: 'Descending', value: SortOrderDirection.Dec },
             ],
@@ -248,9 +364,11 @@ export default mixins(WindowMixin).extend({
                 { text: 'Maximum', value: 'max' },
                 { text: 'Minimum', value: 'min' },
             ],
-            group_order_options: [
-                { text: 'Data Source Order', value: OrderingType.Natural },
+            column_order_options: [
+                { text: 'Syllable ID', value: OrderingType.Natural },
+                { text: 'Distance Value', value: OrderingType.Value },
                 { text: 'Clustered', value: OrderingType.Cluster },
+                { text: 'Dataset', value: OrderingType.Dataset },
             ],
         };
     },

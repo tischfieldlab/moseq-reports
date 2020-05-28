@@ -1,7 +1,19 @@
 <template>
     <b-container fluid>
         <b-row>
-             <label class="font-weight-bold pt-0">Plot Element Visibility</label>
+            <b-col>
+                <b-input-group prepend="Group Ordering">
+                    <b-form-select v-model="group_order_type" :options="group_order_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="group_order_type === 'dataset'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Dataset">
+                    <DatasetPicker v-model="group_order_dataset" :dataview="dataview" />
+                </b-input-group>
+            </b-col>
         </b-row>
         <b-row>
             <b-form-checkbox v-model="show_points" switch>
@@ -42,14 +54,42 @@
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
+import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
+import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import DatasetPicker from '@/components/DatasetPicker.vue';
 
-export enum WhiskerType {
-    TUKEY,
-    MIN_MAX,
-}
 
 export default mixins(WindowMixin).extend({
+    components: {
+        DatasetPicker,
+    },
     computed: {
+        group_order_type: {
+            get(): string {
+                return this.settings.group_order_type;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        group_order_type: value,
+                    },
+                });
+            },
+        },
+        group_order_dataset: {
+            get(): string {
+                return this.settings.group_order_dataset;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        group_order_dataset: value,
+                    },
+                });
+            },
+        },
         show_points: {
             get(): boolean {
                 return this.settings.show_points;
@@ -133,6 +173,10 @@ export default mixins(WindowMixin).extend({
                     text: 'Min/Max',
                     description: 'Whiskers extend to min and max data points',
                 },
+            ],
+            group_order_options: [
+                { text: 'Filter Order', value: OrderingType.Natural },
+                { text: 'Dataset', value: OrderingType.Dataset },
             ],
         };
     },

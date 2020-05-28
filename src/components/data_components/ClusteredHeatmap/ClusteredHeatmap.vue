@@ -5,14 +5,18 @@
         :data="this.aggregateView"
         :groupLabels="this.selectedGroups"
         :colorscale="this.settings.colormap"
+
         :columnOrderType="this.settings.group_order_type"
         :columnClusterDistance="this.settings.group_cluster_distance"
         :columnClusterLinkage="this.settings.group_cluster_linkage"
+
         :rowOrderType="this.settings.syllable_order_type"
         :rowClusterDistance="this.settings.syllable_cluster_distance"
         :rowClusterLinkage="this.settings.syllable_cluster_linkage"
         :rowOrderValue="this.settings.syllable_order_group_value"
         :rowOrderDirection="this.settings.syllable_order_direction"
+        :rowOrderDataset="rowOrderDataset"
+
         xAxisTitle="Group"
         :yAxisTitle="`Module ID (${countMethod})`"
         :legendTitle="`Usage (${countMethod})`"
@@ -21,6 +25,8 @@
         valueKey="usage"
         :selectedRow="selectedSyllable"
         @heatmapClick="onHeatmapClick"
+        @row-order-changed="rowOrderChanged"
+        @col-order-changed="colOrderChanged"
     />
     <!--:columnOrderValue=""   -->
 </template>
@@ -84,6 +90,12 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
+        rowOrderDataset(): any[] {
+            if (this.settings.syllable_order_dataset in this.dataview.views) {
+                return this.dataview.views[this.settings.syllable_order_dataset].data;
+            }
+            return [];
+        },
         dataset(): [string, Operation[]] {
             let ds;
             if (this.countMethod === CountMethod.Usage) {
@@ -142,6 +154,20 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             if (event.row) {
                 this.selectedSyllable = Number.parseInt(event.row, 10);
             }
+        },
+        rowOrderChanged(event) {
+            this.$store.commit(`${this.datasource}/publishDataset`, {
+                owner: this.id,
+                name: 'Row Order',
+                data: event,
+            });
+        },
+        colOrderChanged(event) {
+            this.$store.commit(`${this.datasource}/publishDataset`, {
+                owner: this.id,
+                name: 'Column Order',
+                data: event,
+            });
         },
         /*
         heatmap_node_tooltip(item: HeatmapTile) {

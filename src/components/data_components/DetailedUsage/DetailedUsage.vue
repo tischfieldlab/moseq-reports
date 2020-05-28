@@ -26,6 +26,8 @@ import BoxPlot from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
 import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { CountMethod } from '../../../store/dataview.types';
+import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+
 
 RegisterDataComponent({
     friendly_name: 'Usage Details',
@@ -39,6 +41,7 @@ RegisterDataComponent({
         show_boxplot: true,
         show_violinplot: false,
         boxplot_whiskers: WhiskerType.TUKEY,
+        group_order_type: OrderingType.Natural,
     },
 });
 
@@ -54,7 +57,17 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.dataview.countMethod;
         },
         groupNames(): string[] {
-            return this.dataview.selectedGroups;
+            if (this.settings.group_order_type === OrderingType.Natural) {
+                return this.dataview.selectedGroups;
+            } else if (this.settings.group_order_type === OrderingType.Dataset) {
+                if (this.dataview.views[this.settings.group_order_dataset] !== undefined) {
+                    return this.dataview.views[this.settings.group_order_dataset].data;
+                }
+            } else {
+                // tslint:disable-next-line:no-console
+                console.warn(`Unsupported group order type ${this.settings.group_order_type}`);
+            }
+            return [];
         },
         groupColors(): string[] {
             return this.dataview.groupColors;

@@ -46,6 +46,14 @@
                 </b-input-group>
             </b-col>
         </b-row>
+        <b-row v-show="syllable_order_type === 'dataset'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Dataset">
+                    <DatasetPicker v-model="syllable_order_dataset" :dataview="dataview" :owner="subid" />
+                </b-input-group>
+            </b-col>
+        </b-row>
         <b-row>
             <b-col>
                 <b-input-group prepend="Group Ordering">
@@ -77,19 +85,13 @@ import Vue from 'vue';
 import { GetInterpolatedScaleOptions } from '@/components/Charts/D3ColorProvider';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-
-export enum OrderingType {
-    Natural = 'natural',
-    Value = 'value',
-    Cluster = 'cluster',
-}
-export enum SortOrderDirection {
-    Asc = 'asc',
-    Dec = 'dec',
-}
-
+import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import DatasetPicker from '@/components/DatasetPicker.vue';
 
 export default mixins(WindowMixin).extend({
+    components: {
+        DatasetPicker,
+    },
     mounted() {
         this.populateGroups();
     },
@@ -127,6 +129,19 @@ export default mixins(WindowMixin).extend({
                     id: this.id,
                     settings: {
                         syllable_order_type: value,
+                    },
+                });
+            },
+        },
+        syllable_order_dataset: {
+            get(): string {
+                return this.settings.syllable_order_dataset;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        syllable_order_dataset: value,
                     },
                 });
             },
@@ -230,6 +245,7 @@ export default mixins(WindowMixin).extend({
                 { text: 'Syllable ID', value: OrderingType.Natural },
                 { text: 'Syllable Value', value: OrderingType.Value },
                 { text: 'Clustered', value: OrderingType.Cluster },
+                { text: 'Dataset', value: OrderingType.Dataset },
             ],
             syllable_order_group_value_options: new Array<{text: string, value: string}>(),
             syllable_order_direction_options: [
