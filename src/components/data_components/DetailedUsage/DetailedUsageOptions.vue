@@ -11,7 +11,7 @@
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Dataset">
-                    <DatasetPicker v-model="group_order_dataset" :dataview="dataview" />
+                    <DatasetPicker v-model="group_order_dataset" :dataview="dataview" :owner="subid" />
                 </b-input-group>
             </b-col>
         </b-row>
