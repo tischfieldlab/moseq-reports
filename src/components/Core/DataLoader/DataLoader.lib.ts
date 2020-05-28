@@ -6,6 +6,7 @@ import {
     MapOperation,
     AggregateOperation,
     PluckOperation,
+    KeysOperation,
 } from './DataLoader.types';
 import { groupby } from '@/util/Array';
 import { unnest } from '@/util/Vuex';
@@ -102,6 +103,10 @@ export function pluck(data: object|object[], op: PluckOperation) {
     } else {
         return unnest(data, op.column);
     }
+}
+
+export function keys(data: object, op: KeysOperation) {
+    return Object.keys(data);
 }
 
 export function jsonParseZipEntryContainingNaN(data: string) {

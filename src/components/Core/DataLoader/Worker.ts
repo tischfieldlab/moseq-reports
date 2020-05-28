@@ -1,6 +1,6 @@
 import { expose } from 'threads/worker';
 import { Operation } from './DataLoader.types';
-import { readFileContents, mapColumns, filterBy, sortBy, aggregate, jsonParseZipEntryContainingNaN, pluck } from './DataLoader.lib';
+import { readFileContents, mapColumns, filterBy, sortBy, aggregate, jsonParseZipEntryContainingNaN, pluck, keys } from './DataLoader.lib';
 
 
 const cache = {};
@@ -24,6 +24,10 @@ const exposedMethods = {
             switch (operator.type) {
                 case 'pluck':
                     pipe = pipe.then((obj) =>  pluck(obj, operator));
+                    break;
+
+                case 'keys':
+                    pipe = pipe.then((obj) =>  keys(obj, operator));
                     break;
 
                 case 'map':
