@@ -16,6 +16,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
     namespaced: true,
     state() {
         return {
+            name: '',
             loading: false,
             countMethod: CountMethod.Usage,
             selectedGroups: [],
@@ -51,6 +52,9 @@ const DataviewModule: Module<DataviewState, RootState> = {
         },
     },
     mutations: {
+        setName(state, name: string) {
+            state.name = name;
+        },
         setLoading(state, loading: boolean) {
             state.loading = loading;
         },
@@ -122,12 +126,14 @@ const DataviewModule: Module<DataviewState, RootState> = {
             }
         },
         async initialize(context) {
+            const namespace = getModuleNamespace(store, context.state);
+            context.commit('setName', namespace?.split('/')[1]);
             const groups = context.getters.availableGroups;
             const colorScale = scaleOrdinal(schemeDark2);
             await context.dispatch('updateView', {
                 selectedGroups: groups,
                 groupColors: groups.map((g: string) => colorScale(g)),
-            } as DataviewPayload).then(() => bindStore(getModuleNamespace(store, context.state)));
+            } as DataviewPayload).then(() => bindStore(namespace));
         },
     },
 };

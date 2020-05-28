@@ -148,7 +148,10 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
+.list-group {
+    margin: -1px;
+}
 .list-group-item {
     padding: 0.5em 0.25em;
 }
@@ -176,5 +179,6 @@ export default Vue.extend({
     border:1px solid #efefef;
     margin: 0 10px 0 5px;
     border-radius: 24px;
+    cursor: pointer;
 }
 </style>

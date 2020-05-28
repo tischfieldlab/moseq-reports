@@ -8,7 +8,7 @@
                 <b-button variant="link" @click="removeThis" class="text-dark remove-button text-decoration-none">
                     &#x1F5D9;
                 </b-button>
-                <h7>{{ datasource }}</h7>
+                <EditableText class="editable-text" v-model="filter_name" />
             </template>
             <b-collapse visible :id="$id('filter-collapse')">
                 <b-overlay :show="is_loading" no-fade>
@@ -37,13 +37,14 @@ import { CountMethod, DataviewState } from '@/store/dataview.types';
 import GroupBox from '@/components/GroupBox.vue';
 import SyllableIdFilter from '@/components/SyllableIdFilter.vue';
 import { unnest } from '@/util/Vuex';
-
+import EditableText from './EditableText.vue';
 
 
 export default Vue.component('datafilter', {
     components: {
         GroupBox,
         SyllableIdFilter,
+        EditableText,
     },
     props: {
         datasource: {
@@ -60,6 +61,14 @@ export default Vue.component('datafilter', {
         };
     },
     computed: {
+        filter_name: {
+            get(): string {
+                return this.dataview.name;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.datasource}/setName`, value);
+            },
+        },
         dataview(): DataviewState {
             return unnest(this.$store.state, this.datasource);
         },
@@ -119,7 +128,7 @@ export default Vue.component('datafilter', {
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .collapse-button {
     padding: 0;
     margin-left: -10px;
@@ -144,5 +153,11 @@ export default Vue.component('datafilter', {
 
 .container {
     padding: 0.5em;
+}
+div.editable-text {
+    display: inline;
+}
+div.editable-text >>> input {
+    display: inline;
 }
 </style>
