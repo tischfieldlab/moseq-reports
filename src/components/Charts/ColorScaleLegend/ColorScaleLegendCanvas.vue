@@ -20,8 +20,16 @@ export default mixins(ColorScaleLegendBase).extend({
     },
     render(createElement) {
         const cxt = (this as any).canvas.cxt as CanvasRenderingContext2D;
-        if (!cxt) { return createElement('div'); }
-        if (!this.scale) { return createElement('div'); }
+        if (!cxt) {
+            // tslint:disable-next-line:no-console
+            console.warn('No canvas context recieved');
+            return createElement('div');
+        }
+        if (!this.scale) {
+            // tslint:disable-next-line:no-console
+            console.warn('No scale recieved');
+            return createElement('div');
+        }
 
         cxt.save();
         cxt.translate(this.x - (this.width / 2), this.y);
@@ -34,8 +42,10 @@ export default mixins(ColorScaleLegendBase).extend({
         } else {
             grad = cxt.createLinearGradient(0, this.height, 0, 0);
         }
-        grad.addColorStop(0, this.scale(this.scale.domain()[0]));
-        grad.addColorStop(1, this.scale(this.scale.domain()[1]));
+        if (!(this.scale.domain() as number[]).includes(NaN)) {
+            grad.addColorStop(0, this.scale(this.scale.domain()[0]));
+            grad.addColorStop(1, this.scale(this.scale.domain()[1]));
+        }
         cxt.fillStyle = grad;
         cxt.fillRect(0, 0, this.width, this.height);
 

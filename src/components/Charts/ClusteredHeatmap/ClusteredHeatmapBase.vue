@@ -66,6 +66,13 @@ export default Vue.extend({
         columnOrderValue: {
             type: String,
         },
+        columnOrderDirection: {
+            type: String,
+            default: SortOrderDirection.Asc,
+        },
+        columnOrderDataset: {
+            type: Array,
+        },
         rowOrderType: {
             type: String,
             default: OrderingType.Cluster,
@@ -85,6 +92,9 @@ export default Vue.extend({
             type: String,
             default: SortOrderDirection.Asc,
         },
+        rowOrderDataset: {
+            type: Array,
+        },
         groupLabels: {
             required: true,
             type: Array, /* Array<string> */
@@ -103,9 +113,11 @@ export default Vue.extend({
             default: 'Value',
         },
         selectedRow: {
+            type: String,
             default: null,
         },
         selectedCol: {
+            type: String,
             default: null,
         },
     },
@@ -125,6 +137,18 @@ export default Vue.extend({
         selectedCol: {
             handler(newValue) {
                 this.showSelectedCol(newValue);
+            },
+            immediate: true,
+        },
+        rowOrder: {
+            handler(newValue) {
+                this.$emit('row-order-changed', newValue);
+            },
+            immediate: true,
+        },
+        columnOrder: {
+            handler(newValue) {
+                this.$emit('col-order-changed', newValue);
             },
             immediate: true,
         },
@@ -227,6 +251,21 @@ export default Vue.extend({
                 case OrderingType.Cluster:
                     return this.clusteredColumnOrder;
 
+                case OrderingType.Value:
+                    return (this.data as HeatmapTile[])
+                               .filter((u) => u[this.rowKey] === this.rowOrderValue)
+                               .sort((a, b) => {
+                                   if (this.columnOrderDirection === SortOrderDirection.Asc) {
+                                       return b[this.valueKey] - a[this.valueKey];
+                                   } else {
+                                       return a[this.valueKey] - b[this.valueKey];
+                                   }
+                               })
+                               .map((u) => u[this.columnKey]);
+
+                case OrderingType.Dataset:
+                    return this.columnOrderDataset as string[] || [];
+
                 case OrderingType.Natural:
                 default:
                     return this.groupLabels as string[];
@@ -255,6 +294,9 @@ export default Vue.extend({
                                })
                                .map((u) => u[this.rowKey]);
 
+                case OrderingType.Dataset:
+                    return this.rowOrderDataset as number[] || [];
+
                 case OrderingType.Natural:
                 default:
                     return [...new Set((this.data as HeatmapTile[]).map((u) => u[this.rowKey]))].sort((a, b) => a - b);
@@ -276,9 +318,8 @@ export default Vue.extend({
             if (this.data !== null) {
                 ext = extent((this.data as HeatmapTile[]).map((n) => n[this.valueKey])) as [number, number];
             }
-            const z = scaleSequential(this.colormap)
+            const z = scaleSequential(this.colormap || ((t) => t))
                 .domain(ext as [number, number]);
-
             return { x, y, z };
         },
         columnLinks(): any[] {
