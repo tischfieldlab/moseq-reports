@@ -56,6 +56,7 @@ function beginLoadingProcess(filename: string) {
             }
         })
         .then(() => {
+            app.$bvToast.hide('loading-toast');
             app.$root.$emit('finish-dataset-load');
             app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
                 title: 'Data loaded successfully!',
@@ -64,6 +65,7 @@ function beginLoadingProcess(filename: string) {
             });
         })
         .catch((reason) => {
+            app.$bvToast.hide('loading-toast');
             /* tslint:disable-next-line:no-console */
             console.error(reason);
             app.$root.$emit('fail-dataset-load');
@@ -89,6 +91,7 @@ function showStartLoadingToast() {
     ];
 
     app.$bvToast.toast(body, {
+        id: 'loading-toast',
         title: 'Loading Data',
         variant: 'info',
         toaster: 'b-toaster-bottom-right',
