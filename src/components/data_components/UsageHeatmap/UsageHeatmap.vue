@@ -47,9 +47,9 @@ import { Operation } from '../../Core/DataLoader/DataLoader.types';
 
 
 RegisterDataComponent({
-    friendly_name: 'Clustered Usage Heatmap',
-    component_type: 'ClusteredHeatmap',
-    settings_type: 'ClusteredHeatmapOptions',
+    friendly_name: 'Usage Heatmap',
+    component_type: 'UsageHeatmap',
+    settings_type: 'UsageHeatmapOptions',
     init_width: 400,
     init_height: 500,
     default_settings: {
