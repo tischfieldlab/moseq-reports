@@ -13,8 +13,6 @@ export interface DataviewState {
     groupColors: string[];
     moduleIdFilter: number[];
     selectedSyllable: number;
-    view: any;
-    viewSpecs: {};
     views: {};
 }
 
@@ -37,4 +35,9 @@ export interface DataViewSpec {
     columns: (string|[string, string])[];
     sorting?: SortSpec|undefined;
     filter?: {[key: string]: any[]}|undefined;
+}
+export interface PublishedDataset {
+    owner: string;
+    name: string;
+    data: any;
 }

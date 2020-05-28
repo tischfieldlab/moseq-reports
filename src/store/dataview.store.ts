@@ -5,9 +5,8 @@ import { schemeDark2 } from 'd3-scale-chromatic';
 import { scaleOrdinal } from 'd3-scale';
 import store from './root.store';
 import { getModuleNamespace } from '@/util/Vuex';
-import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, DataViewSpec } from '@/store/dataview.types';
+import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, DataViewSpec, PublishedDataset } from '@/store/dataview.types';
 import Vue from 'vue';
-import LoadData from '@/components/Core/DataLoader/DataLoader';
 
 
 
@@ -23,8 +22,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
             groupColors: [],
             moduleIdFilter: [],
             selectedSyllable: 0,
-            view: null,
-            viewSpecs: {},
             views: {},
         };
     },
@@ -54,16 +51,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
         },
     },
     mutations: {
-        /*mountDataset(state, spec: DataViewSpec) {;
-            const name = JSON.stringify(spec);
-            if (!(name in state.views)) {
-                Vue.set(state.viewSpecs, name, spec);
-            }
-            return name;
-        },
-        updateDataset(state, payload: {name: string, data: any}) {
-            Vue.set(state.views, payload.name, payload.data);
-        },*/
         setLoading(state, loading: boolean) {
             state.loading = loading;
         },
@@ -88,6 +75,9 @@ const DataviewModule: Module<DataviewState, RootState> = {
         setSelectedSyllable(state, selectedSyllable: number) {
             state.selectedSyllable = selectedSyllable;
         },
+        publishDataset(state, payload: PublishedDataset) {
+            Vue.set(state.views, `${payload.owner}/${payload.name}`, payload);
+        }
     },
     actions: {
         switchCountMethod(context, payload: CountMethod) {
@@ -117,16 +107,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 } as DataviewPayload);
             }
         },
-        /*updateViews(context) {
-            for (const name in context.state.viewSpecs) {
-                const spec = context.state.viewSpecs[name] as DataViewSpec;
-                const filter = !spec.filter ? undefined : Object.entries(spec.filter).map(([name, vals]) => )
-                context.commit('updateDataset', {
-                    name,
-                    data: LoadData(spec.dataset, spec.columns, spec.sorting, spec.filter),
-                });
-            }
-        },*/
         async updateView(context, payload: DataviewPayload) {
             context.commit('setLoading', true);
             try {
