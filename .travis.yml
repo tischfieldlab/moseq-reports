@@ -47,20 +47,20 @@ jobs:
         - git tag ${PACKAGE_VERSION}
         - npm run package-release
       
-      # Need this to be separate as it is the job that closes the release. Travis
-      # likes to build in parallel, so this job needs to run last.
-    - stage: deploy_builds
-      os: linux
-      language: node_js
-      node_js: 12
-      script:
-        - export PACKAGE_VERSION=$(npm run --silent version)
-        - git tag ${PACKAGE_VERSION}
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        tag_name: ${PACKAGE_VERSION}
-        draft: false
-        on:
-          branch: auto-update
+    #   # Need this to be separate as it is the job that closes the release. Travis
+    #   # likes to build in parallel, so this job needs to run last.
+    # - stage: deploy_builds
+    #   os: linux
+    #   language: node_js
+    #   node_js: 12
+    #   script:
+    #     - export PACKAGE_VERSION=$(npm run --silent version)
+    #     - git tag ${PACKAGE_VERSION}
+    #   deploy:
+    #     provider: releases
+    #     api_key: ${GH_TOKEN}
+    #     skip_cleanup: true
+    #     tag_name: ${PACKAGE_VERSION}
+    #     draft: false
+    #     on:
+    #       branch: auto-update
