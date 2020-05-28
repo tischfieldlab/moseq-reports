@@ -5,7 +5,7 @@ import { schemeDark2 } from 'd3-scale-chromatic';
 import { scaleOrdinal } from 'd3-scale';
 import store from './root.store';
 import { getModuleNamespace } from '@/util/Vuex';
-import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, DataViewSpec, PublishedDataset } from '@/store/dataview.types';
+import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, PublishedDataset } from '@/store/dataview.types';
 import Vue from 'vue';
 
 

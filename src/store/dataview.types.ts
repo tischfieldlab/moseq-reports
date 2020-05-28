@@ -1,4 +1,3 @@
-import { SortSpec } from '@/components/Core/DataLoader/DataLoader.types';
 
 export enum CountMethod {
     Usage = 'Usage',
@@ -29,13 +28,6 @@ export interface SelectedGroupsPayload {
     colors?: string[];
 }
 
-export interface DataViewSpec {
-    dataset: string;
-    dependOn: string[];
-    columns: (string|[string, string])[];
-    sorting?: SortSpec|undefined;
-    filter?: {[key: string]: any[]}|undefined;
-}
 export interface PublishedDataset {
     owner: string;
     name: string;
