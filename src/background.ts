@@ -125,7 +125,7 @@ import { Updater } from '@/util/AppUpdater';
 if (process.env.NODE_ENV !== 'development') {
     Updater.checkForUpdates();
 
-    Updater.addCallback('update-available', () => { openDialog(); Updater.downloadUpdates() });
+    Updater.addCallback('update-available', () => { openDialog(); Updater.downloadUpdates(); });
     Updater.addCallback('update-downloaded', () => { Updater.restartAndInstall(); });
 
     function downloadProgress(progressObj: any) {
