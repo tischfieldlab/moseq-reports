@@ -99,9 +99,9 @@ export function aggregate(data: object[], op: AggregateOperation) {
 
 export function pluck(data: object|object[], op: PluckOperation) {
     if (Array.isArray(data)) {
-        return data.map((row) => unnest(row, op.column));
+        return data.map((row) => row[op.column]);
     } else {
-        return unnest(data, op.column);
+        return data[op.column];
     }
 }
 
@@ -130,10 +130,6 @@ export function readFileContents(path: string) {
                 reject(err);
             });
             zip.on('ready', async () => {
-                /*for (const entry of Object.values(zip.entries())) {
-                    const desc = entry.isDirectory ? 'directory' : `${entry.size} bytes`;
-                    console.log(`Entry ${entry.name}: ${desc}`);
-                }*/
                 try {
                     const entry = zip.entryDataSync(entryname);
                     if (entry !== null) {

@@ -10,15 +10,23 @@ const exposedMethods = {
         const cacheName = path;
 
         if (!cache.hasOwnProperty(cacheName)) {
-            try {
+            // try {
                 cache[cacheName] = await readFileContents(path)
                                         .then((buffer) =>  buffer.toString())
                                         .then((data) => jsonParseZipEntryContainingNaN(data));
-            } catch (e) {
+            /*} catch (e) {
                 throw new Error(`Error loading '${path}': ${e}`);
-            }
+            }*/
         }
         let pipe = Promise.resolve(cache[cacheName]);
+
+        if (debug) {
+            pipe = pipe.then((data) => {
+                // tslint:disable-next-line:no-console
+                console.log('loaded', data);
+                return data;
+            });
+        }
 
         for (const operator of operations) {
             switch (operator.type) {
