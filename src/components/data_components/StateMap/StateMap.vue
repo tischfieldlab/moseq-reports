@@ -91,7 +91,7 @@ export default mixins(WindowMixin).extend({
         return {
             graph: {} as {nodes: Node[], links: Link[]},
             simulation: {} as any,
-            drag: ((s) => d3.drag()) as (sim: d3.Simulation<d3.SimulationNodeDatum, d3.SimulationLinkDatum<d3.SimulationNodeDatum>>) => d3.DragBehavior<Element, unknown, unknown>,
+            drag: ((s) => d3.drag()) as any,
         };
     },
     async mounted() {

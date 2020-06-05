@@ -17,7 +17,7 @@ export type Operation = KeysOperation|PluckOperation|SortOperation|FilterOperati
 
 export interface PluckOperation {
     type: 'pluck';
-    column: string;
+    column: string|string[];
 }
 export interface KeysOperation {
     type: 'keys';

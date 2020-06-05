@@ -158,6 +158,11 @@ div.editable-text {
     display: inline;
 }
 div.editable-text >>> input {
-    display: inline;
+    width: calc(100% - 60px);
+    display: inline-block;
+}
+.card-header {
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
 }
 </style>

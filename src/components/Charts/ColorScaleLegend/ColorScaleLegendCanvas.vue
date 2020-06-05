@@ -43,8 +43,9 @@ export default mixins(ColorScaleLegendBase).extend({
             grad = cxt.createLinearGradient(0, this.height, 0, 0);
         }
         if (!(this.scale.domain() as number[]).includes(NaN)) {
-            grad.addColorStop(0, this.scale(this.scale.domain()[0]));
-            grad.addColorStop(1, this.scale(this.scale.domain()[1]));
+            for (const [i, d] of this.scale.domain().entries()) {
+                grad.addColorStop((i/(this.scale.domain().length-1)), this.scale(d));
+            }
         }
         cxt.fillStyle = grad;
         cxt.fillRect(0, 0, this.width, this.height);
