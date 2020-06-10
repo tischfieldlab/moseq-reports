@@ -84,6 +84,19 @@ const DataviewModule: Module<DataviewState, RootState> = {
         }
     },
     actions: {
+        serialize(context): any {
+            return {
+                countMethod: context.state.countMethod,
+                selectedGroups: context.state.selectedGroups,
+                groupColors: context.state.groupColors,
+                moduleIdFilter: context.state.moduleIdFilter,
+                selectedSyllable: context.state.selectedSyllable,
+            };
+        },
+        load(context, payload) {
+            context.dispatch('updateView', payload);
+            context.commit('setSelectedSyllable', payload.selectedSyllable);
+        },
         switchCountMethod(context, payload: CountMethod) {
             const newSyllable = context.getters.selectedSyllableAs(payload);
             context.dispatch('updateView', {

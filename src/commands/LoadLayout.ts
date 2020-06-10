@@ -27,14 +27,27 @@ export function LoadDefaultLayout() {
     });
 }
 
-export function LoadLayoutFile(filename: string) {
+export async function LoadLayoutFile(filename: string) {
     const data = fs.readFileSync(filename).toString();
-    const content: DehydratedDataWindow[] = JSON.parse(data) as DehydratedDataWindow[];
-    store.dispatch('datawindows/loadLayout', content);
+    let content = JSON.parse(data);
+    if (Array.isArray(content)) {
+        //old style, list of window layouts
+        store.dispatch('datawindows/loadLayout', content);
+        return;
+    }
+    content = content as {filters: any, layout: any};
+    await store.dispatch('filters/loadFilters', content.filters);
+    await store.dispatch('datawindows/loadLayout', content.layout);
 }
 
-export function SaveLayout() {
-    const data = store.dispatch('datawindows/serializeLayout');
+export async function SaveLayout() {
+    const layout = await store.dispatch('datawindows/serializeLayout');
+    const filters = await store.dispatch('filters/serializeFilters');
+    const data = {
+        layout,
+        filters,
+    }
+    console.log(data);
     const contents = JSON.stringify(data, null, '\t');
     saveFile('layout.json', 'data:text/json', contents);
 }
