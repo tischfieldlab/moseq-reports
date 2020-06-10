@@ -258,7 +258,7 @@ export default mixins(WindowMixin).extend({
 
                 z = scaleDiverging(GetScale(this.settings.colorscale))
                             .domain(transDomain  as [number, number, number]);
-                zo = scaleDiverging(this.settings.use_opacity ? 
+                zo = scaleDiverging(this.settings.use_opacity ?
                                         GetScaleWithOpacity(this.settings.colorscale, zo) :
                                         GetScale(this.settings.colorscale))
                             .domain(transDomain  as [number, number, number]);
@@ -277,7 +277,6 @@ export default mixins(WindowMixin).extend({
                 zo = scaleSequential(GetScaleWithOpacity(this.settings.colorscale, o))
                             .domain(transDomain as [number, number]);
             }
-            console.log(o(-abstransMax), o(0), o(abstransMax));
             return { r, t, o, z, zo };
         },
         sourceData(): any {

@@ -3,7 +3,7 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="Colormap">
-                    <b-form-select v-model="colorscale" :options="color_options"></b-form-select>
+                    <ColorScalePicker v-model="colorscale" />
                 </b-input-group>
             </b-col>
         </b-row>
@@ -82,14 +82,16 @@
 
 <script scoped lang="ts">
 import Vue from 'vue';
-import { GetInterpolatedScaleOptions } from '@/components/Charts/D3ColorProvider';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import DatasetPicker from '@/components/DatasetPicker.vue';
+import ColorScalePicker from '@/components/ColorScalePicker.vue';
+
 
 export default mixins(WindowMixin).extend({
     components: {
+        ColorScalePicker,
         DatasetPicker,
     },
     mounted() {
@@ -240,7 +242,6 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
-            color_options: GetInterpolatedScaleOptions(),
             syllable_order_options: [
                 { text: 'Syllable ID', value: OrderingType.Natural },
                 { text: 'Syllable Value', value: OrderingType.Value },
