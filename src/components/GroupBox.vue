@@ -89,14 +89,22 @@ export default Vue.extend({
             (state, getters) => {
                 return getters[`${this.datasource}/availableGroups`];
             },
-            () => { this.buildGroups(); },
+            () => {
+                if (this.datasource !== undefined) {
+                    this.buildGroups();
+                }
+            },
             { immediate: true },
         ));
         this.watchers.push(this.$store.watch(
             (state, getters) => {
+                const dv = unnest(state, this.datasource);
+                if (dv === undefined) {
+                    return {};
+                }
                 return {
-                    c: unnest(state, this.datasource).groupColors as string[],
-                    s: unnest(state, this.datasource).selectedGroups as string[],
+                    c: unnest(state, this.datasource).groupColors || [] as string[],
+                    s: unnest(state, this.datasource).selectedGroups || [] as string[],
                 };
             },
             (newValue) => {
@@ -119,9 +127,9 @@ export default Vue.extend({
     methods: {
         buildGroups() {
             this.groups = []; // Need to reset this so that we don't have duplicate options.
-            const availableGroups = this.$store.getters[`${this.datasource}/availableGroups`];
-            const selectedGroups = this.dataview.selectedGroups;
-            const colorScale =  this.dataview.groupColors;
+            const availableGroups = this.$store.getters[`${this.datasource}/availableGroups`] || [];
+            const selectedGroups = this.dataview !== undefined ? this.dataview.selectedGroups : [];
+            const colorScale = this.dataview !== undefined ? this.dataview.groupColors : [];
             availableGroups.map((g, i) => {
                 const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
                 sgi.color = colorScale[i];

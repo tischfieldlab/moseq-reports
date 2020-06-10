@@ -63,6 +63,9 @@ export default Vue.component('datafilter', {
     computed: {
         filter_name: {
             get(): string {
+                if (this.dataview === undefined) {
+                    return '';
+                }
                 return this.dataview.name;
             },
             set(value: string) {
@@ -77,6 +80,9 @@ export default Vue.component('datafilter', {
         },
         selectedCountMethod: {
             get(): CountMethod {
+                if (this.dataview === undefined) {
+                    return CountMethod.Usage;
+                }
                 return this.dataview.countMethod;
             },
             set(value: CountMethod) {
@@ -87,6 +93,9 @@ export default Vue.component('datafilter', {
         },
         syllable: {
             get(): number {
+                if (this.dataview === undefined) {
+                    return 0;
+                }
                 return this.dataview.selectedSyllable;
             },
             set(value: number) {
@@ -96,6 +105,9 @@ export default Vue.component('datafilter', {
             },
         },
         syllableIdOptions(): { value: number, text: string }[] {
+            if (this.dataview === undefined) {
+                return [];
+            }
             const filtered = this.dataview.moduleIdFilter;
             if (filtered.length === 0) {
                 const avail = this.$store.getters[`${this.datasource}/availableModuleIds`];

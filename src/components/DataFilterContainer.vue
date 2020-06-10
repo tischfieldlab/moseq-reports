@@ -16,7 +16,7 @@
             shadow="lg">
 
             <div>
-                <template v-for="ns in filters">
+                <template v-for="ns in this.$store.state.filters.items">
                     <DataFilter :key="ns" :datasource="ns" />
                 </template>
             </div>

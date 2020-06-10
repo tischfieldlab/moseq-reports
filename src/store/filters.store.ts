@@ -33,32 +33,32 @@ const FiltersModule: Module<FiltersState, RootState> = {
     },
     actions: {
         async serializeFilters(context): Promise<any> {
-            const dehydrated_promises = context.state.items.map(async (id) => {
+            const dehydrated = context.state.items.map(async (id) => {
                 return [
                     id.split('/')[1],
                     await context.dispatch(`${id}/serialize`, undefined, {root: true}),
                 ] as [string, Promise<any>];
             });
-            return Object.fromEntries(await Promise.all(dehydrated_promises));
+            return Object.fromEntries(await Promise.all(dehydrated));
         },
         async loadFilters(context, filters: any) {
-            // clear out any existing windows
-            await context.dispatch('clearFilters');
-
+            const existing = [...context.state.items];
+            const imported: string[] = [];
             const namespace = getModuleNamespace(store, context.state) as string;
             Object.entries(filters).forEach(async ([name, filter]) => {
                 const fullpath = `${namespace}/${name}`;
-                store.registerModule([namespace, name], DataviewModule, {});
-                if ((store.state as any).datasets.usageByUsage !== null) {
-                    await store.dispatch(`${fullpath}/initialize`);
+                imported.push(fullpath);
+                if (existing.includes(fullpath)) {
+                    await store.dispatch(`${fullpath}/load`, filter, {root: true});
+                } else {
+                    store.registerModule([namespace, name], DataviewModule, {});
+                    await store.dispatch(`${fullpath}/initialize`, {root: true});
+                    await store.dispatch(`${fullpath}/load`, filter, {root: true});
+                    context.commit('addFilter', fullpath);
                 }
-                context.commit('addFilter', fullpath);
             });
-        },
-        clearFilters(context) {
-            context.state.items.map(async (id) => {
-                await context.dispatch('removeFilter', id);
-            });
+            existing.filter((ns) => !imported.includes(ns))
+                    .forEach((id) => context.dispatch('removeFilter', id));
         },
         async addFilter(context) {
             const namespace = getModuleNamespace(store, context.state) as string;

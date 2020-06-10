@@ -93,8 +93,8 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 selectedSyllable: context.state.selectedSyllable,
             };
         },
-        load(context, payload) {
-            context.dispatch('updateView', payload);
+        async load(context, payload) {
+            await context.dispatch('updateView', payload);
             context.commit('setSelectedSyllable', payload.selectedSyllable);
         },
         switchCountMethod(context, payload: CountMethod) {

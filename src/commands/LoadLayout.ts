@@ -31,13 +31,17 @@ export async function LoadLayoutFile(filename: string) {
     const data = fs.readFileSync(filename).toString();
     let content = JSON.parse(data);
     if (Array.isArray(content)) {
-        //old style, list of window layouts
+        // old style, list of window layouts
         store.dispatch('datawindows/loadLayout', content);
         return;
     }
     content = content as {filters: any, layout: any};
-    await store.dispatch('filters/loadFilters', content.filters);
-    await store.dispatch('datawindows/loadLayout', content.layout);
+    if (content.hasOwnProperty('filters')) {
+        await store.dispatch('filters/loadFilters', content.filters);
+    }
+    if (content.hasOwnProperty('layout')) {
+        await store.dispatch('datawindows/loadLayout', content.layout);
+    }
 }
 
 export async function SaveLayout() {
@@ -46,8 +50,7 @@ export async function SaveLayout() {
     const data = {
         layout,
         filters,
-    }
-    console.log(data);
+    };
     const contents = JSON.stringify(data, null, '\t');
     saveFile('layout.json', 'data:text/json', contents);
 }
