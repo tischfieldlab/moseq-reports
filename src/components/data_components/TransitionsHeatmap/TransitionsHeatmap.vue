@@ -66,7 +66,7 @@ import { CountMethod } from '../../../store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 
 
-
+/*
 RegisterDataComponent({
     friendly_name: 'Transitions Heatmap',
     component_type: 'TransitionsHeatmap',
@@ -77,7 +77,7 @@ RegisterDataComponent({
         abs_colormap: 'interpolateViridis',
         rel_colormap: 'interpolatePuOr',
     },
-});
+});*/
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
