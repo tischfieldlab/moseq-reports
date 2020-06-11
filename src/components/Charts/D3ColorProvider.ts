@@ -28,5 +28,5 @@ export function GetScaleWithOpacity(name: string, opacity: any) {
             .replace(')', `, ${opacity(t)})`);
         // console.log(t, base(t), opacity(t), out);
         return out;
-    }
+    };
 }

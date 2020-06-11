@@ -20,7 +20,7 @@ export default Vue.component('dataset-picker', {
         },
         owner: {
             type: String,
-        }
+        },
     },
     computed: {
         options(): {text: string, value: string}[] {
@@ -37,7 +37,7 @@ export default Vue.component('dataset-picker', {
                     return undefined;
                 }
             })
-            .filter((item) => item !== undefined) as {window: any, text: string, value: string}[])
+            .filter((item) => item !== undefined) as Array<{window: any, text: string, value: string}>)
             .filter(this.filters as (item: any) => boolean);
         },
     },

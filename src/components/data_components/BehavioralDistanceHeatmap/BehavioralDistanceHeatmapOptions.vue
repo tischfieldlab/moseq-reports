@@ -128,12 +128,12 @@ export default mixins(WindowMixin).extend({
         DatasetPicker,
     },
     watch: {
-        method_options_spec:{
+        method_options_spec: {
             async handler(newValue) {
                 this.method_options = await LoadData(this.method_options_spec[0], this.method_options_spec[1]);
             },
             immediate: true,
-        }
+        },
     },
     computed: {
         method_options_spec(): any[] {

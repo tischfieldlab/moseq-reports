@@ -60,7 +60,7 @@ import ColorScalePicker from '@/components/ColorScalePicker.vue';
 
 export default mixins(WindowMixin).extend({
     components: {
-        ColorScalePicker
+        ColorScalePicker,
     },
     mounted() {
         if (this.plot_group === undefined) {
@@ -177,7 +177,7 @@ export default mixins(WindowMixin).extend({
             color_options: GetInterpolatedScaleOptions(),
             available_layouts: [
                 'grid', 'circle', 'concentric', 'avsdf',
-            ]
+            ],
         };
     },
 });

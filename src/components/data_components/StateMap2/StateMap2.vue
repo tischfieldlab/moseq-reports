@@ -56,7 +56,7 @@ interface Node {
         id: number;
         name: string;
         usage: number;
-    }
+    };
 }
 
 interface Link {
@@ -149,7 +149,7 @@ export default mixins(WindowMixin).extend({
                         'label': 'data(id)',
                         'width': (n) => this.scale.r(n.data('usage')),
                         'height': (n) => this.scale.r(n.data('usage')),
-                    }
+                    },
                 },
                 {
                     selector: 'edge',
@@ -159,15 +159,15 @@ export default mixins(WindowMixin).extend({
                         'line-color': (d) => this.scale.z(d.data('weight')),
                         'target-arrow-color': (d) => this.scale.z(d.data('weight')),
                         'target-arrow-shape': 'triangle',
-                        'curve-style': 'bezier'
-                    }
+                        'curve-style': 'bezier',
+                    },
                 },
                 {
                     selector: 'edge:active',
                     style: {
-                        'label': 'data(id)',
-                    }
-                }
+                        label: 'data(id)',
+                    },
+                },
             ];
         },
         elements(): any[] {
@@ -233,8 +233,12 @@ export default mixins(WindowMixin).extend({
                         .domain(extent((this.usages).map((n) => n.usage)) as [number, number])
                         .range([5, 20]);
 
-            const abstransMax = this.links.length > 0 ? max(this.links, (d) => Math.abs(d.data.weight)) as number : 1;
-            const transExtent = this.links.length > 0 ? extent(this.links, (d) => d.data.weight) as [number, number] : 1;
+            const abstransMax = this.links.length > 0 ?
+                max(this.links, (d) => Math.abs(d.data.weight)) as number : 1;
+
+            const transExtent = this.links.length > 0 ?
+                extent(this.links, (d) => d.data.weight) as [number, number] : 1;
+
             let transDomain: number[];
             let t;
             let o;
@@ -355,7 +359,7 @@ export default mixins(WindowMixin).extend({
         linkColor(l) {
             return this.scale.z(l.data('weight'));
                         /*.replace('rgb', 'rgba')
-                        .replace(')', `, ${this.scale.o(Math.abs(l.data('weight')))})`)*/;
+                        .replace(')', `, ${this.scale.o(Math.abs(l.data('weight')))})`)*/
         },
         onNodeClick(event) {
             if (event.target && event.target._private.data.id) {

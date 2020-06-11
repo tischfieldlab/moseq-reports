@@ -27,14 +27,14 @@ export default Vue.component('dataset-picker', {
         return {
             edit: false,
             local_value: this.value,
-        }
+        };
     },
     watch: {
         value: {
             handler() {
                 this.local_value = this.value;
-            }
-        }
+            },
+        },
     },
     methods: {
         onInput(event) {
@@ -48,7 +48,7 @@ export default Vue.component('dataset-picker', {
     },
     directives: {
         focus: {
-            inserted (el) {
+            inserted(el) {
                 el.focus();
             },
         },

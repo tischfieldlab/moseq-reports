@@ -88,7 +88,7 @@ export default Vue.extend({
         };
     },
     watch: {
-        value:{
+        value: {
             handler(newValue) {
                 this.selected = this.options.find((o) => o.value === newValue);
             },
@@ -104,8 +104,8 @@ export default Vue.extend({
         select(option) {
             this.selected = option;
             this.$emit('input', option.value);
-        }
-    }
+        },
+    },
 });
 </script>
 
