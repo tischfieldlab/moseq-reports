@@ -20,7 +20,7 @@ export default Vue.component('dataset-picker', {
         },
         owner: {
             type: String,
-        }
+        },
     },
     computed: {
         options(): {text: string, value: string}[] {

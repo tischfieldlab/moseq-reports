@@ -17,7 +17,7 @@ export type Operation = KeysOperation|PluckOperation|SortOperation|FilterOperati
 
 export interface PluckOperation {
     type: 'pluck';
-    column: string;
+    column: string|string[];
 }
 export interface KeysOperation {
     type: 'keys';
@@ -33,7 +33,7 @@ export interface FilterOperation {
 }
 export interface MapOperation {
     type: 'map';
-    columns?: (string|[string, string])[];
+    columns?: ([string, string]|string)[];
 }
 export interface AggregateOperation {
     type: 'aggregate';

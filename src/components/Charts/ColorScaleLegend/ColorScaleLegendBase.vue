@@ -97,8 +97,9 @@ export default Vue.component('color-scale-legend', {
         },
         linearscale(): ScaleLinear<number, number> {
             const range = this.isHorizontal ? [-this.width / 2, this.width / 2] : [this.height / 2, -this.height / 2];
+            const d = this.scale.domain();
             return scaleLinear()
-                .domain(this.scale.domain())
+                .domain([d[0], d[d.length - 1]])
                 .range(range);
         },
     },

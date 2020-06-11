@@ -81,7 +81,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
         },
         publishDataset(state, payload: PublishedDataset) {
             Vue.set(state.views, `${payload.owner}/${payload.name}`, payload);
-        }
+        },
     },
     actions: {
         serialize(context): any {

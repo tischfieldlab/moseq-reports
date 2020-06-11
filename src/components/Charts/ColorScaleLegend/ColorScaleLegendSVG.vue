@@ -2,8 +2,12 @@
     <g class="legend">
         <defs>
             <linearGradient :id="$id('color-gradiant')" :x1="offsets.x1" :x2="offsets.x2" :y1="offsets.y1" :y2="offsets.y2">
-                <stop offset="0%" :stop-color="scale(scale.domain()[0])" />
-                <stop offset="100%" :stop-color="scale(scale.domain()[1])" />
+                <template v-for="(d, i) in scale.domain()">
+                    <stop 
+                        :key="d"
+                        :offset="`${(i/(scale.domain().length-1))*100}%`"
+                        :stop-color="scale(d)" />
+                </template>
             </linearGradient>
         </defs>
         <rect

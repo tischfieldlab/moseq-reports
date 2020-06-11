@@ -175,7 +175,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             ctx.textBaseline = 'middle';
             ctx.fillStyle = 'black';
             ctx.font = '13px Verdana';
-            ctx.fillText(this.xAxisTitle, this.dims.xaxis.w/2, this.dims.xaxis.ly);
+            ctx.fillText(this.xAxisTitle, this.dims.xaxis.w / 2, this.dims.xaxis.ly);
             ctx.restore();
 
             ctx.restore();
@@ -220,7 +220,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.font = '13px Verdana';
-            ctx.fillText(this.yAxisTitle, -this.dims.yaxis.h/2, 50);
+            ctx.fillText(this.yAxisTitle, -this.dims.yaxis.h / 2, 50);
             ctx.restore();
 
             ctx.restore();
