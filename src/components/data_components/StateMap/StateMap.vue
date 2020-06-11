@@ -35,9 +35,9 @@ cytoscape.use(avsdf);
 
 
 RegisterDataComponent({
-    friendly_name: 'State Map 2',
-    component_type: 'StateMap2',
-    settings_type: 'StateMap2Options',
+    friendly_name: 'State Map',
+    component_type: 'StateMap',
+    settings_type: 'StateMapOptions',
     init_width: 400,
     init_height: 500,
     default_settings: {
