@@ -84,8 +84,8 @@ export default mixins(WindowMixin).extend({
                 if (s === undefined) {
                     return;
                 }
-                this.usages = await LoadData(s.usage[0], s.usage[1], true);
-                this.transitions = await LoadData(s.transitions[0], s.transitions[1], true);
+                this.usages = await LoadData(s.usage[0], s.usage[1], false);
+                this.transitions = await LoadData(s.transitions[0], s.transitions[1], false);
             },
             immediate: true,
         },
