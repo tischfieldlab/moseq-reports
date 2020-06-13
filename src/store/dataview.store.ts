@@ -39,6 +39,21 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 return -5;
             }
         },
+        selectedSyllableMap: (state, _, rootState) => {
+            const lmd = (rootState as any).datasets.label_map;
+            const lm = new DataFrame(lmd.data, lmd.columns);
+            const from = state.countMethod.toLowerCase();
+            const result = lm.find({[from]: state.selectedSyllable});
+            if (result !== undefined) {
+                return {
+                    [CountMethod.Frames.toLowerCase()]: result.get(CountMethod.Frames.toLowerCase()),
+                    [CountMethod.Usage.toLowerCase()]: result.get(CountMethod.Usage.toLowerCase()),
+                    [CountMethod.Raw.toLowerCase()]: result.get(CountMethod.Raw.toLowerCase()),
+                };
+            } else {
+                return undefined;
+            }
+        },
         availableModuleIds: (state, getters, rootState, rootGetters) => {
             if (state.countMethod === CountMethod.Usage) {
                 return rootGetters['datasets/availableUsageModuleIds'];
