@@ -187,17 +187,25 @@ function autoType(object) {
         let value = object[key].trim();
         let num;
         let m;
-        if (!value) value = null;
-        else if (value === 'true') value = true;
-        else if (value === 'false') value = false;
-        else if (value === 'NaN') value = NaN;
-        else if (!isNaN(num = +value)) value = num;
-        else if (value.match(pattern)) {
+        if (!value) {
+            value = null;
+        } else if (value === 'true') {
+            value = true;
+        } else if (value === 'false') {
+            value = false;
+        } else if (value === 'NaN') {
+            value = NaN;
+        } else if (!isNaN(num = +value)) {
+            value = num;
+        } else if (value.match(pattern)) {
             m = value.match(pattern)
-            if (fixtz && !!m[4] && !m[7]) value = value.replace(/-/g, '/').replace(/T/, ' ');
+            if (fixtz && !!m[4] && !m[7]) {
+                value = value.replace(/-/g, '/').replace(/T/, ' ');
+            }
             value = new Date(value);
+        } else {
+            continue;
         }
-        else continue;
         object[key] = value;
     }
     return object;
