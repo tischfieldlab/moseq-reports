@@ -11,6 +11,7 @@ import {
 import { groupby } from '@/util/Array';
 import { unnest } from '@/util/Vuex';
 import { mean, median, sum, min, max } from 'd3-array';
+import { tsvParse, csvParse } from 'd3-dsv';
 import StreamZip from 'node-stream-zip';
 import fs from 'fs';
 
@@ -163,3 +164,43 @@ export function readFileContents(path: string) {
         return fs.promises.readFile(path);
     }
 }
+
+export function getParser(filename) {
+    const ext = filename.split('.').pop();
+    switch(ext) {
+        case 'json':
+            return jsonParseZipEntryContainingNaN;
+        case 'tsv':
+            return (data) => tsvParse(data, autoType);
+        case 'csv':
+            return (data) => csvParse(data, autoType);
+        default:
+            return (data) => data;
+    }
+}
+
+
+/* This should be imported from d3-dsv, but isnt present in types! */
+function autoType(object) {
+    const pattern = /^([-+]\d{2})?\d{4}(-\d{2}(-\d{2})?)?(T\d{2}:\d{2}(:\d{2}(\.\d{3})?)?(Z|[-+]\d{2}:\d{2})?)?$/
+    for (const key of Object.keys(object)) {
+        let value = object[key].trim();
+        let num;
+        let m;
+        if (!value) value = null;
+        else if (value === 'true') value = true;
+        else if (value === 'false') value = false;
+        else if (value === 'NaN') value = NaN;
+        else if (!isNaN(num = +value)) value = num;
+        else if (value.match(pattern)) {
+            m = value.match(pattern)
+            if (fixtz && !!m[4] && !m[7]) value = value.replace(/-/g, '/').replace(/T/, ' ');
+            value = new Date(value);
+        }
+        else continue;
+        object[key] = value;
+    }
+    return object;
+}
+// https://github.com/d3/d3-dsv/issues/45
+const fixtz = new Date('2019-01-01T00:00').getHours() || new Date('2019-07-01T00:00').getHours();

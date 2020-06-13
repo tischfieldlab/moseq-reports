@@ -1,24 +1,41 @@
 import { expose } from 'threads/worker';
 import { Operation } from './DataLoader.types';
-import { readFileContents, mapColumns, filterBy, sortBy, aggregate, jsonParseZipEntryContainingNaN, pluck, keys } from './DataLoader.lib';
+import { readFileContents, mapColumns, filterBy, sortBy, aggregate, getParser, pluck, keys } from './DataLoader.lib';
+
+import LRU from 'lru-cache';
+import sizeof from 'object-sizeof';
 
 
-const cache = {};
+const cache = new LRU({
+    max: 1024 * 1024 * 1024, // 1GB
+    length: (item, key) => sizeof(item),
+    stale: true,
+});
 
 const exposedMethods = {
     async LoadJson(path: string, operations: Operation[], debug?: boolean) {
         const cacheName = path;
+        let hit = true;
+        if (!cache.has(cacheName)) {
+            hit = false;
+            const loader = readFileContents(path)
+                            .then((buffer) => buffer.toString())
+                            .then((data) => getParser(path)(data));
 
-        if (!cache.hasOwnProperty(cacheName)) {
-            // try {
-                cache[cacheName] = await readFileContents(path)
-                                        .then((buffer) =>  buffer.toString())
-                                        .then((data) => jsonParseZipEntryContainingNaN(data));
-            /*} catch (e) {
-                throw new Error(`Error loading '${path}': ${e}`);
-            }*/
+            cache.set(cacheName, await loader);
         }
-        let pipe = Promise.resolve(cache[cacheName]);
+
+        if (debug) {
+            // tslint:disable-next-line:no-console
+            console.log({
+                hit,
+                keys: cache.keys(),
+                size: cache.length,
+                count: cache.itemCount,
+            });
+        }
+
+        let pipe = Promise.resolve(cache.get(cacheName));
 
         if (debug) {
             pipe = pipe.then((data) => {
