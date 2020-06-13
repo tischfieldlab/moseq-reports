@@ -16,6 +16,9 @@ import router from './router';
 import store from './store/root.store';
 import './registerServiceWorker';
 
+import {CreateServer, ShutdownServer} from '@/components/Core/DataLoader/DataServer';
+
+
 
 // Bootstrap Stuff
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
@@ -47,6 +50,12 @@ const vm = new Vue({
     router,
     store,
     render: (h) => h(App),
+    beforeCreate() {
+        CreateServer();
+    },
+    beforeDestroy() {
+        ShutdownServer();
+    }
 }).$mount('#app');
 
 export default vm;
