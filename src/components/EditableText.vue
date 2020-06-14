@@ -9,6 +9,7 @@
         </template>
         <span v-else @click="edit = true;" title="Click to edit">
             {{local_value}}
+            <b-icon icon="pencil"></b-icon>
         </span>
     </div>
 </template>

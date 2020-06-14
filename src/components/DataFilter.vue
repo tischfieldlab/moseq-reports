@@ -3,9 +3,10 @@
         <b-card>
             <template v-slot:header>
                 <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="text-dark collapse-button text-decoration-none">
-                    <span class="when-opened">&#x25BC;</span><span class="when-closed">&#x25B6;</span>
+                    <span class="when-opened" title="Collapse Filters">&#x25BC;</span>
+                    <span class="when-closed" title="Expand Filters">&#x25B6;</span>
                 </b-button>
-                <b-button variant="link" @click="removeThis" class="text-dark remove-button text-decoration-none">
+                <b-button variant="link" title="Remove this filter" @click="removeThis" class="text-dark remove-button text-decoration-none">
                     &#x1F5D9;
                 </b-button>
                 <EditableText class="editable-text" v-model="filter_name" />

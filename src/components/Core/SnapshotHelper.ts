@@ -3,6 +3,8 @@ import { saveAs } from 'file-saver';
 import { svgAsDataUri, svgAsPngUri } from 'save-svg-as-png';
 import { Store } from 'vuex';
 import { unnest } from '@/util/Vuex';
+import app from '@/main';
+
 
 interface SnapshotOptions {
     format: string;
@@ -70,6 +72,16 @@ export default async function Snapshot(target: Vue, basename: string, options: S
     }
     if (uri) {
         return uri.then((data) => saveAs(data, basename));
+        // this shows when the dialog is open. probably need a promise or something
+                  // .then(() => notifySuccess());
     }
     return null;
+}
+
+function notifySuccess() {
+    app.$bvToast.toast('Snapshot was saved successfully.', {
+        title: 'Snapshot Success!',
+        variant: 'success',
+        toaster: 'b-toaster-bottom-right',
+    });
 }
