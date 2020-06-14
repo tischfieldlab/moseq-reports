@@ -8,7 +8,7 @@ import { saveFile } from '@/util/Files';
 export default function() {
     const filenames = remote.dialog.showOpenDialogSync({
         properties: ['openFile'],
-        defaultPath: process.cwd(),
+        // defaultPath: process.cwd(),
     });
     if (filenames === undefined) {
         return;

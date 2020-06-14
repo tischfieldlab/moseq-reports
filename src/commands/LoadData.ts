@@ -17,7 +17,7 @@ import StreamZip from 'node-stream-zip';
 export default function() {
     const filenames = remote.dialog.showOpenDialogSync({
         properties: ['openFile'],
-        defaultPath: process.cwd(),
+        // defaultPath: process.cwd(),
         filters: [
             { name: 'MoSeq Data Files', extensions: ['msq'] },
             { name: 'All Files', extensions: ['*'] },
