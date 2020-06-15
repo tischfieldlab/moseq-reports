@@ -73,13 +73,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.dataview.groupColors;
         },
         dataset(): string {
-            if (this.countMethod === CountMethod.Usage) {
-                return this.$store.getters[`datasets/resolve`]('usage_usage');
-            } else if (this.countMethod === CountMethod.Frames) {
-                return this.$store.getters[`datasets/resolve`]('usage_frames');
-            } else {
-                throw new Error(`Count method ${this.countMethod} is not supported`);
-            }
+            return this.$store.getters[`datasets/resolve`]('usage');
         },
     },
     asyncComputed: {
@@ -88,10 +82,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 {
                     type: 'map',
                     columns: [
-                        ['usage', 'value'],
+                        [`usage_${this.countMethod.toLowerCase()}`, 'value'],
                         ['group', 'group'],
-                        ['StartTime', 'id'],
-                        ['syllable', 'syllable'],
+                        [`id_${this.countMethod.toLowerCase()}`, 'syllable'],
+                        ['uuid', 'id'],
                     ],
                 },
                 {

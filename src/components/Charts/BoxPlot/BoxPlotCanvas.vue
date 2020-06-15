@@ -28,27 +28,7 @@ export default mixins(BoxPlotBase).extend({
         return {
             vueCanvas: null as CanvasRenderingContext2D | null,
             debouncedDraw: () => {/**/},
-            tooltipX: undefined as number|undefined,
-            tooltipY: undefined as number|undefined,
-            hoverItem: undefined as object|undefined,
         };
-    },
-    computed: {
-        tooltip_text(): string {
-            if (this.hoverItem !== undefined){
-                if (this.hoverItem.hasOwnProperty('value')) {
-                    const itm = this.hoverItem as DataPoint;
-                    return `Group: ${itm.group}<br />
-                            Value: ${itm.value.toExponential(3)}`;
-                } else {
-                    const itm = this.hoverItem as GroupStats;
-                    return `Group: ${itm.group}<br />
-                            Count: ${itm.count.toString()}<br />
-                            Median: ${itm.q2.toExponential(3)}<br />`;
-                }
-            }
-            return '';
-        },
     },
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;

@@ -92,6 +92,9 @@ export default Vue.extend({
             label_stats: {count: 0, total: 0, longest: 0},
             domainY: [0, 0],
             domainKde: [0, 0],
+            tooltipX: undefined as number|undefined,
+            tooltipY: undefined as number|undefined,
+            hoverItem: undefined as object|undefined,
         };
     },
     beforeDestroy() {
@@ -190,6 +193,23 @@ export default Vue.extend({
                 console.warn(`Too many points (${this.points.length}): disableing show points`);
             }
             return this.show_points && !tooMany;
+        },
+        tooltip_text(): string {
+            if (this.hoverItem !== undefined){
+                if (this.hoverItem.hasOwnProperty('id')) {
+                    const itm = this.hoverItem as DataPoint;
+                    return `ID: ${itm.id}<br />
+                            Value: ${itm.value.toExponential(3)}`;
+                } else if(this.hoverItem.hasOwnProperty('count')) {
+                    const itm = this.hoverItem as GroupStats;
+                    return `Group: ${itm.group}<br />
+                            Count: ${itm.count.toString()}<br />
+                            Median: ${itm.q2.toExponential(3)}<br />`;
+                } else {
+                    return JSON.stringify(this.hoverItem);
+                }
+            }
+            return '';
         },
     },
     watch: {

@@ -97,14 +97,6 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return [];
         },
         dataset(): [string, Operation[]] {
-            let ds;
-            if (this.countMethod === CountMethod.Usage) {
-                ds = this.$store.getters[`datasets/resolve`]('usage_usage');
-            } else if (this.countMethod === CountMethod.Frames) {
-                ds = this.$store.getters[`datasets/resolve`]('usage_frames');
-            } else {
-                throw new Error(`Count method ${this.countMethod} is not supported`);
-            }
             let syllables;
             if (this.dataview.moduleIdFilter.length === 0) {
                 syllables = this.$store.getters[`${this.datasource}/availableModuleIds`];
@@ -112,14 +104,14 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 syllables = this.dataview.moduleIdFilter;
             }
             return [
-                ds,
+                this.$store.getters[`datasets/resolve`]('usage'),
                 [
                     {
                         type: 'map',
                         columns: [
-                            ['usage', 'usage'],
+                            [`usage_${this.countMethod.toLowerCase()}`, 'usage'],
                             ['group', 'group'],
-                            ['syllable', 'syllable'],
+                            [`id_${this.countMethod.toLowerCase()}`, 'syllable'],
                         ],
                     },
                     {
@@ -143,7 +135,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     watch: {
         dataset: {
             handler(): any {
-                LoadData(...this.dataset)
+                LoadData(this.dataset[0], this.dataset[1])
                 .then((data) => this.aggregateView = data);
             },
             immediate: true,

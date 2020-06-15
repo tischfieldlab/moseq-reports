@@ -1,10 +1,12 @@
 <template>
-    <svg ref="canvas" :width="width" :height="height" >
+<div>
+    <svg ref="canvas" :width="width" :height="height" @mouseover="handleHover">
         <g v-if="show_boxplot" :transform="`translate(${margin.left}, ${margin.top})`">
             <template v-for="(node) in groupedData">
                 <g class="boxplot" :key="node.group">
                     <!-- Vertical midline -->
                     <line 
+                        :data-group="node.group"
                         stroke="#000000"
                         :x1="scale.x(node.group) + halfBandwith"
                         :y1="scale.y(fences.lower(node))"
@@ -12,6 +14,7 @@
                         :y2="scale.y(fences.upper(node))" />
                     <!-- the Box of the BoxPlot -->
                     <rect 
+                        :data-group="node.group"
                         stroke="#000000"
                         :width="halfBandwith * 2"
                         :height="scale.y(node.q3) - scale.y(node.q1)"
@@ -20,6 +23,7 @@
                         :style="{'fill': scale.c(node.group)}" />
                     <!-- Horizontal Minimum line -->
                     <line 
+                        :data-group="node.group"
                         stroke="#000000"
                         :x1="scale.x(node.group) + quaterBandwith"
                         :y1="scale.y(fences.lower(node))"
@@ -27,6 +31,7 @@
                         :y2="scale.y(fences.lower(node))" />
                     <!-- Horizontal Median line -->
                     <line 
+                        :data-group="node.group"
                         stroke="#000000"
                         :x1="scale.x(node.group)"
                         :y1="scale.y(node.q2)"
@@ -34,6 +39,7 @@
                         :y2="scale.y(node.q2)" />
                     <!-- Horizontal Maximum line -->
                     <line 
+                        :data-group="node.group"
                         stroke="#000000"
                         :x1="scale.x(node.group) + quaterBandwith"
                         :y1="scale.y(fences.upper(node))"
@@ -44,6 +50,7 @@
                         <template v-for="(node) in points">
                             <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
                             <path v-if="is_outlier(node)"
+                                :data-identifier="node.id"
                                 :key="node.id"
                                 :d="diamond()"
                                 :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.value)})`"
@@ -65,12 +72,14 @@
                 <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
                 <path v-if="is_outlier(node)"
                     :key="node.id"
+                    :data-identifier="node.id"
                     :d="diamond()"
                     :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.value)})`"
                     :style="{'fill': scale.c(node.group), stroke: '#000000'}" />
                     
                 <circle v-else
                     :key="node.id"
+                    :data-identifier="node.id"
                     :r="point_size"
                     :cx="scale.x(node.group) + node.jitter + halfBandwith"
                     :cy="scale.y(node.value)"
@@ -88,6 +97,10 @@
             </text>
         </g>
     </svg>
+    <ToolTip :x="tooltipX" :y="tooltipY">
+        <div v-html="tooltip_text" style="text-align:left;"></div>
+    </ToolTip>
+</div>
 </template>
 
 <script lang="ts">
@@ -97,11 +110,13 @@ import { axisBottom, axisLeft } from 'd3-axis';
 import BoxPlotBase from './BoxPlotBase.vue';
 import { sum } from 'd3-array';
 import mixins from 'vue-typed-mixins';
-
-
+import ToolTip from '@/components/Charts/ToolTip.vue';
 
 
 export default mixins(BoxPlotBase).extend({
+    components: {
+        ToolTip,
+    },
     methods: {
         compute_label_stats(labels: string[]) {
             const canvas = this.$refs.canvas as SVGSVGElement;
@@ -123,6 +138,31 @@ export default mixins(BoxPlotBase).extend({
                 total: sum(widths),
                 longest: Math.max(...widths),
             };
+        },
+        handleHover(event: MouseEvent) {
+            if (event && event.target !== null){
+                const target = event.target as HTMLElement;
+                // individual points have data-id set
+                if (target.dataset.identifier) {
+                    this.tooltipX = event.clientX;
+                    this.tooltipY = event.clientY;
+                    this.hoverItem = this.points.find((itm) => {
+                        return itm.id.toString() === target.dataset.identifier;
+                    });
+                    return;
+                }
+                // boxes have data-group set
+                if (target.dataset.group) {
+                    this.tooltipX = event.clientX;
+                    this.tooltipY = event.clientY;
+                    this.hoverItem = this.groupedData.find((itm) => {
+                        return itm.group.toString() === target.dataset.group;
+                    });
+                    return;
+                }
+            }
+            this.tooltipX = undefined;
+            this.tooltipY = undefined;
         },
     },
     directives: {
