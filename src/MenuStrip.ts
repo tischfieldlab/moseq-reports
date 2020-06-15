@@ -95,6 +95,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: 'Add Widget...',
                     type: 'submenu',
                     submenu: AvailableComponents()
+                            .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
                             .map((cr) => {
                                 return {
                                     label: cr.friendly_name,
