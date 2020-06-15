@@ -1,13 +1,18 @@
 <template>
-    <canvas ref="canvas" :width="width" :height="height" v-on:click="handleHeatmapClick">
-        <ColorScaleLegend
-                :title="legendTitle"
-                :scale="scale.z"
-                :width="dims.legend.w"
-                :height="10"
-                :x="dims.legend.x"
-                :y="dims.legend.y" />
-    </canvas>
+    <div>
+        <canvas ref="canvas" :width="width" :height="height" @click="handleHeatmapClick" @mousemove="handleHeatmapHover">
+            <ColorScaleLegend
+                    :title="legendTitle"
+                    :scale="scale.z"
+                    :width="dims.legend.w"
+                    :height="10"
+                    :x="dims.legend.x"
+                    :y="dims.legend.y" />
+        </canvas>
+        <ToolTip :x="tooltipX" :y="tooltipY">
+            <div v-html="tooltip_text" style="text-align:left;"></div>
+        </ToolTip>
+    </div>
 </template>
 
 
@@ -21,12 +26,14 @@ import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLeg
 import mixins from 'vue-typed-mixins';
 import ClusteredHeatmapBase from './ClusteredHeatmapBase.vue';
 import { debounce } from 'ts-debounce';
+import ToolTip from '@/components/Charts/ToolTip.vue';
 
 
 
 export default mixins(ClusteredHeatmapBase).extend({
     components: {
         ColorScaleLegend,
+        ToolTip,
     },
     provide(): {canvas: {cxt: CanvasRenderingContext2D | null}} {
         return {
@@ -264,6 +271,24 @@ export default mixins(ClusteredHeatmapBase).extend({
                     return;
                 }
             }
+        },
+        handleHeatmapHover(event: MouseEvent) {
+            for (const node of this.data as object[]) {
+                const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]);
+                const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]);
+                const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]) + this.scale.x.bandwidth();
+                const y2 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]) + this.scale.y.bandwidth();
+
+                if (event.offsetX > x1 && event.offsetX <= x2
+                 && event.offsetY > y1 && event.offsetY <= y2) {
+                    this.tooltipX = event.clientX;
+                    this.tooltipY = event.clientY;
+                    this.hoverItem = node;
+                    return;
+                }
+            }
+            this.tooltipX = undefined;
+            this.tooltipY = undefined;
         },
         heatmap_node_tooltip(item: HeatmapTile) {
             return `<div style="text-align:left;">

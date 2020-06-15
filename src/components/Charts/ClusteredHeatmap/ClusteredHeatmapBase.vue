@@ -168,6 +168,9 @@ export default Vue.extend({
             },
             label_stats: {count: 0, total: 0, longest: 0},
             watchers: Array<(() => void)>(),
+            tooltipX: undefined as number|undefined,
+            tooltipY: undefined as number|undefined,
+            hoverItem: undefined as object|undefined,
         };
     },
     mounted() {
@@ -333,6 +336,14 @@ export default Vue.extend({
                 return [];
             }
             return cluster().size([this.dims.rtree.h, this.dims.rtree.w])(this.rowHierarchy as any).links() as any;
+        },
+        tooltip_text(): string {
+            if (this.hoverItem !== undefined){
+                return `Column: ${this.hoverItem[this.columnKey]}<br />
+                        Row: ${this.hoverItem[this.rowKey]}<br />
+                        Value: ${this.hoverItem[this.valueKey].toExponential(3)}`;
+            }
+            return '';
         },
     },
     methods: {

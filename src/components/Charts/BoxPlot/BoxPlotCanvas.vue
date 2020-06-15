@@ -1,5 +1,11 @@
 <template>
-    <canvas ref='canvas' :width='width' :height='height'></canvas>
+    <div>
+        <canvas ref='canvas' :width='width' :height='height' @mousemove="handleHover"></canvas>
+        <ToolTip :x="tooltipX" :y="tooltipY">
+            <div style="text-align:left;" v-html="tooltip_text">
+            </div>
+        </ToolTip>
+    </div>
 </template>
 
 <script lang='ts'>
@@ -10,14 +16,39 @@ import { sum } from 'd3-array';
 import { debounce } from 'ts-debounce';
 import mixins from 'vue-typed-mixins';
 import {sample} from '@/util/Array';
+import ToolTip from '@/components/Charts/ToolTip.vue';
+
 
 
 export default mixins(BoxPlotBase).extend({
+    components: {
+        ToolTip,
+    },
     data() {
         return {
             vueCanvas: null as CanvasRenderingContext2D | null,
             debouncedDraw: () => {/**/},
+            tooltipX: undefined as number|undefined,
+            tooltipY: undefined as number|undefined,
+            hoverItem: undefined as object|undefined,
         };
+    },
+    computed: {
+        tooltip_text(): string {
+            if (this.hoverItem !== undefined){
+                if (this.hoverItem.hasOwnProperty('value')) {
+                    const itm = this.hoverItem as DataPoint;
+                    return `Group: ${itm.group}<br />
+                            Value: ${itm.value.toExponential(3)}`;
+                } else {
+                    const itm = this.hoverItem as GroupStats;
+                    return `Group: ${itm.group}<br />
+                            Count: ${itm.count.toString()}<br />
+                            Median: ${itm.q2.toExponential(3)}<br />`;
+                }
+            }
+            return '';
+        },
     },
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;
@@ -257,6 +288,41 @@ export default mixins(BoxPlotBase).extend({
                 return;
             }
         },
+        handleHover(event: MouseEvent) {
+            // check points
+            for (const node of this.points as DataPoint[]) {
+                const cx = this.scale.x(node.group) + node.jitter + this.halfBandwith + this.margin.left;
+                const cy = this.scale.y(node.value) + this.margin.top;
+                if (PointInsideCircle(cx, cy, this.point_size, event.offsetX, event.offsetY)) {
+                    this.tooltipX = event.clientX;
+                    this.tooltipY = event.clientY;
+                    this.hoverItem = node;
+                    return;
+                }
+            }
+
+            // check boxplot boxes
+            for (const node of this.groupedData as GroupStats[]) {
+                const x1 = this.margin.left + this.scale.x(node.group);
+                const y1 = this.margin.top + this.scale.y(node.q1);
+                const x2 = this.margin.left + this.scale.x(node.group) + this.scale.x.bandwidth();
+                const y2 = this.margin.top + this.scale.y(node.q3);
+
+                if (event.offsetX > x1 && event.offsetX <= x2
+                 && event.offsetY > y1 && event.offsetY <= y2) {
+                    this.tooltipX = event.clientX;
+                    this.tooltipY = event.clientY;
+                    this.hoverItem = node;
+                    return;
+                }
+            }
+            this.tooltipX = undefined;
+            this.tooltipY = undefined;
+        },
     },
 });
+
+function PointInsideCircle(cx, cy, r, qx, qy) {
+    return Math.sqrt((cx - qx)**2 + (cy - qy)**2) < r;
+}
 </script>

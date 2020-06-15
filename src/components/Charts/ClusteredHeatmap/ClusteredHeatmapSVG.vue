@@ -1,6 +1,7 @@
 <template>
-    <svg ref="canvas" :width="width" :height="height">
-        <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`" v-on:click="handleHeatmapClick">
+<div>
+    <svg ref="canvas" :width="width" :height="height" @mouseover="handleHeatmapHover">
+        <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`" @click="handleHeatmapClick">
             <template v-for="node in data">
                 <rect 
                     :key="`${node[columnKey]}-${node[rowKey]}`"
@@ -38,6 +39,10 @@
             :height="10"
             :transform="`translate(${dims.legend.x}, ${dims.legend.y})`" />
     </svg>
+    <ToolTip :x="tooltipX" :y="tooltipY">
+        <div v-html="tooltip_text" style="text-align:left;"></div>
+    </ToolTip>
+</div>
 </template>
 
 
@@ -50,12 +55,14 @@ import { sum } from 'd3';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
 import mixins from 'vue-typed-mixins';
 import ClusteredHeatmapBase from './ClusteredHeatmapBase.vue';
+import ToolTip from '@/components/Charts/ToolTip.vue';
 
 
 
 export default mixins(ClusteredHeatmapBase).extend({
     components: {
         ColorScaleLegend,
+        ToolTip,
     },
     methods: {
         compute_label_stats(labels: string[]) {
@@ -82,6 +89,22 @@ export default mixins(ClusteredHeatmapBase).extend({
                 col: (event.target as SVGRectElement).dataset.col,
                 value: (event.target as SVGRectElement).dataset.val,
             });
+        },
+        handleHeatmapHover(event: MouseEvent) {
+            if (event && event.target !== null){
+                const target = event.target as HTMLElement;
+                if (target.tagName === 'rect' && target.dataset.row && target.dataset.col) {
+                    this.tooltipX = event.clientX;
+                    this.tooltipY = event.clientY;
+                    this.hoverItem = (this.data as any[]).find((itm) => {
+                        return itm[this.columnKey].toString() === target.dataset.col
+                            && itm[this.rowKey].toString() === target.dataset.row;
+                    });
+                    return;
+                }
+            }
+            this.tooltipX = undefined;
+            this.tooltipY = undefined;
         },
         showSelectedRow(id: number) {
             const canvas = this.$refs.canvas as ParentNode;
@@ -110,13 +133,6 @@ export default mixins(ClusteredHeatmapBase).extend({
                     l.classList.remove('selected');
                 }
             }
-        },
-        heatmap_node_tooltip(item: HeatmapTile) {
-            return `<div style="text-align:left;">
-                        Group: ${item[this.columnKey]}<br />
-                        Module: ${item[this.rowKey]}<br />
-                        Usage: ${item[this.valueKey].toExponential(3)}
-                    </div>`;
         },
     },
     directives: {
