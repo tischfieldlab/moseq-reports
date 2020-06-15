@@ -47,7 +47,7 @@ export default mixins(WindowMixin).extend({
                 if (newValue === undefined) {
                     return;
                 }
-                this.items = await LoadData(newValue.source, newValue.filters, true);
+                this.items = await LoadData(newValue.source, newValue.filters, false);
             },
             immediate: true,
         },
