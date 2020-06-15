@@ -1,7 +1,7 @@
 'use strict';
 declare const __static: any;
 
-import { ipcMain, app, protocol, BrowserWindow, ipcRenderer, dialog, remote } from 'electron';
+import {ipcMain, app, protocol, BrowserWindow } from 'electron';
 import path from 'path';
 import {
     createProtocol,
@@ -120,34 +120,29 @@ ipcMain.on('needs-reload', () => {
     }
 });
 
-import { Updater } from '@/util/AppUpdater';
-// This is for auto-updating the app
-if (process.env.NODE_ENV !== 'development') {
-    Updater.checkForUpdates();
+import { autoUpdater, UpdateCheckResult } from 'electron-updater';
+if (process.env.NODE_ENV === 'production') {
 
-    Updater.addCallback('update-available', () => { openDialog(); Updater.downloadUpdates(); });
-    Updater.addCallback('update-downloaded', () => { Updater.restartAndInstall(); });
-
-    function downloadProgress(progressObj: any) {
-        let logMessage = 'Download speed: ' + progressObj.bytesPerSecond;
-        logMessage = logMessage + ' - Downloaded ' + progressObj.percent + '%';
-        logMessage = logMessage + ' (' + progressObj.transferred + '/' + progressObj.total + ')';
-        sendStatusToWindow(logMessage);
-    }
-
-    function sendStatusToWindow(text: string): void {
-        // slint:disable-next-line
-        if (win === null) { return; }
-        win.webContents.send(text, text);
-    }
-
-    function openDialog(): void {
-        if (win === null) { return; }
-        dialog.showMessageBox(win, {
-            type: 'info',
-            title: 'Found Updates',
-            message: 'Found updates, do you want update now?',
-            buttons: ['Sure', 'No'],
+    ipcMain.on('update-check-done', (event: any) => {
+        autoUpdater.downloadUpdate().then(async () => {
+            if (win !== null) {
+                await new Promise((resolve) => setTimeout(resolve, 5000));
+                autoUpdater.quitAndInstall();
+            }
         });
-    }
+    });
+
+    const data: any = {
+        provider: 'github',
+        owner: 'tischfieldlab',
+        repo: 'moseq-reports',
+        token: process.env.GH_TOKEN,
+    };
+    autoUpdater.setFeedURL(data);
+
+    autoUpdater.checkForUpdates().then((check: UpdateCheckResult) => {
+        if (win !== null) {
+            win.webContents.send('update-check', check);
+        }
+    });
 }

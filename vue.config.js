@@ -45,7 +45,7 @@ module.exports = {
                     // For some reason, this fails on the nsi version... so we are leaving it
                     // out for the moment...
                     target: [
-                        "msi",
+                        // "msi",
                         "nsis"
                     ],
                     icon: "public/img/icons/winapp256x256.ico",
