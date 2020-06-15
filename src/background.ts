@@ -138,6 +138,7 @@ if (process.env.NODE_ENV === 'production') {
         repo: 'moseq-reports',
         token: process.env.GH_TOKEN,
     };
+
     autoUpdater.setFeedURL(data);
 
     autoUpdater.checkForUpdates().then((check: UpdateCheckResult) => {
