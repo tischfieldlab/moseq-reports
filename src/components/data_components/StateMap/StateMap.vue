@@ -284,13 +284,11 @@ export default mixins(WindowMixin).extend({
             return { r, t, o, z, zo };
         },
         sourceData(): any {
-            let usageSource;
+            const usageSource = this.$store.getters[`datasets/resolve`]('usage');
             let transSource;
             if (this.dataview.countMethod === CountMethod.Usage) {
-                usageSource = this.$store.getters[`datasets/resolve`]('usage_usage');
                 transSource = this.$store.getters[`datasets/resolve`]('transitions_usage');
             } else if (this.dataview.countMethod === CountMethod.Frames) {
-                usageSource = this.$store.getters[`datasets/resolve`]('usage_frames');
                 transSource = this.$store.getters[`datasets/resolve`]('transitions_frames');
             } else {
                 throw new Error(`Count method ${this.dataview.countMethod} is not supported`);
@@ -302,9 +300,9 @@ export default mixins(WindowMixin).extend({
                 {
                     type: 'map',
                     columns: [
-                        ['usage', 'usage'],
+                        [`usage_${this.dataview.countMethod.toLowerCase()}`, 'usage'],
                         ['group', 'group'],
-                        ['syllable', 'syllable'],
+                        [`id_${this.dataview.countMethod.toLowerCase()}`, 'syllable'],
                     ],
                 },
                 {
