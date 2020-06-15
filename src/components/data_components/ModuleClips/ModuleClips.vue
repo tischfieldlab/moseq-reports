@@ -1,30 +1,16 @@
 <template>
     <div class="container">
-        <b-pagination
-            v-model="example_num"
-            :total-rows="num_examples"
-            :per-page="1"
-            :limit="num_examples"
-            :aria-controls="$id('video')"
-            align="fill"
-            hide-goto-end-buttons="true"
-            size="sm"></b-pagination>
-        <!--<b-button-group size="sm" :justify="true">
-            <b-button @click="onPrevExampleClick" :pressed="null">
-                <b-icon icon="arrow-left-short" />
-            </b-button>
-            <b-button
-                v-for="ex in Array(num_examples).keys()"
-                :key="ex"
-                :pressed="ex === example_num"
-                @click="onExampleClick(ex)">
-                {{ex + 1}}
-            </b-button>
-            <b-button @click="onNextExampleClick">
-                <b-icon icon="arrow-right-short" />
-            </b-button>
-        </b-button-group>-->
         <div v-show="video_loaded">
+            <b-pagination
+                v-if="num_examples > 0"
+                v-model="example_num"
+                :total-rows="num_examples"
+                :per-page="1"
+                :limit="num_examples"
+                :aria-controls="$id('video')"
+                align="fill"
+                hide-goto-end-buttons="true"
+                size="sm"></b-pagination>
             <div class="info">
                 <span>
                     Module {{selected_syllable}} ({{count_method}})
@@ -108,10 +94,13 @@ export default mixins(WindowMixin).extend({
         },
         items(): any[] {
             const ids = this.$store.getters[`${this.datasource}/selectedSyllableMap`];
-            const items = this.$store.state.datasets.manifest.syllable_clips.manifest.filter((row) => {
-                return row.sid_raw === ids.raw;
-            });
-            return items;
+            if (this.$store.state.datasets.manifest.hasOwnProperty('syllable_clips')) {
+                const items = this.$store.state.datasets.manifest.syllable_clips.manifest.filter((row) => {
+                    return row.sid_raw === ids.raw;
+                });
+                return items;
+            }
+            return [];
         },
         args(): any {
             return this.$store.state.datasets.manifest.syllable_clips.args;
@@ -147,7 +136,6 @@ export default mixins(WindowMixin).extend({
             deep: true,
         },
         'settings.playback_rate': 'updateVideoPlaybackRate',
-        // 'settings.loop': 'updateVideoLooping',
     },
     methods: {
         show_video(ev: Event) {
