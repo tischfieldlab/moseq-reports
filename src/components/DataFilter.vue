@@ -1,35 +1,33 @@
 <template>
-    <div>
-        <b-card>
-            <template v-slot:header>
-                <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="text-dark collapse-button text-decoration-none">
-                    <span class="when-opened" title="Collapse Filters">&#x25BC;</span>
-                    <span class="when-closed" title="Expand Filters">&#x25B6;</span>
-                </b-button>
-                <b-button variant="link" title="Remove this filter" @click="removeThis" class="text-dark remove-button text-decoration-none">
-                    &#x1F5D9;
-                </b-button>
-                <EditableText class="editable-text" v-model="filter_name" />
-            </template>
-            <b-collapse visible :id="$id('filter-collapse')">
-                <b-overlay :show="is_loading" no-fade>
-                    <div class="container">
-                        <GroupBox :datasource="datasource" />
+    <b-card>
+        <template v-slot:header>
+            <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="text-dark collapse-button text-decoration-none">
+                <b-icon class="when-opened" title="Collapse Filters" icon="chevron-up"></b-icon>
+                <b-icon class="when-closed" title="Expand Filters" icon="chevron-down"></b-icon>
+            </b-button>
+            <b-button variant="link" title="Remove this filter" @click="removeThis" class="text-dark remove-button text-decoration-none">
+                <b-icon icon="x"></b-icon>
+            </b-button>
+            <EditableText class="editable-text" v-model="filter_name" />
+        </template>
+        <b-collapse visible :id="$id('filter-collapse')">
+            <b-overlay :show="is_loading" no-fade>
+                <div class="container">
+                    <GroupBox :datasource="datasource" />
 
-                        <b-input-group prepend="Count Method" class="filter-item">
-                            <b-form-select v-model="selectedCountMethod" :options="countMethods" />
-                        </b-input-group>
+                    <b-input-group prepend="Count Method" class="filter-item">
+                        <b-form-select v-model="selectedCountMethod" :options="countMethods" />
+                    </b-input-group>
 
-                        <b-input-group prepend="Selected Syllable" class="filter-item">
-                            <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
-                        </b-input-group>
+                    <b-input-group prepend="Selected Syllable" class="filter-item">
+                        <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
+                    </b-input-group>
 
-                        <SyllableIdFilter :datasource="datasource" />
-                    </div>
-                </b-overlay>
-            </b-collapse>
-        </b-card>
-    </div>
+                    <SyllableIdFilter :datasource="datasource" />
+                </div>
+            </b-overlay>
+        </b-collapse>
+    </b-card>
 </template>
 
 <script lang="ts">
@@ -162,6 +160,9 @@ export default Vue.component('datafilter', {
 }
 .filter-item {
     margin:10px 0;
+}
+.filter-item:first-child {
+    margin-top: 0;
 }
 
 .container {

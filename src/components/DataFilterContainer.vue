@@ -16,16 +16,16 @@
             :right="right"
             shadow="lg">
 
-            <div>
-                <div class="action_container text-right">
-                    <b-button @click="add_datasource" pill size="sm">
-                        <b-icon icon="plus"></b-icon>
-                        <b-spinner v-show="is_adding_source" small type="grow"></b-spinner>
-                        <span v-show="!is_adding_source">
-                            Add
-                        </span>
-                    </b-button>
-                </div>
+            <div class="action_container text-right">
+                <b-button @click="add_datasource" pill size="sm">
+                    <b-icon icon="plus"></b-icon>
+                    <b-spinner v-show="is_adding_source" small type="grow"></b-spinner>
+                    <span v-show="!is_adding_source">
+                        Add
+                    </span>
+                </b-button>
+            </div>
+            <div class="filters_container">
                 <template v-for="ns in this.$store.state.filters.items">
                     <DataFilter :key="ns" :datasource="ns" />
                 </template>
@@ -124,5 +124,8 @@ export default Vue.extend({
 }
 .action_container {
     padding: 12px;
+}
+.filters_container {
+    padding-right: 12px
 }
 </style>
