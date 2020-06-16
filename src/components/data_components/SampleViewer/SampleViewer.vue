@@ -37,7 +37,12 @@ export default mixins(WindowMixin).extend({
                 { key: 'ApparatusName', label: 'Apparatus', sortable: true },
                 { key: 'SessionName', label: 'Session Name', sortable: true },
                 { key: 'SubjectName', label: 'Subject Name', sortable: true },
-                { key: 'StartTime', label: 'Acquisition Time', sortable: true, formatter: (value) => new Date(value).toLocaleString() },
+                {
+                    key: 'StartTime',
+                    label: 'Acquisition Time',
+                    sortable: true,
+                    formatter: (value) => new Date(value).toLocaleString()
+                },
             ],
         };
     },
