@@ -126,7 +126,6 @@ if (process.env.NODE_ENV === 'production') {
     ipcMain.on('update-check-done', (event: any) => {
         autoUpdater.downloadUpdate().then(async () => {
             if (win !== null) {
-                await new Promise((resolve) => setTimeout(resolve, 5000));
                 autoUpdater.quitAndInstall();
             }
         });
@@ -137,6 +136,7 @@ if (process.env.NODE_ENV === 'production') {
         owner: 'tischfieldlab',
         repo: 'moseq-reports',
         token: process.env.GITHUB_TOKEN,
+        // token: 'ae846a7971de0f838cceac970a0858e03a95f381'
     };
 
     autoUpdater.setFeedURL(data);
