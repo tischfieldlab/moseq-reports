@@ -22,9 +22,7 @@ RegisterDataComponent({
     settings_type: undefined,
     init_width: 400,
     init_height: 500,
-    default_settings: {
-        
-    },
+    default_settings: {},
 });
 
 export default mixins(WindowMixin).extend({
