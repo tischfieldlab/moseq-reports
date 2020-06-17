@@ -16,7 +16,7 @@
                             <template v-slot:title>Group Color ({{ option.name }})</template>
                             <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
                         </b-popover>
-                        <span>{{ option.name }}</span>
+                        <span class="group_name" :title="option.name">{{ option.name }}</span>
                     </div>
                 </b-list-group-item>
             </draggable>
@@ -163,6 +163,9 @@ export default Vue.extend({
 .list-group-item {
     padding: 0.5em 0.25em;
 }
+.group-wrap {
+    height:24px;
+}
 .group-wrap::after{
   content:"\22EE";
   float:right;
@@ -188,5 +191,14 @@ export default Vue.extend({
     margin: 0 10px 0 5px;
     border-radius: 24px;
     cursor: pointer;
+}
+.group_name {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 175px;
+    font-size: 13px;
+    padding:2.5px 0px;
 }
 </style>
