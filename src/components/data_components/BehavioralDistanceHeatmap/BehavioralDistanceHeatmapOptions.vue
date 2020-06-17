@@ -130,22 +130,16 @@ export default mixins(WindowMixin).extend({
     watch: {
         method_options_spec: {
             async handler(newValue) {
-                this.method_options = await LoadData(this.method_options_spec[0], this.method_options_spec[1]);
+                this.method_options = await LoadData(this.method_options_spec[0], this.method_options_spec[1])
+                    .then((cols) => cols.filter((itm) => !itm.startsWith('row') && !itm.startsWith('col')));
             },
             immediate: true,
         },
     },
     computed: {
         method_options_spec(): any[] {
-            let ds;
-            if (this.dataview.countMethod === CountMethod.Usage) {
-                ds = this.$store.getters[`datasets/resolve`]('behave_dist_usage');
-            } else if (this.dataview.countMethod === CountMethod.Frames) {
-                ds = this.$store.getters[`datasets/resolve`]('behave_dist_frames');
-            } else {
-                throw new Error(`Count method ${this.dataview.countMethod} is not supported`);
-            }
-            return [ds, [{ type: 'keys' }]];
+            const ds = this.$store.getters[`datasets/resolve`]('behave_dist');
+            return [ds, [{ type: 'pluck', column: 'columns' }]];
         },
         group_options(): string[] {
             let vals;

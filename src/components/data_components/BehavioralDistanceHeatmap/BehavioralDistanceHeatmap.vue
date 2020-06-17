@@ -30,6 +30,7 @@
         @heatmap-click="onHeatmapClick"
         @row-order-changed="rowOrderChanged"
         @col-order-changed="colOrderChanged"
+        :tooltipFormatter="heatmap_node_tooltip"
     />
     <!--:columnOrderValue=""   -->
 </template>
@@ -114,14 +115,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.dataview.countMethod;
         },
         dataset(): [string, Operation[]] {
-            let ds;
-            if (this.countMethod === CountMethod.Usage) {
-                ds = this.$store.getters[`datasets/resolve`]('behave_dist_usage');
-            } else if (this.countMethod === CountMethod.Frames) {
-                ds = this.$store.getters[`datasets/resolve`]('behave_dist_frames');
-            } else {
-                throw new Error(`Count method ${this.countMethod} is not supported`);
-            }
+            const ds = this.$store.getters[`datasets/resolve`]('behave_dist');
+
             let syllables;
             if (this.dataview.moduleIdFilter.length === 0) {
                 syllables = this.$store.getters[`${this.datasource}/availableModuleIds`];
@@ -132,8 +127,12 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 ds,
                 [
                     {
-                        type: 'pluck',
-                        column: this.settings.distance_metric,
+                        type: 'map',
+                        columns: [
+                            [`row_id_${this.countMethod.toLowerCase()}`, 'source'],
+                            [`col_id_${this.countMethod.toLowerCase()}`, 'sink'],
+                            [this.settings.distance_metric, 'value'],
+                        ],
                     },
                 ],
             ];
@@ -142,25 +141,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     watch: {
         dataset: {
             handler(): any {
-                LoadData(this.dataset[0], this.dataset[1])
-                .then((data: number[][]) => {
-                    return data.flatMap((vals, sidx) => {
-                        return vals.map((value, didx) => {
-                            return {
-                                source: sidx,
-                                sink: didx,
-                                value,
-                            };
-                        });
-                    });
-                })
+                LoadData(this.dataset[0], this.dataset[1], true)
                 .then((data) => {
                     return data.filter((v) => {
                         return this.selectedGroups.includes(v.source)
                             && this.selectedGroups.includes(v.sink);
                     });
                 })
-                // .then((data) => { console.log(data); return data;})
                 .then((data) => this.aggregateView = Object.freeze(data));
             },
             immediate: true,
@@ -186,15 +173,12 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 data: event,
             });
         },
-        /*
-        heatmap_node_tooltip(item: HeatmapTile) {
+        heatmap_node_tooltip(item: any) {
             return `<div style="text-align:left;">
-                        Group: ${item.group}<br />
-                        Module: ${item.syllable}<br />
-                        Usage: ${item.usage.toExponential(3)}
+                        Module: ${item.source} vs ${item.sink}<br />
+                        Distance: ${item.value?.toExponential(3)}
                     </div>`;
         },
-        */
     },
 });
 </script>
