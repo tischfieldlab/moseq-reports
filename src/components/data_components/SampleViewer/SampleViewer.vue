@@ -30,7 +30,7 @@ export default mixins(WindowMixin).extend({
         return {
             items: [] as any[],
             fields: [
-                { key: 'uuid', label: 'UUID', sortable: false, },
+                { key: 'uuid', label: 'UUID', sortable: true, },
                 { key: 'default_group', label: 'Group', sortable: true },
                 { key: 'ApparatusName', label: 'Apparatus', sortable: true },
                 { key: 'SessionName', label: 'Session Name', sortable: true },
@@ -50,7 +50,11 @@ export default mixins(WindowMixin).extend({
                 if (newValue === undefined) {
                     return;
                 }
-                this.items = await LoadData(newValue.source, newValue.filters, false);
+                this.items = await LoadData(newValue.source, newValue.filters, false)
+                    .then((data) => {
+                        data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop() });
+                        return data;
+                    });
             },
             immediate: true,
         },
