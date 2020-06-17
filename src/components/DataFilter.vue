@@ -1,7 +1,12 @@
 <template>
     <b-card>
         <template v-slot:header>
-            <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="text-dark collapse-button text-decoration-none">
+            <b-button
+                @click="is_expanded = !is_expanded"
+                :title="is_expanded ? 'Collapse Filters' : 'Expand Filters'"
+                v-b-toggle="$id('filter-collapse')"
+                variant="link"
+                class="text-dark collapse-button text-decoration-none">
                 <b-icon class="when-opened" title="Collapse Filters" icon="chevron-up"></b-icon>
                 <b-icon class="when-closed" title="Expand Filters" icon="chevron-down"></b-icon>
             </b-button>
@@ -10,7 +15,7 @@
             </b-button>
             <EditableText class="editable-text" v-model="filter_name" />
         </template>
-        <b-collapse visible :id="$id('filter-collapse')">
+        <b-collapse :visible="is_expanded" :id="$id('filter-collapse')">
             <b-overlay :show="is_loading" no-fade>
                 <div class="container">
                     <GroupBox :datasource="datasource" />
@@ -53,6 +58,7 @@ export default Vue.component('datafilter', {
     },
     data() {
         return {
+            is_expanded: true,
             countMethods: [
                 { text: 'Usage', value: CountMethod.Usage },
                 { text: 'Frames', value: CountMethod.Frames },
