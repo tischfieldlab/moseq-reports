@@ -12,6 +12,7 @@
         :point_size="settings.point_size"
         xAxisTitle="Group"
         :yAxisTitle="`Module #${selectedSyllable} Usage (${countMethod})`"
+        :tooltipFormatter="format_tooltip"
     />
 </template>
 
@@ -104,13 +105,18 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     methods: {
-        /*point_tooltip(item: UsageItem): string {
-            return `<div style="text-align:left;">
-                        ${item.group}<br />
-                        ${new Date(item.StartTime).toLocaleString('en-US')}<br />
-                        ${item.usage.toExponential(3)}
-                    </div>`;
-        },*/
+        format_tooltip(itm: any): string {
+            if (itm.hasOwnProperty('id')) {
+                return `ID: ${itm.id.split('-').pop()}<br />
+                        Usage: ${itm.value.toExponential(3)}`;
+            } else if(itm.hasOwnProperty('count')) {
+                return `Group: ${itm.group}<br />
+                        Count: ${itm.count.toString()}<br />
+                        Median: ${itm.q2.toExponential(3)}<br />`;
+            } else {
+                return JSON.stringify(itm, undefined, '\t');
+            }
+        },
     },
 });
 </script>

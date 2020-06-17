@@ -23,6 +23,25 @@ let worker: ModuleThread<BoxPlotWorker>;
 })();
 
 
+function default_tooltip_formatter(value: any, that) {
+    if (value !== undefined){
+        if (value.hasOwnProperty('id')) {
+            const itm = value as DataPoint;
+            return `ID: ${itm.id}<br />
+                    Value: ${itm.value.toExponential(3)}`;
+        } else if(value.hasOwnProperty('count')) {
+            const itm = value as GroupStats;
+            return `Group: ${itm.group}<br />
+                    Count: ${itm.count.toString()}<br />
+                    Median: ${itm.q2.toExponential(3)}<br />`;
+        } else {
+            return JSON.stringify(value, undefined, '\t');
+        }
+    }
+    return '';
+}
+
+
 export default Vue.extend({
     props: {
         data: {
@@ -74,6 +93,10 @@ export default Vue.extend({
         yAxisTitle: {
             type: String,
             default: 'Value',
+        },
+        tooltipFormatter: {
+            type: Function,
+            default: default_tooltip_formatter,
         },
     },
     data() {
@@ -196,18 +219,7 @@ export default Vue.extend({
         },
         tooltip_text(): string {
             if (this.hoverItem !== undefined){
-                if (this.hoverItem.hasOwnProperty('id')) {
-                    const itm = this.hoverItem as DataPoint;
-                    return `ID: ${itm.id}<br />
-                            Value: ${itm.value.toExponential(3)}`;
-                } else if(this.hoverItem.hasOwnProperty('count')) {
-                    const itm = this.hoverItem as GroupStats;
-                    return `Group: ${itm.group}<br />
-                            Count: ${itm.count.toString()}<br />
-                            Median: ${itm.q2.toExponential(3)}<br />`;
-                } else {
-                    return JSON.stringify(this.hoverItem);
-                }
+                return (this.tooltipFormatter as (itm, that) => string)(this.hoverItem, this);
             }
             return '';
         },
@@ -254,13 +266,6 @@ export default Vue.extend({
                     || node.value > this.fences.upper(group);
             }
             return false;
-        },
-        point_tooltip(item: DataPoint): string {
-            return `<div style="text-align:left;">
-                        ${item.group}<br />
-                        ${item.id}<br />
-                        ${item.value.toExponential(3)}
-                    </div>`;
         },
         compute_label_stats(labels: string[]) {
             // abstract implementation
