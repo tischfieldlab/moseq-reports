@@ -10,7 +10,12 @@ export function CreateServer(port = 8989) {
         server = http.createServer((request, response) => {
             request.addListener('end', async () => {
                 const fpath = store.getters[`datasets/resolve`](decodeURI(request.url as string)) as string;
-                const buffer = await readFileContents(fpath);
+                let buffer;
+                try {
+                    buffer = await readFileContents(fpath);
+                } catch (err) {
+                    return response.writeHead(404).end(JSON.stringify(err));
+                }
                 const fileType = await FileType.fromBuffer(buffer);
                 const size = buffer.length;
                 const range = request.headers.range;

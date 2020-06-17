@@ -142,7 +142,7 @@ export function readFileContents(path: string) {
             });
             zip.on('error', (err) => {
                 zip.close();
-                reject(err);
+                reject(`${err}: ${entryname}`);
             });
             zip.on('ready', async () => {
                 try {
@@ -154,7 +154,7 @@ export function readFileContents(path: string) {
                         throw new Error(`Entry ${entryname} is missing from data file!`);
                     }
                 } catch (e) {
-                    reject(e);
+                    reject(`${e}: ${entryname}`);
                 } finally {
                     zip.close();
                 }
