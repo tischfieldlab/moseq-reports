@@ -19,6 +19,11 @@ let worker: ModuleThread<ClusterWorker>;
     worker = await spawn<ClusterWorker>(new Worker('./Worker.ts'));
 })();
 
+function default_tooltip_formatter(item, that){
+    return `Column: ${item[that.columnKey]}<br />
+            Row: ${item[that.rowKey]}<br />
+            Value: ${item[that.valueKey].toExponential(3)}`;
+}
 
 
 export default Vue.extend({
@@ -119,6 +124,10 @@ export default Vue.extend({
         selectedCol: {
             type: String,
             default: null,
+        },
+        tooltipFormatter: {
+            type: Function,
+            default: default_tooltip_formatter,
         },
     },
     watch: {
@@ -339,9 +348,7 @@ export default Vue.extend({
         },
         tooltip_text(): string {
             if (this.hoverItem !== undefined){
-                return `Column: ${this.hoverItem[this.columnKey]}<br />
-                        Row: ${this.hoverItem[this.rowKey]}<br />
-                        Value: ${this.hoverItem[this.valueKey].toExponential(3)}`;
+                return (this.tooltipFormatter as (itm, that) => string)(this.hoverItem, this);
             }
             return '';
         },

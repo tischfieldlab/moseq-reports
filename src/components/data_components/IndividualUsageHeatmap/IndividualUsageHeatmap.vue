@@ -1,5 +1,5 @@
 <template>
-    <ClusteredHeatmapSVG
+    <ClusteredHeatmap
         :width="this.layout.width"
         :height="this.layout.height - 31"
         :data="this.aggregateView"
@@ -27,6 +27,7 @@
         @heatmapClick="onHeatmapClick"
         @row-order-changed="rowOrderChanged"
         @col-order-changed="colOrderChanged"
+        :tooltipFormatter="heatmap_node_tooltip"
     />
     <!--:columnOrderValue=""   -->
 </template>
@@ -39,7 +40,7 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import { unnest } from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import ClusteredHeatmapSVG from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapSVG.vue';
+import ClusteredHeatmap from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapCanvas.vue';
 import { OrderingType, SortOrderDirection } from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { CountMethod } from '../../../store/dataview.types';
@@ -68,7 +69,7 @@ RegisterDataComponent({
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
-        ClusteredHeatmapSVG,
+        ClusteredHeatmap,
     },
     data() {
         return {
@@ -132,7 +133,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         dataset: {
             handler(): any {
                 LoadData(this.dataset[0], this.dataset[1], false)
-                .then((data) => this.aggregateView = data);
+                    .then((data) => {
+                        data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop() });
+                        return data;
+                    })
+                    .then((data) => this.aggregateView = data);
             },
             immediate: true,
         },
@@ -157,15 +162,14 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 data: event,
             });
         },
-        /*
-        heatmap_node_tooltip(item: HeatmapTile) {
+        heatmap_node_tooltip(item: any) {
             return `<div style="text-align:left;">
+                        UUID: ${item.uuid}<br />
                         Group: ${item.group}<br />
                         Module: ${item.syllable}<br />
                         Usage: ${item.usage.toExponential(3)}
                     </div>`;
         },
-        */
     },
 });
 </script>
