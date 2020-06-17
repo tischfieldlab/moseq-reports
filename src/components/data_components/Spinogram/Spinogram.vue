@@ -1,6 +1,16 @@
 <template>
     <div>
         <template v-if="has_data">
+            <b-pagination
+                v-if="num_examples > 0"
+                v-model="example_num"
+                :total-rows="num_examples"
+                :per-page="1"
+                :limit="num_examples"
+                align="fill"
+                hide-goto-end-buttons="true"
+                size="sm"></b-pagination>
+            
             <svg :width="outsideWidth" :height="outsideHeight">
                 <text class="title" :x="this.outsideWidth / 2" :y="20">
                     Module #{{ selectedSyllable }} ({{countMethod}}) Spinogram
@@ -38,7 +48,13 @@
                     :transform="`translate(${width}, 25)`" />
             </svg>
         </template>
-        <p v-else>No Data</p>
+        <div v-else class="no-data">
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
+                <b-card-text>
+                    Sorry, there are no spinograms available for Syllable {{selectedSyllable}} ({{countMethod}})
+                </b-card-text>
+            </b-card>
+        </div>
     </div>
 </template>
 
@@ -62,7 +78,6 @@ import { Operation } from '../../Core/DataLoader/DataLoader.types';
 
 
 interface Spinogram {
-    id: number;
     data: SpinogramTimepoint[];
 }
 
@@ -93,7 +108,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
-            spinogram_data: [] as Readonly<SpinogramTimepoint[]>,
+            items: [] as Spinogram[],
+            example_num: 1,
             margin: {
                 top: 30,
                 right: 20,
@@ -103,6 +119,15 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         };
     },
     computed: {
+        spinogram_data(): Readonly<SpinogramTimepoint[]> {
+            if (this.example_num - 1 < this.items.length) {
+                return this.items[this.example_num - 1].data;
+            }
+            return [];
+        },
+        num_examples(): number {
+            return this.items.length;
+        },
         width(): number {
             return this.outsideWidth - this.margin.left - this.margin.right;
         },
@@ -122,7 +147,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.layout.width;
         },
         outsideHeight(): number {
-            return this.layout.height - 31;
+            return this.layout.height - 31 - 31;
         },
         origin(): any {
             const x = this.margin.left;
@@ -166,15 +191,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
         },
-        usageSelectedSyllable(): number {
-            const x = this.selectedSyllable + 0;
-            return this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Usage);
-        },
         countMethod(): string {
             return this.dataview.countMethod;
         },
         has_data(): boolean {
-            return this.spinogram_data !== undefined;
+            return this.items.length > 0;
         },
         dataspec(): [string, Operation[]] {
             return [
@@ -186,7 +207,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                     {
                         type: 'filter',
                         filters: {
-                            id: [this.usageSelectedSyllable],
+                            [`sid_${this.countMethod.toLowerCase()}`]: [this.selectedSyllable],
                         },
                     },
                 ],
@@ -196,17 +217,18 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     watch: {
         dataspec: {
             handler() {
-                LoadData(...this.dataspec)
+                LoadData(this.dataspec[0], this.dataspec[1])
                 .then((data: any[]) => {
                     if (data && data.length > 0) {
-                        const d = data[0].data;
-                        d.forEach((stp, idx) => {
-                            stp.xy = stp.x.map((tpx, jdx) => [ tpx, stp.y[jdx] ]);
-                        });
-                        return d;
+                        for (const itm of data) {
+                            const d = itm.data;
+                            d.forEach((stp, idx) => {
+                                stp.xy = stp.x.map((tpx, jdx) => [ tpx, stp.y[jdx] ]);
+                            });
+                        }
                     }
-                })
-                .then((data) => { this.spinogram_data = data; });
+                    this.items = data;
+                });
             },
             immediate: true,
         },
@@ -239,5 +261,16 @@ svg >>> text.title {
 svg >>> g.legend text.label {
     font-size: 10px;
     transform: translateY(-10px);
+}
+
+.b-pagination {
+    margin-bottom:0;
+}
+.no-data .card {
+    width: 75%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 </style>
