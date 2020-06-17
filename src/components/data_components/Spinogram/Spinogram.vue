@@ -94,7 +94,7 @@ RegisterDataComponent({
     component_type: 'Spinogram',
     settings_type: 'SpinogramOptions',
     init_width: 400,
-    init_height: 200,
+    init_height: 250,
     default_settings: {
         line_color: '#FF0000',
         line_weight: 2,
