@@ -3,6 +3,7 @@
         @resized="onResized($event)"
         @moved="onMoved($event)"
         @close="onClosed($event)"
+        :maxWidth="max_width"
         :showCollapseButton="true">
         <div>
             {{ title }}
@@ -70,6 +71,9 @@ export default mixins(WindowMixin).extend({
         is_loading(): boolean {
             const s = this.dataview;
             return this.component_loading > 0 || (s && s.loading);
+        },
+        max_width(): number {
+            return window.innerWidth;
         },
     },
     watch: {
