@@ -141,7 +141,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     watch: {
         dataset: {
             handler(): any {
-                LoadData(this.dataset[0], this.dataset[1], true)
+                LoadData(this.dataset[0], this.dataset[1])
                 .then((data) => {
                     return data.filter((v) => {
                         return this.selectedGroups.includes(v.source)

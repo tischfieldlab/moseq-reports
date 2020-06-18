@@ -24,7 +24,7 @@
         rowKey="syllable"
         valueKey="usage"
         :selectedRow="selectedSyllable"
-        @heatmapClick="onHeatmapClick"
+        @heatmap-click="onHeatmapClick"
         @row-order-changed="rowOrderChanged"
         @col-order-changed="colOrderChanged"
     />

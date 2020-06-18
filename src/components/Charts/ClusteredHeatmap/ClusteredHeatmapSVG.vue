@@ -92,7 +92,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             };
         },
         handleHeatmapClick(event: Event) {
-            this.$emit('heatmapClick', {
+            this.$emit('heatmap-click', {
                 e: event,
                 row: (event.target as SVGRectElement).dataset.row,
                 col: (event.target as SVGRectElement).dataset.col,
