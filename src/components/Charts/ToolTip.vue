@@ -1,6 +1,6 @@
 <template>
     <div ref="contents" class="tooltip_contents">
-        <span data-popper-arrow class="arrow"></span>
+        <span data-popper-arrow class="arrow tt-arrow"></span>
         <slot></slot>
     </div>
 </template>
@@ -98,7 +98,7 @@ export default Vue.extend({
     height: 8px;
     z-index: -1;
 }
-.arrow::before {
+.tt-arrow::before {
     content: '';
     transform: rotate(45deg);
     background: #000;
