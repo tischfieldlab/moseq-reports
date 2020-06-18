@@ -25,7 +25,7 @@
                     {{selected.text}}
                 </div>
                 <template v-else>
-                    Please select some item
+                    Please select a color map
                 </template>
             </template>
             <b-dropdown-item

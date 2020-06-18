@@ -10,7 +10,7 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="Colormap">
-                    <b-form-select v-model="colorscale" :options="color_options"></b-form-select>
+                    <ColorScalePicker v-model="colorscale" />
                 </b-input-group>
             </b-col>
         </b-row>
@@ -28,7 +28,8 @@
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import { GetInterpolatedScaleOptions } from '@/components/Charts/D3ColorProvider';
+import ColorScalePicker from '@/components/ColorScalePicker.vue';
+
 
 export enum PositionPlotMode {
     Overall = 'Overall',
@@ -37,6 +38,9 @@ export enum PositionPlotMode {
 
 
 export default mixins(WindowMixin).extend({
+    components: {
+        ColorScalePicker,
+    },
     computed: {
         mode: {
             get(): string {
@@ -80,7 +84,6 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
-            color_options: GetInterpolatedScaleOptions(),
             mode_options: [
                 { text: 'Overall', value: PositionPlotMode.Overall },
                 { text: 'Grouped', value: PositionPlotMode.Grouped },
