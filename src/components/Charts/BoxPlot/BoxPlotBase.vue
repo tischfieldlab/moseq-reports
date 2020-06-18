@@ -98,6 +98,10 @@ export default Vue.extend({
             type: Function,
             default: default_tooltip_formatter,
         },
+        noDataMessage: {
+            type: String,
+            default: 'Sorry, no data available!',
+        },
     },
     data() {
         return {
@@ -123,6 +127,9 @@ export default Vue.extend({
         this.watchers.forEach((unwatch) => unwatch());
     },
     computed: {
+        has_data(): boolean {
+            return this.data !== undefined && this.data !== null && this.data.length > 0;
+        },
         innerWidth(): number {
             const width = this.width - this.margin.left - this.margin.right;
             this.rotate_labels = this.label_stats.longest > width / this.label_stats.count;

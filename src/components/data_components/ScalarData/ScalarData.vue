@@ -1,27 +1,19 @@
 <template>
-    <div>
-        <box-plot
-            :width="this.layout.width"
-            :height="this.layout.height - 32"
-            :data="individualUseageData"
-            :groupLabels="groupNames"
-            :groupColors="groupColors"
-            :whisker_type="settings.boxplot_whiskers"
-            :show_boxplot="settings.show_boxplot"
-            :show_points="settings.show_points"
-            :show_violinplot="settings.show_violinplot"
-            :point_size="settings.point_size"
-            xAxisTitle="Group"
-            :yAxisTitle="`${metricTitle} (${metricUnits})`"
-        />
-        <div v-show="individualUseageData === null" class="no-data">
-            <b-card bg-variant="primary" text-variant="white" class="text-center">
-                <b-card-text>
-                    Sorry, there is no scalar data available for Syllable {{selectedSyllable}} ({{countMethod}}) 
-                </b-card-text>
-            </b-card>
-        </div>
-    </div>
+    <box-plot
+        :width="this.layout.width"
+        :height="this.layout.height - 32"
+        :data="individualUseageData"
+        :groupLabels="groupNames"
+        :groupColors="groupColors"
+        :whisker_type="settings.boxplot_whiskers"
+        :show_boxplot="settings.show_boxplot"
+        :show_points="settings.show_points"
+        :show_violinplot="settings.show_violinplot"
+        :point_size="settings.point_size"
+        xAxisTitle="Group"
+        :yAxisTitle="`${metricTitle} (${metricUnits})`"
+        :noDataMessage="`Sorry, there is no scalar data available for Syllable ${selectedSyllable} (${countMethod})`"
+    />
 </template>
 
 <script lang="ts">
@@ -161,15 +153,3 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
 });
 </script>
-
-
-
-<style scoped>
-.no-data .card {
-    width: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-</style>

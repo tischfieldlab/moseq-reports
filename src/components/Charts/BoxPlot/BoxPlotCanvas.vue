@@ -1,6 +1,20 @@
 <template>
-    <div>
-        <canvas ref='canvas' :width='width' :height='height' @mousemove="debouncedHover" @mouseleave="hoverItem = undefined"></canvas>
+    <div :style="{width:'100%', height:'100%', 'overflow': 'hidden'}">
+        <canvas
+            v-show="has_data"
+            ref='canvas'
+            :width="`${width}px`"
+            :height="`${height}px`"
+            @mousemove="debouncedHover"
+            @mouseleave="hoverItem = undefined"></canvas>
+
+        <div v-if="!has_data" class="no-data">
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
+                <b-card-text>
+                    {{noDataMessage}}
+                </b-card-text>
+            </b-card>
+        </div>
         <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
             <div style="text-align:left;" v-html="tooltip_text">
             </div>
@@ -312,3 +326,13 @@ function PointInsideCircle(cx, cy, r, qx, qy) {
     return Math.sqrt((cx - qx)**2 + (cy - qy)**2) < r;
 }
 </script>
+
+<style scoped>
+.no-data .card {
+    width: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+</style>
