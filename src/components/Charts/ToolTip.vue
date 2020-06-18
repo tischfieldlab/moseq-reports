@@ -40,7 +40,7 @@ export default Vue.extend({
     },
     mounted() {
         this.$nextTick().then(() => {
-            this.virtualElement.getBoundingClientRect = this.generateGetBoundingClientRect(this.position.x, this.position.y);
+            this.virtualElement.getBoundingClientRect = this.generateGetBoundingClientRect(this.position);
             this.instance = createPopper(this.virtualElement as VirtualElement,
                                         document.querySelector(this.$idRef('tooltip-contents')) as HTMLElement,
                                         {
@@ -65,19 +65,19 @@ export default Vue.extend({
     },
     methods: {
         updatePosition() {
-            this.virtualElement.getBoundingClientRect = this.generateGetBoundingClientRect(this.position.x, this.position.y);
+            this.virtualElement.getBoundingClientRect = this.generateGetBoundingClientRect(this.position);
             if (this.instance !== undefined) {
                 this.instance.update();
             }
         },
-        generateGetBoundingClientRect(x = 0, y = 0): () => ClientRect {
+        generateGetBoundingClientRect(position: {x:number,y:number}): () => ClientRect {
             return () => ({
                 width: 0,
                 height: 0,
-                top: y,
-                right: x,
-                bottom: y,
-                left: x,
+                top: position.y,
+                right: position.x,
+                bottom: position.y,
+                left: position.x,
             });
         },
     },
