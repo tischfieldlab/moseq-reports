@@ -11,8 +11,8 @@
                             v-model="option.selected"
                             :name="option.name">
                         </b-form-checkbox>
-                        <div class="swatch" :id="$id(option.id)" :style="{'background-color': option.color}">
-                            <span class="group-count" :style="{'color': getContrast(option.color)}">{{option.count}}</span>
+                        <div class="swatch" :id="$id(option.id)" :style="{'background-color': option.color}" title="Click to select color">
+                            <span class="group-count" :style="{'color': getContrast(option.color)}">{{group_counts[option.name]}}</span>
                         </div>
                         <b-popover :target="$id(option.id)" triggers="click blur" placement="top">
                             <template v-slot:title>Group Color ({{ option.name }})</template>
@@ -74,6 +74,7 @@ export default Vue.extend({
     data() {
         return {
             groups: [] as SelectableGroupItem[],
+            group_counts: {},
             colorChangeHandler: (option, event) => {/**/},
             watchers: Array<(() => void)>(),
         };
@@ -95,6 +96,7 @@ export default Vue.extend({
             },
             () => {
                 if (this.datasource !== undefined) {
+                    this.updateGroupCounts();
                     this.buildGroups();
                 }
             },
@@ -134,21 +136,9 @@ export default Vue.extend({
             const availableGroups = this.$store.getters[`${this.datasource}/availableGroups`] || [];
             const selectedGroups = this.dataview !== undefined ? this.dataview.selectedGroups : [];
             const colorScale = this.dataview !== undefined ? this.dataview.groupColors : [];
-            const sampleCounts = await LoadData(this.$store.getters[`datasets/resolve`]('samples'), [{type: 'map'}], true)
-                    .then((data: any[]) => {
-                        return data.reduce((acc, curr) => {
-                            if (acc[curr.default_group] === undefined) {
-                                acc[curr.default_group] = 1;
-                            } else {
-                                acc[curr.default_group] += 1;
-                            }
-                            return acc;
-                        }, {});
-                    });
             availableGroups.map((g, i) => {
                 const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
                 sgi.color = colorScale[i];
-                sgi.count = sampleCounts[g];
                 groups.push(sgi);
             });
             this.groups = groups;
@@ -169,23 +159,44 @@ export default Vue.extend({
                 this.$store.dispatch(`${this.datasource}/updateSelectedGroups`, {colors});
             }
         },
-        getContrast(hexcolor: string): string{
-            // If a leading # is provided, remove it
-            if (hexcolor.slice(0, 1) === '#') {
-                hexcolor = hexcolor.slice(1);
+        async updateGroupCounts() {
+            try {
+                this.group_counts = await LoadData(this.$store.getters[`datasets/resolve`]('samples'), [{type: 'map'}])
+                    .then((data: any[]) => {
+                        return data.reduce((acc, curr) => {
+                            if (acc[curr.default_group] === undefined) {
+                                acc[curr.default_group] = 1;
+                            } else {
+                                acc[curr.default_group] += 1;
+                            }
+                            return acc;
+                        }, {});
+                    });
+            } catch {
+                return;
             }
-            // If a three-character hexcode, make six-character
-            if (hexcolor.length === 3) {
-                hexcolor = hexcolor.split('').map((hex) => hex + hex).join('');
+        },
+        getContrast(hexcolor: string): string {
+            try {
+                // If a leading # is provided, remove it
+                if (hexcolor.slice(0, 1) === '#') {
+                    hexcolor = hexcolor.slice(1);
+                }
+                // If a three-character hexcode, make six-character
+                if (hexcolor.length === 3) {
+                    hexcolor = hexcolor.split('').map((hex) => hex + hex).join('');
+                }
+                // Convert to RGB value
+                const r = parseInt(hexcolor.substr(0,2),16);
+                const g = parseInt(hexcolor.substr(2,2),16);
+                const b = parseInt(hexcolor.substr(4,2),16);
+                // Get YIQ ratio
+                const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+                // Check contrast
+                return (yiq >= 128) ? 'black' : 'white';
+            } catch {
+                return 'black';
             }
-            // Convert to RGB value
-            const r = parseInt(hexcolor.substr(0,2),16);
-            const g = parseInt(hexcolor.substr(2,2),16);
-            const b = parseInt(hexcolor.substr(4,2),16);
-            // Get YIQ ratio
-            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-            // Check contrast
-            return (yiq >= 128) ? 'black' : 'white';
         }
     },
 });
