@@ -11,7 +11,9 @@
                             v-model="option.selected"
                             :name="option.name">
                         </b-form-checkbox>
-                        <div class="swatch" :id="$id(option.id)" :style="{'background-color': option.color}" />
+                        <div class="swatch" :id="$id(option.id)" :style="{'background-color': option.color}">
+                            <span class="group-count" :style="{'color': getContrast(option.color)}">{{option.count}}</span>
+                        </div>
                         <b-popover :target="$id(option.id)" triggers="click blur" placement="top">
                             <template v-slot:title>Group Color ({{ option.name }})</template>
                             <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
@@ -32,6 +34,7 @@ import { debounce } from 'ts-debounce';
 import { unnest } from '@/util/Vuex';
 import deepEqual from 'deep-equal';
 import { DataviewState } from '../store/dataview.types';
+import LoadData from '@/components/Core/DataLoader/DataLoader';
 
 
 
@@ -40,6 +43,7 @@ class SelectableGroupItem {
     public name: string;
     public selected: boolean;
     public color: string;
+    public count: number = 0;
 
     get style(): string {
         return this.selected ? 'selected' : 'non-selected';
@@ -125,16 +129,29 @@ export default Vue.extend({
         this.watchers.forEach((w) => w());
     },
     methods: {
-        buildGroups() {
-            this.groups = []; // Need to reset this so that we don't have duplicate options.
+        async buildGroups() {
+            const groups = [] as SelectableGroupItem[]; // Need to reset this so that we don't have duplicate options.
             const availableGroups = this.$store.getters[`${this.datasource}/availableGroups`] || [];
             const selectedGroups = this.dataview !== undefined ? this.dataview.selectedGroups : [];
             const colorScale = this.dataview !== undefined ? this.dataview.groupColors : [];
+            const sampleCounts = await LoadData(this.$store.getters[`datasets/resolve`]('samples'), [{type: 'map'}], true)
+                    .then((data: any[]) => {
+                        return data.reduce((acc, curr) => {
+                            if (acc[curr.default_group] === undefined) {
+                                acc[curr.default_group] = 1;
+                            } else {
+                                acc[curr.default_group] += 1;
+                            }
+                            return acc;
+                        }, {});
+                    });
             availableGroups.map((g, i) => {
                 const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
                 sgi.color = colorScale[i];
-                this.groups.push(sgi);
+                sgi.count = sampleCounts[g];
+                groups.push(sgi);
             });
+            this.groups = groups;
         },
         updateGroups() {
             const groups = this.groups.filter((g) => g.selected).map((g) => g.name);
@@ -152,6 +169,24 @@ export default Vue.extend({
                 this.$store.dispatch(`${this.datasource}/updateSelectedGroups`, {colors});
             }
         },
+        getContrast(hexcolor: string): string{
+            // If a leading # is provided, remove it
+            if (hexcolor.slice(0, 1) === '#') {
+                hexcolor = hexcolor.slice(1);
+            }
+            // If a three-character hexcode, make six-character
+            if (hexcolor.length === 3) {
+                hexcolor = hexcolor.split('').map((hex) => hex + hex).join('');
+            }
+            // Convert to RGB value
+            const r = parseInt(hexcolor.substr(0,2),16);
+            const g = parseInt(hexcolor.substr(2,2),16);
+            const b = parseInt(hexcolor.substr(4,2),16);
+            // Get YIQ ratio
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            // Check contrast
+            return (yiq >= 128) ? 'black' : 'white';
+        }
     },
 });
 </script>
@@ -191,6 +226,10 @@ export default Vue.extend({
     margin: 0 10px 0 5px;
     border-radius: 24px;
     cursor: pointer;
+    text-align: center;
+    font-size: 10px;
+    line-height: 21px;
+    font-weight: bold;
 }
 .group_name {
     display: inline-block;
