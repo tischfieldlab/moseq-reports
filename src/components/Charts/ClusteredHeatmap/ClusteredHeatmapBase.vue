@@ -177,8 +177,7 @@ export default Vue.extend({
             },
             label_stats: {count: 0, total: 0, longest: 0},
             watchers: Array<(() => void)>(),
-            tooltipX: undefined as number|undefined,
-            tooltipY: undefined as number|undefined,
+            tooltipPosition: undefined as {x: number, y:number}|undefined,
             hoverItem: undefined as object|undefined,
         };
     },

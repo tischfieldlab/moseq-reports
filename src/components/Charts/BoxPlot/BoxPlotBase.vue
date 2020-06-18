@@ -115,8 +115,7 @@ export default Vue.extend({
             label_stats: {count: 0, total: 0, longest: 0},
             domainY: [0, 0],
             domainKde: [0, 0],
-            tooltipX: undefined as number|undefined,
-            tooltipY: undefined as number|undefined,
+            tooltipPosition: undefined as {x: number, y:number}|undefined,
             hoverItem: undefined as object|undefined,
         };
     },

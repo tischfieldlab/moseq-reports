@@ -1,6 +1,6 @@
 <template>
 <div>
-    <svg ref="canvas" :width="width" :height="height" @mouseover="handleHover">
+    <svg ref="canvas" :width="width" :height="height" @mouseover="debouncedHover" @mouseleave="hoverItem = undefined">
         <g v-if="show_boxplot" :transform="`translate(${margin.left}, ${margin.top})`">
             <template v-for="(node) in groupedData">
                 <g class="boxplot" :key="node.group">
@@ -97,7 +97,7 @@
             </text>
         </g>
     </svg>
-    <ToolTip :x="tooltipX" :y="tooltipY">
+    <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
         <div v-html="tooltip_text" style="text-align:left;"></div>
     </ToolTip>
 </div>
@@ -111,11 +111,20 @@ import BoxPlotBase from './BoxPlotBase.vue';
 import { sum } from 'd3-array';
 import mixins from 'vue-typed-mixins';
 import ToolTip from '@/components/Charts/ToolTip.vue';
+import { debounce } from 'ts-debounce';
 
 
 export default mixins(BoxPlotBase).extend({
     components: {
         ToolTip,
+    },
+    data() {
+        return {
+            debouncedHover: (event: MouseEvent) => {/**/},
+        };
+    },
+    mounted() {
+        this.debouncedHover = debounce(this.handleHover, 10, {isImmediate: true});
     },
     methods: {
         compute_label_stats(labels: string[]) {
@@ -144,8 +153,10 @@ export default mixins(BoxPlotBase).extend({
                 const target = event.target as HTMLElement;
                 // individual points have data-id set
                 if (target.dataset.identifier) {
-                    this.tooltipX = event.clientX;
-                    this.tooltipY = event.clientY;
+                    this.tooltipPosition = {
+                        x: event.clientX,
+                        y: event.clientY
+                    };
                     this.hoverItem = this.points.find((itm) => {
                         return itm.id.toString() === target.dataset.identifier;
                     });
@@ -153,16 +164,18 @@ export default mixins(BoxPlotBase).extend({
                 }
                 // boxes have data-group set
                 if (target.dataset.group) {
-                    this.tooltipX = event.clientX;
-                    this.tooltipY = event.clientY;
+                    this.tooltipPosition = {
+                        x: event.clientX,
+                        y: event.clientY
+                    };
                     this.hoverItem = this.groupedData.find((itm) => {
                         return itm.group.toString() === target.dataset.group;
                     });
                     return;
                 }
             }
-            this.tooltipX = undefined;
-            this.tooltipY = undefined;
+            this.tooltipPosition = undefined;
+            this.hoverItem = undefined;
         },
     },
     directives: {

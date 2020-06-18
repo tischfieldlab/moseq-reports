@@ -1,6 +1,6 @@
 <template>
     <div>
-        <canvas ref="canvas" :width="width" :height="height" @click="handleHeatmapClick" @mousemove="handleHeatmapHover">
+        <canvas ref="canvas" :width="width" :height="height" @click="handleHeatmapClick" @mousemove="debouncedHover" @mouseleave="hoverItem = undefined">
             <ColorScaleLegend
                     :title="legendTitle"
                     :scale="scale.z"
@@ -9,7 +9,7 @@
                     :x="dims.legend.x"
                     :y="dims.legend.y" />
         </canvas>
-        <ToolTip :x="tooltipX" :y="tooltipY">
+        <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
             <div v-html="tooltip_text" style="text-align:left;"></div>
         </ToolTip>
     </div>
@@ -43,6 +43,7 @@ export default mixins(ClusteredHeatmapBase).extend({
     data() {
         return {
             debouncedDraw: () => {/**/},
+            debouncedHover: (event: MouseEvent) => {/**/},
             canvas: {
                 // This is the CanvasRenderingContext that children will draw to.
                 cxt: null as CanvasRenderingContext2D | null,
@@ -52,7 +53,8 @@ export default mixins(ClusteredHeatmapBase).extend({
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;
         this.canvas.cxt = c.getContext('2d');
-        this.debouncedDraw = debounce(this.draw, 100);
+        this.debouncedDraw = debounce(this.draw, 50);
+        this.debouncedHover = debounce(this.handleHeatmapHover, 10, {isImmediate: true});
 
         Object.keys(this.$props).forEach((key) => {
             this.watchers.push(this.$watch(key, () => {
@@ -281,14 +283,16 @@ export default mixins(ClusteredHeatmapBase).extend({
 
                 if (event.offsetX > x1 && event.offsetX <= x2
                  && event.offsetY > y1 && event.offsetY <= y2) {
-                    this.tooltipX = event.clientX;
-                    this.tooltipY = event.clientY;
+                    this.tooltipPosition = {
+                        x: event.clientX,
+                        y: event.clientY
+                    };
                     this.hoverItem = node;
                     return;
                 }
             }
-            this.tooltipX = undefined;
-            this.tooltipY = undefined;
+            this.tooltipPosition = undefined;
+            this.hoverItem = undefined;
         },
         heatmap_node_tooltip(item: HeatmapTile) {
             return `<div style="text-align:left;">

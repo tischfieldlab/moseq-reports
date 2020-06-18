@@ -1,32 +1,34 @@
 <template>
-    <div ref="contents" class="tooltip_contents">
-        <span data-popper-arrow class="arrow tt-arrow"></span>
-        <slot></slot>
-    </div>
+    <Portal>
+        <div :id="$id('tooltip-contents')" class="tooltip_contents" v-show="show">
+            <span data-popper-arrow class="arrow tt-arrow"></span>
+            <slot></slot>
+        </div>
+    </Portal>
 </template>
 
 
 <script lang="ts">
 import Vue from 'vue';
 import { createPopper, Instance, VirtualElement } from '@popperjs/core';
+import { Portal } from '@linusborg/vue-simple-portal';
 
 export default Vue.extend({
+    components: {
+        Portal,
+    },
     props: {
         container: {
             required: true,
         },
         show: {
             type: Boolean,
-            default: true,
+            default: false,
         },
-        x: {
-            type: Number,
-            required: true,
+        position: {
+            type: Object,
+            default: { x: 0, y: 0 },
         },
-        y: {
-            type: Number,
-            required: true,
-        }
     },
     data() {
         return {
@@ -37,28 +39,25 @@ export default Vue.extend({
         };
     },
     mounted() {
-        this.virtualElement.getBoundingClientRect = this.generateGetBoundingClientRect(this.x, this.y);
-        this.instance = createPopper(this.virtualElement as VirtualElement,
-                                     this.$refs.contents as HTMLElement,
-                                     {
-                                        placement: 'right',
-                                        modifiers: [
-                                            {
-                                                name: 'offset',
-                                                options: {
-                                                    offset: [0, 10],
+        this.$nextTick().then(() => {
+            this.virtualElement.getBoundingClientRect = this.generateGetBoundingClientRect(this.position.x, this.position.y);
+            this.instance = createPopper(this.virtualElement as VirtualElement,
+                                        document.querySelector(this.$idRef('tooltip-contents')) as HTMLElement,
+                                        {
+                                            placement: 'right',
+                                            modifiers: [
+                                                {
+                                                    name: 'offset',
+                                                    options: {
+                                                        offset: [0, 10],
+                                                    },
                                                 },
-                                            },
-                                        ],
-                                     });
+                                            ],
+                                        });
+        });
     },
     watch: {
-        x: {
-            handler(newValue) {
-                this.updatePosition();
-            }
-        },
-        y: {
+        position: {
             handler(newValue) {
                 this.updatePosition();
             }
@@ -66,7 +65,7 @@ export default Vue.extend({
     },
     methods: {
         updatePosition() {
-            this.virtualElement.getBoundingClientRect = this.generateGetBoundingClientRect(this.x, this.y);
+            this.virtualElement.getBoundingClientRect = this.generateGetBoundingClientRect(this.position.x, this.position.y);
             if (this.instance !== undefined) {
                 this.instance.update();
             }
@@ -90,6 +89,8 @@ export default Vue.extend({
     background-color: #000;
     padding: 4px 8px;
     color: #FFF;
+    z-index: 2147483647;
+    font-size: 13px;
 }
 .arrow,
 .arrow::before {

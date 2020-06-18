@@ -1,7 +1,7 @@
 <template>
     <div>
-        <canvas ref='canvas' :width='width' :height='height' @mousemove="handleHover"></canvas>
-        <ToolTip :x="tooltipX" :y="tooltipY">
+        <canvas ref='canvas' :width='width' :height='height' @mousemove="debouncedHover" @mouseleave="hoverItem = undefined"></canvas>
+        <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
             <div style="text-align:left;" v-html="tooltip_text">
             </div>
         </ToolTip>
@@ -28,12 +28,14 @@ export default mixins(BoxPlotBase).extend({
         return {
             vueCanvas: null as CanvasRenderingContext2D | null,
             debouncedDraw: () => {/**/},
+            debouncedHover: (event: MouseEvent) => {/**/},
         };
     },
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;
         this.vueCanvas = c.getContext('2d');
         this.debouncedDraw = debounce(this.draw, 100);
+        this.debouncedHover = debounce(this.handleHover, 10, {isImmediate: true});
 
         Object.keys(this.$props).forEach((key) => {
             this.watchers.push(this.$watch(key, () => {
@@ -274,8 +276,10 @@ export default mixins(BoxPlotBase).extend({
                 const cx = this.scale.x(node.group) + node.jitter + this.halfBandwith + this.margin.left;
                 const cy = this.scale.y(node.value) + this.margin.top;
                 if (PointInsideCircle(cx, cy, this.point_size, event.offsetX, event.offsetY)) {
-                    this.tooltipX = event.clientX;
-                    this.tooltipY = event.clientY;
+                    this.tooltipPosition = {
+                        x: event.clientX,
+                        y: event.clientY
+                    };
                     this.hoverItem = node;
                     return;
                 }
@@ -290,14 +294,16 @@ export default mixins(BoxPlotBase).extend({
 
                 if (event.offsetX > x1 && event.offsetX <= x2
                  && event.offsetY > y1 && event.offsetY <= y2) {
-                    this.tooltipX = event.clientX;
-                    this.tooltipY = event.clientY;
+                    this.tooltipPosition = {
+                        x: event.clientX,
+                        y: event.clientY
+                    };
                     this.hoverItem = node;
                     return;
                 }
             }
-            this.tooltipX = undefined;
-            this.tooltipY = undefined;
+            this.tooltipPosition = undefined;
+            this.hoverItem = undefined;
         },
     },
 });
