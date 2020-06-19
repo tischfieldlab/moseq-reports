@@ -38,7 +38,6 @@
             <b-col>
                 <b-input-group prepend="Colormap">
                     <ColorScalePicker v-model="colorscale" />
-                    <!--<b-form-select v-model="colorscale" :options="color_options"></b-form-select>-->
                 </b-input-group>
             </b-col>
         </b-row>
@@ -61,14 +60,6 @@ import ColorScalePicker from '@/components/ColorScalePicker.vue';
 export default mixins(WindowMixin).extend({
     components: {
         ColorScalePicker,
-    },
-    mounted() {
-        if (this.plot_group === undefined) {
-            this.plot_group = this.available_groups[0].value;
-        }
-        if (this.relative_diff_group === undefined) {
-            this.relative_diff_group = this.available_diff_groups[0].value;
-        }
     },
     methods: {},
     computed: {
@@ -174,7 +165,6 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
-            color_options: GetInterpolatedScaleOptions(),
             available_layouts: [
                 'grid', 'circle', 'concentric', 'avsdf',
             ],

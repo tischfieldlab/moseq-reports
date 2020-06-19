@@ -1,6 +1,6 @@
 <template>
 <div>
-    <svg ref="canvas" :width="width" :height="height" @mouseover="debouncedHover" @mouseleave="hoverItem = undefined">
+    <svg ref="canvas" :width="width" :height="height" @mousemove="debouncedHover" @mouseleave="hoverItem = undefined">
         <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`" @click="handleHeatmapClick">
             <template v-for="node in data">
                 <rect 
@@ -56,7 +56,7 @@ import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLeg
 import mixins from 'vue-typed-mixins';
 import ClusteredHeatmapBase from './ClusteredHeatmapBase.vue';
 import ToolTip from '@/components/Charts/ToolTip.vue';
-import { debounce } from 'ts-debounce';
+import { throttle } from '@/util/Events';
 
 
 
@@ -71,7 +71,7 @@ export default mixins(ClusteredHeatmapBase).extend({
         };
     },
     mounted() {
-        this.debouncedHover = debounce(this.handleHeatmapHover, 10, {isImmediate: true});
+        this.debouncedHover = throttle(this.handleHeatmapHover, 10);
     },
     methods: {
         compute_label_stats(labels: string[]) {

@@ -25,7 +25,7 @@ import { sum } from 'd3';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendCanvas.vue';
 import mixins from 'vue-typed-mixins';
 import ClusteredHeatmapBase from './ClusteredHeatmapBase.vue';
-import { debounce } from 'ts-debounce';
+import { debounce, throttle } from '@/util/Events';
 import ToolTip from '@/components/Charts/ToolTip.vue';
 
 
@@ -54,7 +54,7 @@ export default mixins(ClusteredHeatmapBase).extend({
         const c = this.$refs.canvas as HTMLCanvasElement;
         this.canvas.cxt = c.getContext('2d');
         this.debouncedDraw = debounce(this.draw, 50);
-        this.debouncedHover = debounce(this.handleHeatmapHover, 10, {isImmediate: true});
+        this.debouncedHover = throttle(this.handleHeatmapHover, 10);
 
         Object.keys(this.$props).forEach((key) => {
             this.watchers.push(this.$watch(key, () => {

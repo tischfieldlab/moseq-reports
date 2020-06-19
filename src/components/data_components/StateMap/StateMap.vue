@@ -53,6 +53,7 @@ RegisterDataComponent({
 
 interface Node {
     data: {
+        type: string,
         id: number;
         name: string;
         usage: number;
@@ -61,6 +62,7 @@ interface Node {
 
 interface Link {
     data: {
+        type: string,
         id?: string,
         source: number;
         target: number;
@@ -74,18 +76,23 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
-            transitions: [] as any[],
-            usages: [] as any[],
+            raw_data: {
+                transitions: [] as any[],
+                usages: [] as any[],
+            }
         };
     },
     watch: {
         sourceData: {
             async handler(s) {
-                if (s === undefined) {
+                if (s === undefined || !s.is_valid) {
                     return;
                 }
-                this.usages = await LoadData(s.usage[0], s.usage[1], false);
-                this.transitions = await LoadData(s.transitions[0], s.transitions[1], false);
+                const data = {
+                    usages: await LoadData(s.usage[0], s.usage[1]),
+                    transitions: await LoadData(s.transitions[0], s.transitions[1]),
+                }
+                this.raw_data = data;
             },
             immediate: true,
         },
@@ -97,8 +104,9 @@ export default mixins(WindowMixin).extend({
                 }
                 cy.startBatch();
                 cy.remove('node');
-                cy.add(this.elements);
+                cy.add(newValue);
                 cy.layout(this.graph_layout).run();
+                cy.style(this.graph_styles);
                 cy.endBatch();
             },
         },
@@ -115,8 +123,8 @@ export default mixins(WindowMixin).extend({
             cy.style(this.graph_styles);
         },
     },
-    async mounted() {
-        if (this.settings.plot_group === '') {
+    created() {
+        if (this.settings.plot_group === undefined || this.settings.plot_group === '') {
             this.$store.commit(`${this.id}/updateComponentSettings`, {
                 id: this.id,
                 settings: {
@@ -124,12 +132,22 @@ export default mixins(WindowMixin).extend({
                 },
             });
         }
+        if (this.settings.relative_diff_group === undefined || this.settings.relative_diff_group === '') {
+            this.$store.commit(`${this.id}/updateComponentSettings`, {
+                id: this.id,
+                settings: {
+                    relative_diff_group: this.dataview.selectedGroups[1],
+                },
+            });
+        }
+    },
+    mounted() {
         const cy = cytoscape({
             container: this.$refs.container,
             elements: [],
             style: this.graph_styles,
-            minZoom: 1e-2,
-            maxZoom: 1e3,
+            minZoom: 1e-1,
+            maxZoom: 1e2,
         });
         cy.on('click', 'node', this.onNodeClick);
         (this as any).cy = cy;
@@ -171,41 +189,38 @@ export default mixins(WindowMixin).extend({
             ];
         },
         elements(): any[] {
-            return [...this.nodes, ...this.links];
-        },
-        nodes(): any[] {
-            if (this.usages.length === 0) {
-                return [];
-            }
-            const nodes = [] as Node[];
-            for (const s of this.activeSyllables) {
-                nodes.push({
-                    data: {
-                        id: s,
-                        name: s.toString(),
-                        usage: this.usages.find((row) => row.syllable === s).usage || 0,
-                    },
-                });
-            }
-            return nodes;
-        },
-        links(): any[] {
-            const trans = this.transitions[this.settings.plot_group];
-            const relTrans = this.transitions[this.settings.relative_diff_group];
+            const trans = this.raw_data.transitions[this.settings.plot_group];
+            const relTrans = this.raw_data.transitions[this.settings.relative_diff_group];
             if (trans === undefined || trans.length === 0) {
                 return [];
             }
             if (this.settings.show_relative_diff && relTrans === undefined) {
                 return [];
             }
-            const links = [] as Link[];
+
+            const elements = [] as (Node|Link)[];
+            for (const s of this.activeSyllables) {
+                const n = this.raw_data.usages.find((row) => row.syllable === s);
+                if (n !== undefined) {
+                    elements.push({
+                        data: {
+                            type: 'node',
+                            id: s,
+                            name: s.toString(),
+                            usage: n.usage,
+                        },
+                    });
+                }
+            }
+
             for (let s = 0; s < trans.length; s++) {
                 for (let d = 0; d < trans[s].length; d++) {
                     if (this.activeSyllables.includes(s) && this.activeSyllables.includes(d)) {
                         if (trans[s][d] > 0 && trans[s][d] >= this.settings.prune_threshold) {
                             if (this.settings.show_relative_diff) {
-                                links.push({
+                                elements.push({
                                     data: {
+                                        type: 'edge',
                                         id: `${s}->${d}`,
                                         source: s,
                                         target: d,
@@ -213,8 +228,9 @@ export default mixins(WindowMixin).extend({
                                     },
                                 });
                             } else {
-                                links.push({
+                                elements.push({
                                     data: {
+                                        type: 'edge',
                                         id: `${s}->${d}`,
                                         source: s,
                                         target: d,
@@ -226,18 +242,16 @@ export default mixins(WindowMixin).extend({
                     }
                 }
             }
-            return links;
+            return elements;
         },
         scale(): any {
             const r = scaleLinear()
-                        .domain(extent((this.usages).map((n) => n.usage)) as [number, number])
+                        .domain(extent((this.raw_data.usages).map((n) => n.usage)) as [number, number])
                         .range([5, 20]);
 
-            const abstransMax = this.links.length > 0 ?
-                max(this.links, (d) => Math.abs(d.data.weight)) as number : 1;
-
-            const transExtent = this.links.length > 0 ?
-                extent(this.links, (d) => d.data.weight) as [number, number] : 1;
+            const links = this.elements.filter((d) => d.data.type === 'edge')
+            const abstransMax = links.length > 0 ? max(links, (d) => Math.abs(d.data.weight)) as number : 1;
+            const transExtent = links.length > 0 ? extent(links, (d) => d.data.weight) as [number, number] : 1;
 
             let transDomain: number[];
             let t;
@@ -296,6 +310,9 @@ export default mixins(WindowMixin).extend({
             const showRelDiff = this.settings.show_relative_diff;
             const relDiffGroup = this.settings.relative_diff_group;
 
+            const filterGroups = [...(showRelDiff ?
+                [this.settings.plot_group, relDiffGroup] : [this.settings.plot_group])];
+
             const usageFilters = [
                 {
                     type: 'map',
@@ -308,8 +325,7 @@ export default mixins(WindowMixin).extend({
                 {
                     type: 'filter',
                     filters: {
-                        group: [...(showRelDiff ?
-                                    [this.settings.plot_group, relDiffGroup] : [this.settings.plot_group])],
+                        group: filterGroups,
                         syllable: this.activeSyllables,
                     },
                 },
@@ -325,13 +341,13 @@ export default mixins(WindowMixin).extend({
             const transFilters = [
                 {
                     type: 'pluck',
-                    column: [...(showRelDiff ?
-                                    [this.settings.plot_group, relDiffGroup] : [this.settings.plot_group])],
+                    column: filterGroups,
                 },
             ];
             return {
                 usage: [usageSource, usageFilters],
                 transitions: [transSource, transFilters],
+                is_valid: filterGroups.filter((g) => g !== '' && g !== undefined).length > 0,
             };
         },
         activeSyllables(): number[] {

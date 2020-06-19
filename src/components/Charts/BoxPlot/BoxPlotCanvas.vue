@@ -27,7 +27,7 @@ import Vue from 'vue';
 import BoxPlotBase from './BoxPlotBase.vue';
 import { GroupStats, DataPoint } from './BoxPlot.types';
 import { sum } from 'd3-array';
-import { debounce } from 'ts-debounce';
+import { throttle, debounce } from '@/util/Events';
 import mixins from 'vue-typed-mixins';
 import {sample} from '@/util/Array';
 import ToolTip from '@/components/Charts/ToolTip.vue';
@@ -49,7 +49,7 @@ export default mixins(BoxPlotBase).extend({
         const c = this.$refs.canvas as HTMLCanvasElement;
         this.vueCanvas = c.getContext('2d');
         this.debouncedDraw = debounce(this.draw, 100);
-        this.debouncedHover = debounce(this.handleHover, 10, {isImmediate: true});
+        this.debouncedHover = throttle(this.handleHover, 10);
 
         Object.keys(this.$props).forEach((key) => {
             this.watchers.push(this.$watch(key, () => {

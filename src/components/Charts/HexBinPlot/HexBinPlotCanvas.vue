@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { debounce } from 'ts-debounce';
+import { debounce } from '@/util/Events';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendCanvas.vue';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';

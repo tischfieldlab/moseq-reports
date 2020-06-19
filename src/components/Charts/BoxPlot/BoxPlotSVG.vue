@@ -1,6 +1,6 @@
 <template>
 <div>
-    <svg ref="canvas" :width="width" :height="height" @mouseover="debouncedHover" @mouseleave="hoverItem = undefined">
+    <svg ref="canvas" :width="width" :height="height" @mousemove="debouncedHover" @mouseleave="hoverItem = undefined">
         <g v-if="show_boxplot" :transform="`translate(${margin.left}, ${margin.top})`">
             <template v-for="(node) in groupedData">
                 <g class="boxplot" :key="node.group">
@@ -118,7 +118,7 @@ import BoxPlotBase from './BoxPlotBase.vue';
 import { sum } from 'd3-array';
 import mixins from 'vue-typed-mixins';
 import ToolTip from '@/components/Charts/ToolTip.vue';
-import { debounce } from 'ts-debounce';
+import { throttle } from '@/util/Events';
 
 
 export default mixins(BoxPlotBase).extend({
@@ -131,7 +131,7 @@ export default mixins(BoxPlotBase).extend({
         };
     },
     mounted() {
-        this.debouncedHover = debounce(this.handleHover, 10, {isImmediate: true});
+        this.debouncedHover = throttle(this.handleHover, 10);
     },
     methods: {
         compute_label_stats(labels: string[]) {

@@ -30,7 +30,7 @@
 import Vue from 'vue';
 import draggable from 'vuedraggable';
 import { Chrome } from 'vue-color';
-import { debounce } from 'ts-debounce';
+import { debounce } from '@/util/Events';
 import { unnest } from '@/util/Vuex';
 import deepEqual from 'deep-equal';
 import { DataviewState } from '../store/dataview.types';
