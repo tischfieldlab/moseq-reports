@@ -40,7 +40,7 @@ export function debounce<F extends Procedure>(
     }
 }
 
-export function throttle<F extends Procedure>(func: F, limit: number): (this: ThisParameterType<F>, ...args: Parameters<F>) => void {
+export function throttle<F extends Procedure>(func: F, limit: number) {
     let inThrottle: boolean;
 
     return function(this: ThisParameterType<F>, ...args: Parameters<F>): void {
