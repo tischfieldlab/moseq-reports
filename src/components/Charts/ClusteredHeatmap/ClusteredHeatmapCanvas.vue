@@ -27,6 +27,7 @@ import mixins from 'vue-typed-mixins';
 import ClusteredHeatmapBase from './ClusteredHeatmapBase.vue';
 import { debounce, throttle } from '@/util/Events';
 import ToolTip from '@/components/Charts/ToolTip.vue';
+import {getScaledContext2d} from '@/components/Charts/Canvas';
 
 
 
@@ -52,7 +53,7 @@ export default mixins(ClusteredHeatmapBase).extend({
     },
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;
-        this.canvas.cxt = c.getContext('2d');
+        this.canvas.cxt = getScaledContext2d(c, this.width, this.height);
         this.debouncedDraw = debounce(this.draw, 50);
         this.debouncedHover = throttle(this.handleHeatmapHover, 10);
 

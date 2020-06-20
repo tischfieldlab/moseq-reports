@@ -18,6 +18,7 @@ import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLeg
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import HexBinPlotBase from './HexBinPlotBase.vue';
+import {getScaledContext2d} from '@/components/Charts/Canvas';
 
 
 
@@ -41,7 +42,7 @@ export default mixins(HexBinPlotBase).extend({
     },
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;
-        this.canvas.cxt = c.getContext('2d');
+        this.canvas.cxt = getScaledContext2d(c, this.width, this.height);
         this.debouncedDraw = debounce(this.draw, 100);
 
         Object.keys(this.$props).forEach((key) => {

@@ -31,7 +31,7 @@ import { throttle, debounce } from '@/util/Events';
 import mixins from 'vue-typed-mixins';
 import {sample} from '@/util/Array';
 import ToolTip from '@/components/Charts/ToolTip.vue';
-
+import {getScaledContext2d} from '@/components/Charts/Canvas';
 
 
 export default mixins(BoxPlotBase).extend({
@@ -40,14 +40,11 @@ export default mixins(BoxPlotBase).extend({
     },
     data() {
         return {
-            vueCanvas: null as CanvasRenderingContext2D | null,
             debouncedDraw: () => {/**/},
             debouncedHover: (event: MouseEvent) => {/**/},
         };
     },
     mounted() {
-        const c = this.$refs.canvas as HTMLCanvasElement;
-        this.vueCanvas = c.getContext('2d');
         this.debouncedDraw = debounce(this.draw, 100);
         this.debouncedHover = throttle(this.handleHover, 10);
 
@@ -67,37 +64,39 @@ export default mixins(BoxPlotBase).extend({
         draw() {
             this.$emit('start-loading');
             this.$forceNextTick().then(() => {
-                if (this.vueCanvas === null) {
+                const c = this.$refs.canvas as HTMLCanvasElement;
+                const ctx = getScaledContext2d(c, this.width, this.height);
+                if (ctx === null) {
                     return; // bail out
                 }
-                this.vueCanvas.save();
+                ctx.save();
                 // clear canvas
-                this.vueCanvas.clearRect(0, 0, this.width, this.height);
+                ctx.clearRect(0, 0, this.width, this.height);
 
-                this.vueCanvas.translate(this.margin.left, this.margin.top);
+                ctx.translate(this.margin.left, this.margin.top);
 
                 if (this.show_boxplot) {
                     for (const node of this.groupedData) {
-                        this.drawBoxPlotNode(this.vueCanvas, node);
+                        this.drawBoxPlotNode(ctx, node);
                     }
                 }
                 if (this.show_violinplot) {
                     for (const node of this.groupedData) {
-                        this.drawViolinNode(this.vueCanvas, node);
+                        this.drawViolinNode(ctx, node);
                     }
                 }
                 if (this.actuallyShowPoints) {
                     for (const node of this.points) {
                         if (this.is_outlier(node)) {
-                            this.drawOutlierPointNode(this.vueCanvas, node);
+                            this.drawOutlierPointNode(ctx, node);
                         } else {
-                            this.drawPointNode(this.vueCanvas, node);
+                            this.drawPointNode(ctx, node);
                         }
                     }
                 }
-                this.drawAxisX(this.vueCanvas);
-                this.drawAxisY(this.vueCanvas);
-                this.vueCanvas.restore();
+                this.drawAxisX(ctx);
+                this.drawAxisY(ctx);
+                ctx.restore();
                 this.$emit('finish-loading');
             });
         },
@@ -267,8 +266,9 @@ export default mixins(BoxPlotBase).extend({
             ctx.restore();
         },
         compute_label_stats(labels: string[]) {
-            if (this.vueCanvas !== null) {
-                const ctx = this.vueCanvas;
+            const c = this.$refs.canvas as HTMLCanvasElement;
+            const ctx = getScaledContext2d(c, this.width, this.height);
+            if (ctx !== null) {
                 const widths = labels.map((l) => {
                     return ctx.measureText(l).width;
                 });
