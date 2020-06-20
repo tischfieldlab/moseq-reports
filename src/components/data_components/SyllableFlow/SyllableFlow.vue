@@ -157,7 +157,7 @@ export default mixins(WindowMixin).extend({
         this.debouncedHover = throttle(this.handleHover, 10);
     },
     watch: {
-        sourceData: {
+        'sourceData': {
             handler(s) {
                 if (s === undefined || !s.is_valid) {
                     return;
