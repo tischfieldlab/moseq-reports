@@ -21,7 +21,7 @@ module.exports = {
             },
             builderOptions: {
                 productName: "moseq-reports",
-                appId: "org.tischfieldlab.reports",
+                appId: "org.tischfieldlab.moseq-reports",
                 dmg: {
                     contents: [
                         {
@@ -33,15 +33,33 @@ module.exports = {
                             y: 220,
                             type: "link",
                             path: "/Applications"
-                        }
-                    ]
+                        },
+                    ],
+                },
+                mac: {
+                    target: [
+                        "dmg"
+                    ],
+                    fileAssociations: [
+                        {
+                            ext: 'msq',
+                            role: 'Editor',
+                            icon: 'bundled/img/icons/msq.icns',
+                            isPackage: true,
+                        },
+                    ],
                 },
                 linux: {
                     target: [
                         "deb",
-                        "AppImage"
+                        "AppImage",
                     ],
-                    category: "Development"
+                    category: "Development",
+                    fileAssociations: [
+                        {
+                            ext: 'msq',
+                        },
+                    ],
                 },
                 win: {
                     // For some reason, this fails on the nsi version... so we are leaving it
@@ -50,12 +68,19 @@ module.exports = {
                         "msi"
                     ],
                     icon: "public/img/icons/winapp256x256.ico",
-                    certificateSubjectName: "Rutgers, The State University of New Jersey"
+                    certificateSubjectName: "Rutgers, The State University of New Jersey",
+                    fileAssociations: [
+                        {
+                            ext: 'msq',
+                            description: 'Moseq Data File',
+                            icon: 'bundled/img/icons/msq.ico',
+                        },
+                    ],
                 },
-                // directories: {
-                //     buildResources: "public/img/icons",
-                //     output: "dist_electron"
-                // },
+                directories: {
+                    buildResources: "public/img",
+                    output: "dist_electron",
+                },
                 publish: {
                     provider: "github",
                     owner: "tischfieldlab",
