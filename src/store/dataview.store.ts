@@ -155,7 +155,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
         },
         async initialize(context) {
             const namespace = getModuleNamespace(store, context.state);
-            context.commit('setName', namespace?.split('/')[1]);
+            context.commit('setName', 'filter' + namespace?.split('/')[1].split('-')[1]);
             const groups = context.getters.availableGroups;
             const colorScale = scaleOrdinal(schemeDark2);
             await context.dispatch('updateView', {
