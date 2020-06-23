@@ -19,6 +19,13 @@ module.exports = {
             builderOptions: {
                 productName: "moseq-reports",
                 appId: "org.tischfieldlab.reports",
+                fileAssociations: [
+                    {
+                        ext: "msq",
+                        name: "Moseq Data File",
+                        role: "Editor"
+                    }
+                ],
                 dmg: {
                     contents: [
                         {
@@ -49,9 +56,9 @@ module.exports = {
                         "nsis"
                     ],
                     icon: "public/img/icons/winapp256x256.ico",
-                    certificateSubjectName: "Rutgers, The State University of New Jersey",
-                    // certificateFile: "test.pfx",
-                    publish: ["github"]
+                    // certificateSubjectName: "Rutgers, The State University of New Jersey",
+                    certificateFile: "test.pfx",
+                    publish: ["github"],
                 },
                 // directories: {
                 //     buildResources: "public/img/icons",

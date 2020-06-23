@@ -13,7 +13,7 @@ jobs:
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
         - git tag ${PACKAGE_VERSION}
-        - npm run package-release -- GITHUB_TOKEN=${GH_TOKEN}
+        - npm run package-release
 
     - stage: build
       os: windows
@@ -30,7 +30,7 @@ jobs:
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
         - git tag ${PACKAGE_VERSION}
-        - npm run package-release -- GITHUB_TOKEN=${GH_TOKEN}
+        - npm run package-release
 
     - stage: build
       os: linux
@@ -45,5 +45,5 @@ jobs:
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
         - git tag ${PACKAGE_VERSION}
-        - npm run package-release -- GITHUB_TOKEN=${GH_TOKEN}
+        - npm run package-release
 

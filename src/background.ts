@@ -135,8 +135,6 @@ if (process.env.NODE_ENV === 'production') {
         provider: 'github',
         owner: 'tischfieldlab',
         repo: 'moseq-reports',
-        token: process.env.GITHUB_TOKEN,
-        // token: 'ae846a7971de0f838cceac970a0858e03a95f381'
     };
 
     autoUpdater.setFeedURL(data);
