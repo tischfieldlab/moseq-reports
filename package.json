@@ -50,6 +50,7 @@
     "html-to-image": "^0.1.1",
     "jqwidgets-scripts": "^9.1.6",
     "lru-cache": "^5.1.1",
+    "mime-types": "^2.1.27",
     "node-stream-zip": "^1.11.1",
     "object-sizeof": "^1.6.0",
     "parse-numeric-range": "^1.2.0",
