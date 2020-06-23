@@ -8,6 +8,16 @@ let server: http.Server|undefined;
 export function CreateServer(port = 8989) {
     if (server === undefined) {
         server = http.createServer((request, response) => {
+            // Set CORS headers
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            response.setHeader('Access-Control-Request-Method', '*');
+            response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+            response.setHeader('Access-Control-Allow-Headers', '*');
+            if (request.method === 'OPTIONS') {
+                response.writeHead(200);
+                response.end();
+                return;
+            }
             request.addListener('end', async () => {
                 const fpath = store.getters[`datasets/resolve`](decodeURI(request.url as string)) as string;
                 let buffer;
