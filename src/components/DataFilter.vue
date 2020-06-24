@@ -1,34 +1,38 @@
 <template>
-    <div>
-        <b-card>
-            <template v-slot:header>
-                <b-button v-b-toggle="$id('filter-collapse')" variant="link" class="text-dark collapse-button text-decoration-none">
-                    <span class="when-opened">&#x25BC;</span><span class="when-closed">&#x25B6;</span>
-                </b-button>
-                <b-button variant="link" @click="removeThis" class="text-dark remove-button text-decoration-none">
-                    &#x1F5D9;
-                </b-button>
-                <h7>{{ datasource }}</h7>
-            </template>
-            <b-collapse visible :id="$id('filter-collapse')">
-                <b-overlay :show="is_loading" no-fade>
-                    <div class="container">
-                        <GroupBox :datasource="datasource" />
+    <b-card>
+        <template v-slot:header>
+            <b-button
+                @click="is_expanded = !is_expanded"
+                :title="is_expanded ? 'Collapse Filters' : 'Expand Filters'"
+                v-b-toggle="$id('filter-collapse')"
+                variant="link"
+                class="text-dark collapse-button text-decoration-none">
+                <b-icon class="when-opened" title="Collapse Filters" icon="chevron-up"></b-icon>
+                <b-icon class="when-closed" title="Expand Filters" icon="chevron-down"></b-icon>
+            </b-button>
+            <b-button variant="link" title="Remove this filter" @click="removeThis" class="text-dark remove-button text-decoration-none">
+                <b-icon icon="x"></b-icon>
+            </b-button>
+            <EditableText class="editable-text" v-model="filter_name" />
+        </template>
+        <b-collapse :visible="is_expanded" :id="$id('filter-collapse')">
+            <b-overlay :show="is_loading" no-fade>
+                <div class="container">
+                    <GroupBox :datasource="datasource" />
 
-                        <b-input-group prepend="Count Method" class="filter-item">
-                            <b-form-select v-model="selectedCountMethod" :options="countMethods" />
-                        </b-input-group>
+                    <b-input-group prepend="Count Method" class="filter-item">
+                        <b-form-select v-model="selectedCountMethod" :options="countMethods" />
+                    </b-input-group>
 
-                        <b-input-group prepend="Selected Syllable" class="filter-item">
-                            <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
-                        </b-input-group>
+                    <b-input-group prepend="Selected Syllable" class="filter-item">
+                        <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
+                    </b-input-group>
 
-                        <SyllableIdFilter :datasource="datasource" />
-                    </div>
-                </b-overlay>
-            </b-collapse>
-        </b-card>
-    </div>
+                    <SyllableIdFilter :datasource="datasource" />
+                </div>
+            </b-overlay>
+        </b-collapse>
+    </b-card>
 </template>
 
 <script lang="ts">
@@ -37,13 +41,14 @@ import { CountMethod, DataviewState } from '@/store/dataview.types';
 import GroupBox from '@/components/GroupBox.vue';
 import SyllableIdFilter from '@/components/SyllableIdFilter.vue';
 import { unnest } from '@/util/Vuex';
-
+import EditableText from './EditableText.vue';
 
 
 export default Vue.component('datafilter', {
     components: {
         GroupBox,
         SyllableIdFilter,
+        EditableText,
     },
     props: {
         datasource: {
@@ -53,6 +58,7 @@ export default Vue.component('datafilter', {
     },
     data() {
         return {
+            is_expanded: true,
             countMethods: [
                 { text: 'Usage', value: CountMethod.Usage },
                 { text: 'Frames', value: CountMethod.Frames },
@@ -60,6 +66,17 @@ export default Vue.component('datafilter', {
         };
     },
     computed: {
+        filter_name: {
+            get(): string {
+                if (this.dataview === undefined) {
+                    return '';
+                }
+                return this.dataview.name;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.datasource}/setName`, value);
+            },
+        },
         dataview(): DataviewState {
             return unnest(this.$store.state, this.datasource);
         },
@@ -68,6 +85,9 @@ export default Vue.component('datafilter', {
         },
         selectedCountMethod: {
             get(): CountMethod {
+                if (this.dataview === undefined) {
+                    return CountMethod.Usage;
+                }
                 return this.dataview.countMethod;
             },
             set(value: CountMethod) {
@@ -78,6 +98,9 @@ export default Vue.component('datafilter', {
         },
         syllable: {
             get(): number {
+                if (this.dataview === undefined) {
+                    return 0;
+                }
                 return this.dataview.selectedSyllable;
             },
             set(value: number) {
@@ -86,7 +109,10 @@ export default Vue.component('datafilter', {
                 }
             },
         },
-        syllableIdOptions(): Array<{ value: number, text: string }> {
+        syllableIdOptions(): { value: number, text: string }[] {
+            if (this.dataview === undefined) {
+                return [];
+            }
             const filtered = this.dataview.moduleIdFilter;
             if (filtered.length === 0) {
                 const avail = this.$store.getters[`${this.datasource}/availableModuleIds`];
@@ -119,7 +145,7 @@ export default Vue.component('datafilter', {
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .collapse-button {
     padding: 0;
     margin-left: -10px;
@@ -141,8 +167,22 @@ export default Vue.component('datafilter', {
 .filter-item {
     margin:10px 0;
 }
+.filter-item:first-child {
+    margin-top: 0;
+}
 
 .container {
     padding: 0.5em;
+}
+div.editable-text {
+    display: inline;
+}
+div.editable-text >>> input {
+    width: calc(100% - 60px);
+    display: inline-block;
+}
+.card-header {
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
 }
 </style>

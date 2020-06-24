@@ -16,6 +16,9 @@ import router from './router';
 import store from './store/root.store';
 import './registerServiceWorker';
 
+import {CreateServer, ShutdownServer} from '@/components/Core/DataLoader/DataServer';
+
+
 
 // Bootstrap Stuff
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
@@ -33,6 +36,9 @@ Vue.use(VueForceNextTick);
 import UniqueId from 'vue-unique-id';
 Vue.use(UniqueId);
 
+import AsyncComputed from 'vue-async-computed';
+Vue.use(AsyncComputed);
+
 Vue.config.productionTip = false;
 Vue.config.silent = true;
 
@@ -44,6 +50,12 @@ const vm = new Vue({
     router,
     store,
     render: (h) => h(App),
+    beforeCreate() {
+        CreateServer();
+    },
+    beforeDestroy() {
+        ShutdownServer();
+    }
 }).$mount('#app');
 
 export default vm;

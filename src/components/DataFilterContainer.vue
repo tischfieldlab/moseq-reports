@@ -1,8 +1,9 @@
 <template>
     <Portal>
-        <div :class="{ 'button-bar': true, 'shadow-lg': !show_filters, 'right': right }">
+        <div 
+            :class="{ 'button-bar': true, 'shadow-lg': !show_filters, 'right': right }"
+            :title="show_filters ? 'Hide data filters' : 'Show data filters'">
             <b-icon
-                title="Data Filters"
                 :class="{ active: show_filters }"
                 :icon="show_filters ? 'funnel-fill' : 'funnel'"
                 v-on:click="toggle_filters"></b-icon>
@@ -15,8 +16,17 @@
             :right="right"
             shadow="lg">
 
-            <div>
-                <template v-for="ns in filters">
+            <div class="action_container text-right">
+                <b-button @click="add_datasource" pill size="sm">
+                    <b-icon icon="plus"></b-icon>
+                    <b-spinner v-show="is_adding_source" small type="grow"></b-spinner>
+                    <span v-show="!is_adding_source">
+                        Add
+                    </span>
+                </b-button>
+            </div>
+            <div class="filters_container">
+                <template v-for="ns in this.$store.state.filters.items">
                     <DataFilter :key="ns" :datasource="ns" />
                 </template>
             </div>
@@ -44,6 +54,7 @@ export default Vue.extend({
     data() {
         return {
             show_filters: false,
+            is_adding_source: false,
         };
     },
     computed: {
@@ -62,6 +73,13 @@ export default Vue.extend({
         },
         sidebar_visibility_changed(visibility: boolean) {
             this.show_filters = visibility;
+        },
+        add_datasource() {
+            this.is_adding_source = true;
+            this.$forceNextTick(() => {
+                this.$store.dispatch('filters/addFilter')
+                    .finally(() => this.is_adding_source = false);
+            });
         },
     },
 });
@@ -94,13 +112,20 @@ export default Vue.extend({
 .button-bar.right .b-icon.active {
     border-right: 3px solid #2c3e50;
 }
-.b-sidebar {
-    top:30px;
+.b-sidebar-outer >>> .b-sidebar {
+    top: 30px;
+    height: calc(100vh - 30px) !important;
 }
-.b-sidebar:not(.b-sidebar-right) {
+.b-sidebar-outer >>> .b-sidebar:not(.b-sidebar-right) {
     left: 48px;
 }
-.b-sidebar.b-sidebar-right {
+.b-sidebar-outer >>> .b-sidebar.b-sidebar-right {
     right: 48px;
+}
+.action_container {
+    padding: 12px;
+}
+.filters_container {
+    padding-right: 12px
 }
 </style>

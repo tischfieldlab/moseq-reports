@@ -6,8 +6,8 @@ import path from 'path';
 import os from 'os';
 import { deleteFolderRecursive } from '@/util/Files';
 import { DatasetsState } from '@/store/datasets.types';
-import JSZip from 'jszip';
 import {LoadDefaultLayout} from './LoadLayout';
+import StreamZip from 'node-stream-zip';
 
 
 /**
@@ -17,7 +17,7 @@ import {LoadDefaultLayout} from './LoadLayout';
 export default function() {
     const filenames = remote.dialog.showOpenDialogSync({
         properties: ['openFile'],
-        defaultPath: process.cwd(),
+        // defaultPath: process.cwd(),
         filters: [
             { name: 'MoSeq Data Files', extensions: ['msq'] },
             { name: 'All Files', extensions: ['*'] },
@@ -56,6 +56,7 @@ function beginLoadingProcess(filename: string) {
             }
         })
         .then(() => {
+            app.$bvToast.hide('loading-toast');
             app.$root.$emit('finish-dataset-load');
             app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
                 title: 'Data loaded successfully!',
@@ -64,6 +65,7 @@ function beginLoadingProcess(filename: string) {
             });
         })
         .catch((reason) => {
+            app.$bvToast.hide('loading-toast');
             /* tslint:disable-next-line:no-console */
             console.error(reason);
             app.$root.$emit('fail-dataset-load');
@@ -89,6 +91,7 @@ function showStartLoadingToast() {
     ];
 
     app.$bvToast.toast(body, {
+        id: 'loading-toast',
         title: 'Loading Data',
         variant: 'info',
         toaster: 'b-toaster-bottom-right',
@@ -98,27 +101,40 @@ function showStartLoadingToast() {
 
 function readDataBundle(filename: string) {
     return new Promise<DatasetsState>((resolve, reject) => {
+        let zip;
         try {
             CleanState(); // clean any old state
             const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
-            const rawData = fs.readFileSync(filename);
 
-            JSZip.loadAsync(rawData).then(async (zip) => {
+            zip = new StreamZip({
+                file: filename,
+                storeEntries: true,
+            });
+            zip.on('error', (err) => {
+                zip.close();
+                reject(err);
+            });
+            zip.on('ready', async () => {
                 try {
+                    // await ExtractDirectory(zip, null, tmpdir);
                     const dataset: DatasetsState = {
                         bundle: filename,
                         name: path.basename(filename, '.msq'),
                         path: tmpdir,
+                        ...await LoadManifest(zip),
                         ...await LoadMetadataData(zip),
-                        ...await LoadUsageData(zip),
-                        ...await LoadSpinogramData(zip),
-                        ...await LoadCrowdMovies(zip, tmpdir),
+                        // ...await LoadUsageData(zip),
+                        // ...await LoadSpinogramData(zip),
+                        // ...await LoadCrowdMovies(zip, tmpdir),
+                        // ...await LoadScalarsData(zip, tmpdir),
                     };
                     resolve(dataset);
                 } catch (e) {
                     reject(e);
+                } finally {
+                    zip.close();
                 }
-            }, (error) => reject(error));
+            });
         } catch (e) {
             reject(e);
         }
@@ -132,73 +148,72 @@ function CleanState() {
     }
     deleteFolderRecursive(datapath);
 }
-
-async function LoadMetadataData(zip: JSZip) {
+async function LoadManifest(zip: StreamZip) {
+    return {
+        manifest: await jsonParseZipEntry(zip, 'manifest.json'),
+    };
+}
+async function LoadMetadataData(zip: StreamZip) {
     return {
         groups: await jsonParseZipEntry(zip, 'groups.json'),
         label_map: await jsonParseZipEntry(zip, 'label_map.json'),
     };
 }
 
-async function LoadSpinogramData(zip: JSZip) {
+async function LoadSpinogramData(zip: StreamZip) {
     // TODO: JSON cannot handle NaN here!
     return {
         spinogram: await jsonParseZipEntryContainingNaN(zip, 'spinogram.corpus-sorted-usage.json'),
     };
 }
 
-async function LoadUsageData(zip: JSZip) {
+async function LoadUsageData(zip: StreamZip) {
     return {
         usageByUsage: await jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json'),
         usageByFrames: await jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json'),
     };
 }
 
-async function LoadCrowdMovies(zip: JSZip, dir: string) {
-    const dest = path.join(dir, 'crowd_movies');
-    fs.mkdirSync(dest);
-    const waiting = new Array<Promise<unknown>>();
-    zip.folder('crowd_movies').forEach((relativePath, file) => {
-        waiting.push(new Promise((resolve, reject) => {
-            file.async('nodebuffer').then((value: Buffer) => {
-                try {
-                    fs.writeFileSync(path.join(dir, file.name), value);
-                    resolve();
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        }));
+async function LoadCrowdMovies(zip: StreamZip, dir: string) {
+    return {}; // ExtractDirectory(zip, 'crowd_movies', dir);
+}
+
+async function LoadScalarsData(zip: StreamZip, dir: string) {
+    return {}; // ExtractDirectory(zip, 'scalars', dir);
+}
+
+async function ExtractDirectory(zip: StreamZip, dirname: string|null, basedest: string): Promise<object> {
+    let dest: string;
+    if (dirname !== null) {
+        dest = path.join(basedest, dirname);
+        fs.mkdirSync(dest);
+    } else {
+        dest = basedest;
+    }
+    return new Promise((resolve, reject) => {
+        zip.extract(dirname as string, dest, (err) => {
+            if (err !== null) {
+                reject(err);
+            }
+            resolve({});
+        });
     });
-    await Promise.allSettled(waiting)
-                 .then((values) => {
-                    values.forEach((v) => {
-                        if (v.status === 'rejected') {
-                            throw(v.reason);
-                        }
-                    });
-                 });
-    return {};
 }
 
 
-async function jsonParseZipEntry(zip: JSZip, entryName: string) {
-    const entry = zip.file(entryName);
+async function jsonParseZipEntry(zip: StreamZip, entryName: string) {
+    const entry = zip.entryDataSync(entryName);
     if (entry !== null) {
-        return entry.async('text')
-                .then((value) => JSON.parse(value));
+        return Promise.resolve(JSON.parse(entry.toString()));
     }
     return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
 }
-async function jsonParseZipEntryContainingNaN(zip: JSZip, entryName: string) {
-    const entry = zip.file(entryName);
+async function jsonParseZipEntryContainingNaN(zip: StreamZip, entryName: string) {
+    const entry = zip.entryDataSync(entryName);
     if (entry !== null) {
-        return entry.async('text')
-            .then((data) => {
-                return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
+        return Promise.resolve(JSON.parse(entry.toString().replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
                     return value === '***NaN***' ? NaN : value;
-                });
-            });
+                }));
     }
     return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
 }

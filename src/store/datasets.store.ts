@@ -3,6 +3,8 @@ import { Module } from 'vuex';
 import Vue from 'vue';
 import DataFrame from 'dataframe-js';
 import { DatasetsState } from './datasets.types';
+import path from 'path';
+import { unnest } from '@/util/Vuex';
 
 
 
@@ -12,15 +14,20 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         bundle: '',
         name: '',
         path: '',
-        spinogram: [],
-        usageByUsage: null,
-        usageByFrames: null,
+        manifest: {},
         groups: [],
         label_map: null,
     },
     getters: {
+        resolve: (state) => (filename: string) => {
+            const mani = unnest(state.manifest, filename);
+            if (mani) {
+                filename = mani;
+            }
+            return path.join(state.bundle, filename);
+        },
         availableUsageModuleIds: (state) => {
-            if (state.usageByUsage === null) {
+            if (!state.label_map) {
                 return [];
             }
             return new DataFrame(state.label_map.data, state.label_map.columns)
@@ -29,7 +36,7 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
                 .toArray('usage');
         },
         availableFramesModuleIds: (state) => {
-            if (state.usageByFrames === null) {
+            if (!state.label_map) {
                 return [];
             }
             return new DataFrame(state.label_map.data, state.label_map.columns)
@@ -43,15 +50,7 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
             state.bundle = payload.bundle;
             state.name = payload.name;
             state.path = payload.path;
-        },
-        SetSpinogramData(state, data: DatasetsState) {
-            state.spinogram = data.spinogram;
-        },
-        SetUsageByUsage(state, data: DatasetsState) {
-            state.usageByUsage = data.usageByUsage;
-        },
-        SetUsageByFrames(state, data: DatasetsState) {
-            state.usageByFrames = data.usageByFrames;
+            state.manifest = payload.manifest;
         },
         SetGroupInfo(state, data: DatasetsState) {
             Vue.set(state, 'groups', [...data.groups]);
@@ -63,9 +62,6 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
     actions: {
         setData(context, payload: DatasetsState) {
             context.commit('SetDataSourceInfo', payload);
-            context.commit('SetSpinogramData', payload);
-            context.commit('SetUsageByUsage', payload);
-            context.commit('SetUsageByFrames', payload);
             context.commit('SetGroupInfo', payload);
             context.commit('SetLabelMap', payload);
         },

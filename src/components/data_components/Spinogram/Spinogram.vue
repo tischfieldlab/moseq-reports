@@ -1,18 +1,29 @@
 <template>
     <div>
         <template v-if="has_data">
+            <b-pagination
+                v-if="num_examples > 0"
+                v-model="example_num"
+                :total-rows="num_examples"
+                :per-page="1"
+                :limit="num_examples"
+                align="fill"
+                hide-goto-end-buttons="true"
+                size="sm"></b-pagination>
+            
             <svg :width="outsideWidth" :height="outsideHeight">
                 <text class="title" :x="this.outsideWidth / 2" :y="20">
                     Module #{{ selectedSyllable }} ({{countMethod}}) Spinogram
                 </text>
                 <g :transform="`translate(${margin.left}, ${margin.top})`">
-                    <template v-for="(tp, idx) in spinogram_plot">
+                    <template v-for="(tp, idx) in spinogram_data">
                         <path 
                             v-bind:key="idx"
-                            :d="line(tp)"
+                            :d="line(tp.xy)"
                             :stroke="line_color"
                             :stroke-width="line_weight"
-                            :style="{opacity:spinogram_alphas[idx]}" />
+                            :style="{opacity:tp.a}"
+                            :data-time="tp.t" />
                     </template>
                 </g>
                 <g class="x-axis" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
@@ -37,7 +48,13 @@
                     :transform="`translate(${width}, 25)`" />
             </svg>
         </template>
-        <p v-else>No Data</p>
+        <div v-else class="no-data">
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
+                <b-card-text>
+                    Sorry, there are no spinograms available for Syllable {{selectedSyllable}} ({{countMethod}})
+                </b-card-text>
+            </b-card>
+        </div>
     </div>
 </template>
 
@@ -54,16 +71,20 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
 import mixins from 'vue-typed-mixins';
 import {rgb} from 'd3-color';
+import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
+import LoadData from '@/components/Core/DataLoader/DataLoader';
+import { extent } from 'd3';
+import { Operation } from '../../Core/DataLoader/DataLoader.types';
 
 
 interface Spinogram {
-    id: number;
     data: SpinogramTimepoint[];
 }
 
 interface SpinogramTimepoint {
     x: number[];
     y: number[];
+    xy: number[][];
     a: number;
     t: number;
 }
@@ -73,7 +94,7 @@ RegisterDataComponent({
     component_type: 'Spinogram',
     settings_type: 'SpinogramOptions',
     init_width: 400,
-    init_height: 200,
+    init_height: 250,
     default_settings: {
         line_color: '#FF0000',
         line_weight: 2,
@@ -82,8 +103,13 @@ RegisterDataComponent({
 
 
 export default mixins(LoadingMixin, WindowMixin).extend({
+    components: {
+        ColorScaleLegend,
+    },
     data() {
         return {
+            items: [] as Spinogram[],
+            example_num: 1,
             margin: {
                 top: 30,
                 right: 20,
@@ -93,6 +119,15 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         };
     },
     computed: {
+        spinogram_data(): Readonly<SpinogramTimepoint[]> {
+            if (this.example_num - 1 < this.items.length) {
+                return this.items[this.example_num - 1].data;
+            }
+            return [];
+        },
+        num_examples(): number {
+            return this.items.length;
+        },
         width(): number {
             return this.outsideWidth - this.margin.left - this.margin.right;
         },
@@ -112,7 +147,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.layout.width;
         },
         outsideHeight(): number {
-            return this.layout.height - 31;
+            return this.layout.height - 31 - 31;
         },
         origin(): any {
             const x = this.margin.left;
@@ -120,8 +155,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return { x, y };
         },
         scale(): any {
-            if (this.spinogram_plot === undefined) {
-                return { x: scaleLinear(), y: scaleLinear() };
+            if (this.spinogram_data === undefined || this.spinogram_data.length === 0) {
+                return { x: scaleLinear(), y: scaleLinear(), t: scaleSequential((n) => n) };
             }
             const x = scaleLinear()
                 .domain([0, 200])
@@ -131,20 +166,18 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 .rangeRound([this.height, 0]);
 
             const c = rgb(this.line_color);
-            const a1 = this.spinogram_alphas[0];
-            const a2 = this.spinogram_alphas[this.spinogram_alphas.length - 1];
+            const ae = extent(this.spinogram_data.map((tp) => tp.a)) as [number, number];
+            const te = extent(this.spinogram_data.map((tp) => tp.t)) as [number, number];
             const t = scaleSequential(d3.interpolateRgb(
-                    rgb(c.r, c.g, c.b, a1).toString(),
-                    rgb(c.r, c.g, c.b, a2).toString(),
+                    rgb(c.r, c.g, c.b, ae[0]).toString(),
+                    rgb(c.r, c.g, c.b, ae[1]).toString(),
                 ))
-                .domain([
-                    this.spinogram_times[0],
-                    this.spinogram_times[this.spinogram_times.length - 1],
-                ]);
+                .domain(te);
             return { x, y, t };
         },
         line(): any {
             const a = line()
+                .defined(([x, y]) => !Number.isNaN(x) && !Number.isNaN(y))
                 .x((d) => this.scale.x(d[0]))
                 .y((d) => this.scale.y(d[1]));
             return a;
@@ -158,28 +191,46 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
         },
-        usageSelectedSyllable(): number {
-            return this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Usage);
-        },
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        spinogram_data(): Spinogram {
-            return this.$store.state.datasets.spinogram.find((s) => s.id === this.usageSelectedSyllable) as Spinogram;
-        },
-        spinogram_plot(): number[][][] {
-            return this.spinogram_data.data.map((stp, idx) => {
-                return stp.x.map((tpx, jdx) => [ tpx, stp.y[jdx] ]);
-            });
-        },
-        spinogram_alphas(): number[] {
-            return this.spinogram_data.data.map((stp, idx) => stp.a);
-        },
-        spinogram_times(): number[] {
-            return this.spinogram_data.data.map((stp, idx) => stp.t);
-        },
         has_data(): boolean {
-            return this.spinogram_data !== undefined;
+            return this.items.length > 0;
+        },
+        dataspec(): [string, Operation[]] {
+            return [
+                this.$store.getters[`datasets/resolve`]('spinograms'),
+                [
+                    {
+                        type: 'map',
+                    },
+                    {
+                        type: 'filter',
+                        filters: {
+                            [`sid_${this.countMethod.toLowerCase()}`]: [this.selectedSyllable],
+                        },
+                    },
+                ],
+            ];
+        },
+    },
+    watch: {
+        dataspec: {
+            handler() {
+                LoadData(this.dataspec[0], this.dataspec[1])
+                .then((data: any[]) => {
+                    if (data && data.length > 0) {
+                        for (const itm of data) {
+                            const d = itm.data;
+                            d.forEach((stp, idx) => {
+                                stp.xy = stp.x.map((tpx, jdx) => [ tpx, stp.y[jdx] ]);
+                            });
+                        }
+                    }
+                    this.items = data;
+                });
+            },
+            immediate: true,
         },
     },
     directives: {
@@ -210,5 +261,16 @@ svg >>> text.title {
 svg >>> g.legend text.label {
     font-size: 10px;
     transform: translateY(-10px);
+}
+
+.b-pagination {
+    margin-bottom:0;
+}
+.no-data .card {
+    width: 75%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 </style>

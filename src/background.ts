@@ -36,6 +36,8 @@ function createWindow() {
         backgroundColor: '#FFFFFF',
         webPreferences: {
             nodeIntegration: true,
+            nodeIntegrationInWorker: true,
+            sandbox: false,
         },
     }) as BrowserWindow;
 

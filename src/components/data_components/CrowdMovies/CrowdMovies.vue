@@ -35,7 +35,6 @@ import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import { CreateCrowdMovieServer } from './CrowdMoviesServer';
 
 RegisterDataComponent({
     friendly_name: 'Crowd Movies',
@@ -48,9 +47,6 @@ RegisterDataComponent({
         playback_rate: 1.0,
     },
 });
-
-// Create the crowd movie server
-CreateCrowdMovieServer();
 
 export default mixins(WindowMixin).extend({
     data() {

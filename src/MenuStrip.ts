@@ -2,7 +2,7 @@ import { remote, Menu } from 'electron';
 import loadDataCommand from '@/commands/LoadData';
 import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/commands/LoadLayout';
 import {AvailableComponents, CreateComponent} from '@/commands/Windows';
-
+import showAboutWindow from '@/commands/ShowAbout';
 
 /**
  * Creates the main menu strip for the electron app
@@ -95,6 +95,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: 'Add Widget...',
                     type: 'submenu',
                     submenu: AvailableComponents()
+                            .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
                             .map((cr) => {
                                 return {
                                     label: cr.friendly_name,
@@ -149,6 +150,17 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: 'Default Layout',
                     type: 'normal',
                     click: (): void => { LoadDefaultLayout(); },
+                },
+            ],
+        },
+        // ********************** HELP MENU **********************
+        {
+            label: 'Help',
+            submenu: [
+                {
+                    label: 'About',
+                    type: 'normal',
+                    click: (): void => { showAboutWindow(); },
                 },
             ],
         },

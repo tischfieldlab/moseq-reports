@@ -6,12 +6,15 @@ module.exports = {
     configureWebpack: {
         devtool: 'source-map',
         plugins: [
-            new ThreadsPlugin()
+            new ThreadsPlugin({
+                target: 'electron-node-worker',
+                globalObject: 'self',
+            })
         ],
     },
     pluginOptions: {
         electronBuilder: {
-            externals: ['plotly.js-dist', 'hclusterjs'],
+            externals: ['plotly.js-dist', 'hclusterjs', 'about-window'],
             chainWebpackRendererProcess(config) {
                 config.plugins.delete('workbox')
                 config.plugins.delete('pwa')
@@ -44,9 +47,14 @@ module.exports = {
                 linux: {
                     target: [
                         "deb",
-                        "AppImage"
+                        "AppImage",
                     ],
-                    category: "Development"
+                    category: "Development",
+                    fileAssociations: [
+                        {
+                            ext: 'msq',
+                        },
+                    ],
                 },
                 win: {
                     // For some reason, this fails on the nsi version... so we are leaving it
@@ -60,10 +68,6 @@ module.exports = {
                     // certificateFile: "test.pfx",
                     publish: ["github"],
                 },
-                // directories: {
-                //     buildResources: "public/img/icons",
-                //     output: "dist_electron"
-                // },
                 publish: {
                     provider: "github",
                     owner: "tischfieldlab",

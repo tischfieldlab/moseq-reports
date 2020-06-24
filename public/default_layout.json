@@ -1,6 +1,6 @@
 [{
-    "type": "ClusteredHeatmap",
-    "title": "Clustered Usage Heatmap",
+    "type": "UsageHeatmap",
+    "title": "Usage Heatmap",
     "layout": {
         "width": 400,
         "height": 600,
