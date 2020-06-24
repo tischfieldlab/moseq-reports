@@ -3,7 +3,6 @@ import createMainMenu from './MenuStrip';
 
 let titlebar: Titlebar|undefined;
 
-
 export function CreateTitleBar() {
     DisposeTitlebar();
     titlebar = new Titlebar({
