@@ -8,7 +8,7 @@
             <g>
                 <text class="axis-label" :transform="`translate(10, ${(innerHeight / 2) + margin.top}) rotate(-90)`">Incoming</text>
                 <text class="axis-label" :transform="`translate(${layout.width - (margin.right / 2)}, ${(innerHeight / 2) + margin.top}) rotate(-90)`">Outgoing</text>
-                <g
+                <g class="node"
                     v-for="n in graph.nodes"
                     :key="n.name"
                     :transform="`translate(${(n.x0 || 0)+1}, ${(n.y0 || 0)})`"
@@ -20,7 +20,7 @@
                         :width="(n.x1 - n.x0 - 2 || 0)"
                         :height="Math.max(1, n.y1 - n.y0) || 0"
                         :fill="color(scale.n(n.id)).darker(0.5)"
-                        :data-nodeid="n.id" />
+                        :data-nodeid="n.id"></rect>
                     <text v-if="Math.max(1, n.y1 - n.y0) > 10"
                         class="node-label"
                         :x="(n.x1 - n.x0 - 2) / 2"
@@ -328,7 +328,7 @@ export default mixins(WindowMixin).extend({
                             : trans[s][this.selectedSyllable];
                         g.links.push({
                             type: 'edge',
-                            id: `${s}->${this.selectedSyllable}`,
+                            id: `${s} → ${this.selectedSyllable}`,
                             color_id: s,
                             source: inName,
                             target: this.selectedSyllable.toString(),
@@ -353,7 +353,7 @@ export default mixins(WindowMixin).extend({
                             : trans[this.selectedSyllable][d];
                         g.links.push({
                             type: 'edge',
-                            id: `${this.selectedSyllable}->${d}`,
+                            id: `${this.selectedSyllable} → ${d}`,
                             color_id: d,
                             source: this.selectedSyllable.toString(),
                             target: outName,
@@ -422,6 +422,9 @@ export default mixins(WindowMixin).extend({
 <style scoped>
 .link {
     mix-blend-mode: multiply;
+}
+g.node {
+    cursor: pointer;
 }
 .node-label {
     text-anchor: middle;

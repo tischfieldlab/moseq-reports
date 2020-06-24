@@ -1,5 +1,4 @@
 import { toPng, toSvgDataURL } from 'html-to-image';
-import { saveAs } from 'file-saver';
 import { svgAsDataUri, svgAsPngUri } from 'save-svg-as-png';
 import { Store } from 'vuex';
 import { unnest } from '@/util/Vuex';
