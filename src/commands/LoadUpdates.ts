@@ -1,4 +1,12 @@
 import app from '@/main';
+import { ipcRenderer } from 'electron';
+import { UpdateCheckResult } from 'electron-updater';
+
+
+ipcRenderer.on('update-check', (event: any, data: UpdateCheckResult) => {
+    UpdateCheck();
+    ipcRenderer.send('update-check-done');
+});
 
 export function UpdateCheck() {
     app.$root.$once('bv::toast:shown', () => beginUpdateCheck());
