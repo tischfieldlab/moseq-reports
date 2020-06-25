@@ -1,11 +1,27 @@
 <template>
+<div class="sample-viewer-container">
+    <b-input-group size="sm">
+        <b-input-group-prepend is-text>
+            <b-icon icon="search" />
+        </b-input-group-prepend>
+        <b-form-input type="text" v-model="filter_string" placeholder="Filter" ></b-form-input>
+        <template v-slot:append>
+            <b-button variant="info" @click="filter_string = ''" title="Clear Filters">
+                <b-icon icon="x" />
+            </b-button>
+        </template>
+    </b-input-group>
     <b-table
+        data-snapshot-target
+        style="width:100%;height:calc(100%-31px);"
         :items="items"
         :fields="fields"
+        :filter="filter_string"
         striped="true"
         hover="true"
-        :sticky-header="`${this.layout.height - 31}px`"
+        :sticky-header="`${this.layout.height - 31 - 31}px`"
         ></b-table>
+</div>
 </template>
 
 <script lang="ts">
@@ -29,6 +45,7 @@ export default mixins(WindowMixin).extend({
     data() {
         return {
             items: [] as any[],
+            filter_string: '',
             fields: [
                 { key: 'uuid', label: 'UUID', sortable: true, },
                 { key: 'default_group', label: 'Group', sortable: true },
@@ -73,3 +90,18 @@ export default mixins(WindowMixin).extend({
     },
 });
 </script>
+
+<style scoped>
+.sample-viewer-container {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.b-table-sticky-header {
+    margin-bottom: 0;
+}
+.b-table-sticky-header >>> .table.b-table > thead > tr > th {
+    top: -1px;
+}
+</style>
