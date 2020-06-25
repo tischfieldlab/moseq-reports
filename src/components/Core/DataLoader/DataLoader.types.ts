@@ -24,7 +24,7 @@ export interface KeysOperation {
 }
 export interface SortOperation {
     type: 'sort';
-    column: string;
+    columns: string[];
     direction: SortDirection|'asc'|'desc';
 }
 export interface FilterOperation {
