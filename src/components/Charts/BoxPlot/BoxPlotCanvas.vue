@@ -40,6 +40,7 @@ export default mixins(BoxPlotBase).extend({
     },
     data() {
         return {
+            emitLoadingOnUpdate: false,
             debouncedDraw: () => {/**/},
             debouncedHover: (event: MouseEvent) => {/**/},
         };
@@ -62,11 +63,12 @@ export default mixins(BoxPlotBase).extend({
     },
     methods: {
         draw() {
-            this.$emit('start-loading');
+            this.emitStartLoading();
             this.$forceNextTick().then(() => {
                 const c = this.$refs.canvas as HTMLCanvasElement;
                 const ctx = getScaledContext2d(c, this.width, this.height);
                 if (ctx === null) {
+                    this.emitFinishLoading();
                     return; // bail out
                 }
                 ctx.save();
@@ -97,7 +99,7 @@ export default mixins(BoxPlotBase).extend({
                 this.drawAxisX(ctx);
                 this.drawAxisY(ctx);
                 ctx.restore();
-                this.$emit('finish-loading');
+                this.emitFinishLoading();
             });
         },
         drawBoxPlotNode(ctx: CanvasRenderingContext2D, node: GroupStats) {

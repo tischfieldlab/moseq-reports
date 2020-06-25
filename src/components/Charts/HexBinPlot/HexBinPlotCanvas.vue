@@ -74,7 +74,7 @@ export default mixins(HexBinPlotBase).extend({
             return fontsize;
         },
         draw() {
-            this.$emit('start-loading');
+            this.emitStartLoading();
             this.$forceNextTick().then(() => {
                 const c = this.$refs.canvas as HTMLCanvasElement;
                 this.canvas.cxt = c.getContext('2d');

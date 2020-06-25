@@ -127,6 +127,7 @@ export default mixins(BoxPlotBase).extend({
     },
     data() {
         return {
+            emitLoadingOnUpdate: false,
             debouncedHover: (event: MouseEvent) => {/**/},
         };
     },

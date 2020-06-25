@@ -10,6 +10,9 @@ import { WhiskerType, GroupStats, DataPoint, DataPointQueueNode } from './BoxPlo
 import {groupby} from '@/util/Array';
 import { spawn, Thread, Worker, ModuleThread } from 'threads';
 import { BoxPlotWorker } from './Worker';
+import LoadingMixin from '@/components/Core/LoadingMixin';
+import mixins from 'vue-typed-mixins';
+
 
 
 if (module.hot) {
@@ -42,7 +45,7 @@ function default_tooltip_formatter(value: any, that) {
 }
 
 
-export default Vue.extend({
+export default mixins(LoadingMixin).extend({
     props: {
         data: {
             required: true,

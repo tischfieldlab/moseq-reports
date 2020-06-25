@@ -161,7 +161,7 @@ export default mixins(LoadingMixin).extend({
             if (this.data === null) {
                 return;
             }
-            this.$emit('start-loading');
+            this.emitStartLoading();
 
             worker.binData(this.data as any[],
                         this.useGroups ? this.groupLabels as string[] : null,
@@ -174,7 +174,7 @@ export default mixins(LoadingMixin).extend({
                         this.domainX = result.domainX;
                         this.domainY = result.domainY;
                     }
-                    this.$emit('finish-loading');
+                    this.emitFinishLoading();
                 });
         },
     },

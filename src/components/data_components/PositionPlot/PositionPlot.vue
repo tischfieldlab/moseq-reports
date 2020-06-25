@@ -106,10 +106,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     watch: {
         dataspec: {
             handler(newValue) {
-                this.$emit('start-loading');
+                this.emitStartLoading();
                 LoadData(newValue[0], newValue[1])
                 .then((data) => this.individualUseageData = data)
-                .then(() => this.$emit('finish-loading'));
+                .then(() => this.emitFinishLoading());
             },
             immediate: true,
         },
