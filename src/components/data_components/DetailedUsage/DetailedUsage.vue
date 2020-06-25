@@ -98,7 +98,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 },
                 {
                     type: 'sort',
-                    column: 'value',
+                    columns: ['value'],
                     direction: 'asc',
                 },
             ]);
