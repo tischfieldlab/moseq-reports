@@ -18,14 +18,11 @@ import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
-import { CountMethod } from '../../../store/dataview.types';
+import { CountMethod } from '@/store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import {forceSimulation, forceLink, forceManyBody, forceX, forceY, forceRadial, forceCollide} from 'd3-force';
-import { scaleBand, scaleSequential, scaleLinear, scaleDiverging } from 'd3-scale';
-import {interpolateNumber} from 'd3-interpolate';
+import { scaleSequential, scaleLinear, scaleDiverging } from 'd3-scale';
 import { GetScale, GetScaleWithOpacity } from '@/components/Charts/D3ColorProvider';
 import { extent, max } from 'd3-array';
-import * as d3 from 'd3';
 import cytoscape from 'cytoscape';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
 
@@ -70,7 +67,7 @@ interface Link {
     };
 }
 
-export default mixins(WindowMixin).extend({
+export default mixins(WindowMixin, LoadingMixin).extend({
     components: {
         ColorScaleLegend,
     },
@@ -88,11 +85,13 @@ export default mixins(WindowMixin).extend({
                 if (s === undefined || !s.is_valid) {
                     return;
                 }
-                const data = {
-                    usages: await LoadData(s.usage[0], s.usage[1]),
-                    transitions: await LoadData(s.transitions[0], s.transitions[1]),
-                }
+                this.emitStartLoading();
+                const data = Object.freeze({
+                    usages: await LoadData(s.usage[0], s.usage[1], false),
+                    transitions: await LoadData(s.transitions[0], s.transitions[1], false),
+                });
                 this.raw_data = data;
+                this.emitFinishLoading();
             },
             immediate: true,
         },
@@ -189,12 +188,16 @@ export default mixins(WindowMixin).extend({
             ];
         },
         elements(): any[] {
-            const trans = this.raw_data.transitions[this.settings.plot_group];
-            const relTrans = this.raw_data.transitions[this.settings.relative_diff_group];
+            const trans = this.raw_data.transitions.filter((row) => row.group === this.settings.plot_group);
+            const transSum = trans.reduce((acc, curr) => acc + curr.raw, 0);
+            const relTrans = this.raw_data.transitions.filter((row) => row.group === this.settings.relative_diff_group);
+            const relTransSum = relTrans.reduce((acc, curr) => acc + curr.raw, 0);
+
+            const showRelDiff = this.settings.show_relative_diff;
             if (trans === undefined || trans.length === 0) {
                 return [];
             }
-            if (this.settings.show_relative_diff && relTrans === undefined) {
+            if (showRelDiff && (relTrans === undefined || relTrans.length === 0)) {
                 return [];
             }
 
@@ -213,32 +216,26 @@ export default mixins(WindowMixin).extend({
                 }
             }
 
-            for (let s = 0; s < trans.length; s++) {
-                for (let d = 0; d < trans[s].length; d++) {
-                    if (this.activeSyllables.includes(s) && this.activeSyllables.includes(d)) {
-                        if (trans[s][d] > 0 && trans[s][d] >= this.settings.prune_threshold) {
-                            if (this.settings.show_relative_diff) {
-                                elements.push({
-                                    data: {
-                                        type: 'edge',
-                                        id: `${s}->${d}`,
-                                        source: s,
-                                        target: d,
-                                        weight: trans[s][d] - relTrans[s][d],
-                                    },
-                                });
-                            } else {
-                                elements.push({
-                                    data: {
-                                        type: 'edge',
-                                        id: `${s}->${d}`,
-                                        source: s,
-                                        target: d,
-                                        weight: trans[s][d],
-                                    },
-                                });
-                            }
-                        }
+            for (const [i, t] of trans.entries()) {
+                if (this.activeSyllables.includes(t.row_id) && this.activeSyllables.includes(t.col_id)) {
+                    const val = (t.raw / transSum);
+                    if (showRelDiff && (t.row_id !== relTrans[i].row_id || t.col_id !== relTrans[i].col_id)) {
+                        /* tslint:disable-next-line:no-console */
+                        console.warn('primary and relative mismatch', t, relTrans[i]);
+                    }
+                    const relval = showRelDiff
+                                ?  (t.raw / transSum) - (relTrans[i].raw / relTransSum)
+                                : (t.raw / transSum);
+                    if (val > 0 && val > this.settings.prune_threshold) {
+                        elements.push({
+                            data: {
+                                type: 'edge',
+                                id: `${t.row_id}->${t.col_id}`,
+                                source: t.row_id,
+                                target: t.col_id,
+                                weight: relval,
+                            },
+                        });
                     }
                 }
             }
@@ -299,14 +296,8 @@ export default mixins(WindowMixin).extend({
         },
         sourceData(): any {
             const usageSource = this.$store.getters[`datasets/resolve`]('usage');
-            let transSource;
-            if (this.dataview.countMethod === CountMethod.Usage) {
-                transSource = this.$store.getters[`datasets/resolve`]('transitions_usage');
-            } else if (this.dataview.countMethod === CountMethod.Frames) {
-                transSource = this.$store.getters[`datasets/resolve`]('transitions_frames');
-            } else {
-                throw new Error(`Count method ${this.dataview.countMethod} is not supported`);
-            }
+            const transSource = this.$store.getters[`datasets/resolve`]('individual_transitions');
+
             const showRelDiff = this.settings.show_relative_diff;
             const relDiffGroup = this.settings.relative_diff_group;
 
@@ -340,9 +331,36 @@ export default mixins(WindowMixin).extend({
 
             const transFilters = [
                 {
-                    type: 'pluck',
-                    column: filterGroups,
+                    type: 'map',
+                    columns: [
+                        ['default_group', 'group'],
+                        [`row_id_${this.dataview.countMethod.toLowerCase()}`, 'row_id'],
+                        [`col_id_${this.dataview.countMethod.toLowerCase()}`, 'col_id'],
+                        'raw',
+                    ]
                 },
+                {
+                    type: 'filter',
+                    filters: {
+                        group: filterGroups,
+                    },
+                },
+                {
+                    type: 'aggregate',
+                    groupby: [
+                        'group',
+                        'row_id',
+                        'col_id',
+                    ],
+                    aggregate: {
+                        raw: 'sum'
+                    },
+                },
+                {
+                    type: 'sort',
+                    columns: ['row_id', 'col_id',],
+                    direction: 'asc',
+                }
             ];
             return {
                 usage: [usageSource, usageFilters],

@@ -134,14 +134,14 @@ interface Link {
 
 
 
-export default mixins(WindowMixin).extend({
+export default mixins(WindowMixin, LoadingMixin).extend({
     components: {
         ColorScaleLegend,
         ToolTip,
     },
     data() {
         return {
-            raw_data: [] as number[][],
+            raw_data: [] as {group: string, row_id: number, col_id: number, raw: number}[],
             margin: {
                 top: 20,
                 right: 20,
@@ -162,8 +162,10 @@ export default mixins(WindowMixin).extend({
                 if (s === undefined || !s.is_valid) {
                     return;
                 }
+                this.emitStartLoading();
                 LoadData(s.transitions[0], s.transitions[1], false)
-                    .then((data) => this.raw_data = data);
+                    .then((data) => this.raw_data = data)
+                    .then(() => this.emitFinishLoading());
             },
             immediate: true,
         },
@@ -271,14 +273,7 @@ export default mixins(WindowMixin).extend({
             return { n, l, li };
         },
         sourceData(): any {
-            let transSource;
-            if (this.dataview.countMethod === CountMethod.Usage) {
-                transSource = this.$store.getters[`datasets/resolve`]('transitions_usage');
-            } else if (this.dataview.countMethod === CountMethod.Frames) {
-                transSource = this.$store.getters[`datasets/resolve`]('transitions_frames');
-            } else {
-                throw new Error(`Count method ${this.dataview.countMethod} is not supported`);
-            }
+            const transSource = this.$store.getters[`datasets/resolve`]('individual_transitions');
 
             const relDiffGroup = this.settings.relative_diff_group;
             const filterGroups = [...(this.settings.show_relative_diff ?
@@ -286,9 +281,36 @@ export default mixins(WindowMixin).extend({
 
             const transFilters = [
                 {
-                    type: 'pluck',
-                    column: filterGroups,
+                    type: 'map',
+                    columns: [
+                        ['default_group', 'group'],
+                        [`row_id_${this.dataview.countMethod.toLowerCase()}`, 'row_id'],
+                        [`col_id_${this.dataview.countMethod.toLowerCase()}`, 'col_id'],
+                        'raw',
+                    ]
                 },
+                {
+                    type: 'filter',
+                    filters: {
+                        group: filterGroups,
+                    },
+                },
+                {
+                    type: 'aggregate',
+                    groupby: [
+                        'group',
+                        'row_id',
+                        'col_id',
+                    ],
+                    aggregate: {
+                        raw: 'sum'
+                    },
+                },
+                {
+                    type: 'sort',
+                    columns: ['row_id', 'col_id',],
+                    direction: 'asc',
+                }
             ];
             return {
                 transitions: [transSource, transFilters],
@@ -296,8 +318,10 @@ export default mixins(WindowMixin).extend({
             };
         },
         graph(): {nodes: Node[], links: Link[]} {
-            const trans = this.raw_data[this.settings.plot_group];
-            const relTrans = this.raw_data[this.settings.relative_diff_group];
+            const trans = this.raw_data.filter((row) => row.group === this.settings.plot_group);
+            const transSum = trans.reduce((acc, curr) => acc + curr.raw, 0);
+            const relTrans = this.raw_data.filter((row) => row.group === this.settings.relative_diff_group);
+            const relTransSum = relTrans.reduce((acc, curr) => acc + curr.raw, 0);
 
             const g = { nodes: [] as Node[], links: [] as Link[] };
             if (trans === undefined || trans.length === 0) {
@@ -314,51 +338,53 @@ export default mixins(WindowMixin).extend({
             });
 
             // incoming links
-            for (let s = 0; s < trans.length; s++) {
-                if (this.activeSyllables.includes(s) && s !== this.selectedSyllable) {
-                    if (trans[s][this.selectedSyllable] > this.settings.prune_threshold) {
-                        const inName = `in-${s}`;
+            for (const [i, t] of trans.filter((row) => row.col_id === this.selectedSyllable).entries()) {
+                if (this.activeSyllables.includes(t.row_id) && t.row_id !== this.selectedSyllable) {
+                    const val = (t.raw / transSum);
+                    if (val > this.settings.prune_threshold) {
+                        const inName = `in-${t.row_id}`;
                         g.nodes.push({
                             type: 'node',
-                            id: s,
+                            id: t.row_id,
                             name: inName,
                         });
-                        const val = this.settings.show_relative_diff
-                            ?  trans[s][this.selectedSyllable] -  relTrans[s][this.selectedSyllable]
-                            : trans[s][this.selectedSyllable];
+                        const relval = this.settings.show_relative_diff
+                                ?  (t.raw / transSum) - (relTrans[i].raw / relTransSum)
+                                : (t.raw / transSum);
                         g.links.push({
                             type: 'edge',
-                            id: `${s} → ${this.selectedSyllable}`,
-                            color_id: s,
+                            id: `${t.row_id} → ${this.selectedSyllable}`,
+                            color_id: t.row_id,
                             source: inName,
                             target: this.selectedSyllable.toString(),
-                            value: trans[s][this.selectedSyllable],
-                            real_value: val,
+                            value: val,
+                            real_value: relval,
                         });
                     }
                 }
             }
             // outgoing links
-            for (let d = 0; d < trans.length; d++) {
-                if (this.activeSyllables.includes(d) && d !== this.selectedSyllable) {
-                    if (trans[this.selectedSyllable][d] > this.settings.prune_threshold) {
-                        const outName = `out-${d}`;
+            for (const [i, t] of trans.filter((row) => row.row_id === this.selectedSyllable).entries()) {
+                if (this.activeSyllables.includes(t.col_id) && t.col_id !== this.selectedSyllable) {
+                    const val = (t.raw / transSum);
+                    if (val > this.settings.prune_threshold) {
+                        const outName = `out-${t.col_id}`;
                         g.nodes.push({
                             type: 'node',
-                            id: d,
+                            id: t.col_id,
                             name: outName,
                         });
-                        const val = this.settings.show_relative_diff
-                            ?  trans[this.selectedSyllable][d] -  relTrans[this.selectedSyllable][d]
-                            : trans[this.selectedSyllable][d];
+                        const relval = this.settings.show_relative_diff
+                                ?  (t.raw / transSum) - (relTrans[i].raw / relTransSum)
+                                : (t.raw / transSum);
                         g.links.push({
                             type: 'edge',
-                            id: `${this.selectedSyllable} → ${d}`,
-                            color_id: d,
+                            id: `${this.selectedSyllable} → ${t.col_id}`,
+                            color_id: t.col_id,
                             source: this.selectedSyllable.toString(),
                             target: outName,
-                            value: trans[this.selectedSyllable][d],
-                            real_value: val,
+                            value: val,
+                            real_value: relval,
                         });
                     }
                 }
