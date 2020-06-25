@@ -3,7 +3,7 @@ import { svgAsDataUri, svgAsPngUri } from 'save-svg-as-png';
 import { Store } from 'vuex';
 import { unnest } from '@/util/Vuex';
 import app from '@/main';
-import { remote } from 'electron';
+import { remote, shell } from 'electron';
 import fs from 'fs';
 import mime from 'mime-types';
 
@@ -65,13 +65,7 @@ export default async function Snapshot(target: Vue, basename: string, options: S
                 });
             });
         })
-        .then((dest) => {
-            app.$bvToast.toast(`Your snapshot was saved successfully to: ${dest}.`, {
-                title: 'Snapshot Success!',
-                variant: 'success',
-                toaster: 'b-toaster-bottom-right',
-            });
-        })
+        .then((dest) => showSuccessToast(dest as string))
         .catch((err) => {
             if (err instanceof SaveCancelledError) {
                 return; // don't care the user cancelled of their own accord
@@ -82,6 +76,34 @@ export default async function Snapshot(target: Vue, basename: string, options: S
                 toaster: 'b-toaster-bottom-right',
             });
         });
+}
+
+function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
+    const h = app.$createElement;
+
+    let clickHandler;
+    if (showOrOpen === 'show') {
+        clickHandler = () => shell.showItemInFolder(dest);
+    } else {
+        clickHandler = () => shell.openItem(dest);
+    }
+
+    const body = [
+        h('div', {}, [
+            'Your snapshot was saved successfully to ',
+            h('a', {
+                attrs: { href: 'javascript:void(0)', title: 'Click to open' },
+                on: { click: clickHandler, },
+            }, dest)
+        ]),
+    ];
+
+    app.$bvToast.toast(body, {
+        noAutoHide: true,
+        title: 'Snapshot Success!',
+        variant: 'success',
+        toaster: 'b-toaster-bottom-right',
+    });
 }
 
 function filtersForFinfo(finfo) {
@@ -100,6 +122,31 @@ function filtersForFinfo(finfo) {
 }
 
 function resolveTarget(target: Vue): {type: 'video'|'svg'|'html', target:HTMLElement} {
+    const eattr = '[data-snapshot-target]';
+
+    const explicit = (target.$el.hasAttribute(eattr)
+        ? target.$el
+        : target.$el.querySelector('[data-snapshot-target]')) as HTMLElement;
+    if (explicit !== null) {
+        const etag = explicit.tagName;
+        if (etag === 'svg') {
+            return {
+                type: 'svg',
+                target: explicit,
+            };
+        } else if (etag === 'video') {
+            return {
+                type: 'video',
+                target: explicit,
+            }
+        } else {
+            return {
+                type: 'html',
+                target: explicit,
+            }
+        }
+    }
+
     const svg = findTag(target, 'svg');
     if (svg) {
         return {
