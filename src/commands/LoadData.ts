@@ -10,6 +10,8 @@ import {LoadDefaultLayout} from './LoadLayout';
 import StreamZip from 'node-stream-zip';
 
 
+export const DataFileExt = 'msq';
+
 /**
  * Allows the user to pick a .MSQ file, and then
  * loads that file.
@@ -19,7 +21,7 @@ export default function() {
         properties: ['openFile'],
         // defaultPath: process.cwd(),
         filters: [
-            { name: 'MoSeq Data Files', extensions: ['msq'] },
+            { name: 'MoSeq Data Files', extensions: [DataFileExt] },
             { name: 'All Files', extensions: ['*'] },
         ],
     });
@@ -52,7 +54,7 @@ function beginLoadingProcess(filename: string) {
         .then(async () => {
             if ((store.state as any).datawindows.items.length === 0) {
                 await app.$forceNextTick();
-                return LoadDefaultLayout();
+                return LoadDefaultLayout(false);
             }
         })
         .then(() => {
@@ -119,7 +121,7 @@ function readDataBundle(filename: string) {
                     // await ExtractDirectory(zip, null, tmpdir);
                     const dataset: DatasetsState = {
                         bundle: filename,
-                        name: path.basename(filename, '.msq'),
+                        name: path.basename(filename, `.${DataFileExt}`),
                         path: tmpdir,
                         ...await LoadManifest(zip),
                         ...await LoadMetadataData(zip),

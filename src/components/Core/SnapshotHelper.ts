@@ -99,7 +99,6 @@ function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
     ];
 
     app.$bvToast.toast(body, {
-        noAutoHide: true,
         title: 'Snapshot Success!',
         variant: 'success',
         toaster: 'b-toaster-bottom-right',

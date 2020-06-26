@@ -4,8 +4,8 @@
             <div class="file-acceptor"></div>
             <b-card bg-variant="primary" text-variant="white" class="text-center">
                 <b-card-text>
-                    Drop your <code text-variant="white">.msq</code> Data Bundle or 
-                    <code text-variant="white">.json</code> Layout files here!
+                    Drop your <code text-variant="white">.{{file_associations[0].ext}}</code> Data Bundle or 
+                    <code text-variant="white">.{{file_associations[1].ext}}</code> Layout files here!
                 </b-card-text>
             </b-card>
         </div>
@@ -16,8 +16,8 @@
 import Vue from 'vue';
 import { Portal } from '@linusborg/vue-simple-portal';
 
-import {LoadDataFile} from '@/commands/LoadData';
-import {LoadLayoutFile} from '@/commands/LoadLayout';
+import {LoadDataFile, DataFileExt} from '@/commands/LoadData';
+import {LoadLayoutFile, LayoutFileExt} from '@/commands/LoadLayout';
 
 export default Vue.extend({
     components: {
@@ -28,11 +28,11 @@ export default Vue.extend({
             is_file_hover: false,
             file_associations: [
                 {
-                    ext: 'msq',
+                    ext: DataFileExt,
                     handler: LoadDataFile,
                 },
                 {
-                    ext: 'json',
+                    ext: LayoutFileExt,
                     handler: LoadLayoutFile,
                 },
             ],
