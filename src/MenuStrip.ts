@@ -3,6 +3,7 @@ import loadDataCommand from '@/commands/LoadData';
 import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/commands/LoadLayout';
 import {AvailableComponents, CreateComponent} from '@/commands/Windows';
 import showAboutWindow from '@/commands/ShowAbout';
+import {UpdateCheck} from '@/commands/LoadUpdates';
 
 /**
  * Creates the main menu strip for the electron app
@@ -157,6 +158,14 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
         {
             label: 'Help',
             submenu: [
+                {
+                    label: 'Check for Updates...',
+                    type: 'normal',
+                    click: (): void => { UpdateCheck(); },
+                },
+                {
+                    type: 'separator',
+                },
                 {
                     label: 'About',
                     type: 'normal',

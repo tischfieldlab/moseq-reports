@@ -1,7 +1,7 @@
 'use strict';
 declare const __static: any;
 
-import { ipcMain, app, protocol, BrowserWindow, Menu } from 'electron';
+import {ipcMain, app, protocol, BrowserWindow } from 'electron';
 import path from 'path';
 import {
     createProtocol,
@@ -12,6 +12,8 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win: BrowserWindow | null;
+
+app.allowRendererProcessReuse = false;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged(
@@ -119,3 +121,29 @@ ipcMain.on('needs-reload', () => {
         win.reload();
     }
 });
+
+import { autoUpdater, UpdateCheckResult } from 'electron-updater';
+if (process.env.NODE_ENV === 'production') {
+
+    ipcMain.on('update-check-done', (event: any) => {
+        autoUpdater.downloadUpdate().then(async () => {
+            if (win !== null) {
+                autoUpdater.quitAndInstall();
+            }
+        });
+    });
+
+    const data: any = {
+        provider: 'github',
+        owner: 'tischfieldlab',
+        repo: 'moseq-reports',
+    };
+
+    autoUpdater.setFeedURL(data);
+
+    autoUpdater.checkForUpdates().then((check: UpdateCheckResult) => {
+        if (win !== null) {
+            win.webContents.send('update-check', check);
+        }
+    });
+}
