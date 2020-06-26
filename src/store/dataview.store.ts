@@ -1,12 +1,12 @@
 import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
-import DataFrame from 'dataframe-js';
 import { schemeDark2 } from 'd3-scale-chromatic';
 import { scaleOrdinal } from 'd3-scale';
 import store from './root.store';
 import { getModuleNamespace } from '@/util/Vuex';
 import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, PublishedDataset } from '@/store/dataview.types';
 import Vue from 'vue';
+import { DatasetsState } from './datasets.types';
 
 
 
@@ -28,27 +28,25 @@ const DataviewModule: Module<DataviewState, RootState> = {
     },
     getters: {
         selectedSyllableAs: (state, _, rootState) => (countMethod: CountMethod) => {
-            const lmd = (rootState as any).datasets.label_map;
-            const lm = new DataFrame(lmd.data, lmd.columns);
+            const lm = ((rootState as any).datasets as DatasetsState).label_map;
             const from = state.countMethod.toLowerCase();
             const to = countMethod.toLowerCase();
-            const result = lm.find({[from]: state.selectedSyllable});
+            const result = lm.find((row) => row[from] === state.selectedSyllable);
             if (result !== undefined) {
-                return result.get(to);
+                return result[to];
             } else {
                 return -5;
             }
         },
         selectedSyllableMap: (state, _, rootState) => {
-            const lmd = (rootState as any).datasets.label_map;
-            const lm = new DataFrame(lmd.data, lmd.columns);
+            const lm = ((rootState as any).datasets as DatasetsState).label_map;
             const from = state.countMethod.toLowerCase();
-            const result = lm.find({[from]: state.selectedSyllable});
+            const result = lm.find((row) => row[from] === state.selectedSyllable);
             if (result !== undefined) {
                 return {
-                    [CountMethod.Frames.toLowerCase()]: result.get(CountMethod.Frames.toLowerCase()),
-                    [CountMethod.Usage.toLowerCase()]: result.get(CountMethod.Usage.toLowerCase()),
-                    [CountMethod.Raw.toLowerCase()]: result.get(CountMethod.Raw.toLowerCase()),
+                    [CountMethod.Frames.toLowerCase()]: result[CountMethod.Frames.toLowerCase()],
+                    [CountMethod.Usage.toLowerCase()]: result[CountMethod.Usage.toLowerCase()],
+                    [CountMethod.Raw.toLowerCase()]: result[CountMethod.Raw.toLowerCase()],
                 };
             } else {
                 return undefined;

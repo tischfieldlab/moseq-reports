@@ -1,7 +1,6 @@
 import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
 import Vue from 'vue';
-import DataFrame from 'dataframe-js';
 import { DatasetsState } from './datasets.types';
 import path from 'path';
 import { unnest } from '@/util/Vuex';
@@ -16,7 +15,7 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         path: '',
         manifest: {},
         groups: [],
-        label_map: null,
+        label_map: [],
     },
     getters: {
         resolve: (state) => (filename: string) => {
@@ -30,19 +29,19 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
             if (!state.label_map) {
                 return [];
             }
-            return new DataFrame(state.label_map.data, state.label_map.columns)
-                .where((row) => row.get('usage') >= 0)
-                .sortBy('usage')
-                .toArray('usage');
+            return state.label_map
+                        .filter((row) => row.usage >= 0)
+                        .map((row) => row.usage)
+                        .sort((a, b) => a - b);
         },
         availableFramesModuleIds: (state) => {
             if (!state.label_map) {
                 return [];
             }
-            return new DataFrame(state.label_map.data, state.label_map.columns)
-                .where((row) => row.get('frames') >= 0)
-                .sortBy('frames')
-                .toArray('frames');
+            return state.label_map
+                        .filter((row) => row.frames >= 0)
+                        .map((row) => row.frames)
+                        .sort((a, b) => a - b);
         },
     },
     mutations: {

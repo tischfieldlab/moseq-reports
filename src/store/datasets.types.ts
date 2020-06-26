@@ -6,5 +6,11 @@ export interface DatasetsState {
     path: string; // path to uncompressed data
     manifest: object;
     groups: string[];
-    label_map: any;
+    label_map: LabelMapRecord[];
+}
+
+export interface LabelMapRecord {
+    raw: number;
+    usage: number;
+    frames: number;
 }
