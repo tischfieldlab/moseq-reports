@@ -210,7 +210,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
     computed: {
         tooltip_text(): string {
             if (this.hoverItem !== undefined){
-                return default_tooltip_formatter(this.hoverItem);
+                return default_tooltip_formatter(this.hoverItem, this);
             }
             return '';
         },
