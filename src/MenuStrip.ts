@@ -33,7 +33,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
             label: 'File',
             submenu: [
                 {
-                    label: 'Open...',
+                    label: 'Open Data...',
                     type: 'normal',
                     accelerator: 'CmdOrCtrl+O',
                     click: loadDataCommand,
@@ -91,19 +91,42 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
         // ********************** TOOLS MENU **********************
         {
             label: 'Tools',
+            submenu: AvailableComponents()
+                        .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
+                        .map((cr) => {
+                            return {
+                                label: cr.friendly_name,
+                                type: 'normal',
+                                click: () => CreateComponent(cr),
+                            } as Electron.MenuItemConstructorOptions;
+                        }),
+        },
+        // ********************** VIEW MENU **********************
+        {
+            label: 'View',
             submenu: [
                 {
-                    label: 'Add Widget...',
-                    type: 'submenu',
-                    submenu: AvailableComponents()
-                            .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
-                            .map((cr) => {
-                                return {
-                                    label: cr.friendly_name,
-                                    type: 'normal',
-                                    click: () => CreateComponent(cr),
-                                } as Electron.MenuItemConstructorOptions;
-                            }),
+                    label: 'Save Layout...',
+                    type: 'normal',
+                    click: (): void => { SaveLayout(); },
+                },
+                {
+                    label: 'Load Layout...',
+                    type: 'normal',
+                    click: loadLayoutCommand,
+                },
+                {
+                    type: 'separator',
+                },
+                {
+                    label: 'Clear Layout',
+                    type: 'normal',
+                    click: (): void => { ClearLayout(); },
+                },
+                {
+                    label: 'Default Layout',
+                    type: 'normal',
+                    click: (): void => { LoadDefaultLayout(); },
                 },
                 {
                     type: 'separator',
@@ -122,35 +145,6 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: 'Toggle Dev Tools',
                     type: 'normal',
                     role: 'toggleDevTools',
-                },
-            ],
-        },
-        // ********************** VIEW MENU **********************
-        {
-            label: 'View',
-            submenu: [
-                {
-                    label: 'Save Layout',
-                    type: 'normal',
-                    click: (): void => { SaveLayout(); },
-                },
-                {
-                    label: 'Load Layout',
-                    type: 'normal',
-                    click: loadLayoutCommand,
-                },
-                {
-                    type: 'separator',
-                },
-                {
-                    label: 'Clear Layout',
-                    type: 'normal',
-                    click: (): void => { ClearLayout(); },
-                },
-                {
-                    label: 'Default Layout',
-                    type: 'normal',
-                    click: (): void => { LoadDefaultLayout(); },
                 },
             ],
         },
