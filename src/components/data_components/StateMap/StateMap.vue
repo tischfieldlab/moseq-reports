@@ -296,7 +296,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         },
         sourceData(): any {
             const usageSource = this.$store.getters[`datasets/resolve`]('usage');
-            const transSource = this.$store.getters[`datasets/resolve`]('individual_transitions');
+            const transSource = this.$store.getters[`datasets/resolve`]('transitions');
 
             const showRelDiff = this.settings.show_relative_diff;
             const relDiffGroup = this.settings.relative_diff_group;

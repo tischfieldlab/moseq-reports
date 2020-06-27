@@ -1,5 +1,5 @@
 <template>
-<div :style="{width:'100%', height:'100%', 'overflow': 'hidden'}">
+<div class="syllable-flow-container">
     <svg :width="layout.width" :height="layout.height - 31" @mousemove="debouncedHover" @mouseout="hoverItem = undefined">
         <template v-if="graph.nodes.length > 0 && graph.links.length > 0">
             <text class="axis-label" :transform="`translate(${layout.width / 2}, 15)`">
@@ -132,6 +132,19 @@ interface Link {
     real_value: number;
 }
 
+function default_tooltip_formatter(hoverItem, that) {
+    if (hoverItem !== undefined) {
+        let hi = hoverItem as Node|Link;
+        if (hi.type === 'node') {
+            return `Module ${hi.id}`;
+        } else if (hi.type === 'edge') {
+            hi = hi as Link;
+            return `Transition ${hi.id}<br />P(t) = ${hi.real_value.toExponential(3)}`;
+        }
+    }
+    return '';
+}
+
 
 
 export default mixins(WindowMixin, LoadingMixin).extend({
@@ -196,14 +209,8 @@ export default mixins(WindowMixin, LoadingMixin).extend({
     },
     computed: {
         tooltip_text(): string {
-            if (this.hoverItem !== undefined) {
-                let hi = this.hoverItem as Node|Link;
-                if (hi.type === 'node') {
-                    return `Module ${hi.id}`;
-                } else if (hi.type === 'edge') {
-                    hi = hi as Link;
-                    return `Transition ${hi.id}<br />P(t) = ${hi.real_value.toExponential(3)}`;
-                }
+            if (this.hoverItem !== undefined){
+                return default_tooltip_formatter(this.hoverItem);
             }
             return '';
         },
@@ -273,7 +280,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             return { n, l, li };
         },
         sourceData(): any {
-            const transSource = this.$store.getters[`datasets/resolve`]('individual_transitions');
+            const transSource = this.$store.getters[`datasets/resolve`]('transitions');
 
             const relDiffGroup = this.settings.relative_diff_group;
             const filterGroups = [...(this.settings.show_relative_diff ?
@@ -446,6 +453,11 @@ export default mixins(WindowMixin, LoadingMixin).extend({
 </script>
 
 <style scoped>
+.syllable-flow-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
 .link {
     mix-blend-mode: multiply;
 }
