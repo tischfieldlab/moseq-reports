@@ -45,6 +45,11 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
         };
     },
     mounted() {
+        const c = this.$refs.canvas as HTMLCanvasElement;
+        const ctx = c.getContext('2d');
+        if (ctx !== null) {
+            ctx.scale(this.canvas.scale, this.canvas.scale);
+        }
         this.debouncedDraw = debounce(this.draw, 100);
         this.debouncedHover = throttle(this.handleHover, 10);
 

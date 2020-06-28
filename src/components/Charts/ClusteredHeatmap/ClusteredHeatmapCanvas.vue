@@ -48,6 +48,9 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;
         this.canvas.cxt = c.getContext('2d');
+        if (this.canvas.cxt !== null) {
+            this.canvas.cxt.scale(this.canvas.scale, this.canvas.scale);
+        }
         this.debouncedDraw = debounce(this.draw, 50);
         this.debouncedHover = throttle(this.handleHeatmapHover, 10);
 
