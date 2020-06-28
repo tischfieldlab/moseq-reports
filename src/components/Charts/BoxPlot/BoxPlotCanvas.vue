@@ -3,8 +3,9 @@
         <canvas
             v-show="has_data"
             ref='canvas'
-            :width="`${width}px`"
-            :height="`${height}px`"
+            :width="canvas.scale * width"
+            :height="canvas.scale * height"
+            :style="{width: `${width}px`, height: `${height}px`}"
             @mousemove="debouncedHover"
             @mouseleave="hoverItem = undefined"></canvas>
 
@@ -31,18 +32,16 @@ import { throttle, debounce } from '@/util/Events';
 import mixins from 'vue-typed-mixins';
 import {sample} from '@/util/Array';
 import ToolTip from '@/components/Charts/ToolTip.vue';
-import {getScaledContext2d} from '@/components/Charts/Canvas';
+import CanvasMixin from '@/components/Charts/Canvas';
 
 
-export default mixins(BoxPlotBase).extend({
+export default mixins(BoxPlotBase, CanvasMixin).extend({
     components: {
         ToolTip,
     },
     data() {
         return {
             emitLoadingOnUpdate: false,
-            debouncedDraw: () => {/**/},
-            debouncedHover: (event: MouseEvent) => {/**/},
         };
     },
     mounted() {
@@ -66,7 +65,7 @@ export default mixins(BoxPlotBase).extend({
             this.emitStartLoading();
             this.$forceNextTick().then(() => {
                 const c = this.$refs.canvas as HTMLCanvasElement;
-                const ctx = getScaledContext2d(c, this.width, this.height);
+                const ctx = c.getContext('2d');
                 if (ctx === null) {
                     this.emitFinishLoading();
                     return; // bail out
@@ -269,7 +268,7 @@ export default mixins(BoxPlotBase).extend({
         },
         compute_label_stats(labels: string[]) {
             const c = this.$refs.canvas as HTMLCanvasElement;
-            const ctx = getScaledContext2d(c, this.width, this.height);
+            const ctx = c.getContext('2d');
             if (ctx !== null) {
                 const widths = labels.map((l) => {
                     return ctx.measureText(l).width;

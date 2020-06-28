@@ -1,6 +1,12 @@
 <template>
     <div>
-        <canvas ref="canvas" :width="width" :height="height" @click="handleHeatmapClick" @mousemove="debouncedHover" @mouseleave="hoverItem = undefined">
+        <canvas ref="canvas"
+            :width="canvas.scale * width"
+            :height="canvas.scale * height"
+            :style="{width: `${width}px`, height: `${height}px`}"
+            @click="handleHeatmapClick"
+            @mousemove="debouncedHover"
+            @mouseleave="hoverItem = undefined">
             <ColorScaleLegend
                     :title="legendTitle"
                     :scale="scale.z"
@@ -27,33 +33,21 @@ import mixins from 'vue-typed-mixins';
 import ClusteredHeatmapBase from './ClusteredHeatmapBase.vue';
 import { debounce, throttle } from '@/util/Events';
 import ToolTip from '@/components/Charts/ToolTip.vue';
-import {getScaledContext2d} from '@/components/Charts/Canvas';
+import CanvasMixin from '@/components/Charts/Canvas';
 
 
 
-export default mixins(ClusteredHeatmapBase).extend({
+export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
     components: {
         ColorScaleLegend,
         ToolTip,
     },
-    provide(): {canvas: {cxt: CanvasRenderingContext2D | null}} {
-        return {
-            canvas: this.canvas,
-        };
-    },
     data() {
-        return {
-            debouncedDraw: () => {/**/},
-            debouncedHover: (event: MouseEvent) => {/**/},
-            canvas: {
-                // This is the CanvasRenderingContext that children will draw to.
-                cxt: null as CanvasRenderingContext2D | null,
-            },
-        };
+        return {};
     },
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;
-        this.canvas.cxt = getScaledContext2d(c, this.width, this.height);
+        this.canvas.cxt = c.getContext('2d');
         this.debouncedDraw = debounce(this.draw, 50);
         this.debouncedHover = throttle(this.handleHeatmapHover, 10);
 

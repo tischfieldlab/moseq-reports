@@ -1,5 +1,8 @@
 <template>
-    <canvas ref='canvas' :width='width' :height='height'>
+    <canvas ref="canvas"
+        :width="canvas.scale * width"
+        :height="canvas.scale * height"
+        :style="{width: `${width}px`, height: `${height}px`}">
         <ColorScaleLegend
                 :title="legendTitle"
                 :scale="scale.c"
@@ -18,31 +21,20 @@ import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLeg
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import HexBinPlotBase from './HexBinPlotBase.vue';
-import {getScaledContext2d} from '@/components/Charts/Canvas';
+import CanvasMixin from '@/components/Charts/Canvas';
 
 
 
-export default mixins(HexBinPlotBase).extend({
+export default mixins(HexBinPlotBase, CanvasMixin).extend({
     components: {
         ColorScaleLegend,
     },
     data() {
-        return {
-            debouncedDraw: () => {/**/},
-            canvas: {
-                // This is the CanvasRenderingContext that children will draw to.
-                cxt: null as CanvasRenderingContext2D | null,
-            },
-        };
-    },
-    provide(): {canvas: {cxt: CanvasRenderingContext2D | null}} {
-        return {
-            canvas: this.canvas,
-        };
+        return {};
     },
     mounted() {
         const c = this.$refs.canvas as HTMLCanvasElement;
-        this.canvas.cxt = getScaledContext2d(c, this.width, this.height);
+        this.canvas.cxt = c.getContext('2d');
         this.debouncedDraw = debounce(this.draw, 100);
 
         Object.keys(this.$props).forEach((key) => {

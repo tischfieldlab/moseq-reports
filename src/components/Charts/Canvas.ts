@@ -1,4 +1,4 @@
-
+import Vue from 'vue';
 
 export function getScaledContext2d(canvas: HTMLCanvasElement, width: number, height: number) {
     const ctx = canvas.getContext('2d');
@@ -18,3 +18,25 @@ export function getScaledContext2d(canvas: HTMLCanvasElement, width: number, hei
     }
     return ctx;
 }
+
+
+
+const CanvasMixin = Vue.extend({
+    provide(): {canvas: {cxt: CanvasRenderingContext2D | null}} {
+        return {
+            canvas: this.canvas,
+        };
+    },
+    data() {
+        return {
+            debouncedDraw: () => {/**/},
+            debouncedHover: (event: MouseEvent) => {/**/},
+            canvas: {
+                // This is the CanvasRenderingContext that children will draw to.
+                cxt: null as CanvasRenderingContext2D | null,
+                scale: window.devicePixelRatio || 1,
+            },
+        };
+    },
+});
+export default CanvasMixin;
