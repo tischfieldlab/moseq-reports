@@ -1,13 +1,11 @@
 <template>
     <div>
         <canvas ref="canvas"
-            :width="canvas.scale * width"
-            :height="canvas.scale * height"
-            :style="{width: `${width}px`, height: `${height}px`}"
+            v-dpiadapt="{width: width, height: height}"
             @click="handleHeatmapClick"
             @mousemove="debouncedHover"
             @mouseleave="hoverItem = undefined">
-            <ColorScaleLegend
+            <ColorScaleLegend ref="legend"
                     :title="legendTitle"
                     :scale="scale.z"
                     :width="dims.legend.w"
@@ -46,11 +44,6 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
         return {};
     },
     mounted() {
-        const c = this.$refs.canvas as HTMLCanvasElement;
-        this.canvas.cxt = c.getContext('2d');
-        if (this.canvas.cxt !== null) {
-            this.canvas.cxt.scale(this.canvas.scale, this.canvas.scale);
-        }
         this.debouncedDraw = debounce(this.draw, 50);
         this.debouncedHover = throttle(this.handleHeatmapHover, 10);
 
@@ -68,8 +61,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
     },
     methods: {
         draw() {
-            const c = this.$refs.canvas as HTMLCanvasElement;
-            const cxt = c.getContext('2d');
+            const cxt = this.canvas.cxt;
             if (cxt === null) {
                 return;
             }
@@ -85,7 +77,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             this.drawAxisY(cxt);
 
             cxt.restore();
-
+            (this.$refs.legend as Vue).$forceUpdate();
         },
         drawHeatmapCells(cxt: CanvasRenderingContext2D) {
             cxt.save();
@@ -233,20 +225,17 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             ctx.restore();
         },
         compute_label_stats(labels: string[]) {
-            const c = this.$refs.canvas as HTMLCanvasElement;
-            if (c !== undefined) {
-                const cxt = c.getContext('2d');
-                if (cxt !== null) {
-                    const widths = labels.map((l) => {
-                        return cxt.measureText(l).width;
-                    });
-                    this.label_stats = {
-                        count: labels.length,
-                        total: sum(widths),
-                        longest: Math.max(...widths),
-                    };
-                    return;
-                }
+            const cxt = this.canvas.cxt;
+            if (cxt !== null) {
+                const widths = labels.map((l) => {
+                    return cxt.measureText(l).width;
+                });
+                this.label_stats = {
+                    count: labels.length,
+                    total: sum(widths),
+                    longest: Math.max(...widths),
+                };
+                return;
             }
             // if canvas is not available yet (i.e. before fully mounted)
             // then schedule the calculation for the next tick

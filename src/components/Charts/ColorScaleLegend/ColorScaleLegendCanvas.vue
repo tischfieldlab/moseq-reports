@@ -22,7 +22,7 @@ export default mixins(ColorScaleLegendBase).extend({
         const cxt = (this as any).canvas.cxt as CanvasRenderingContext2D;
         if (!cxt) {
             // tslint:disable-next-line:no-console
-            console.warn('No canvas context recieved');
+            // console.warn('No canvas context recieved');
             return createElement('div');
         }
         if (!this.scale) {

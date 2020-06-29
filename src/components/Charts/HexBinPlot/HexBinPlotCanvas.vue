@@ -1,9 +1,6 @@
 <template>
-    <canvas ref="canvas"
-        :width="canvas.scale * width"
-        :height="canvas.scale * height"
-        :style="{width: `${width}px`, height: `${height}px`}">
-        <ColorScaleLegend
+    <canvas ref="canvas" v-dpiadapt="{width: width, height: height}">
+        <ColorScaleLegend ref="legend"
                 :title="legendTitle"
                 :scale="scale.c"
                 :width="200"
@@ -33,11 +30,6 @@ export default mixins(HexBinPlotBase, CanvasMixin).extend({
         return {};
     },
     mounted() {
-        const c = this.$refs.canvas as HTMLCanvasElement;
-        this.canvas.cxt = c.getContext('2d');
-        if (this.canvas.cxt !== null) {
-            this.canvas.cxt.scale(this.canvas.scale, this.canvas.scale);
-        }
         this.debouncedDraw = debounce(this.draw, 100);
 
         Object.keys(this.$props).forEach((key) => {
@@ -71,8 +63,6 @@ export default mixins(HexBinPlotBase, CanvasMixin).extend({
         draw() {
             this.emitStartLoading();
             this.$forceNextTick().then(() => {
-                const c = this.$refs.canvas as HTMLCanvasElement;
-                this.canvas.cxt = c.getContext('2d');
                 if (this.canvas.cxt === null) {
                     return; // bail out
                 }
@@ -126,6 +116,7 @@ export default mixins(HexBinPlotBase, CanvasMixin).extend({
                     this.canvas.cxt.restore();
                 }
                 this.canvas.cxt.restore();
+                (this.$refs.legend as Vue).$forceUpdate();
             });
         },
     },

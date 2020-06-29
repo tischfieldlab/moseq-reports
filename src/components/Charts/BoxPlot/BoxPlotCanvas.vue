@@ -1,11 +1,9 @@
 <template>
     <div :style="{width:'100%', height:'100%', 'overflow': 'hidden'}">
         <canvas
+            v-dpiadapt="{width: width, height: height}"
             v-show="has_data"
             ref='canvas'
-            :width="canvas.scale * width"
-            :height="canvas.scale * height"
-            :style="{width: `${width}px`, height: `${height}px`}"
             @mousemove="debouncedHover"
             @mouseleave="hoverItem = undefined"></canvas>
 
@@ -45,11 +43,6 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
         };
     },
     mounted() {
-        const c = this.$refs.canvas as HTMLCanvasElement;
-        const ctx = c.getContext('2d');
-        if (ctx !== null) {
-            ctx.scale(this.canvas.scale, this.canvas.scale);
-        }
         this.debouncedDraw = debounce(this.draw, 100);
         this.debouncedHover = throttle(this.handleHover, 10);
 
@@ -69,8 +62,7 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
         draw() {
             this.emitStartLoading();
             this.$forceNextTick().then(() => {
-                const c = this.$refs.canvas as HTMLCanvasElement;
-                const ctx = c.getContext('2d');
+                const ctx = this.canvas.cxt;
                 if (ctx === null) {
                     this.emitFinishLoading();
                     return; // bail out
@@ -272,8 +264,7 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
             ctx.restore();
         },
         compute_label_stats(labels: string[]) {
-            const c = this.$refs.canvas as HTMLCanvasElement;
-            const ctx = c.getContext('2d');
+            const ctx = this.canvas.cxt;
             if (ctx !== null) {
                 const widths = labels.map((l) => {
                     return ctx.measureText(l).width;
