@@ -129,6 +129,10 @@ export default Vue.extend({
             type: Function,
             default: default_tooltip_formatter,
         },
+        noDataMessage: {
+            type: String,
+            default: 'Sorry, no data available!',
+        },
     },
     watch: {
         data: {
@@ -189,6 +193,9 @@ export default Vue.extend({
         this.watchers.forEach((w) => w());
     },
     computed: {
+        has_data(): boolean {
+            return this.data !== undefined && this.data !== null && this.data.length > 0;
+        },
         innerWidth(): number {
             return this.width - this.margin.left - this.margin.right;
         },

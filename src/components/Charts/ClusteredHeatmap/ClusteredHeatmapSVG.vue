@@ -1,6 +1,6 @@
 <template>
 <div>
-    <svg ref="canvas" :width="width" :height="height" @mousemove="debouncedHover" @mouseleave="hoverItem = undefined">
+    <svg ref="canvas" v-show="has_data" :width="width" :height="height" @mousemove="debouncedHover" @mouseleave="hoverItem = undefined">
         <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`" @click="handleHeatmapClick">
             <template v-for="node in data">
                 <rect 
@@ -39,6 +39,13 @@
             :height="10"
             :transform="`translate(${dims.legend.x}, ${dims.legend.y})`" />
     </svg>
+    <div v-if="!has_data" class="no-data">
+        <b-card bg-variant="primary" text-variant="white" class="text-center">
+            <b-card-text>
+                {{noDataMessage}}
+            </b-card-text>
+        </b-card>
+    </div>
     <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
         <div v-html="tooltip_text" style="text-align:left;"></div>
     </ToolTip>
@@ -181,6 +188,13 @@ export default mixins(ClusteredHeatmapBase).extend({
 </script>
 
 <style scoped>
+.no-data .card {
+    width: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 svg >>> g.rtree path.rlink,
 svg >>> g.ctree path.clink {
     fill: none;

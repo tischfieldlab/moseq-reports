@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <canvas ref="canvas"
+    <div class="clustered-heatmap-container">
+        <canvas ref="canvas" v-show="has_data"
             v-dpiadapt="{width: width, height: height}"
             @click="handleHeatmapClick"
             @mousemove="debouncedHover"
@@ -13,6 +13,13 @@
                     :x="dims.legend.x"
                     :y="dims.legend.y" />
         </canvas>
+        <div v-if="!has_data" class="no-data">
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
+                <b-card-text>
+                    {{noDataMessage}}
+                </b-card-text>
+            </b-card>
+        </div>
         <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
             <div v-html="tooltip_text" style="text-align:left;"></div>
         </ToolTip>
@@ -275,9 +282,11 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                         y: event.clientY
                     };
                     this.hoverItem = node;
+                    (this.$el as HTMLElement).style.cursor = 'crosshair';
                     return;
                 }
             }
+            (this.$el as HTMLElement).style.cursor = 'default';
             this.tooltipPosition = undefined;
             this.hoverItem = undefined;
         },
@@ -291,3 +300,16 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
     },
 });
 </script>
+
+<style scoped>
+.clustered-heatmap-container {
+    overflow: hidden;
+}
+.no-data .card {
+    width: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+</style>
