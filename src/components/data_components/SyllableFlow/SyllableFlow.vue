@@ -1,68 +1,22 @@
 <template>
-<div class="syllable-flow-container">
-    <svg :width="layout.width" :height="layout.height - 31" @mousemove="debouncedHover" @mouseout="hoverItem = undefined">
-        <template v-if="graph.nodes.length > 0 && graph.links.length > 0">
-            <text class="axis-label" :transform="`translate(${layout.width / 2}, 15)`">
-                {{plotTitle}}
-            </text>
-            <g>
-                <text class="axis-label" :transform="`translate(10, ${(innerHeight / 2) + margin.top}) rotate(-90)`">Incoming</text>
-                <text class="axis-label" :transform="`translate(${layout.width - (margin.right / 2)}, ${(innerHeight / 2) + margin.top}) rotate(-90)`">Outgoing</text>
-                <g class="node"
-                    v-for="n in graph.nodes"
-                    :key="n.name"
-                    :transform="`translate(${(n.x0 || 0)+1}, ${(n.y0 || 0)})`"
-                    @click="onNodeClick(n.id)"
-                    :data-nodeid="n.id">
-                    <rect
-                        :x="0"
-                        :y="0"
-                        :width="(n.x1 - n.x0 - 2 || 0)"
-                        :height="Math.max(1, n.y1 - n.y0) || 0"
-                        :fill="color(scale.n(n.id)).darker(0.5)"
-                        :data-nodeid="n.id"></rect>
-                    <text v-if="Math.max(1, n.y1 - n.y0) > 10"
-                        class="node-label"
-                        :x="(n.x1 - n.x0 - 2) / 2"
-                        :y="Math.max(1, n.y1 - n.y0) / 2"
-                        :data-nodeid="n.id">
-                        {{n.id}}
-                    </text>
-                </g>
-            </g>
-            <g>
-                <template v-for="l in graph.links" >
-                    <path
-                        :key="l.id"
-                        class="link"
-                        :d="sankeyLinkHorizontal(l)"
-                        fill="none"
-                        :stroke="scale.l(l)"
-                        :stroke-width="Math.max(1, l.width)"
-                        :data-color="color_id"
-                        :data-transitionid="l.id">
-                    </path>
-                </template>
-            </g>
-            <ColorScaleLegend v-if="settings.show_relative_diff"
-                    :title="colorLegendTitle"
-                    :scale="scale.li"
-                    :width="150"
-                    :height="10"
-                    :transform="`translate(${layout.width / 2}, ${layout.height - margin.bottom - 25})`" />
-        </template>
-    </svg>
-    <div v-if="graph.links.length === 0" class="no-data">
-        <b-card bg-variant="primary" text-variant="white" class="text-center">
-            <b-card-text>
-                No transitions for group {{settings.plot_group}} Module {{selectedSyllable}} ({{dataview.countMethod}})
-            </b-card-text>
-        </b-card>
-    </div>
-    <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
-        <div v-html="tooltip_text" style="text-align:left;"></div>
-    </ToolTip>
-    </div>
+    <sankey 
+        :width="layout.width"
+        :height="layout.height - 31"
+        :data="graph"
+        :title="plotTitle"
+        :colorLegendTitle="colorLegendTitle"
+        :noDataMessage="noDataMessage"
+        :tooltipFormatter="tooltip_formatter"
+        :nodeAlignment="settings.node_alignment"
+        :nodeWidth="settings.node_width"
+        :nodePadding="settings.node_padding"
+        :nodeColorMode="nodeColoring.mode"
+        :nodeColorProperty="nodeColoring.prop"
+        :linkColorMode="linkColoring.mode"
+        :linkColorProperty="linkColoring.prop"
+        :categoricalColormap="schemeDark2"
+        :quantitativeColormap="settings.colorscale"
+    />
 </template>
 
 <script lang="ts">
@@ -73,30 +27,10 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
 import { CountMethod } from '../../../store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import { scaleOrdinal, scaleDiverging } from 'd3-scale';
-import * as d3 from 'd3';
-import { sankey, sankeyCenter, sankeyLeft, sankeyRight, sankeyJustify } from 'd3-sankey';
-import { linkHorizontal } from 'd3-shape';
-import { schemeDark2 } from 'd3-scale-chromatic';
-import { color } from 'd3-color';
-import {max} from 'd3-array';
-import { GetScale } from '@/components/Charts/D3ColorProvider';
-import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
-import ToolTip from '@/components/Charts/ToolTip.vue';
-import { debounce } from '@/util/Events';
-import {throttle} from '@/util/Events';
 
+import Sankey from '@/components/Charts/Sankey/Sankey.vue';
+import {Node, Link, NodeAlignment, ColoringMode} from '@/components/Charts/Sankey/Sankey.types';
 
-export enum NodeAlignment {
-    Left = 'Left',
-    Right = 'Right',
-    Center = 'Center',
-    Justify = 'Justify',
-}
-
-export enum NodeSortMethods {
-
-}
 
 RegisterDataComponent({
     friendly_name: 'Syllable Flow',
@@ -116,21 +50,7 @@ RegisterDataComponent({
     },
 });
 
-interface Node {
-    type: string;
-    id: number;
-    name: string;
-}
 
-interface Link {
-    type: string;
-    id: string;
-    color_id: number,
-    source: string;
-    target: string;
-    value: number;
-    real_value: number;
-}
 
 function default_tooltip_formatter(hoverItem, that) {
     if (hoverItem !== undefined) {
@@ -149,25 +69,12 @@ function default_tooltip_formatter(hoverItem, that) {
 
 export default mixins(WindowMixin, LoadingMixin).extend({
     components: {
-        ColorScaleLegend,
-        ToolTip,
+        Sankey,
     },
     data() {
         return {
             raw_data: [] as {group: string, row_id: number, col_id: number, raw: number}[],
-            margin: {
-                top: 20,
-                right: 20,
-                bottom: 20,
-                left: 20,
-            },
-            tooltipPosition: undefined as {x: number, y:number}|undefined,
-            hoverItem: undefined as object|undefined,
-            debouncedHover: (event: MouseEvent) => {/**/},
         };
-    },
-    mounted() {
-        this.debouncedHover = throttle(this.handleHover, 10);
     },
     watch: {
         'sourceData': {
@@ -179,12 +86,6 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 LoadData(s.transitions[0], s.transitions[1], false)
                     .then((data) => this.raw_data = data)
                     .then(() => this.emitFinishLoading());
-            },
-            immediate: true,
-        },
-        'settings.show_relative_diff': {
-            handler(newValue) {
-                newValue ? this.margin.bottom = 70 : this.margin.bottom = 20;
             },
             immediate: true,
         },
@@ -208,11 +109,28 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         }
     },
     computed: {
-        tooltip_text(): string {
-            if (this.hoverItem !== undefined){
-                return default_tooltip_formatter(this.hoverItem, this);
+        nodeColoring() {
+            return {
+                mode: ColoringMode.Categorical,
+                prop: 'id',
+            };
+        },
+        linkColoring() {
+            if (this.settings.show_relative_diff) {
+                return {
+                    mode: ColoringMode.Quantitative,
+                    prop: 'real_value',
+                };
+            } else {
+                return {
+                    mode: ColoringMode.Categorical,
+                    prop: 'color_id',
+                };
             }
-            return '';
+        },
+        noDataMessage(): string {
+            return `No transitions for group ${this.settings.plot_group} `
+                 + `Module ${this.selectedSyllable}} (${this.dataview.countMethod})`;
         },
         colorLegendTitle(): string {
             if (this.settings.show_relative_diff) {
@@ -227,57 +145,6 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 title += ` vs ${this.settings.relative_diff_group}`;
             }
             return title + ` Module ${this.selectedSyllable} (${this.dataview.countMethod})`;
-        },
-        innerWidth(): number {
-            return this.layout.width - this.margin.left - this.margin.right;
-        },
-        innerHeight(): number {
-            return this.layout.height - this.margin.top - this.margin.bottom - 31;
-        },
-        sankeyLinkHorizontal() {
-            return linkHorizontal()
-                .source((link: any) => [link.source.x1, link.y0])
-                .target((link: any) => [link.target.x0, link.y1]);
-        },
-        sankeyGen(): any {
-            let align;
-            switch (this.settings.node_alignment) {
-                case NodeAlignment.Left: align = sankeyLeft; break;
-                case NodeAlignment.Right: align = sankeyRight; break;
-                case NodeAlignment.Center: align = sankeyCenter; break;
-                case NodeAlignment.Justify:
-                default: align = sankeyJustify; break;
-            }
-            return sankey()
-                .nodeWidth(this.settings.node_width)
-                .nodePadding(this.settings.node_padding)
-                .nodeAlign(align)
-                .extent([
-                    [this.margin.left, this.margin.top],
-                    [this.margin.left + this.innerWidth, this.margin.top + this.innerHeight],
-                ])
-                .nodeId((node) => node.name);
-        },
-        scale(): any {
-            const n = scaleOrdinal()
-                .range(schemeDark2)
-                .domain(this.activeSyllables.map((s) => s.toString()));
-
-            let l;
-            let li;
-            if (this.settings.show_relative_diff) {
-                const abstransMax = max(this.graph.links, (d) => Math.abs(d.real_value)) || 1;
-                li = scaleDiverging(GetScale(this.settings.colorscale))
-                        .domain([-abstransMax, 0, abstransMax]);
-                l = (link: Link) => color(li(link.real_value) as string)
-            } else {
-                li = scaleOrdinal()
-                    .range(schemeDark2)
-                    .domain(this.activeSyllables.map((s) => s.toString()));
-                l = (link: Link) => color(li(link.color_id.toString()) as string)!.brighter(0.5)
-            }
-
-            return { n, l, li };
         },
         sourceData(): any {
             const transSource = this.$store.getters[`datasets/resolve`]('transitions');
@@ -396,9 +263,6 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                     }
                 }
             }
-            if (g.nodes.length > 0) {
-                return this.sankeyGen(g);
-            }
             return g;
         },
         activeSyllables(): number[] {
@@ -418,65 +282,21 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         },
     },
     methods: {
-        color(value) {
-            return color(value)
+        tooltip_formatter(hoverItem, that) {
+            if (hoverItem !== undefined) {
+                let hi = hoverItem as Node|Link;
+                if (hi.type === 'node') {
+                    return `Module ${hi.id}`;
+                } else if (hi.type === 'edge') {
+                    hi = hi as Link;
+                    return `Transition ${hi.id}<br />P(t) = ${hi.real_value.toExponential(3)}`;
+                }
+            }
+            return '';
         },
         onNodeClick(event) {
             this.selectedSyllable = Number.parseInt(event, 10);
         },
-        handleHover(event: MouseEvent) {
-            if (event && event.target !== null){
-                const target = event.target as HTMLElement;
-                if (target.dataset.nodeid) {
-                    this.tooltipPosition = {
-                        x: event.clientX,
-                        y: event.clientY
-                    };
-                    this.hoverItem = this.graph.nodes.find((n) => n.id.toString() === target.dataset.nodeid);
-                    return;
-                }
-
-                if (target.dataset.transitionid) {
-                    this.tooltipPosition = {
-                        x: event.clientX,
-                        y: event.clientY
-                    };
-                    this.hoverItem = this.graph.links.find((n) => n.id.toString() === target.dataset.transitionid);
-                    return;
-                }
-            }
-            this.tooltipPosition = undefined;
-            this.hoverItem = undefined;
-        },
     },
 });
 </script>
-
-<style scoped>
-.syllable-flow-container {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-.link {
-    mix-blend-mode: multiply;
-}
-g.node {
-    cursor: pointer;
-}
-.node-label {
-    text-anchor: middle;
-    alignment-baseline: middle;
-    dominant-baseline: middle;
-}
-.axis-label {
-    text-anchor: middle;
-}
-.no-data .card {
-    width: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-</style>

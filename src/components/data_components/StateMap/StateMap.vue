@@ -271,11 +271,11 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                             .range([1.0, 0.0, 1.0])
                             .clamp(true);
 
-                z = scaleDiverging(GetScale(this.settings.colorscale))
+                z = scaleDiverging(GetScale(this.settings.colorscale) as (t: number) => string)
                             .domain(transDomain  as [number, number, number]);
-                zo = scaleDiverging(this.settings.use_opacity ?
+                zo = scaleDiverging((this.settings.use_opacity ?
                                         GetScaleWithOpacity(this.settings.colorscale, zo) :
-                                        GetScale(this.settings.colorscale))
+                                        GetScale(this.settings.colorscale)) as (t: number) => string)
                             .domain(transDomain  as [number, number, number]);
             } else {
                 transDomain = [0, abstransMax] as [number, number];
@@ -287,7 +287,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                             .domain(transDomain)
                             .range([0, 1]);
 
-                z = scaleSequential(GetScale(this.settings.colorscale))
+                z = scaleSequential(GetScale(this.settings.colorscale) as (t: number) => string)
                             .domain(transDomain  as [number, number]);
                 zo = scaleSequential(GetScaleWithOpacity(this.settings.colorscale, o))
                             .domain(transDomain as [number, number]);

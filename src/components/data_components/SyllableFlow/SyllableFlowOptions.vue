@@ -65,7 +65,7 @@ import {GetInterpolatedScaleOptions} from '@/components/Charts/D3ColorProvider';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import ColorScalePicker from '@/components/ColorScalePicker.vue';
-import {NodeAlignment} from './SyllableFlow.vue';
+import {NodeAlignment} from '@/components/Charts/Sankey/Sankey.types';
 
 
 

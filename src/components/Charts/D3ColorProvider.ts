@@ -18,10 +18,10 @@ export function GetInterpolatedScaleOptions() {
     return options;
 }
 export function GetScale(name: string) {
-    return d3ScaleChromatic[name] as (t: number) => string | string[];
+    return d3ScaleChromatic[name] as ((t: number) => string) | string[];
 }
 export function GetScaleWithOpacity(name: string, opacity: any) {
-    const base = GetScale(name);
+    const base = GetScale(name) as (t: number) => string;
     return (t: number) => {
         const out = (base(t) as string)
             .replace('rgb', 'rgba')

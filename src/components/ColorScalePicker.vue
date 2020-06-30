@@ -97,7 +97,7 @@ export default Vue.extend({
     },
     methods: {
         scale(interpolator) {
-            const z = scaleSequential(GetScale(interpolator))
+            const z = scaleSequential(GetScale(interpolator) as (t: number) => string)
                         .domain([0, 1]);
             return range(0, 1.1, 0.05).map((v) => ({ v: v * 100, z: z(v) }));
         },
