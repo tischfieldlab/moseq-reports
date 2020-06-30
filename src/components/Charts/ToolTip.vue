@@ -49,7 +49,7 @@ export default Vue.extend({
                                                 {
                                                     name: 'offset',
                                                     options: {
-                                                        offset: [0, 10],
+                                                        offset: [0, 20],
                                                     },
                                                 },
                                             ],
