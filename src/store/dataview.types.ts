@@ -7,6 +7,7 @@ export enum CountMethod {
 
 export interface DataviewState {
     name: string;
+    color: string;
     loading: boolean;
     countMethod: CountMethod;
     selectedGroups: string[];

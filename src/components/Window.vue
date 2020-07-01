@@ -5,7 +5,7 @@
         @close="onClosed($event)"
         :maxWidth="max_width"
         :showCollapseButton="true">
-        <div>
+        <div :style="{background: titlebar_color, color: getContrast(dataview.color)}">
             {{ title }}
         </div>
         <div>
@@ -51,6 +51,8 @@ import { Size, Position, Layout } from '@/store/datawindow.types';
 import Snapshot, { ensureDefaults } from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin.ts';
+import {getContrastingColor} from '@/components/Charts/D3ColorProvider';
+
 
 export default mixins(WindowMixin).extend({
     components: {
@@ -75,6 +77,9 @@ export default mixins(WindowMixin).extend({
         max_width(): number {
             return window.innerWidth;
         },
+        titlebar_color(): string {
+            return this.dataview.color;
+        }
     },
     watch: {
         layout: {
@@ -158,6 +163,14 @@ export default mixins(WindowMixin).extend({
         },
         async snapshotContent(event: MouseEvent) {
             await Snapshot(this.$refs.body as Vue, this.title, this.settings.snapshot);
+        },
+        getContrast(hexcolor: string): string {
+            const c = getContrastingColor(hexcolor);
+            if (c === 'dark') {
+                return 'black';
+            } else {
+                return 'white';
+            }
         },
     },
 });
