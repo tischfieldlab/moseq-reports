@@ -6,6 +6,7 @@ import app from '@/main';
 import { remote, shell } from 'electron';
 import fs from 'fs';
 import mime from 'mime-types';
+import { DataWindowState } from '@/store/datawindow.types';
 
 
 interface SnapshotOptions {
@@ -38,6 +39,11 @@ export function ensureDefaults(target: Vue, store: Store<any>) {
 }
 
 export default async function Snapshot(target: Vue, basename: string, options: SnapshotOptions) {
+    console.log('target', target.$options.name, target);
+    console.log('parent1', target.$parent.$options.name, target.$parent);
+    console.log('parent2', target.$parent.$parent.$options.name, target.$parent.$parent);
+    console.log('parent3', target.$parent.$parent.$parent.$options.name, target.$parent.$parent.$parent);
+
     return targetToDataURI(target, options)
         .then((data) => dataUriToFile(data as string))
         .then((finfo) => {
@@ -76,6 +82,87 @@ export default async function Snapshot(target: Vue, basename: string, options: S
                 toaster: 'b-toaster-bottom-right',
             });
         });
+}
+
+export async function SnapshotWorkspace() {
+    const opts = defaultOptions(app);
+
+    const toSnapshot = getAllVues(app).filter((v) => {
+        if (v.$parent && v.$parent.$parent) {
+            return (v.$parent.$parent.$options as any)._componentTag === 'JqxWindow';
+        }
+    });
+
+    const dims = toSnapshot.reduce((accum, item) => {
+        const wstate = (item as any).$wstate as DataWindowState;
+        accum.minX = Math.min(accum.minX, wstate.pos_x);
+        accum.maxX = Math.max(accum.maxX, wstate.pos_x + wstate.width);
+        accum.minY = Math.min(accum.minY, wstate.pos_y);
+        accum.maxY = Math.max(accum.maxY, wstate.pos_y + wstate.height);
+        return accum;
+    }, {
+        minX: Number.MAX_VALUE,
+        maxX: Number.MIN_VALUE,
+        minY: Number.MAX_VALUE,
+        maxY: Number.MIN_VALUE,
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.style.width = `${dims.maxX}px`;
+    canvas.style.height = `${dims.maxY}px`;
+    canvas.width = dims.maxX;
+    canvas.height = dims.maxY;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    const drawers = toSnapshot.map((item) => {
+        return targetToDataURI(item, opts)
+        .then((data) => {
+            return new Promise((resolve, reject) => {
+                const subInfo = dataUriToFile(data as string)
+                if (subInfo.extension !== 'png') {
+                    reject('non-image data');
+                    return;
+                }
+                const wstate = (item as any).$wstate as DataWindowState;
+                const img = new Image(wstate.width, wstate.height);
+                img.onload = () => {
+                    if (ctx === null) {
+                        return reject('no context!');
+                    }
+                    ctx.drawImage(img, wstate.pos_x, wstate.pos_y, wstate.width, wstate.height);
+                    resolve();
+                };
+                img.src = data as string;
+            });
+        });
+    });
+    console.log(drawers);
+    await Promise.allSettled(drawers);
+    const final = canvas.toDataURL('image/png');
+    console.log(final);
+    const finfo = dataUriToFile(final);
+
+    const dest = remote.dialog.showSaveDialogSync({
+        title: 'Save Snapshot',
+        defaultPath: 'WorkspaceSnapshot.png',
+        filters: filtersForFinfo(finfo),
+    });
+    if (dest === undefined) {
+        return;
+    }
+    fs.writeFile(dest, finfo.buffer, (err) => {
+        if (err) {
+            console.error(err);
+        }
+    });
+    document.body.removeChild(canvas);
+}
+
+function getAllVues(root: Vue) {
+    const items = [root];
+    items.push(...root.$children.flatMap((child) => getAllVues(child)));
+    return items;
 }
 
 function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
