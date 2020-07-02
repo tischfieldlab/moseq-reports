@@ -97,13 +97,7 @@
             </text>
         </g>
     </svg>
-    <div v-if="!has_data" class="no-data">
-        <b-card bg-variant="primary" text-variant="white" class="text-center">
-            <b-card-text>
-                {{noDataMessage}}
-            </b-card-text>
-        </b-card>
-    </div>
+    <MessageBox :show="!has_data">{{noDataMessage}}</MessageBox>
     <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
         <div v-html="tooltip_text" style="text-align:left;"></div>
     </ToolTip>
@@ -119,11 +113,13 @@ import { sum } from 'd3-array';
 import mixins from 'vue-typed-mixins';
 import ToolTip from '@/components/Charts/ToolTip.vue';
 import { throttle } from '@/util/Events';
+import MessageBox from '@/components/Charts/CenteredMessage.vue';
 
 
 export default mixins(BoxPlotBase).extend({
     components: {
         ToolTip,
+        MessageBox,
     },
     data() {
         return {
@@ -220,12 +216,5 @@ svg >>> rect {
 svg >>> circle,
 svg >>> path {
     shape-rendering: geometricPrecision;
-}
-.no-data .card {
-    width: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 </style>

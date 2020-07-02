@@ -1,27 +1,18 @@
 <template>
-    <div>
-        <HexBinPlotSVG
-            :width="this.layout.width"
-            :height="this.layout.height - 31"
-            :data="individualUseageData"
-            :useGroups="useGroups"
-            :groupLabels="groupNames"
-            :groupColors="groupColors"
-            :resolution="settings.resolution"
-            :colorscale="settings.colormap"
-            :legendTitle="`Relative Occupancy`"
-            :title="`Occupancy while in Module ${selectedSyllable} (${countMethod})`"
-            xAxisTitle="Group"
-            yAxisTitle="velocity_2d_mm"
-        />
-        <div v-show="individualUseageData === null" class="no-data">
-            <b-card bg-variant="primary" text-variant="white" class="text-center">
-                <b-card-text>
-                    Sorry, there is no scalar data available for Syllable {{selectedSyllable}} ({{countMethod}}) 
-                </b-card-text>
-            </b-card>
-        </div>
-    </div>
+    <HexBinPlotSVG
+        :width="this.layout.width"
+        :height="this.layout.height - 31"
+        :data="individualUseageData"
+        :useGroups="useGroups"
+        :groupLabels="groupNames"
+        :groupColors="groupColors"
+        :resolution="settings.resolution"
+        :colorscale="settings.colormap"
+        :legendTitle="`Relative Occupancy`"
+        :title="`Occupancy while in Module ${selectedSyllable} (${countMethod})`"
+        xAxisTitle="Group"
+        yAxisTitle="velocity_2d_mm"
+    />
 </template>
 
 <script lang="ts">
@@ -54,7 +45,7 @@ RegisterDataComponent({
     init_height: 380,
     default_settings: {
         mode: PositionPlotMode.Overall,
-        resolution: 2,
+        resolution: 5,
         colormap: 'interpolateBuPu',
     },
 });
@@ -129,11 +120,5 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 
 
 <style scoped>
-.no-data .card {
-    width: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
+
 </style>

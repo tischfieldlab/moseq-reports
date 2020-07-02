@@ -1,5 +1,6 @@
 <template>
-    <svg ref="canvas" :width="width" :height="height" >
+<div>
+    <svg ref="canvas" v-show="has_data" :width="width" :height="height" >
         <g :transform="`translate(${margin.left},${margin.top})`">
             <g
                 v-for="cell in scale.gl"
@@ -9,10 +10,10 @@
                 class="group">
 
                 <!--<rect
-                    :x="(-hexWidth / 2) - 1"
-                    :y="-hexHeight / 2 - 3"
-                    :width="cell.pos.width + hexWidth + 2"
-                    :height="cell.pos.height + hexHeight + 2"
+                    :x="0"
+                    :y="0"
+                    :width="cell.pos.width"
+                    :height="cell.pos.height"
                     stroke="#666"
                     fill="transparent" />-->
 
@@ -39,7 +40,7 @@
                 :scale="scale.c"
                 :width="200"
                 :height="10"
-                :transform="`translate(${width / 2},${scale.gl.height + 20})`" />
+                :transform="`translate(${width / 2},${innerSize.h})`" />
         </g>
         <text
             :x="width / 2"
@@ -48,6 +49,8 @@
             {{title}}
         </text>
     </svg>
+    <MessageBox :show="!has_data">{{noDataMessage}}</MessageBox>
+</div>
 </template>
 
 <script lang="ts">
@@ -55,12 +58,14 @@ import Vue from 'vue';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
 import mixins from 'vue-typed-mixins';
 import HexBinPlotBase from './HexBinPlotBase.vue';
+import MessageBox from '@/components/Charts/CenteredMessage.vue';
 
 
 
 export default mixins(HexBinPlotBase).extend({
     components: {
         ColorScaleLegend,
+        MessageBox,
     },
 });
 </script>

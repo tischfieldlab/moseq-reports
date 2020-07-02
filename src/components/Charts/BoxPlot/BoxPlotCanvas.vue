@@ -7,13 +7,7 @@
             @mousemove="debouncedHover"
             @mouseleave="hoverItem = undefined"></canvas>
 
-        <div v-if="!has_data" class="no-data">
-            <b-card bg-variant="primary" text-variant="white" class="text-center">
-                <b-card-text>
-                    {{noDataMessage}}
-                </b-card-text>
-            </b-card>
-        </div>
+        <MessageBox :show="!has_data">{{noDataMessage}}</MessageBox>
         <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
             <div style="text-align:left;" v-html="tooltip_text">
             </div>
@@ -31,11 +25,13 @@ import mixins from 'vue-typed-mixins';
 import {sample} from '@/util/Array';
 import ToolTip from '@/components/Charts/ToolTip.vue';
 import CanvasMixin from '@/components/Charts/Canvas';
+import MessageBox from '@/components/Charts/CenteredMessage.vue';
 
 
 export default mixins(BoxPlotBase, CanvasMixin).extend({
     components: {
         ToolTip,
+        MessageBox,
     },
     data() {
         return {

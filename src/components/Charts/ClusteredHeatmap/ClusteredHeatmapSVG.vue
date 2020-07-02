@@ -39,13 +39,7 @@
             :height="10"
             :transform="`translate(${dims.legend.x}, ${dims.legend.y})`" />
     </svg>
-    <div v-if="!has_data" class="no-data">
-        <b-card bg-variant="primary" text-variant="white" class="text-center">
-            <b-card-text>
-                {{noDataMessage}}
-            </b-card-text>
-        </b-card>
-    </div>
+    <MessageBox :show="!has_data">{{noDataMessage}}</MessageBox>
     <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
         <div v-html="tooltip_text" style="text-align:left;"></div>
     </ToolTip>
@@ -64,13 +58,14 @@ import mixins from 'vue-typed-mixins';
 import ClusteredHeatmapBase from './ClusteredHeatmapBase.vue';
 import ToolTip from '@/components/Charts/ToolTip.vue';
 import { throttle } from '@/util/Events';
-
+import MessageBox from '@/components/Charts/CenteredMessage.vue';
 
 
 export default mixins(ClusteredHeatmapBase).extend({
     components: {
         ColorScaleLegend,
         ToolTip,
+        MessageBox,
     },
     data() {
         return {
@@ -188,13 +183,6 @@ export default mixins(ClusteredHeatmapBase).extend({
 </script>
 
 <style scoped>
-.no-data .card {
-    width: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
 svg >>> g.rtree path.rlink,
 svg >>> g.ctree path.clink {
     fill: none;

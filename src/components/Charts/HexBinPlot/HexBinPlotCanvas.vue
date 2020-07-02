@@ -1,5 +1,6 @@
 <template>
-    <canvas ref="canvas" v-dpiadapt="{width: width, height: height}">
+<div>
+    <canvas ref="canvas" v-show="has_data" v-dpiadapt="{width: width, height: height}">
         <ColorScaleLegend ref="legend"
                 :title="legendTitle"
                 :scale="scale.c"
@@ -8,6 +9,8 @@
                 :x="width / 2"
                 :y="scale.gl.height + 45" />
     </canvas>
+    <MessageBox :show="!has_data">{{noDataMessage}}</MessageBox>
+</div>
 </template>
 
 
@@ -19,12 +22,14 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import HexBinPlotBase from './HexBinPlotBase.vue';
 import CanvasMixin from '@/components/Charts/Canvas';
+import MessageBox from '@/components/Charts/CenteredMessage.vue';
 
 
 
 export default mixins(HexBinPlotBase, CanvasMixin).extend({
     components: {
         ColorScaleLegend,
+        MessageBox,
     },
     data() {
         return {};

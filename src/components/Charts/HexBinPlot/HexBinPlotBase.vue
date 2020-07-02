@@ -63,6 +63,10 @@ export default mixins(LoadingMixin).extend({
             type: String,
             default: 'title',
         },
+        noDataMessage: {
+            type: String,
+            default: 'Sorry, no data available!',
+        },
     },
     data() {
         return {
@@ -97,6 +101,10 @@ export default mixins(LoadingMixin).extend({
         },*/
     },
     computed: {
+        has_data(): boolean {
+            return this.data !== undefined && this.data !== null && this.data.length > 0
+                && (!this.useGroups || (this.useGroups && this.groupLabels.length > 0));
+        },
         colormap(): any {
             return GetScale(this.colorscale);
         },
@@ -129,13 +137,15 @@ export default mixins(LoadingMixin).extend({
                 return { x: scaleLinear(), y: scaleLinear(), c: scaleSequential(this.colormap), gl };
             }
 
+            const xMax = gl.length > 0 ? gl[0].pos.width : 20;
             const x = scaleLinear()
                 .domain(this.domainX)
-                .range([0, gl[0].pos.width - 20]);
+                .range([0, xMax - 20]);
 
+            const yMax = gl.length > 0 ? gl[0].pos.height : 20;
             const y = scaleLinear()
                 .domain(this.domainY)
-                .range([gl[0].pos.height - 20, 0]);
+                .range([yMax - 20, 0]);
 
             const c = scaleSequential(this.colormap)
                 .domain([0, this.zmax]);
