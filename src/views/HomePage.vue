@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <Sidebar :right="false" v-show="metadataLoaded" />
+        <Sidebar :right="false" v-if="metadataLoaded" />
         <NoDataPresent />
         <WindowContainer />
         <FileDropAcceptor />
