@@ -112,6 +112,9 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     click: () => SnapshotWorkspace(),
                 },
                 {
+                    type: 'separator',
+                },
+                {
                     label: 'Save Layout...',
                     type: 'normal',
                     click: (): void => { SaveLayout(); },

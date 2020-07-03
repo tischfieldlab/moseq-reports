@@ -17,8 +17,9 @@ interface SnapshotOptions {
 }
 
 export function defaultOptions(target: Vue): SnapshotOptions {
+    const rtgt = resolveTarget(target);
     return {
-        format: 'png',
+        format: rtgt.type === 'video' ? 'video' : 'png',
         quality: 1,
         scale: 4,
         backgroundColor: '#FFFFFF00', // fully transparent white
@@ -42,10 +43,10 @@ export default async function Snapshot(target: Vue, basename: string, options: S
     return targetToDataURI(target, options)
         .then((data) => dataUriToFile(data as string))
         .then((finfo) => {
-            const dfltPath = getSuggestedFilename(target) || `${basename}.${finfo.extension}`;
+            const dfltPath = getSuggestedFilename(target) || basename;
             const dest = remote.dialog.showSaveDialogSync({
                 title: 'Save Snapshot',
-                defaultPath: dfltPath,
+                defaultPath: `${dfltPath}.${finfo.extension}`,
                 filters: filtersForFinfo(finfo),
             });
             if (dest === undefined) {
@@ -87,6 +88,15 @@ export async function SnapshotWorkspace() {
             return (v.$parent.$parent.$options as any)._componentTag === 'JqxWindow';
         }
     });
+
+    if (toSnapshot.length <= 0) {
+        app.$bvToast.toast('There are not any items to snapshot!', {
+            title: 'Error Creating Workspace Snapshot!',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+        });
+        return;
+    }
 
     const dims = toSnapshot.reduce((accum, item) => {
         const wstate = (item as any).$wstate as DataWindowState;
@@ -228,7 +238,7 @@ function filtersForFinfo(finfo) {
     return infos;
 }
 
-function resolveTarget(target: Vue): {type: 'video'|'svg'|'html', target:HTMLElement} {
+export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html', target:HTMLElement} {
     const eattr = '[data-snapshot-target]';
 
     const explicit = (target.$el.hasAttribute(eattr)
@@ -301,7 +311,7 @@ function getSuggestedFilename(target: Vue) {
     const tgt = resolveTarget(target);
     if (tgt.type === 'video') {
         const src = decodeURIComponent((tgt.target as HTMLVideoElement).src);
-        return src.replace(/[\#\?].*$/,'');
+        return src.replace(/[\#\?].*$/,'').replace(/\.[^/.]+$/, '');
     }
     return undefined;
 }
@@ -336,21 +346,38 @@ async function targetToDataURI(target: Vue, options: SnapshotOptions) {
             });
         }
     } else if (tgt.type === 'video') {
-        uri = videoToDataUri(tgt.target);
+        uri = videoToDataUri(tgt.target as HTMLVideoElement, options);
     }
     return uri;
 }
 
 
-async function videoToDataUri(el) {
-    return await fetch(el.src)
-        .then(async (response) => {
-            const blob = await response.blob();
-            const data = new Uint8Array(await blob.arrayBuffer());
-            const mimeType = mime.lookup(el.src);
+async function videoToDataUri(el: HTMLVideoElement, options: SnapshotOptions) {
+    if (options.format === 'video') {
+        return await fetch(el.src)
+            .then(async (response) => {
+                const blob = await response.blob();
+                const data = new Uint8Array(await blob.arrayBuffer());
+                const mimeType = mime.lookup(el.src);
 
-            return `data:${mimeType};base64,${encode(data)}`;
-        });
+                return `data:${mimeType};base64,${encode(data)}`;
+            });
+    } else {
+        const canvas = document.createElement('canvas');
+        canvas.style.width = `${el.width}px`;
+        canvas.style.height = `${el.height}px`;
+        canvas.width = el.width;
+        canvas.height = el.height;
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        if (ctx === null) {
+            throw new Error('got null canvas context!');
+        }
+        ctx.drawImage(el, 0, 0, el.width, el.height);
+        const data = canvas.toDataURL('image/png');
+        document.body.removeChild(canvas);
+        return data;
+    }
 }
 
 // public method for encoding an Uint8Array to base64

@@ -23,6 +23,7 @@
                 </span>
             </div>
             <video ref="video" :id="$id('video')"
+                crossOrigin='anonymous'
                 :src="movie_path"
                 type="video/mp4"
                 controls="true"
