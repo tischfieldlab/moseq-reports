@@ -39,11 +39,6 @@ export function ensureDefaults(target: Vue, store: Store<any>) {
 }
 
 export default async function Snapshot(target: Vue, basename: string, options: SnapshotOptions) {
-    console.log('target', target.$options.name, target);
-    console.log('parent1', target.$parent.$options.name, target.$parent);
-    console.log('parent2', target.$parent.$parent.$options.name, target.$parent.$parent);
-    console.log('parent3', target.$parent.$parent.$parent.$options.name, target.$parent.$parent.$parent);
-
     return targetToDataURI(target, options)
         .then((data) => dataUriToFile(data as string))
         .then((finfo) => {
@@ -108,10 +103,10 @@ export async function SnapshotWorkspace() {
     });
 
     const canvas = document.createElement('canvas');
-    canvas.style.width = `${dims.maxX}px`;
-    canvas.style.height = `${dims.maxY}px`;
-    canvas.width = dims.maxX;
-    canvas.height = dims.maxY;
+    canvas.style.width = `${dims.maxX * opts.scale}px`;
+    canvas.style.height = `${dims.maxY * opts.scale}px`;
+    canvas.width = dims.maxX * opts.scale;
+    canvas.height = dims.maxY * opts.scale;
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
@@ -125,38 +120,64 @@ export async function SnapshotWorkspace() {
                     return;
                 }
                 const wstate = (item as any).$wstate as DataWindowState;
-                const img = new Image(wstate.width, wstate.height);
+                const img = new Image();
                 img.onload = () => {
                     if (ctx === null) {
                         return reject('no context!');
                     }
-                    ctx.drawImage(img, wstate.pos_x, wstate.pos_y, wstate.width, wstate.height);
+                    const isNotScaled = img.width / opts.scale / wstate.width < 1;
+                    if (isNotScaled) {
+                        ctx.drawImage(img, wstate.pos_x * opts.scale, wstate.pos_y * opts.scale, img.width * opts.scale, img.height * opts.scale);
+                    } else {
+                        ctx.drawImage(img, wstate.pos_x * opts.scale, wstate.pos_y * opts.scale, img.width, img.height);
+                    }
                     resolve();
                 };
                 img.src = data as string;
             });
         });
     });
-    console.log(drawers);
-    await Promise.allSettled(drawers);
-    const final = canvas.toDataURL('image/png');
-    console.log(final);
-    const finfo = dataUriToFile(final);
-
-    const dest = remote.dialog.showSaveDialogSync({
-        title: 'Save Snapshot',
-        defaultPath: 'WorkspaceSnapshot.png',
-        filters: filtersForFinfo(finfo),
-    });
-    if (dest === undefined) {
-        return;
-    }
-    fs.writeFile(dest, finfo.buffer, (err) => {
-        if (err) {
-            console.error(err);
-        }
-    });
-    document.body.removeChild(canvas);
+    Promise.allSettled(drawers)
+        .then(() => {
+            const finfo = dataUriToFile(canvas.toDataURL('image/png'));
+            document.body.removeChild(canvas);
+            return finfo;
+        })
+        .then((finfo) => {
+            const dest = remote.dialog.showSaveDialogSync({
+                title: 'Save Snapshot',
+                defaultPath: 'WorkspaceSnapshot.png',
+                filters: filtersForFinfo(finfo),
+            });
+            if (dest === undefined) {
+                throw new SaveCancelledError();
+            }
+            return {
+                 finfo,
+                 dest
+            };
+        })
+        .then((data) => {
+            return new Promise((resolve, reject) => {
+                fs.writeFile(data.dest, data.finfo.buffer, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(data.dest);
+                });
+            });
+        })
+        .then((dest) => showSuccessToast(dest as string))
+        .catch((err) => {
+            if (err instanceof SaveCancelledError) {
+                return; // don't care the user cancelled of their own accord
+            }
+            app.$bvToast.toast(err.toString(), {
+                title: 'Error Creating Workspace Snapshot!',
+                variant: 'danger',
+                toaster: 'b-toaster-bottom-right',
+            });
+        });
 }
 
 function getAllVues(root: Vue) {
