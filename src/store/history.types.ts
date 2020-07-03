@@ -7,4 +7,5 @@ export interface HistoryState {
 export interface HistoryItem {
     time: Date;
     message: string;
+    variant: string;
 }

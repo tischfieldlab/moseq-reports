@@ -2,7 +2,7 @@
     <div>
         <b-button @click="pushFakeItem">add</b-button>
         <template v-for="itm in items" >
-            <b-card :key="itm">
+            <b-card :key="itm" :bg-variant="itm.variant">
                 <RenderNode class="message" :data="itm.message"></RenderNode>
                 <small class="text-muted"><Timeago :datetime="itm.time" autoUpdate="60"></Timeago></small>
             </b-card>
@@ -32,7 +32,7 @@ export default Vue.extend({
     },
     methods: {
         pushFakeItem() {
-            this.$store.commit('history/addEntry', 'Some message to go to  history');
+            this.$store.commit('history/addEntry', {message: 'Some message to go to  history'});
         },
     },
 });

@@ -72,7 +72,7 @@ function beginLoadingProcess(filename: string) {
                 variant: 'success',
                 toaster: 'b-toaster-bottom-right',
             });
-            store.commit('history/addEntry', message);
+            store.commit('history/addEntry', {message, variant: 'success'});
         })
         .catch((reason) => {
             app.$bvToast.hide('loading-toast');
@@ -84,7 +84,7 @@ function beginLoadingProcess(filename: string) {
                 variant: 'danger',
                 toaster: 'b-toaster-bottom-right',
             });
-            store.commit('history/addEntry', reason);
+            store.commit('history/addEntry', {message: reason, variant: 'danger'});
         });
 }
 
