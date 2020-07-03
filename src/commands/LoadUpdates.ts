@@ -38,6 +38,7 @@ function createToast(title: string, type: string, message: string, id: string) {
 }
 
 export function CheckUpdates() {
+    if (process.env.NODE_ENV !== 'production') { return; }
     ipcRenderer.send('updater-start-update-check');
 
     createSpinnerToast('update-check-toast', 'Downloading update', 'info',

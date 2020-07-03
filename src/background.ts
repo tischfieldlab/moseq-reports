@@ -145,8 +145,7 @@ const data: any = {
     provider: 'github',
     owner: 'tischfieldlab',
     repo: 'moseq-reports',
-    private: true,
-    token: "177c6afc07928caf5993f9bb5f18ea5ef6a9526e",
+    private: false,
 };
 
 autoUpdater.setFeedURL(data);
