@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <Sidebar :right="false" />
+        <Sidebar :right="false" v-show="metadataLoaded" />
         <NoDataPresent />
         <WindowContainer />
         <FileDropAcceptor />
@@ -34,7 +34,7 @@ export default Vue.component('homepage', {
             return title;
         },
         metadataLoaded(): boolean {
-            return this.$store.state.datasets.usageByUsage !== null;
+            return this.$store.state.datasets.name !== '';
         },
     },
     watch: {

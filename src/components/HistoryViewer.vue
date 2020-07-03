@@ -3,8 +3,8 @@
         <b-button @click="pushFakeItem">add</b-button>
         <template v-for="itm in items" >
             <b-card :key="itm">
-                <RenderNode :data="itm.message"></RenderNode>
-                <small class="text-muted"><Timeago :datetime="itm.time"></Timeago></small>
+                <RenderNode class="message" :data="itm.message"></RenderNode>
+                <small class="text-muted"><Timeago :datetime="itm.time" autoUpdate="60"></Timeago></small>
             </b-card>
         </template>
     </div>
@@ -41,5 +41,10 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-
+.message {
+    font-size: 14px;
+}
+.card {
+    margin: 3px;
+}
 </style>
