@@ -1,15 +1,9 @@
 import { Module } from 'vuex';
 import { RootState } from './root.types';
+import { HistoryState, HistoryItem } from './history.types';
 
 
-interface HistoryState {
-    items: HistoryItem[];
-}
 
-interface HistoryItem {
-    time: Date;
-    message: string;
-}
 
 
 const HistoryModule: Module<HistoryState, RootState> = {

@@ -45,6 +45,13 @@ Vue.config.silent = true;
 import {CreateTitleBar} from './WindowChrome';
 CreateTitleBar();
 
+import VueTimeago from 'vue-timeago';
+Vue.use(VueTimeago, {
+    name: 'Timeago',
+    locale: 'en',
+    autoUpdate: 60,
+});
+
 
 const vm = new Vue({
     router,

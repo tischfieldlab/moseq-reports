@@ -60,11 +60,13 @@ function beginLoadingProcess(filename: string) {
         .then(() => {
             app.$bvToast.hide('loading-toast');
             app.$root.$emit('finish-dataset-load');
-            app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
+            const message = 'File "' + (store.state as any).datasets.name + '" was loaded successfully.'
+            app.$bvToast.toast(message, {
                 title: 'Data loaded successfully!',
                 variant: 'success',
                 toaster: 'b-toaster-bottom-right',
             });
+            store.commit('history/addEntry', message);
         })
         .catch((reason) => {
             app.$bvToast.hide('loading-toast');
@@ -76,6 +78,7 @@ function beginLoadingProcess(filename: string) {
                 variant: 'danger',
                 toaster: 'b-toaster-bottom-right',
             });
+            store.commit('history/addEntry', reason);
         });
 }
 

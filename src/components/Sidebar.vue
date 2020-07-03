@@ -19,7 +19,9 @@
             :right="right"
             shadow="lg">
 
-            <component :is="current ? current.component : ''" />
+            <keep-alive>
+                <component :is="current ? current.component : ''" />
+            </keep-alive>
 
         </b-sidebar>
     </Portal>

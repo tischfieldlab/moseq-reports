@@ -3,11 +3,8 @@
         <b-button @click="pushFakeItem">add</b-button>
         <template v-for="itm in items" >
             <b-card :key="itm">
-                <b-card-text>
-                    {{itm}}
-                    <br />
-                    <small class="text-muted">Last updated 3 mins ago</small>
-                </b-card-text>
+                <RenderNode :data="itm.message"></RenderNode>
+                <small class="text-muted"><Timeago :datetime="itm.time"></Timeago></small>
             </b-card>
         </template>
     </div>
@@ -15,12 +12,22 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { HistoryItem } from '@/store/history.types';
 
+const RenderNode = Vue.extend({
+    props: ['data'],
+    render(h, context) {
+        return h('div', this.data);
+    },
+});
 
 export default Vue.extend({
+    components: {
+        RenderNode,
+    },
     computed: {
-        items(): string[] {
-            return this.$store.state.history.items;
+        items(): HistoryItem[] {
+            return this.$store.state.history.items.slice().reverse();
         },
     },
     methods: {
@@ -29,6 +36,8 @@ export default Vue.extend({
         },
     },
 });
+
+
 </script>
 
 <style scoped>
