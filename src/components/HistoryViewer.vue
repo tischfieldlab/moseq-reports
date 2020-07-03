@@ -2,9 +2,9 @@
     <div>
         <b-button @click="pushFakeItem">add</b-button>
         <template v-for="itm in items" >
-            <b-card :key="itm" :bg-variant="itm.variant">
+            <b-card :key="itm" :bg-variant="itm.variant" :text-variant="textVarForBgVar(itm.variant)">
                 <RenderNode class="message" :data="itm.message"></RenderNode>
-                <small class="text-muted"><Timeago :datetime="itm.time" autoUpdate="60"></Timeago></small>
+                <small :class="`text-${textVarForBgVar(itm.variant)}`"><Timeago :datetime="itm.time" autoUpdate="60"></Timeago></small>
             </b-card>
         </template>
     </div>
@@ -34,6 +34,13 @@ export default Vue.extend({
         pushFakeItem() {
             this.$store.commit('history/addEntry', {message: 'Some message to go to  history'});
         },
+        textVarForBgVar(variant) {
+            const dark = ['dark', 'success', 'danger'];
+            if (dark.includes(variant)) {
+                return 'white';
+            }
+            return 'dark';
+        }
     },
 });
 
