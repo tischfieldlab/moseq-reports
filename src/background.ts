@@ -1,7 +1,9 @@
 'use strict';
+import {auto} from '@popperjs/core';
+
 declare const __static: any;
 
-import {ipcMain, app, protocol, BrowserWindow } from 'electron';
+import {ipcMain, app, protocol, BrowserWindow, IpcMainEvent} from 'electron';
 import path from 'path';
 import {
     createProtocol,
@@ -56,6 +58,18 @@ function createWindow() {
     }
 
     win.on('closed', () => { win = null; });
+
+    // NOTE: File association file load event
+    win.webContents.on('dom-ready', () => {
+        if (win == null) { return; }
+        let arg: string = process.argv[process.argv.length - 1];
+        console.log(arg);
+        if (!arg.endsWith('.msq')) {
+            arg = '';
+        }
+
+        win.webContents.send('ready-to-load-file', arg);
+    });
 }
 
 // Quit when all windows are closed.
@@ -119,31 +133,70 @@ ipcMain.on('needs-reload', () => {
     if (win !== null) {
         (win as any).hasReloaded = true;
         win.reload();
+        win.webContents.send('window-has-reloaded');
     }
 });
 
 import { autoUpdater, UpdateCheckResult } from 'electron-updater';
-if (process.env.NODE_ENV === 'production') {
+import logger from 'electron-log';
 
-    ipcMain.on('update-check-done', (event: any) => {
-        autoUpdater.downloadUpdate().then(async () => {
-            if (win !== null) {
-                autoUpdater.quitAndInstall();
-            }
-        });
-    });
+// NOTE: Setup the autoupdater so it works only in production
+const data: any = {
+    provider: 'github',
+    owner: 'tischfieldlab',
+    repo: 'moseq-reports',
+    private: true,
+    token: "177c6afc07928caf5993f9bb5f18ea5ef6a9526e",
+};
 
-    const data: any = {
-        provider: 'github',
-        owner: 'tischfieldlab',
-        repo: 'moseq-reports',
-    };
+autoUpdater.setFeedURL(data);
+autoUpdater.autoInstallOnAppQuit = false;
+autoUpdater.autoDownload = false;
 
-    autoUpdater.setFeedURL(data);
-
-    autoUpdater.checkForUpdates().then((check: UpdateCheckResult) => {
-        if (win !== null) {
-            win.webContents.send('update-check', check);
+// NOTE: Event sent from the render process to start the update check
+ipcMain.on('updater-start-update-check', (event: IpcMainEvent) => {
+    autoUpdater.checkForUpdates().then((result: UpdateCheckResult) => {
+        // NOTE: Send back an event saying the update check was completed
+        if (win != null) {
+            win.webContents.send('updater-finish-update-check', result.updateInfo.version);
+        } else {
+            logger.error('Attempted to send update complete message, but window is null');
         }
+    }).catch((reason: any) => {
+        // NOTE: This error occurs most likely because of an authentication issue... so we will
+        // ignore it for now as the repo may become public
+        logger.error('Attempted to check for updates but ran into error: ', reason);
+        if (win != null)
+            win.webContents.send('updater-finish-update-check', 'error');
     });
-}
+});
+
+// NOTE: Sent from the render process if the user decides they want to download the update
+ipcMain.on('updater-start-update-download', (event: IpcMainEvent) => {
+   autoUpdater.downloadUpdate().then(() => {
+       // NOTE: Send message to the renderer proc that the update was completed.
+       if (win != null) {
+           win.webContents.send('updater-finish-update-download', 'success');
+           autoUpdater.quitAndInstall();
+       }
+   }).catch((reason: any) => {
+       // NOTE: Send back error...
+       logger.error('Attempted to download the update but ran into error: ', reason);
+       if (win != null) {
+           win.webContents.send('updater-finish-update-download', 'success');
+           autoUpdater.quitAndInstall();
+       }
+   });
+});
+
+// NOTE: Both of these events are dependent on whether or not the user chooses to download the updates
+
+// NOTE: If we are to install updates now
+ipcMain.on('updater-restart-and-install-now', (event: IpcMainEvent) => {
+   autoUpdater.quitAndInstall();
+});
+
+// NOTE: If we are to install when the user quits
+ipcMain.on('updater-restart-and-install-later', (event: IpcMainEvent) => {
+   autoUpdater.autoInstallOnAppQuit = true;
+});
