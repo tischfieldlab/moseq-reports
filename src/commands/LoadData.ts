@@ -47,9 +47,15 @@ function beginLoadingProcess(filename: string) {
         .then(() => readDataBundle(filename))
         .then((data) => store.dispatch('datasets/setData', data))
         .then(() => {
-            return Promise.allSettled((store.state as any).filters.items.map((item) => {
+            let init;
+            if ((store.state as any).filters.items.length === 0) {
+                init = store.dispatch('filters/addFilter');
+            } else {
+                init = Promise.resolve();
+            }
+            return init.then(() => Promise.allSettled((store.state as any).filters.items.map((item) => {
                 return store.dispatch(`${item}/initialize`);
-            }));
+            })));
         })
         .then(async () => {
             if ((store.state as any).datawindows.items.length === 0) {

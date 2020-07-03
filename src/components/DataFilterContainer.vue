@@ -36,11 +36,6 @@ export default Vue.extend({
             return this.$store.state.filters.items;
         },
     },
-    created() {
-        if (this.filters.length === 0) {
-            this.$store.dispatch('filters/addFilter');
-        }
-    },
     methods: {
         add_datasource() {
             this.is_adding_source = true;
