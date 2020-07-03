@@ -137,9 +137,13 @@ export async function SnapshotWorkspace() {
                     }
                     const isNotScaled = img.width / opts.scale / wstate.width < 1;
                     if (isNotScaled) {
-                        ctx.drawImage(img, wstate.pos_x * opts.scale, wstate.pos_y * opts.scale, img.width * opts.scale, img.height * opts.scale);
+                        ctx.drawImage(img,
+                            wstate.pos_x * opts.scale, wstate.pos_y * opts.scale,
+                            img.width * opts.scale, img.height * opts.scale);
                     } else {
-                        ctx.drawImage(img, wstate.pos_x * opts.scale, wstate.pos_y * opts.scale, img.width, img.height);
+                        ctx.drawImage(img,
+                            wstate.pos_x * opts.scale, wstate.pos_y * opts.scale,
+                            img.width, img.height);
                     }
                     resolve();
                 };
