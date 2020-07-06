@@ -1,11 +1,19 @@
 <template>
     <div>
-        <b-button @click="pushFakeItem">add</b-button>
-        <template v-for="itm in items" >
-            <b-card :key="itm" :bg-variant="itm.variant" :text-variant="textVarForBgVar(itm.variant)">
+        <!--<b-button @click="pushFakeItem">add</b-button>-->
+        <h3>Notification History</h3>
+        <template v-for="itm in items">
+            <b-toast :key="itm"
+                :static="true"
+                :visible="true"
+                :no-auto-hide="true"
+                :is-status="true"
+                :no-close-button="true"
+                :variant="itm.variant">
+
                 <RenderNode class="message" :data="itm.message"></RenderNode>
-                <small :class="`text-${textVarForBgVar(itm.variant)}`"><Timeago :datetime="itm.time" autoUpdate="60"></Timeago></small>
-            </b-card>
+                <small><Timeago :datetime="itm.time" autoUpdate="60"></Timeago></small>
+            </b-toast>
         </template>
     </div>
 </template>
@@ -34,13 +42,6 @@ export default Vue.extend({
         pushFakeItem() {
             this.$store.commit('history/addEntry', {message: 'Some message to go to  history'});
         },
-        textVarForBgVar(variant) {
-            const dark = ['dark', 'success', 'danger'];
-            if (dark.includes(variant)) {
-                return 'white';
-            }
-            return 'dark';
-        }
     },
 });
 
@@ -51,7 +52,7 @@ export default Vue.extend({
 .message {
     font-size: 14px;
 }
-.card {
-    margin: 3px;
+.b-toast {
+    margin: 6px;
 }
 </style>
