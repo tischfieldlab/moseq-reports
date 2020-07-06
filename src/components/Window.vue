@@ -5,7 +5,8 @@
         @close="onClosed($event)"
         :maxWidth="max_width"
         :showCollapseButton="true">
-        <div :style="{background: titlebar_color, color: getContrast(dataview.color)}">
+        <div> <!--:style="{background: titlebar_color, color: getContrast(dataview.color)}"-->
+            <span class="dataview-swatch" :id="$id('swatch')" :style="{background: titlebar_color}"></span>
             {{ title }}
         </div>
         <div>
@@ -90,6 +91,15 @@ export default mixins(WindowMixin).extend({
         },
         title(newValue) {
             (this.$refs.window as any).title = newValue;
+        },
+        titlebar_color: {
+            handler(newValue) {
+                const swatch = document.getElementById(this.$id('swatch'));
+                if (swatch) {
+                    swatch.style.backgroundColor = newValue;
+                }
+            },
+            // immediate: true,
         },
     },
     mounted() {
@@ -231,5 +241,13 @@ function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
 .no-settings{
     text-align: center;
     margin:20px 0;
+}
+.dataview-swatch {
+    display: inline-block;
+    vertical-align: text-top;
+    width: 16px;
+    height: 16px;
+    border-radius: 24px;
+    border: 1px solid #c5c5c5
 }
 </style>
