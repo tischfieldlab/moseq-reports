@@ -1,16 +1,16 @@
 <template>
     <Portal>
         <div :class="{ 'button-bar': true, 'shadow-lg': !is_open, 'right': right }">
-                <div v-for="itm in items"
-                    :key="itm.name"
-                    v-show="showItem(itm)"
-                    :style="{'justify-self': itm.align}"
-                    :title="current === itm ? `Hide ${itm.name}` : `Show ${itm.name}`">
-                    <b-icon
-                        :class="{ active: current === itm }"
-                        :icon="current === itm ? itm.icon[0] : itm.icon[1]"
-                        v-on:click="() => toggleItem(itm)"></b-icon>
-                </div>
+            <div v-for="itm in items"
+                :key="itm.name"
+                v-show="showItem(itm)"
+                :style="{'justify-self': itm.align}"
+                :title="current === itm ? `Hide ${itm.name}` : `Show ${itm.name}`">
+                <b-icon
+                    :class="{ active: current === itm }"
+                    :icon="current === itm ? itm.icon[0] : itm.icon[1]"
+                    v-on:click="() => toggleItem(itm)"></b-icon>
+            </div>
         </div>
         
         <b-sidebar id="sidebar-1"
@@ -82,7 +82,6 @@ export default Vue.extend({
     },
     computed: {
         showItem: () => (item: SidebarItem) => {
-            console.log(item, item.isVisible());
             return item.isVisible();
         },
     },
