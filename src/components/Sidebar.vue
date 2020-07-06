@@ -1,7 +1,9 @@
 <template>
     <Portal>
         <div :class="{ 'button-bar': true, 'shadow-lg': !is_open, 'right': right }">
-                <div :key="itm.name" v-for="itm in items"
+                <div v-for="itm in items"
+                    :key="itm.name"
+                    v-show="showItem(itm)"
                     :style="{'justify-self': itm.align}"
                     :title="current === itm ? `Hide ${itm.name}` : `Show ${itm.name}`">
                     <b-icon
@@ -40,6 +42,7 @@ interface SidebarItem {
     icon: [string, string];
     component: string;
     align: string;
+    isVisible: () => boolean;
 }
 
 
@@ -65,17 +68,24 @@ export default Vue.extend({
                     icon: ['funnel-fill', 'funnel'],
                     component: 'DataFilterContainer',
                     align: 'flex-start',
+                    isVisible: () => this.$store.state.datasets.name !== '',
                 } as SidebarItem,
                 {
                     name: 'History',
                     icon: ['clock-fill', 'clock-history'],
                     component: 'HistoryViewer',
                     align: 'flex-end',
+                    isVisible: () => true,
                 } as SidebarItem,
             ],
         };
     },
-    computed: {},
+    computed: {
+        showItem: () => (item: SidebarItem) => {
+            console.log(item, item.isVisible());
+            return item.isVisible();
+        },
+    },
     methods: {
         openItem(name) {
             this.current = this.items.find((i) => i.name === name);
