@@ -12,7 +12,7 @@
                     {{settings.playback_rate}}x
                 </span>
             </div>
-            <video ref="video"
+            <video ref="video" crossOrigin='anonymous'
                 :src="crowd_movie_path"
                 type="video/mp4"
                 controls="true"
