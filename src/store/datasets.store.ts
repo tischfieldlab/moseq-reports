@@ -12,7 +12,6 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
     state: {
         bundle: '',
         name: '',
-        path: '',
         manifest: {},
         groups: [],
         label_map: [],
@@ -45,10 +44,16 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         },
     },
     mutations: {
+        Unload(state) {
+            state.bundle = '';
+            state.name = '';
+            state.manifest = {};
+            state.groups = [];
+            state.label_map = [];
+        },
         SetDataSourceInfo(state, payload: DatasetsState) {
             state.bundle = payload.bundle;
             state.name = payload.name;
-            state.path = payload.path;
             state.manifest = payload.manifest;
         },
         SetGroupInfo(state, data: DatasetsState) {
@@ -59,6 +64,9 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         },
     },
     actions: {
+        Unload(context) {
+            context.commit('Unload');
+        },
         setData(context, payload: DatasetsState) {
             context.commit('SetDataSourceInfo', payload);
             context.commit('SetGroupInfo', payload);
