@@ -6,7 +6,7 @@
         :maxWidth="max_width"
         :showCollapseButton="true">
         <div> <!--:style="{background: titlebar_color, color: getContrast(dataview.color)}"-->
-            <span class="dataview-swatch" :id="$id('swatch')" :style="{background: titlebar_color}"></span>
+            <span class="dataview-swatch" :id="$id('swatch')" :style="{background: titlebar_color}" :title="swatch_title"></span>
             {{ title }}
         </div>
         <div>
@@ -80,7 +80,10 @@ export default mixins(WindowMixin).extend({
         },
         titlebar_color(): string {
             return this.dataview.color;
-        }
+        },
+        swatch_title(): string {
+            return `Using ${this.dataview.name}`;
+        },
     },
     watch: {
         layout: {
@@ -99,8 +102,15 @@ export default mixins(WindowMixin).extend({
                     swatch.style.backgroundColor = newValue;
                 }
             },
-            // immediate: true,
         },
+        swatch_title: {
+            handler(newValue) {
+                const swatch = document.getElementById(this.$id('swatch'));
+                if (swatch) {
+                    swatch.title = newValue;
+                }
+            }
+        }
     },
     mounted() {
         // Create the settings button on the next tick when the DOM is ready
@@ -247,7 +257,8 @@ function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
     vertical-align: text-top;
     width: 16px;
     height: 16px;
-    border-radius: 24px;
-    border: 1px solid #c5c5c5
+    border-radius: 16px;
+    border: 1px solid #c5c5c5;
+    cursor: default;
 }
 </style>
