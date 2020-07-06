@@ -7,6 +7,7 @@ import {
 import DatasetsStore from '@/store/datasets.store';
 import FiltersModule from '@/store/filters.store';
 import WindowsModule from './windows.store';
+import HistoryModule from './history.store';
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ const store: StoreOptions<RootState> = {
         datasets: DatasetsStore,
         filters: FiltersModule,
         datawindows: WindowsModule,
+        history: HistoryModule,
     },
     state: {
         registry: Array<ComponentRegistration>(),

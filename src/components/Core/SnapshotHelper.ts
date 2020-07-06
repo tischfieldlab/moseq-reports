@@ -77,6 +77,7 @@ export default async function Snapshot(target: Vue, basename: string, options: S
                 variant: 'danger',
                 toaster: 'b-toaster-bottom-right',
             });
+            app.$store.commit('history/addEntry', {message: err.toString(), variant: 'danger'});
         });
 }
 
@@ -225,6 +226,7 @@ function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
         variant: 'success',
         toaster: 'b-toaster-bottom-right',
     });
+    app.$store.commit('history/addEntry', {message: body, variant: 'success'});
 }
 
 function filtersForFinfo(finfo) {
