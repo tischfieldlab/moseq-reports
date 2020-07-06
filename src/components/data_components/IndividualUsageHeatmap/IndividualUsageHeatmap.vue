@@ -17,7 +17,7 @@
         :rowOrderDirection="this.settings.syllable_order_direction"
         :rowOrderDataset="rowOrderDataset"
 
-        xAxisTitle="Group"
+        xAxisTitle="Individual"
         :yAxisTitle="`Module ID (${countMethod})`"
         :legendTitle="`Usage (${countMethod})`"
         columnKey="uuid"
