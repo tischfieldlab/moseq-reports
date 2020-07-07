@@ -1,5 +1,5 @@
 <template>
-    <b-card class="shadow">
+    <b-card class="shadow datafilter">
         <template v-slot:header>
             <div :style="{background: color, color: getContrast(color)}">
                 <b-button
@@ -228,7 +228,7 @@ div.editable-text >>> input {
 .b-button, .btn-link {
     color: inherit !important;
 }
-.card {
+.datafilter.card {
     margin: 0px 6px 1rem 6px;
 }
 </style>
