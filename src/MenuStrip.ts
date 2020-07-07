@@ -4,6 +4,7 @@ import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/c
 import {AvailableComponents, CreateComponent} from '@/commands/Windows';
 import showAboutWindow from '@/commands/ShowAbout';
 import {CheckUpdates} from '@/commands/LoadUpdates';
+import {SnapshotWorkspace} from '@/components/Core/SnapshotHelper';
 
 /**
  * Creates the main menu strip for the electron app
@@ -105,6 +106,14 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
         {
             label: 'View',
             submenu: [
+                {
+                    label: 'Snapshot Workspace...',
+                    type: 'normal',
+                    click: () => SnapshotWorkspace(),
+                },
+                {
+                    type: 'separator',
+                },
                 {
                     label: 'Save Layout...',
                     type: 'normal',

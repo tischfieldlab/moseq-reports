@@ -53,9 +53,15 @@ function beginLoadingProcess(filename: string) {
         .then(() => readDataBundle(filename))
         .then((data) => store.dispatch('datasets/setData', data))
         .then(() => {
-            return Promise.allSettled((store.state as any).filters.items.map((item) => {
+            let init;
+            if ((store.state as any).filters.items.length === 0) {
+                init = store.dispatch('filters/addFilter');
+            } else {
+                init = Promise.resolve();
+            }
+            return init.then(() => Promise.allSettled((store.state as any).filters.items.map((item) => {
                 return store.dispatch(`${item}/initialize`);
-            }));
+            })));
         })
         .then(async () => {
             if ((store.state as any).datawindows.items.length === 0) {
@@ -66,11 +72,13 @@ function beginLoadingProcess(filename: string) {
         .then(() => {
             app.$bvToast.hide('loading-toast');
             app.$root.$emit('finish-dataset-load');
-            app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
+            const message = 'File "' + (store.state as any).datasets.name + '" was loaded successfully.'
+            app.$bvToast.toast(message, {
                 title: 'Data loaded successfully!',
                 variant: 'success',
                 toaster: 'b-toaster-bottom-right',
             });
+            store.commit('history/addEntry', {message, variant: 'success'});
         })
         .catch((reason) => {
             app.$bvToast.hide('loading-toast');
@@ -82,6 +90,7 @@ function beginLoadingProcess(filename: string) {
                 variant: 'danger',
                 toaster: 'b-toaster-bottom-right',
             });
+            store.commit('history/addEntry', {message: reason, variant: 'danger'});
         });
 }
 

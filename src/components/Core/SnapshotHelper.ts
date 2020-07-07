@@ -6,6 +6,7 @@ import app from '@/main';
 import { remote, shell } from 'electron';
 import fs from 'fs';
 import mime from 'mime-types';
+import { DataWindowState } from '@/store/datawindow.types';
 
 
 interface SnapshotOptions {
@@ -16,8 +17,9 @@ interface SnapshotOptions {
 }
 
 export function defaultOptions(target: Vue): SnapshotOptions {
+    const rtgt = resolveTarget(target);
     return {
-        format: 'png',
+        format: rtgt.type === 'video' ? 'video' : 'png',
         quality: 1,
         scale: 4,
         backgroundColor: '#FFFFFF00', // fully transparent white
@@ -41,10 +43,10 @@ export default async function Snapshot(target: Vue, basename: string, options: S
     return targetToDataURI(target, options)
         .then((data) => dataUriToFile(data as string))
         .then((finfo) => {
-            const dfltPath = getSuggestedFilename(target) || `${basename}.${finfo.extension}`;
+            const dfltPath = getSuggestedFilename(target) || basename;
             const dest = remote.dialog.showSaveDialogSync({
                 title: 'Save Snapshot',
-                defaultPath: dfltPath,
+                defaultPath: `${dfltPath}.${finfo.extension}`,
                 filters: filtersForFinfo(finfo),
             });
             if (dest === undefined) {
@@ -75,7 +77,128 @@ export default async function Snapshot(target: Vue, basename: string, options: S
                 variant: 'danger',
                 toaster: 'b-toaster-bottom-right',
             });
+            app.$store.commit('history/addEntry', {message: err.toString(), variant: 'danger'});
         });
+}
+
+export async function SnapshotWorkspace() {
+    const opts = defaultOptions(app);
+
+    const toSnapshot = getAllVues(app).filter((v) => {
+        if (v.$parent && v.$parent.$parent) {
+            return (v.$parent.$parent.$options as any)._componentTag === 'JqxWindow';
+        }
+    });
+
+    if (toSnapshot.length <= 0) {
+        app.$bvToast.toast('There are not any items to snapshot!', {
+            title: 'Error Creating Workspace Snapshot!',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+        });
+        return;
+    }
+
+    const dims = toSnapshot.reduce((accum, item) => {
+        const wstate = (item as any).$wstate as DataWindowState;
+        accum.minX = Math.min(accum.minX, wstate.pos_x);
+        accum.maxX = Math.max(accum.maxX, wstate.pos_x + wstate.width);
+        accum.minY = Math.min(accum.minY, wstate.pos_y);
+        accum.maxY = Math.max(accum.maxY, wstate.pos_y + wstate.height);
+        return accum;
+    }, {
+        minX: Number.MAX_VALUE,
+        maxX: Number.MIN_VALUE,
+        minY: Number.MAX_VALUE,
+        maxY: Number.MIN_VALUE,
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.style.width = `${dims.maxX * opts.scale}px`;
+    canvas.style.height = `${dims.maxY * opts.scale}px`;
+    canvas.width = dims.maxX * opts.scale;
+    canvas.height = dims.maxY * opts.scale;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    const drawers = toSnapshot.map((item) => {
+        return targetToDataURI(item, opts)
+        .then((data) => {
+            return new Promise((resolve, reject) => {
+                const subInfo = dataUriToFile(data as string)
+                if (subInfo.extension !== 'png') {
+                    reject('non-image data');
+                    return;
+                }
+                const wstate = (item as any).$wstate as DataWindowState;
+                const img = new Image();
+                img.onload = () => {
+                    if (ctx === null) {
+                        return reject('no context!');
+                    }
+                    const isNotScaled = img.width / opts.scale / wstate.width < 1;
+                    if (isNotScaled) {
+                        ctx.drawImage(img,
+                            wstate.pos_x * opts.scale, wstate.pos_y * opts.scale,
+                            img.width * opts.scale, img.height * opts.scale);
+                    } else {
+                        ctx.drawImage(img,
+                            wstate.pos_x * opts.scale, wstate.pos_y * opts.scale,
+                            img.width, img.height);
+                    }
+                    resolve();
+                };
+                img.src = data as string;
+            });
+        });
+    });
+    Promise.allSettled(drawers)
+        .then(() => {
+            const finfo = dataUriToFile(canvas.toDataURL('image/png'));
+            document.body.removeChild(canvas);
+            return finfo;
+        })
+        .then((finfo) => {
+            const dest = remote.dialog.showSaveDialogSync({
+                title: 'Save Snapshot',
+                defaultPath: 'WorkspaceSnapshot.png',
+                filters: filtersForFinfo(finfo),
+            });
+            if (dest === undefined) {
+                throw new SaveCancelledError();
+            }
+            return {
+                 finfo,
+                 dest
+            };
+        })
+        .then((data) => {
+            return new Promise((resolve, reject) => {
+                fs.writeFile(data.dest, data.finfo.buffer, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(data.dest);
+                });
+            });
+        })
+        .then((dest) => showSuccessToast(dest as string))
+        .catch((err) => {
+            if (err instanceof SaveCancelledError) {
+                return; // don't care the user cancelled of their own accord
+            }
+            app.$bvToast.toast(err.toString(), {
+                title: 'Error Creating Workspace Snapshot!',
+                variant: 'danger',
+                toaster: 'b-toaster-bottom-right',
+            });
+        });
+}
+
+function getAllVues(root: Vue) {
+    const items = [root];
+    items.push(...root.$children.flatMap((child) => getAllVues(child)));
+    return items;
 }
 
 function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
@@ -103,6 +226,7 @@ function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
         variant: 'success',
         toaster: 'b-toaster-bottom-right',
     });
+    app.$store.commit('history/addEntry', {message: body, variant: 'success'});
 }
 
 function filtersForFinfo(finfo) {
@@ -120,7 +244,7 @@ function filtersForFinfo(finfo) {
     return infos;
 }
 
-function resolveTarget(target: Vue): {type: 'video'|'svg'|'html', target:HTMLElement} {
+export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html', target:HTMLElement} {
     const eattr = '[data-snapshot-target]';
 
     const explicit = (target.$el.hasAttribute(eattr)
@@ -193,7 +317,7 @@ function getSuggestedFilename(target: Vue) {
     const tgt = resolveTarget(target);
     if (tgt.type === 'video') {
         const src = decodeURIComponent((tgt.target as HTMLVideoElement).src);
-        return src.replace(/[\#\?].*$/,'');
+        return src.replace(/[\#\?].*$/,'').replace(/\.[^/.]+$/, '');
     }
     return undefined;
 }
@@ -228,21 +352,38 @@ async function targetToDataURI(target: Vue, options: SnapshotOptions) {
             });
         }
     } else if (tgt.type === 'video') {
-        uri = videoToDataUri(tgt.target);
+        uri = videoToDataUri(tgt.target as HTMLVideoElement, options);
     }
     return uri;
 }
 
 
-async function videoToDataUri(el) {
-    return await fetch(el.src)
-        .then(async (response) => {
-            const blob = await response.blob();
-            const data = new Uint8Array(await blob.arrayBuffer());
-            const mimeType = mime.lookup(el.src);
+async function videoToDataUri(el: HTMLVideoElement, options: SnapshotOptions) {
+    if (options.format === 'video') {
+        return await fetch(el.src)
+            .then(async (response) => {
+                const blob = await response.blob();
+                const data = new Uint8Array(await blob.arrayBuffer());
+                const mimeType = mime.lookup(el.src);
 
-            return `data:${mimeType};base64,${encode(data)}`;
-        });
+                return `data:${mimeType};base64,${encode(data)}`;
+            });
+    } else {
+        const canvas = document.createElement('canvas');
+        canvas.style.width = `${el.width}px`;
+        canvas.style.height = `${el.height}px`;
+        canvas.width = el.width;
+        canvas.height = el.height;
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        if (ctx === null) {
+            throw new Error('got null canvas context!');
+        }
+        ctx.drawImage(el, 0, 0, el.width, el.height);
+        const data = canvas.toDataURL('image/png');
+        document.body.removeChild(canvas);
+        return data;
+    }
 }
 
 // public method for encoding an Uint8Array to base64

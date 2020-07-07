@@ -5,7 +5,8 @@
         @close="onClosed($event)"
         :maxWidth="max_width"
         :showCollapseButton="true">
-        <div>
+        <div> <!--:style="{background: titlebar_color, color: getContrast(dataview.color)}"-->
+            <span class="dataview-swatch" :id="$id('swatch')" :style="{background: titlebar_color}" :title="swatch_title"></span>
             {{ title }}
         </div>
         <div>
@@ -51,6 +52,8 @@ import { Size, Position, Layout } from '@/store/datawindow.types';
 import Snapshot, { ensureDefaults } from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin.ts';
+import {getContrastingColor} from '@/components/Charts/D3ColorProvider';
+
 
 export default mixins(WindowMixin).extend({
     components: {
@@ -75,6 +78,12 @@ export default mixins(WindowMixin).extend({
         max_width(): number {
             return window.innerWidth;
         },
+        titlebar_color(): string {
+            return this.dataview.color;
+        },
+        swatch_title(): string {
+            return `Using ${this.dataview.name}`;
+        },
     },
     watch: {
         layout: {
@@ -86,6 +95,22 @@ export default mixins(WindowMixin).extend({
         title(newValue) {
             (this.$refs.window as any).title = newValue;
         },
+        titlebar_color: {
+            handler(newValue) {
+                const swatch = document.getElementById(this.$id('swatch'));
+                if (swatch) {
+                    swatch.style.backgroundColor = newValue;
+                }
+            },
+        },
+        swatch_title: {
+            handler(newValue) {
+                const swatch = document.getElementById(this.$id('swatch'));
+                if (swatch) {
+                    swatch.title = newValue;
+                }
+            }
+        }
     },
     mounted() {
         // Create the settings button on the next tick when the DOM is ready
@@ -159,6 +184,14 @@ export default mixins(WindowMixin).extend({
         async snapshotContent(event: MouseEvent) {
             await Snapshot(this.$refs.body as Vue, this.title, this.settings.snapshot);
         },
+        getContrast(hexcolor: string): string {
+            const c = getContrastingColor(hexcolor);
+            if (c === 'dark') {
+                return 'black';
+            } else {
+                return 'white';
+            }
+        },
     },
 });
 
@@ -218,5 +251,14 @@ function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
 .no-settings{
     text-align: center;
     margin:20px 0;
+}
+.dataview-swatch {
+    display: inline-block;
+    vertical-align: text-top;
+    width: 16px;
+    height: 16px;
+    border-radius: 16px;
+    border: 1px solid #c5c5c5;
+    cursor: default;
 }
 </style>
