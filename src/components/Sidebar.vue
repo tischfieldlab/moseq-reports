@@ -119,7 +119,7 @@ export default Vue.extend({
     width: 48px;
     top: 30px;
     bottom: 0;
-    background-color: #f8f9fa;
+    background-color: #FFFFFF; /*#f8f9fa*/;
     z-index: 1050;
 }
 .button-bar.right {

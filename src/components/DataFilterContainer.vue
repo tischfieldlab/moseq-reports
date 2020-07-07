@@ -1,14 +1,13 @@
 <template>
     <div>
-        <div class="action_container text-right">
-            <b-button @click="add_datasource" pill size="sm">
-                <b-icon icon="plus"></b-icon>
-                <b-spinner v-show="is_adding_source" small type="grow"></b-spinner>
-                <span v-show="!is_adding_source">
-                    Add
-                </span>
+        <div class="action_container">
+            <b-button @click="add_datasource" block size="sm" variant="primary">
+                <b-spinner v-if="is_adding_source" small type="grow"></b-spinner>
+                <b-icon v-else icon="plus"></b-icon>
             </b-button>
         </div>
+        <h3>Data Filters</h3>
+        
         <div class="filters_container">
             <template v-for="ns in this.$store.state.filters.items">
                 <DataFilter :key="ns" :datasource="ns" />
@@ -50,9 +49,14 @@ export default Vue.extend({
 
 <style scoped>
 .action_container {
-    padding: 12px;
+    padding: 0 12px;
+    float: right;
+}
+h3 {
+    text-align: center;
+    margin-top: 12px;
 }
 .filters_container {
-    padding-right: 12px
+    clear: both;
 }
 </style>

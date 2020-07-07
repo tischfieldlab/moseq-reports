@@ -229,6 +229,6 @@ div.editable-text >>> input {
     color: inherit !important;
 }
 .card {
-    margin-bottom: 1rem;
+    margin: 0px 6px 1rem 6px;
 }
 </style>

@@ -2,8 +2,8 @@
     <div>
         <!--<b-button @click="pushFakeItem">add</b-button>-->
         <h3>Notification History</h3>
-        <template v-for="itm in items">
-            <b-toast :key="itm"
+        <template v-if="items.length > 0">
+            <b-toast :key="itm" v-for="itm in items"
                 :static="true"
                 :visible="true"
                 :no-auto-hide="true"
@@ -14,6 +14,9 @@
                 <RenderNode class="message" :data="itm.message"></RenderNode>
                 <small><Timeago :datetime="itm.time" autoUpdate="60"></Timeago></small>
             </b-toast>
+        </template>
+        <template v-else>
+            <div class="no-items">There doesn't seem to be anything here.</div>
         </template>
     </div>
 </template>
@@ -54,5 +57,15 @@ export default Vue.extend({
 }
 .b-toast {
     margin: 6px;
+}
+h3 {
+    text-align: center;
+    margin-top: 12px;
+}
+.no-items {
+    text-align: center;
+    font-size: 13px;
+    color: #a5a5a5;
+    margin-top: 24px;
 }
 </style>
