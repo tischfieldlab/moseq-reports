@@ -7,10 +7,16 @@
                 @keyup.enter.native="onBlur"
                 v-focus="" />
         </template>
-        <span v-else @click="edit = true;" title="Click to edit">
+        <b-button
+            v-else
+            @click="edit = true;"
+            title="Click to edit"
+            variant="link"
+            class="text-dark text-decoration-none">
+
             {{local_value}}
             <b-icon icon="pencil"></b-icon>
-        </span>
+        </b-button>
     </div>
 </template>
 
@@ -58,7 +64,14 @@ export default Vue.component('dataset-picker', {
 </script>
 
 <style scoped>
-span {
-    cursor: pointer;
+.btn {
+    padding: 0;
+}
+.b-icon {
+    margin-left: 6px;
+    width: 16px;
+}
+.b-button, .btn-link {
+    color: inherit !important;
 }
 </style>

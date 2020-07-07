@@ -1,6 +1,6 @@
 import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
-import { schemeDark2 } from 'd3-scale-chromatic';
+import { schemeDark2, schemePastel1  } from 'd3-scale-chromatic';
 import { scaleOrdinal } from 'd3-scale';
 import store from './root.store';
 import { getModuleNamespace } from '@/util/Vuex';
@@ -9,7 +9,7 @@ import Vue from 'vue';
 import { DatasetsState } from './datasets.types';
 
 
-
+const FilterColorGenerator = scaleOrdinal(schemePastel1);
 
 
 const DataviewModule: Module<DataviewState, RootState> = {
@@ -17,6 +17,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
     state() {
         return {
             name: '',
+            color: '',
             loading: false,
             countMethod: CountMethod.Usage,
             selectedGroups: [],
@@ -68,6 +69,9 @@ const DataviewModule: Module<DataviewState, RootState> = {
         setName(state, name: string) {
             state.name = name;
         },
+        setColor(state, color: string) {
+            state.color = color;
+        },
         setLoading(state, loading: boolean) {
             state.loading = loading;
         },
@@ -99,6 +103,8 @@ const DataviewModule: Module<DataviewState, RootState> = {
     actions: {
         serialize(context): any {
             return {
+                color: context.state.color,
+                name: context.state.name,
                 countMethod: context.state.countMethod,
                 selectedGroups: context.state.selectedGroups,
                 groupColors: context.state.groupColors,
@@ -153,9 +159,11 @@ const DataviewModule: Module<DataviewState, RootState> = {
         },
         async initialize(context) {
             const namespace = getModuleNamespace(store, context.state);
-            context.commit('setName', 'filter' + namespace?.split('/')[1].split('-')[1]);
+            const name = 'filter' + namespace?.split('/')[1].split('-')[1];
+            context.commit('setName', name);
             const groups = context.getters.availableGroups;
             const colorScale = scaleOrdinal(schemeDark2);
+            context.commit('setColor', FilterColorGenerator(name));
             await context.dispatch('updateView', {
                 selectedGroups: groups,
                 groupColors: groups.map((g: string) => colorScale(g)),

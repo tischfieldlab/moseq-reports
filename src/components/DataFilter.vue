@@ -1,19 +1,28 @@
 <template>
-    <b-card>
+    <b-card class="shadow">
         <template v-slot:header>
-            <b-button
-                @click="is_expanded = !is_expanded"
-                :title="is_expanded ? 'Collapse Filters' : 'Expand Filters'"
-                v-b-toggle="$id('filter-collapse')"
-                variant="link"
-                class="text-dark collapse-button text-decoration-none">
-                <b-icon class="when-opened" title="Collapse Filters" icon="chevron-up"></b-icon>
-                <b-icon class="when-closed" title="Expand Filters" icon="chevron-down"></b-icon>
-            </b-button>
-            <b-button variant="link" title="Remove this filter" @click="removeThis" class="text-dark remove-button text-decoration-none">
-                <b-icon icon="x"></b-icon>
-            </b-button>
-            <EditableText class="editable-text" v-model="filter_name" />
+            <div :style="{background: color, color: getContrast(color)}">
+                <b-button
+                    @click="is_expanded = !is_expanded"
+                    :title="is_expanded ? 'Collapse Filters' : 'Expand Filters'"
+                    v-b-toggle="$id('filter-collapse')"
+                    variant="link"
+                    class="text-dark collapse-button text-decoration-none">
+                    <b-icon class="when-opened" title="Collapse Filters" icon="chevron-up"></b-icon>
+                    <b-icon class="when-closed" title="Expand Filters" icon="chevron-down"></b-icon>
+                </b-button>
+                <b-button variant="link" title="Remove this filter" @click="removeThis" class="remove-button text-decoration-none">
+                    <b-icon icon="x"></b-icon>
+                </b-button>
+                <EditableText class="editable-text" v-model="filter_name" />
+                <b-button variant="link" :id="$id(datasource)" title="Click to select color" class="text-dark text-decoration-none color-button">
+                    <b-icon icon="droplet-half" style="width:16px;margin-left:6px;"></b-icon>
+                </b-button>
+                <b-popover :target="$id(datasource)" triggers="click blur" placement="top">
+                    <template v-slot:title>Dataview `{{filter_name}}` Color</template>
+                    <chrome-picker v-model="color" disableAlpha="true" />
+                </b-popover>
+             </div>
         </template>
         <b-collapse :visible="is_expanded" :id="$id('filter-collapse')">
             <b-overlay :show="is_loading" no-fade>
@@ -42,6 +51,8 @@ import GroupBox from '@/components/GroupBox.vue';
 import SyllableIdFilter from '@/components/SyllableIdFilter.vue';
 import { unnest } from '@/util/Vuex';
 import EditableText from './EditableText.vue';
+import { Chrome } from 'vue-color';
+import {getContrastingColor} from '@/components/Charts/D3ColorProvider';
 
 
 export default Vue.component('datafilter', {
@@ -49,6 +60,7 @@ export default Vue.component('datafilter', {
         GroupBox,
         SyllableIdFilter,
         EditableText,
+        'chrome-picker': Chrome,
     },
     props: {
         datasource: {
@@ -66,6 +78,9 @@ export default Vue.component('datafilter', {
         };
     },
     computed: {
+        name(): string {
+            return this.datasource;
+        },
         filter_name: {
             get(): string {
                 if (this.dataview === undefined) {
@@ -75,6 +90,17 @@ export default Vue.component('datafilter', {
             },
             set(value: string) {
                 this.$store.commit(`${this.datasource}/setName`, value);
+            },
+        },
+        color: {
+            get(): string {
+                if (this.dataview === undefined) {
+                    return '';
+                }
+                return this.dataview.color;
+            },
+            set(value: any) {
+                this.$store.commit(`${this.datasource}/setColor`, value.hex);
             },
         },
         dataview(): DataviewState {
@@ -141,6 +167,14 @@ export default Vue.component('datafilter', {
                 });
             }
         },
+        getContrast(hexcolor: string): string {
+            const c = getContrastingColor(hexcolor);
+            if (c === 'dark') {
+                return 'black';
+            } else {
+                return 'white';
+            }
+        },
     },
 });
 </script>
@@ -182,7 +216,19 @@ div.editable-text >>> input {
     display: inline-block;
 }
 .card-header {
-    padding-top: 0.25em;
-    padding-bottom: 0.25em;
+    padding: 0;
+}
+.card-header > div {
+    border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+    padding: 0.25em 1.25rem;
+}
+.color-button {
+    padding: 0;
+}
+.b-button, .btn-link {
+    color: inherit !important;
+}
+.card {
+    margin-bottom: 1rem;
 }
 </style>
