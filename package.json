@@ -21,7 +21,7 @@
     "electron:serve": "vue-cli-service electron:serve --mode development",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint",
+    "lint": "vue-cli-service lint -- --no-fix",
     "package": "npm run electron:build -- --publish never",
     "package-release": "npm run electron:build -- --publish always",
     "preinstall": "npx npm-force-resolutions",

@@ -3,7 +3,7 @@ import loadDataCommand from '@/commands/LoadData';
 import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/commands/LoadLayout';
 import {AvailableComponents, CreateComponent} from '@/commands/Windows';
 import showAboutWindow from '@/commands/ShowAbout';
-import {UpdateCheck} from '@/commands/LoadUpdates';
+import {CheckUpdates} from '@/commands/LoadUpdates';
 import {SnapshotWorkspace} from '@/components/Core/SnapshotHelper';
 
 /**
@@ -164,7 +164,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                 {
                     label: 'Check for Updates...',
                     type: 'normal',
-                    click: (): void => { UpdateCheck(); },
+                    click: (): void => { CheckUpdates(); },
                 },
                 {
                     type: 'separator',
