@@ -8,7 +8,7 @@ import StreamZip from 'node-stream-zip';
 
 // NOTE: Event for loading file for file association sent by the main proc
 ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent, data: string) => {
-    if (data == null || data === '' || data == undefined) {
+    if (data == null || data === '' || data === undefined) {
         return;
     }
 

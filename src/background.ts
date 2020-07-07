@@ -1,6 +1,4 @@
 'use strict';
-import {auto} from '@popperjs/core';
-
 declare const __static: any;
 
 import {ipcMain, app, protocol, BrowserWindow, IpcMainEvent} from 'electron';
@@ -63,7 +61,6 @@ function createWindow() {
     win.webContents.on('dom-ready', () => {
         if (win == null) { return; }
         let arg: string = process.argv[process.argv.length - 1];
-        console.log(arg);
         if (!arg.endsWith('.msq')) {
             arg = '';
         }
@@ -141,14 +138,14 @@ import { autoUpdater, UpdateCheckResult } from 'electron-updater';
 import logger from 'electron-log';
 
 // NOTE: Setup the autoupdater so it works only in production
-const data: any = {
+const autoUpdaterOptions: any = {
     provider: 'github',
     owner: 'tischfieldlab',
     repo: 'moseq-reports',
     private: false,
 };
 
-autoUpdater.setFeedURL(data);
+autoUpdater.setFeedURL(autoUpdaterOptions);
 autoUpdater.autoInstallOnAppQuit = false;
 autoUpdater.autoDownload = false;
 

@@ -21,8 +21,8 @@ function createSpinnerToast(id: string, title: string, type: string, message: st
     ];
 
     app.$bvToast.toast(body, {
-        id: id,
-        title: title,
+        id,
+        title,
         variant: type,
         toaster: 'b-toaster-bottom-right',
     });
@@ -30,8 +30,8 @@ function createSpinnerToast(id: string, title: string, type: string, message: st
 
 function createToast(title: string, type: string, message: string, id: string) {
     app.$bvToast.toast(message, {
-        id: id,
-        title: title,
+        id,
+        title,
         variant: type,
         toaster: 'b-toaster-bottom-right',
     });
@@ -63,10 +63,10 @@ ipcRenderer.on('updater-finish-update-check', (event: IpcRendererEvent, version:
         const body = [
             h('div', {}, [
                 h('p', {}, [
-                   "Would you like to download version " + version + " ?"
+                   'Would you like to download version ' + version + ' ?'
                 ]),
                 h('b-button', {
-                   on: {'click': (event: any) => {
+                   on: {'click': (e: any) => {
                            createSpinnerToast('download-toast', 'Downloading update','info',
                                'Hang tight... We\'re downloading updates.');
                            // NOTE: Send back a message to start the download process.
@@ -76,13 +76,13 @@ ipcRenderer.on('updater-finish-update-check', (event: IpcRendererEvent, version:
                     style: {'margin-right': '1em'},
                     props: { variant: 'primary'}
                 }, [
-                    "Download",
+                    'Download',
                 ]),
                 h('b-button', {
-                    on: {'click': (event: any) => { app.$bvToast.hide('New version ' + version + ' available.')}},
+                    on: {'click': (e: any) => { app.$bvToast.hide('New version ' + version + ' available.')}},
                     props: { variant: 'danger'}
                 }, [
-                    "Not now",
+                    'Not now',
                 ])
             ]),
         ];
@@ -109,10 +109,10 @@ ipcRenderer.on('updater-finish-update-download', (event: IpcRendererEvent, resul
         const body = [
             h('div', {}, [
                 h('p', {}, [
-                    "Would you like to install the update now, or on next launch?"
+                    'Would you like to install the update now, or on next launch?'
                 ]),
                 h('b-button', {
-                    on: {'click': (event: any) => {
+                    on: {'click': (e: any) => {
                             // NOTE: Send message to main process to install the update and restart
                             app.$bvToast.hide('Ready to install update.');
                             ipcRenderer.send('updater-restart-and-install-now');
@@ -121,10 +121,10 @@ ipcRenderer.on('updater-finish-update-download', (event: IpcRendererEvent, resul
                     style: {'margin-right': '1em'},
                     props: { variant: 'primary'}
                 }, [
-                    "Now",
+                    'Now',
                 ]),
                 h('b-button', {
-                    on: {'click': (event: any) => {
+                    on: {'click': (e: any) => {
                             app.$bvToast.hide('Ready to install update.');
                             // NOTE: Send message to install on next launch
                             ipcRenderer.send('updater-restart-and-install-later');
@@ -132,7 +132,7 @@ ipcRenderer.on('updater-finish-update-download', (event: IpcRendererEvent, resul
                     },
                     props: { variant: 'secondary'}
                 }, [
-                    "Next Launch",
+                    'Next Launch',
                 ])
             ]),
         ];
