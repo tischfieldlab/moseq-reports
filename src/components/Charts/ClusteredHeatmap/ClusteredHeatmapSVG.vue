@@ -1,43 +1,45 @@
 <template>
 <div>
-    <svg ref="canvas" v-show="has_data" :width="width" :height="height" @mousemove="debouncedHover" @mouseleave="hoverItem = undefined">
-        <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`" @click="handleHeatmapClick">
-            <template v-for="node in data">
-                <rect 
-                    :key="`${node[columnKey]}-${node[rowKey]}`"
-                    :x="scale.x(node[columnKey])"
-                    :y="scale.y(node[rowKey])"
-                    :width="scale.x.bandwidth()"
-                    :height="scale.y.bandwidth()"
-                    :fill="scale.z(node[valueKey])"
-                    :data-row="node[rowKey]"
-                    :data-col="node[columnKey]"
-                    :data-val="node[valueKey]"
-                    /><!-- v-b-tooltip.html :title="heatmap_node_tooltip(node)"-->
-            </template>
+    <svg ref="canvas" :width="width" :height="height" @mousemove="debouncedHover" @mouseleave="hoverItem = undefined">
+        <g v-show="has_data">
+            <g class="heatmap" :transform="`translate(${dims.heatmap.x},${dims.heatmap.y})`" @click="handleHeatmapClick">
+                <template v-for="node in data">
+                    <rect 
+                        :key="`${node[columnKey]}-${node[rowKey]}`"
+                        :x="scale.x(node[columnKey])"
+                        :y="scale.y(node[rowKey])"
+                        :width="scale.x.bandwidth()"
+                        :height="scale.y.bandwidth()"
+                        :fill="scale.z(node[valueKey])"
+                        :data-row="node[rowKey]"
+                        :data-col="node[columnKey]"
+                        :data-val="node[valueKey]"
+                        /><!-- v-b-tooltip.html :title="heatmap_node_tooltip(node)"-->
+                </template>
+            </g>
+            <g class="rtree" v-show="isRowsClustered" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
+                <template v-for="(link, index) in rowLinks">
+                    <path class="rlink" :key="index" :d="elbowH(link)" />
+                </template>
+            </g>
+            <g class="ctree" v-show="isColumnsClustered" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
+                <template v-for="(link, index) in columnLinks">
+                    <path class="clink" :key="index" :d="elbowV(link)" />
+                </template>
+            </g>
+            <g class="x-axis" v-axis:x="scale" :transform="`translate(${dims.xaxis.x},${dims.xaxis.y})`">
+                <text class="label" :x="dims.xaxis.w/2" :y="dims.xaxis.ly">{{xAxisTitle}}</text>
+            </g>
+            <g class="y-axis" v-axis:y="scale" :transform="`translate(${dims.yaxis.x},${dims.yaxis.y})`">
+                <text class="label" :x="-dims.yaxis.h/2" :y="50" transform="rotate(-90)">{{yAxisTitle}}</text>
+            </g>
+            <ColorScaleLegend
+                :title="legendTitle"
+                :scale="scale.z"
+                :width="dims.legend.w"
+                :height="10"
+                :transform="`translate(${dims.legend.x}, ${dims.legend.y})`" />
         </g>
-        <g class="rtree" v-show="isRowsClustered" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
-            <template v-for="(link, index) in rowLinks">
-                <path class="rlink" :key="index" :d="elbowH(link)" />
-            </template>
-        </g>
-        <g class="ctree" v-show="isColumnsClustered" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
-            <template v-for="(link, index) in columnLinks">
-                <path class="clink" :key="index" :d="elbowV(link)" />
-            </template>
-        </g>
-        <g class="x-axis" v-axis:x="scale" :transform="`translate(${dims.xaxis.x},${dims.xaxis.y})`">
-            <text class="label" :x="dims.xaxis.w/2" :y="dims.xaxis.ly">{{xAxisTitle}}</text>
-        </g>
-        <g class="y-axis" v-axis:y="scale" :transform="`translate(${dims.yaxis.x},${dims.yaxis.y})`">
-            <text class="label" :x="-dims.yaxis.h/2" :y="50" transform="rotate(-90)">{{yAxisTitle}}</text>
-        </g>
-        <ColorScaleLegend
-            :title="legendTitle"
-            :scale="scale.z"
-            :width="dims.legend.w"
-            :height="10"
-            :transform="`translate(${dims.legend.x}, ${dims.legend.y})`" />
     </svg>
     <MessageBox :show="!has_data">{{noDataMessage}}</MessageBox>
     <ToolTip :position="tooltipPosition" :show="hoverItem !== undefined">
@@ -88,7 +90,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             }
             canvas.removeChild(tag);
             this.label_stats = {
-                count: labels.length,
+                count: widths.length,
                 total: sum(widths),
                 longest: Math.max(...widths),
             };
