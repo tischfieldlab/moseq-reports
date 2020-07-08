@@ -16,6 +16,7 @@
         :linkColorProperty="linkColoring.prop"
         :categoricalColormap="schemeDark2"
         :quantitativeColormap="settings.colorscale"
+        @node-click="onNodeClick"
     />
 </template>
 
@@ -295,7 +296,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             return '';
         },
         onNodeClick(event) {
-            this.selectedSyllable = Number.parseInt(event, 10);
+            this.selectedSyllable = event.value.id;
         },
     },
 });

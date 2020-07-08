@@ -12,7 +12,7 @@
                     v-for="n in graph.nodes"
                     :key="n.name"
                     :transform="`translate(${(n.x0 || 0)+1}, ${(n.y0 || 0)})`"
-                    @click="onNodeClick(n.id)"
+                    @click="onNodeClick($event, n)"
                     :data-nodeid="n.id">
                     <rect
                         :x="0"
@@ -40,7 +40,8 @@
                         :stroke="scale.l(l)"
                         :stroke-width="Math.max(1, l.width)"
                         :data-color="color_id"
-                        :data-transitionid="l.id">
+                        :data-transitionid="l.id"
+                        @click="onEdgeClick($event, l)">
                     </path>
                 </template>
             </g>
@@ -257,10 +258,18 @@ export default Vue.extend({
         color(value) {
             return color(value)
         },
-        onNodeClick(event) {
-            this.$emit('sankey-click', {
-                e: event,
-                value: event,
+        onNodeClick(event, node) {
+            this.$emit('node-click', {
+                event: event,
+                type: 'node',
+                value: node,
+            });
+        },
+        onEdgeClick(event, edge) {
+            this.$emit('edge-click', {
+                event: event,
+                type: 'edge',
+                value: edge,
             });
         },
         handleHover(event: MouseEvent) {
