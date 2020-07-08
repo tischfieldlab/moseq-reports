@@ -56,17 +56,15 @@ function createWindow() {
     }
 
     win.on('closed', () => { win = null; });
+}
 
-    // NOTE: File association file load event
-    win.webContents.on('dom-ready', () => {
-        if (win == null) { return; }
-        let arg: string = process.argv[process.argv.length - 1];
-        if (!arg.endsWith('.msq')) {
-            arg = '';
-        }
-
-        win.webContents.send('ready-to-load-file', arg);
-    });
+function loadDataFile(window: BrowserWindow|null, filepath: string) {
+    if (window === null) {
+        return;
+    }
+    if (filepath.endsWith('.msq')) {
+        window.webContents.send('ready-to-load-file', filepath);
+    }
 }
 
 // Quit when all windows are closed.
@@ -132,6 +130,10 @@ ipcMain.on('needs-reload', () => {
         win.reload();
         win.webContents.send('window-has-reloaded');
     }
+});
+
+ipcMain.on('app-ready', () => {
+    loadDataFile(win, process.argv[process.argv.length - 1]);
 });
 
 import { autoUpdater, UpdateCheckResult } from 'electron-updater';

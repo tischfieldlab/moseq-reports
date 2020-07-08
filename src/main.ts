@@ -53,16 +53,29 @@ Vue.use(VueTimeago, {
 });
 
 
+
 const vm = new Vue({
     router,
     store,
     render: (h) => h(App),
-    beforeCreate() {
-        CreateServer();
+    mounted() {
+        if ((remote.getCurrentWindow() as any).hasReloaded) {
+            ipcRenderer.send('app-ready');
+        }
     },
     beforeDestroy() {
         ShutdownServer();
     }
-}).$mount('#app');
+});
+
+// delay mounting the app until after server is completed startup
+CreateServer()
+    .catch((reason) => {
+        // tslint:disable-next-line:no-console
+        console.error('Error creating server', reason);
+    })
+    .then(() => {
+        vm.$mount('#app');
+    });
 
 export default vm;

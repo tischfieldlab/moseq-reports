@@ -6,6 +6,7 @@ import portscanner from 'portscanner';
 
 const minSearchPort = 3000;
 const maxSearchPort = 4000;
+let serverPort;
 let server: http.Server|undefined;
 
 export function GetAddress() {
@@ -14,8 +15,12 @@ export function GetAddress() {
 }
 
 export async function CreateServer() {
-    if (server === undefined) {
-        await portscanner.findAPortNotInUse(minSearchPort, maxSearchPort).then((port) => {
+    if (server !== undefined) {
+        return Promise.reject(`Server is alreay running on '${GetAddress()}'`);
+    }
+    return portscanner.findAPortNotInUse(minSearchPort, maxSearchPort).then((port) => {
+        return new Promise((resolve, reject) => {
+            serverPort = port;
             server = http.createServer((request, response) => {
                 // Set CORS headers
                 response.setHeader('Access-Control-Allow-Origin', '*');
@@ -62,7 +67,6 @@ export async function CreateServer() {
                             });
                             return response.end();
                         }
-
                         /** Sending Partial Content With HTTP Code 206 */
                         response.writeHead(206, {
                             'Content-Range': `bytes ${start}-${end}/${size}`,
@@ -70,9 +74,7 @@ export async function CreateServer() {
                             'Content-Length': end - start + 1,
                             'Content-Type': fileType?.mime
                         });
-
                         response.end(buffer.slice(start, end+1))
-
                     } else {
                         readFileContents(fpath)
                             .then((data) => {
@@ -83,9 +85,12 @@ export async function CreateServer() {
                             });
                     }
                 }).resume();
-            }).listen(port);
+            })
+            server.on('listening', () => resolve());
+            server.on('error', (err) => reject(err))
+            server.listen(port);
         });
-    }
+    });
 }
 
 export function ShutdownServer() {
