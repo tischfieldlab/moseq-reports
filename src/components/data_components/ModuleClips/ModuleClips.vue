@@ -46,6 +46,7 @@ import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
+import { GetAddress } from '@/components/Core/DataLoader/DataServer';
 
 RegisterDataComponent({
     friendly_name: 'Module Clips',
@@ -124,7 +125,7 @@ export default mixins(WindowMixin).extend({
             const item = this.current_item;
             if (item) {
                 const base = item.base_name.replace('\\', '/');
-                return `http://localhost:8989/${base}.${this.settings.stream}.mp4`;
+                return `http://${GetAddress()}/${base}.${this.settings.stream}.mp4`;
             }
             return '';
         },
