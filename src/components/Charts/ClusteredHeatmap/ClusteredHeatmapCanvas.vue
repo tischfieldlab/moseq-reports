@@ -282,7 +282,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                     return;
                 }
             }
-            (this.$el as HTMLElement).style.cursor = 'default';
+            (this.$el as HTMLElement).style.cursor = 'inherit';
             this.tooltipPosition = undefined;
             this.hoverItem = undefined;
         },
