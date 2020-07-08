@@ -13,9 +13,9 @@ export function GetAddress() {
     return `localhost:${addr.port}`;
 }
 
-export function CreateServer() {
+export async function CreateServer() {
     if (server === undefined) {
-        portscanner.findAPortNotInUse(minSearchPort, maxSearchPort).then((port) => {
+        await portscanner.findAPortNotInUse(minSearchPort, maxSearchPort).then((port) => {
             server = http.createServer((request, response) => {
                 // Set CORS headers
                 response.setHeader('Access-Control-Allow-Origin', '*');
