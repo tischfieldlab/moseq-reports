@@ -1,8 +1,10 @@
 import {remote, ipcRenderer} from 'electron';
-if (!(remote.getCurrentWindow() as any).hasReloaded) {
+if (!hasAppReloadedOnce()) {
     ipcRenderer.send('needs-reload');
 }
-
+function hasAppReloadedOnce() {
+    return (remote.getCurrentWindow().webContents as any).hasReloaded;
+}
 
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -59,7 +61,7 @@ const vm = new Vue({
     store,
     render: (h) => h(App),
     mounted() {
-        if ((remote.getCurrentWindow() as any).hasReloaded) {
+        if (hasAppReloadedOnce()) {
             ipcRenderer.send('app-ready');
         }
     },
