@@ -4,7 +4,7 @@ import {ipcRenderer, IpcRendererEvent} from 'electron';
 // NOTE: Only call the update when we are reloaded at startup...
 ipcRenderer.on('window-has-reloaded', (event: IpcRendererEvent) => {
     // NOTE: Send the event to the main proc to start the update check
-    CheckUpdates();
+    window.setTimeout(CheckUpdates, 30 * 1000); // defer for 30 seconds
 });
 
 function createSpinnerToast(id: string, title: string, type: string, message: string) {
@@ -28,7 +28,7 @@ function createSpinnerToast(id: string, title: string, type: string, message: st
     });
 }
 
-function createToast(title: string, type: string, message: string, id: string) {
+function createToast(id: string, title: string, type: string, message: string) {
     app.$bvToast.toast(message, {
         id,
         title,
@@ -37,11 +37,18 @@ function createToast(title: string, type: string, message: string, id: string) {
     });
 }
 
+function pushHistory(variant: string, message: string) {
+    app.$store.commit('history/addEntry', {
+        variant,
+        message,
+    });
+}
+
 export function CheckUpdates() {
     if (process.env.NODE_ENV !== 'production') { return; }
     ipcRenderer.send('updater-start-update-check');
 
-    createSpinnerToast('update-check-toast', 'Downloading update', 'info',
+    createSpinnerToast('update-check-toast', 'Searching for Updates', 'info',
         'Hang tight... We\'re checking for updates.');
 }
 
@@ -50,10 +57,12 @@ ipcRenderer.on('updater-finish-update-check', (event: IpcRendererEvent, version:
     app.$bvToast.hide('update-check-toast');
     if (version === '') {
         // NOTE: This means there is no update
-        createToast('No new version available.', 'No new versions!', 'danger', 'update-error');
+        createToast('update-error', 'No Update Available', 'succeess', 'No new versions are available at this time!');
+        pushHistory('succeess', 'Updater: No new versions are available at this time!');
     } else if (version === 'error') {
         // NOTE: This means updating was unsuccessful... for now we just hide the toast.
-        createToast('No new version available.', 'No new versions!', 'danger', 'update-error');
+        createToast('update-error', 'Error Checking for Updates', 'danger', 'Something happened while checking for updates');
+        pushHistory('danger', 'Updater: Something happened while checking for updates');
     } else {
         // NOTE: This means there is a new version available for download.
         // createToast('New version ' + version + ' available.', 'Update check successful!', 'success');
@@ -101,8 +110,7 @@ ipcRenderer.on('updater-finish-update-check', (event: IpcRendererEvent, version:
 ipcRenderer.on('updater-finish-update-download', (event: IpcRendererEvent, result: string) => {
     app.$bvToast.hide('download-toast');
     if (result === 'success') {
-        createToast('Update download successful!', 'success', 'Successfully downloaded updates.',
-            'download-succeeded');
+        createToast('download-succeeded', 'Update Downloaded', 'success', 'Successfully downloaded updates.');
 
         const h = app.$createElement;
 
@@ -145,7 +153,9 @@ ipcRenderer.on('updater-finish-update-download', (event: IpcRendererEvent, resul
             toaster: 'b-toaster-bottom-right',
             noAutoHide: true,
         });
+        pushHistory('success', 'Updater: Ready to install update.');
     } else {
-        createToast('Update download failed!', 'danger', result, 'download-error');
+        createToast('download-error', 'Update download failed!', 'danger', result);
+        pushHistory('danger', 'Updater: Update download failed!');
     }
 });
