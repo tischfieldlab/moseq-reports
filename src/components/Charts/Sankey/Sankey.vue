@@ -260,14 +260,14 @@ export default Vue.extend({
         },
         onNodeClick(event, node) {
             this.$emit('node-click', {
-                event: event,
+                event,
                 type: 'node',
                 value: node,
             });
         },
         onEdgeClick(event, edge) {
             this.$emit('edge-click', {
-                event: event,
+                event,
                 type: 'edge',
                 value: edge,
             });
