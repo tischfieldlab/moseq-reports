@@ -131,7 +131,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         },
         noDataMessage(): string {
             return `No transitions for group ${this.settings.plot_group} `
-                 + `Module ${this.selectedSyllable}} (${this.dataview.countMethod})`;
+                 + `Module ${this.selectedSyllable} (${this.dataview.countMethod})`;
         },
         colorLegendTitle(): string {
             if (this.settings.show_relative_diff) {
