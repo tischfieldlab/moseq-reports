@@ -7,6 +7,7 @@
         :colorLegendTitle="colorLegendTitle"
         :noDataMessage="noDataMessage"
         :tooltipFormatter="tooltip_formatter"
+        :nodeIdSuperset="activeSyllables"
         :nodeAlignment="settings.node_alignment"
         :nodeWidth="settings.node_width"
         :nodePadding="settings.node_padding"

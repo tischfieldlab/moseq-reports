@@ -122,6 +122,9 @@ export default Vue.extend({
             type: Function,
             default: default_tooltip_formatter,
         },
+        nodeIdSuperset: {
+            type: Array,
+        },
         nodeAlignment: {
             default: NodeAlignment.Justify,
         },
@@ -234,8 +237,12 @@ export default Vue.extend({
             let n;
             if (this.nodeColorMode === ColoringMode.Categorical) {
                 n = scaleOrdinal<string, string>()
-                    .range(GetScale(this.categoricalColormap) as string[])
-                    .domain(this.data.nodes.map((node) => node[this.nodeColorProperty]));
+                    .range(GetScale(this.categoricalColormap) as string[]);
+                if (this.nodeIdSuperset !== undefined) {
+                    n = n.domain(this.nodeIdSuperset);
+                } else {
+                    n = n.domain(this.data.nodes.map((node) => node[this.nodeColorProperty]));
+                }
             }
 
             let l;
