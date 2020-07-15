@@ -36,6 +36,7 @@ function createWindow(argv: string[]) {
         width: 800,
         height: 600,
         frame: false,
+        titleBarStyle: 'hidden',
         backgroundColor: '#FFFFFF',
         webPreferences: {
             nodeIntegration: true,
