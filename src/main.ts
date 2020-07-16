@@ -1,26 +1,26 @@
 import {remote, ipcRenderer} from 'electron';
-if (!hasAppReloadedOnce()) {
-    ipcRenderer.send('needs-reload');
-}
+
 function hasAppReloadedOnce() {
     return (remote.getCurrentWindow().webContents as any).hasReloaded;
 }
+if (!hasAppReloadedOnce()) {
+    ipcRenderer.send('needs-reload');
+}
 
 import Vue from 'vue';
+Vue.config.productionTip = false;
+Vue.config.silent = remote.process.env.NODE_ENV === 'production'; // silent while in production
+
 import Vuex from 'vuex';
 Vue.use(Vuex);
 
 import '@/components/Core';
-
-
 import App from './App.vue';
 import router from './router';
 import store from './store/root.store';
 import './registerServiceWorker';
-
 import {CreateServer, ShutdownServer} from '@/components/Core/DataLoader/DataServer';
-
-
+import {CreateTitleBar} from './WindowChrome';
 
 // Bootstrap Stuff
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
@@ -41,12 +41,6 @@ Vue.use(UniqueId);
 import AsyncComputed from 'vue-async-computed';
 Vue.use(AsyncComputed);
 
-Vue.config.productionTip = false;
-Vue.config.silent = true;
-
-import {CreateTitleBar} from './WindowChrome';
-CreateTitleBar();
-
 import VueTimeago from 'vue-timeago';
 Vue.use(VueTimeago, {
     name: 'Timeago',
@@ -60,6 +54,9 @@ const vm = new Vue({
     router,
     store,
     render: (h) => h(App),
+    beforeCreate() {
+        CreateTitleBar();
+    },
     mounted() {
         if (hasAppReloadedOnce()) {
             ipcRenderer.send('app-ready');
