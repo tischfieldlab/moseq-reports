@@ -5,6 +5,16 @@ function hasAppReloadedOnce() {
 }
 if (!hasAppReloadedOnce()) {
     ipcRenderer.send('needs-reload');
+} else {
+    // delay mounting the app until after server is completed startup
+    CreateServer()
+        .catch((reason) => {
+            // tslint:disable-next-line:no-console
+            console.error('Error creating server', reason);
+        })
+        .then(() => {
+            vm.$mount('#app');
+        });
 }
 
 import Vue from 'vue';
@@ -54,7 +64,7 @@ const vm = new Vue({
     router,
     store,
     render: (h) => h(App),
-    beforeCreate() {
+    beforeMount() {
         CreateTitleBar();
     },
     mounted() {
@@ -67,14 +77,6 @@ const vm = new Vue({
     }
 });
 
-// delay mounting the app until after server is completed startup
-CreateServer()
-    .catch((reason) => {
-        // tslint:disable-next-line:no-console
-        console.error('Error creating server', reason);
-    })
-    .then(() => {
-        vm.$mount('#app');
-    });
+
 
 export default vm;
