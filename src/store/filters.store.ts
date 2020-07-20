@@ -32,6 +32,34 @@ const FiltersModule: Module<FiltersState, RootState> = {
         },
     },
     actions: {
+        async serializeFilters(context): Promise<any> {
+            const dehydrated = context.state.items.map(async (id) => {
+                return [
+                    id.split('/')[1],
+                    await context.dispatch(`${id}/serialize`, undefined, {root: true}),
+                ] as [string, Promise<any>];
+            });
+            return Object.fromEntries(await Promise.all(dehydrated));
+        },
+        async loadFilters(context, filters: any) {
+            const existing = [...context.state.items];
+            const imported: string[] = [];
+            const namespace = getModuleNamespace(store, context.state) as string;
+            Object.entries(filters).forEach(async ([name, filter]) => {
+                const fullpath = `${namespace}/${name}`;
+                imported.push(fullpath);
+                if (existing.includes(fullpath)) {
+                    await store.dispatch(`${fullpath}/load`, filter, {root: true});
+                } else {
+                    store.registerModule([namespace, name], DataviewModule, {});
+                    await store.dispatch(`${fullpath}/initialize`, {root: true});
+                    await store.dispatch(`${fullpath}/load`, filter, {root: true});
+                    context.commit('addFilter', fullpath);
+                }
+            });
+            existing.filter((ns) => !imported.includes(ns))
+                    .forEach((id) => context.dispatch('removeFilter', id));
+        },
         async addFilter(context) {
             const namespace = getModuleNamespace(store, context.state) as string;
             let i = 0;

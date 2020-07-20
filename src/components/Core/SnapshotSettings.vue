@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Snapshot from '@/components/Core/SnapshotHelper';
+import Snapshot, {resolveTarget} from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import { Chrome } from 'vue-color';
@@ -62,7 +62,8 @@ export default mixins(WindowMixin).extend({
         this.updateQualityStr();
     },
     mounted() {
-        this.supported_formats = this.getSupportedFormats();
+        const target = resolveTarget(this.getComponent());
+        this.supported_formats = this.getSupportedFormats(target);
     },
     computed: {
         snapshot_settings(): any {
@@ -144,9 +145,12 @@ export default mixins(WindowMixin).extend({
                     .finally(() => this.is_taking_snapshot = false);
             });
         },
-        getSupportedFormats(): string[] {
-            const options = ['png', 'svg'];
-            return options;
+        getSupportedFormats(info): string[] {
+            if (info.type === 'video') {
+                return ['video', 'png']
+            } else {
+                return ['png', 'svg'];
+            }
         },
         backgroundColorChanged(event) {
             this.backgroundColor = event.hex;

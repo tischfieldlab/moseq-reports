@@ -1,3 +1,4 @@
+
 export enum CountMethod {
     Usage = 'Usage',
     Frames = 'Frames',
@@ -5,13 +6,15 @@ export enum CountMethod {
 }
 
 export interface DataviewState {
+    name: string;
+    color: string;
     loading: boolean;
     countMethod: CountMethod;
     selectedGroups: string[];
     groupColors: string[];
     moduleIdFilter: number[];
     selectedSyllable: number;
-    view: any;
+    views: {};
 }
 
 export interface DataviewPayload {
@@ -25,4 +28,10 @@ export interface DataviewPayload {
 export interface SelectedGroupsPayload {
     groups?: string[];
     colors?: string[];
+}
+
+export interface PublishedDataset {
+    owner: string;
+    name: string;
+    data: any;
 }

@@ -23,6 +23,8 @@
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
+import { unnest } from '@/util/Vuex';
+
 
 export default mixins(WindowMixin).extend({
     data() {
@@ -32,7 +34,10 @@ export default mixins(WindowMixin).extend({
     },
     computed: {
         available_sources(): string[] {
-            return this.$store.state.filters.items;
+            return this.$store.state.filters.items.map((sourceId) => {
+                const source = unnest(this.$store.state, sourceId);
+                return {text: source.name, value: sourceId};
+            });
         },
         datasource: {
             get(): string {

@@ -2,7 +2,9 @@ import { remote, Menu } from 'electron';
 import loadDataCommand from '@/commands/LoadData';
 import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/commands/LoadLayout';
 import {AvailableComponents, CreateComponent} from '@/commands/Windows';
-
+import showAboutWindow from '@/commands/ShowAbout';
+import {CheckUpdates} from '@/commands/LoadUpdates';
+import {SnapshotWorkspace} from '@/components/Core/SnapshotHelper';
 
 /**
  * Creates the main menu strip for the electron app
@@ -32,7 +34,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
             label: 'File',
             submenu: [
                 {
-                    label: 'Open...',
+                    label: 'Open Data...',
                     type: 'normal',
                     accelerator: 'CmdOrCtrl+O',
                     click: loadDataCommand,
@@ -90,18 +92,50 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
         // ********************** TOOLS MENU **********************
         {
             label: 'Tools',
+            submenu: AvailableComponents()
+                        .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
+                        .map((cr) => {
+                            return {
+                                label: cr.friendly_name,
+                                type: 'normal',
+                                click: () => CreateComponent(cr),
+                            } as Electron.MenuItemConstructorOptions;
+                        }),
+        },
+        // ********************** VIEW MENU **********************
+        {
+            label: 'View',
             submenu: [
                 {
-                    label: 'Add Widget...',
-                    type: 'submenu',
-                    submenu: AvailableComponents()
-                            .map((cr) => {
-                                return {
-                                    label: cr.friendly_name,
-                                    type: 'normal',
-                                    click: () => CreateComponent(cr),
-                                } as Electron.MenuItemConstructorOptions;
-                            }),
+                    label: 'Snapshot Workspace...',
+                    type: 'normal',
+                    click: () => SnapshotWorkspace(),
+                },
+                {
+                    type: 'separator',
+                },
+                {
+                    label: 'Save Layout...',
+                    type: 'normal',
+                    click: (): void => { SaveLayout(); },
+                },
+                {
+                    label: 'Load Layout...',
+                    type: 'normal',
+                    click: loadLayoutCommand,
+                },
+                {
+                    type: 'separator',
+                },
+                {
+                    label: 'Clear Layout',
+                    type: 'normal',
+                    click: (): void => { ClearLayout(); },
+                },
+                {
+                    label: 'Default Layout',
+                    type: 'normal',
+                    click: (): void => { LoadDefaultLayout(); },
                 },
                 {
                     type: 'separator',
@@ -123,32 +157,22 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                 },
             ],
         },
-        // ********************** VIEW MENU **********************
+        // ********************** HELP MENU **********************
         {
-            label: 'View',
+            label: 'Help',
             submenu: [
                 {
-                    label: 'Save Layout',
+                    label: 'Check for Updates...',
                     type: 'normal',
-                    click: (): void => { SaveLayout(); },
-                },
-                {
-                    label: 'Load Layout',
-                    type: 'normal',
-                    click: loadLayoutCommand,
+                    click: (): void => { CheckUpdates(); },
                 },
                 {
                     type: 'separator',
                 },
                 {
-                    label: 'Clear Layout',
+                    label: 'About',
                     type: 'normal',
-                    click: (): void => { ClearLayout(); },
-                },
-                {
-                    label: 'Default Layout',
-                    type: 'normal',
-                    click: (): void => { LoadDefaultLayout(); },
+                    click: (): void => { showAboutWindow(); },
                 },
             ],
         },

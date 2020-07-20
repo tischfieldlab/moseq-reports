@@ -3,10 +3,18 @@ import Vue from 'vue';
 
 const LoadingMixin = Vue.extend({
     beforeUpdate() {
-        this.$emit('start-loading');
+        this.emitStartLoading();
     },
     updated() {
-        this.$emit('finish-loading');
+        this.emitFinishLoading();
+    },
+    methods: {
+        emitStartLoading() {
+            this.$emit('start-loading');
+        },
+        emitFinishLoading() {
+            this.$emit('finish-loading');
+        },
     },
 });
 export default LoadingMixin;

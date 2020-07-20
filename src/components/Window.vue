@@ -3,8 +3,10 @@
         @resized="onResized($event)"
         @moved="onMoved($event)"
         @close="onClosed($event)"
+        :maxWidth="max_width"
         :showCollapseButton="true">
-        <div>
+        <div> <!--:style="{background: titlebar_color, color: getContrast(dataview.color)}"-->
+            <span class="dataview-swatch" :id="$id('swatch')" :style="{background: titlebar_color}" :title="swatch_title"></span>
             {{ title }}
         </div>
         <div>
@@ -50,6 +52,8 @@ import { Size, Position, Layout } from '@/store/datawindow.types';
 import Snapshot, { ensureDefaults } from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin.ts';
+import {getContrastingColor} from '@/components/Charts/D3ColorProvider';
+
 
 export default mixins(WindowMixin).extend({
     components: {
@@ -58,7 +62,7 @@ export default mixins(WindowMixin).extend({
     data() {
         return {
             title_offset: 30,
-            component_loading: false,
+            component_loading: 0,
             show_settings_modal: false,
             watchers: Array<(() => void)>(),
         };
@@ -69,7 +73,16 @@ export default mixins(WindowMixin).extend({
         },
         is_loading(): boolean {
             const s = this.dataview;
-            return this.component_loading || (s && s.loading);
+            return this.component_loading > 0 || (s && s.loading);
+        },
+        max_width(): number {
+            return window.innerWidth;
+        },
+        titlebar_color(): string {
+            return this.dataview.color;
+        },
+        swatch_title(): string {
+            return `Using ${this.dataview.name}`;
         },
     },
     watch: {
@@ -82,6 +95,22 @@ export default mixins(WindowMixin).extend({
         title(newValue) {
             (this.$refs.window as any).title = newValue;
         },
+        titlebar_color: {
+            handler(newValue) {
+                const swatch = document.getElementById(this.$id('swatch'));
+                if (swatch) {
+                    swatch.style.backgroundColor = newValue;
+                }
+            },
+        },
+        swatch_title: {
+            handler(newValue) {
+                const swatch = document.getElementById(this.$id('swatch'));
+                if (swatch) {
+                    swatch.title = newValue;
+                }
+            }
+        }
     },
     mounted() {
         // Create the settings button on the next tick when the DOM is ready
@@ -90,8 +119,14 @@ export default mixins(WindowMixin).extend({
             this.updateWindowLayout(this.layout);
             ensureDefaults(this.$refs.body as Vue, this.$store);
         });
-        (this.$refs.body as Vue).$on('start-loading', () => this.component_loading = true);
-        (this.$refs.body as Vue).$on('finish-loading', () => this.component_loading = false);
+        (this.$refs.body as Vue).$on('start-loading', () => {
+            this.component_loading++;
+            // console.log('start', this, this.component_loading);
+        });
+        (this.$refs.body as Vue).$on('finish-loading', () => {
+            this.component_loading = clamp(this.component_loading - 1, 0);
+            // console.log('end', this, this.component_loading);
+        });
     },
     beforeDestroy() {
         // un-watch the store
@@ -149,14 +184,22 @@ export default mixins(WindowMixin).extend({
         async snapshotContent(event: MouseEvent) {
             await Snapshot(this.$refs.body as Vue, this.title, this.settings.snapshot);
         },
+        getContrast(hexcolor: string): string {
+            const c = getContrastingColor(hexcolor);
+            if (c === 'dark') {
+                return 'black';
+            } else {
+                return 'white';
+            }
+        },
     },
 });
 
 function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
-    if (min && value < min) {
+    if (value < min) {
         return min;
     }
-    if (max && value > max) {
+    if (value > max) {
         return max;
     }
     return value;
@@ -208,5 +251,14 @@ function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
 .no-settings{
     text-align: center;
     margin:20px 0;
+}
+.dataview-swatch {
+    display: inline-block;
+    vertical-align: text-top;
+    width: 16px;
+    height: 16px;
+    border-radius: 16px;
+    border: 1px solid #c5c5c5;
+    cursor: default;
 }
 </style>

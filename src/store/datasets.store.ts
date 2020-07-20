@@ -1,8 +1,9 @@
 import { RootState } from '@/store/root.types';
 import { Module } from 'vuex';
 import Vue from 'vue';
-import DataFrame from 'dataframe-js';
 import { DatasetsState } from './datasets.types';
+import path from 'path';
+import { unnest } from '@/util/Vuex';
 
 
 
@@ -11,47 +12,49 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
     state: {
         bundle: '',
         name: '',
-        path: '',
-        spinogram: [],
-        usageByUsage: null,
-        usageByFrames: null,
+        manifest: {},
         groups: [],
-        label_map: null,
+        label_map: [],
     },
     getters: {
+        resolve: (state) => (filename: string) => {
+            const mani = unnest(state.manifest, filename);
+            if (mani) {
+                filename = mani;
+            }
+            return path.join(state.bundle, filename);
+        },
         availableUsageModuleIds: (state) => {
-            if (state.usageByUsage === null) {
+            if (!state.label_map) {
                 return [];
             }
-            return new DataFrame(state.label_map.data, state.label_map.columns)
-                .where((row) => row.get('usage') >= 0)
-                .sortBy('usage')
-                .toArray('usage');
+            return state.label_map
+                        .filter((row) => row.usage >= 0)
+                        .map((row) => row.usage)
+                        .sort((a, b) => a - b);
         },
         availableFramesModuleIds: (state) => {
-            if (state.usageByFrames === null) {
+            if (!state.label_map) {
                 return [];
             }
-            return new DataFrame(state.label_map.data, state.label_map.columns)
-                .where((row) => row.get('frames') >= 0)
-                .sortBy('frames')
-                .toArray('frames');
+            return state.label_map
+                        .filter((row) => row.frames >= 0)
+                        .map((row) => row.frames)
+                        .sort((a, b) => a - b);
         },
     },
     mutations: {
+        Unload(state) {
+            state.bundle = '';
+            state.name = '';
+            state.manifest = {};
+            state.groups = [];
+            state.label_map = [];
+        },
         SetDataSourceInfo(state, payload: DatasetsState) {
             state.bundle = payload.bundle;
             state.name = payload.name;
-            state.path = payload.path;
-        },
-        SetSpinogramData(state, data: DatasetsState) {
-            state.spinogram = data.spinogram;
-        },
-        SetUsageByUsage(state, data: DatasetsState) {
-            state.usageByUsage = data.usageByUsage;
-        },
-        SetUsageByFrames(state, data: DatasetsState) {
-            state.usageByFrames = data.usageByFrames;
+            state.manifest = payload.manifest;
         },
         SetGroupInfo(state, data: DatasetsState) {
             Vue.set(state, 'groups', [...data.groups]);
@@ -61,11 +64,11 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         },
     },
     actions: {
+        Unload(context) {
+            context.commit('Unload');
+        },
         setData(context, payload: DatasetsState) {
             context.commit('SetDataSourceInfo', payload);
-            context.commit('SetSpinogramData', payload);
-            context.commit('SetUsageByUsage', payload);
-            context.commit('SetUsageByFrames', payload);
             context.commit('SetGroupInfo', payload);
             context.commit('SetLabelMap', payload);
         },

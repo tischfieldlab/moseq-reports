@@ -12,7 +12,7 @@
                     {{settings.playback_rate}}x
                 </span>
             </div>
-            <video ref="video"
+            <video ref="video" crossOrigin='anonymous'
                 :src="crowd_movie_path"
                 type="video/mp4"
                 controls="true"
@@ -35,7 +35,7 @@ import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import { CreateCrowdMovieServer } from './CrowdMoviesServer';
+import { GetAddress } from '@/components/Core/DataLoader/DataServer';
 
 RegisterDataComponent({
     friendly_name: 'Crowd Movies',
@@ -48,9 +48,6 @@ RegisterDataComponent({
         playback_rate: 1.0,
     },
 });
-
-// Create the crowd movie server
-CreateCrowdMovieServer();
 
 export default mixins(WindowMixin).extend({
     data() {
@@ -84,7 +81,7 @@ export default mixins(WindowMixin).extend({
             const uID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Usage);
             const rID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Raw);
             const fname = `syllable_sorted-id-${uID} (usage)_original-id-${rID}.mp4`;
-            return `http://localhost:8989/crowd_movies/${fname}`;
+            return `http://${GetAddress()}/crowd_movies/${fname}`;
         },
     },
     watch: {

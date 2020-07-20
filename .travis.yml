@@ -12,26 +12,8 @@ jobs:
         - npm install
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
-        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-        - echo $TRAVIS_TAG
-        - git tag $TRAVIS_TAG
-        - npm run package
-        - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
-        - mkdir ${RELEASE_NAME}
-        - mv dist_electron/*.dmg ${RELEASE_NAME}
-        - mv dist_electron/*.blockmap ${RELEASE_NAME}
-        - mv dist_electron/*.zip ${RELEASE_NAME}
-        - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        file_glob: true
-        file: ${RELEASE_NAME}.zip
-        tag_name: ${TRAVIS_TAG}
-        draft: true
-        on:
-          branch: master
+        - git tag ${PACKAGE_VERSION}
+        - if [ $TRAVIS_BRANCH  == "master"]; then npm run package-release; else npm run package; fi
 
     - stage: build
       os: windows
@@ -47,24 +29,8 @@ jobs:
         - npm install
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
-        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-        - echo $TRAVIS_TAG
-        - git tag $TRAVIS_TAG
-        - npm run package
-        - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
-        - mkdir ${RELEASE_NAME}
-        - mv dist_electron/*.msi ${RELEASE_NAME}
-        - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        file_glob: true
-        file: ${RELEASE_NAME}.zip
-        tag_name: ${TRAVIS_TAG}
-        draft: true
-        on:
-          branch: master
+        - git tag ${PACKAGE_VERSION}
+        - if [ $TRAVIS_BRANCH  == "master"]; then npm run package-release; else npm run package; fi
 
     - stage: build
       os: linux
@@ -78,42 +44,7 @@ jobs:
         - npm install
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
-        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-        - echo $TRAVIS_TAG
-        - git tag $TRAVIS_TAG
-        - npm run package
-        - export RELEASE_NAME=${TRAVIS_OS_NAME}-${TRAVIS_TAG}
-        - mkdir ${RELEASE_NAME}
-        - mv dist_electron/*.deb ${RELEASE_NAME}
-        - mv dist_electron/*.AppImage ${RELEASE_NAME}
-        - zip -r ${RELEASE_NAME}.zip ${RELEASE_NAME}
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        file_glob: true
-        file: ${RELEASE_NAME}.zip
-        tag_name: ${TRAVIS_TAG}
-        draft: true
-        on:
-          branch: master
-      
-      # Need this to be separate as it is the job that closes the release. Travis
-      # likes to build in parallel, so this job needs to run last.
-    - stage: deploy_builds
-      os: linux
-      language: node_js
-      node_js: 12
-      script:
-        - export PACKAGE_VERSION=$(npm run --silent version)
-        - export TRAVIS_TAG=${PACKAGE_VERSION}.${TRAVIS_BUILD_NUMBER}
-        - echo $TRAVIS_TAG
-        - git tag $TRAVIS_TAG
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        tag_name: ${TRAVIS_TAG}
-        draft: false
-        on:
-          branch: master
+        - git tag ${PACKAGE_VERSION}
+        - if [ $TRAVIS_BRANCH  == "master"]; then npm run package-release; else npm run package; fi
+
+

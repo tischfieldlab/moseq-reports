@@ -6,12 +6,15 @@ module.exports = {
     configureWebpack: {
         devtool: 'source-map',
         plugins: [
-            new ThreadsPlugin()
+            new ThreadsPlugin({
+                target: 'electron-node-worker',
+                globalObject: 'self',
+            })
         ],
     },
     pluginOptions: {
         electronBuilder: {
-            externals: ['plotly.js-dist', 'hclusterjs'],
+            externals: ['plotly.js-dist', 'hclusterjs', 'about-window'],
             chainWebpackRendererProcess(config) {
                 config.plugins.delete('workbox')
                 config.plugins.delete('pwa')
@@ -19,6 +22,13 @@ module.exports = {
             builderOptions: {
                 productName: "moseq-reports",
                 appId: "org.tischfieldlab.reports",
+                fileAssociations: [
+                    {
+                        ext: "msq",
+                        name: "Moseq Data File",
+                        role: "Editor"
+                    }
+                ],
                 dmg: {
                     contents: [
                         {
@@ -31,28 +41,33 @@ module.exports = {
                             type: "link",
                             path: "/Applications"
                         }
-                    ]
+                    ],
+                    publish: ["github"]
                 },
                 linux: {
                     target: [
                         "deb",
-                        "AppImage"
+                        "AppImage",
                     ],
-                    category: "Development"
+                    category: "Development",
+                    fileAssociations: [
+                        {
+                            ext: 'msq',
+                        },
+                    ],
                 },
                 win: {
                     // For some reason, this fails on the nsi version... so we are leaving it
                     // out for the moment...
                     target: [
-                        "msi"
+                        // "msi",
+                        "nsis"
                     ],
                     icon: "public/img/icons/winapp256x256.ico",
-                    certificateSubjectName: "Rutgers, The State University of New Jersey"
+                    certificateSubjectName: "Rutgers, The State University of New Jersey",
+                    // certificateFile: "test.pfx",
+                    publish: ["github"],
                 },
-                // directories: {
-                //     buildResources: "public/img/icons",
-                //     output: "dist_electron"
-                // },
                 publish: {
                     provider: "github",
                     owner: "tischfieldlab",

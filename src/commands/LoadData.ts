@@ -1,14 +1,21 @@
 import app from '@/main';
 import store from '@/store/root.store';
-import { remote } from 'electron';
-import fs from 'fs';
+import {ipcRenderer, IpcRendererEvent, remote} from 'electron';
 import path from 'path';
-import os from 'os';
-import { deleteFolderRecursive } from '@/util/Files';
 import { DatasetsState } from '@/store/datasets.types';
-import JSZip from 'jszip';
 import {LoadDefaultLayout} from './LoadLayout';
+import StreamZip from 'node-stream-zip';
 
+// NOTE: Event for loading file for file association sent by the main proc
+ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent, data: string) => {
+    if (data == null || data === '' || data === undefined) {
+        return;
+    }
+
+    LoadDataFile(data);
+});
+
+export const DataFileExt = 'msq';
 
 /**
  * Allows the user to pick a .MSQ file, and then
@@ -17,9 +24,9 @@ import {LoadDefaultLayout} from './LoadLayout';
 export default function() {
     const filenames = remote.dialog.showOpenDialogSync({
         properties: ['openFile'],
-        defaultPath: process.cwd(),
+        // defaultPath: process.cwd(),
         filters: [
-            { name: 'MoSeq Data Files', extensions: ['msq'] },
+            { name: 'MoSeq Data Files', extensions: [DataFileExt] },
             { name: 'All Files', extensions: ['*'] },
         ],
     });
@@ -42,28 +49,39 @@ export function LoadDataFile(filename: string) {
 function beginLoadingProcess(filename: string) {
     app.$forceNextTick()
         .then(() => app.$root.$emit('begin-dataset-load'))
+        // .then(async () => await store.dispatch('datasets/Unload'))
         .then(() => readDataBundle(filename))
         .then((data) => store.dispatch('datasets/setData', data))
         .then(() => {
-            return Promise.allSettled((store.state as any).filters.items.map((item) => {
+            let init;
+            if ((store.state as any).filters.items.length === 0) {
+                init = store.dispatch('filters/addFilter');
+            } else {
+                init = Promise.resolve();
+            }
+            return init.then(() => Promise.allSettled((store.state as any).filters.items.map((item) => {
                 return store.dispatch(`${item}/initialize`);
-            }));
+            })));
         })
         .then(async () => {
             if ((store.state as any).datawindows.items.length === 0) {
                 await app.$forceNextTick();
-                return LoadDefaultLayout();
+                return LoadDefaultLayout(false);
             }
         })
         .then(() => {
+            app.$bvToast.hide('loading-toast');
             app.$root.$emit('finish-dataset-load');
-            app.$bvToast.toast('File "' + (store.state as any).datasets.name + '" was loaded successfully.', {
+            const message = 'File "' + (store.state as any).datasets.name + '" was loaded successfully.'
+            app.$bvToast.toast(message, {
                 title: 'Data loaded successfully!',
                 variant: 'success',
                 toaster: 'b-toaster-bottom-right',
             });
+            store.commit('history/addEntry', {message, variant: 'success'});
         })
         .catch((reason) => {
+            app.$bvToast.hide('loading-toast');
             /* tslint:disable-next-line:no-console */
             console.error(reason);
             app.$root.$emit('fail-dataset-load');
@@ -72,6 +90,7 @@ function beginLoadingProcess(filename: string) {
                 variant: 'danger',
                 toaster: 'b-toaster-bottom-right',
             });
+            store.commit('history/addEntry', {message: reason, variant: 'danger'});
         });
 }
 
@@ -89,6 +108,7 @@ function showStartLoadingToast() {
     ];
 
     app.$bvToast.toast(body, {
+        id: 'loading-toast',
         title: 'Loading Data',
         variant: 'info',
         toaster: 'b-toaster-bottom-right',
@@ -98,107 +118,49 @@ function showStartLoadingToast() {
 
 function readDataBundle(filename: string) {
     return new Promise<DatasetsState>((resolve, reject) => {
+        let zip;
         try {
-            CleanState(); // clean any old state
-            const tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), 'moseq-reports-'));
-            const rawData = fs.readFileSync(filename);
-
-            JSZip.loadAsync(rawData).then(async (zip) => {
+            zip = new StreamZip({
+                file: filename,
+                storeEntries: true,
+            });
+            zip.on('error', (err) => {
+                zip.close();
+                reject(err);
+            });
+            zip.on('ready', async () => {
                 try {
                     const dataset: DatasetsState = {
                         bundle: filename,
-                        name: path.basename(filename, '.msq'),
-                        path: tmpdir,
+                        name: path.basename(filename, `.${DataFileExt}`),
                         ...await LoadMetadataData(zip),
-                        ...await LoadUsageData(zip),
-                        ...await LoadSpinogramData(zip),
-                        ...await LoadCrowdMovies(zip, tmpdir),
                     };
                     resolve(dataset);
                 } catch (e) {
                     reject(e);
+                } finally {
+                    zip.close();
                 }
-            }, (error) => reject(error));
+            });
         } catch (e) {
             reject(e);
         }
     });
 }
 
-function CleanState() {
-    const datapath = (store.state as any).datasets.path;
-    if (datapath === undefined) {
-        return;
-    }
-    deleteFolderRecursive(datapath);
-}
-
-async function LoadMetadataData(zip: JSZip) {
+async function LoadMetadataData(zip: StreamZip) {
     return {
+        manifest: await jsonParseZipEntry(zip, 'manifest.json'),
         groups: await jsonParseZipEntry(zip, 'groups.json'),
         label_map: await jsonParseZipEntry(zip, 'label_map.json'),
     };
 }
 
-async function LoadSpinogramData(zip: JSZip) {
-    // TODO: JSON cannot handle NaN here!
-    return {
-        spinogram: await jsonParseZipEntryContainingNaN(zip, 'spinogram.corpus-sorted-usage.json'),
-    };
-}
-
-async function LoadUsageData(zip: JSZip) {
-    return {
-        usageByUsage: await jsonParseZipEntry(zip, 'usage.ms100.cusage.sTrue.json'),
-        usageByFrames: await jsonParseZipEntry(zip, 'usage.ms100.cframes.sTrue.json'),
-    };
-}
-
-async function LoadCrowdMovies(zip: JSZip, dir: string) {
-    const dest = path.join(dir, 'crowd_movies');
-    fs.mkdirSync(dest);
-    const waiting = new Array<Promise<unknown>>();
-    zip.folder('crowd_movies').forEach((relativePath, file) => {
-        waiting.push(new Promise((resolve, reject) => {
-            file.async('nodebuffer').then((value: Buffer) => {
-                try {
-                    fs.writeFileSync(path.join(dir, file.name), value);
-                    resolve();
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        }));
-    });
-    await Promise.allSettled(waiting)
-                 .then((values) => {
-                    values.forEach((v) => {
-                        if (v.status === 'rejected') {
-                            throw(v.reason);
-                        }
-                    });
-                 });
-    return {};
-}
-
-
-async function jsonParseZipEntry(zip: JSZip, entryName: string) {
-    const entry = zip.file(entryName);
-    if (entry !== null) {
-        return entry.async('string')
-                .then((value) => JSON.parse(value));
+async function jsonParseZipEntry(zip: StreamZip, entryName: string) {
+    try {
+        const entry = zip.entryDataSync(entryName);
+        return Promise.resolve(JSON.parse(entry.toString()));
+    } catch (e) {
+        return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
     }
-    return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
-}
-async function jsonParseZipEntryContainingNaN(zip: JSZip, entryName: string) {
-    const entry = zip.file(entryName);
-    if (entry !== null) {
-        return entry.async('string')
-            .then((data) => {
-                return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
-                    return value === '***NaN***' ? NaN : value;
-                });
-            });
-    }
-    return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
 }

@@ -11,12 +11,14 @@
                             v-model="option.selected"
                             :name="option.name">
                         </b-form-checkbox>
-                        <div class="swatch" :id="$id(option.id)" :style="{'background-color': option.color}" />
+                        <div class="swatch" :id="$id(option.id)" :style="{'background-color': option.color}" title="Click to select color">
+                            <span class="group-count" :style="{'color': getContrast(option.color)}">{{group_counts[option.name]}}</span>
+                        </div>
                         <b-popover :target="$id(option.id)" triggers="click blur" placement="top">
                             <template v-slot:title>Group Color ({{ option.name }})</template>
                             <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
                         </b-popover>
-                        <span>{{ option.name }}</span>
+                        <span class="group_name" :title="option.name">{{ option.name }}</span>
                     </div>
                 </b-list-group-item>
             </draggable>
@@ -28,11 +30,12 @@
 import Vue from 'vue';
 import draggable from 'vuedraggable';
 import { Chrome } from 'vue-color';
-import { debounce } from 'ts-debounce';
+import { debounce } from '@/util/Events';
 import { unnest } from '@/util/Vuex';
 import deepEqual from 'deep-equal';
 import { DataviewState } from '../store/dataview.types';
-
+import LoadData from '@/components/Core/DataLoader/DataLoader';
+import {getContrastingColor} from '@/components/Charts/D3ColorProvider';
 
 
 
@@ -40,6 +43,7 @@ class SelectableGroupItem {
     public name: string;
     public selected: boolean;
     public color: string;
+    public count: number = 0;
 
     get style(): string {
         return this.selected ? 'selected' : 'non-selected';
@@ -70,6 +74,7 @@ export default Vue.extend({
     data() {
         return {
             groups: [] as SelectableGroupItem[],
+            group_counts: {},
             colorChangeHandler: (option, event) => {/**/},
             watchers: Array<(() => void)>(),
         };
@@ -89,14 +94,23 @@ export default Vue.extend({
             (state, getters) => {
                 return getters[`${this.datasource}/availableGroups`];
             },
-            () => { this.buildGroups(); },
+            () => {
+                if (this.datasource !== undefined) {
+                    this.updateGroupCounts();
+                    this.buildGroups();
+                }
+            },
             { immediate: true },
         ));
         this.watchers.push(this.$store.watch(
             (state, getters) => {
+                const dv = unnest(state, this.datasource);
+                if (dv === undefined) {
+                    return {};
+                }
                 return {
-                    c: unnest(state, this.datasource).groupColors as string[],
-                    s: unnest(state, this.datasource).selectedGroups as string[],
+                    c: unnest(state, this.datasource).groupColors || [] as string[],
+                    s: unnest(state, this.datasource).selectedGroups || [] as string[],
                 };
             },
             (newValue) => {
@@ -117,16 +131,17 @@ export default Vue.extend({
         this.watchers.forEach((w) => w());
     },
     methods: {
-        buildGroups() {
-            this.groups = []; // Need to reset this so that we don't have duplicate options.
-            const availableGroups = this.$store.getters[`${this.datasource}/availableGroups`];
-            const selectedGroups = this.dataview.selectedGroups;
-            const colorScale =  this.dataview.groupColors;
+        async buildGroups() {
+            const groups = [] as SelectableGroupItem[]; // Need to reset this so that we don't have duplicate options.
+            const availableGroups = this.$store.getters[`${this.datasource}/availableGroups`] || [];
+            const selectedGroups = this.dataview !== undefined ? this.dataview.selectedGroups : [];
+            const colorScale = this.dataview !== undefined ? this.dataview.groupColors : [];
             availableGroups.map((g, i) => {
                 const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
                 sgi.color = colorScale[i];
-                this.groups.push(sgi);
+                groups.push(sgi);
             });
+            this.groups = groups;
         },
         updateGroups() {
             const groups = this.groups.filter((g) => g.selected).map((g) => g.name);
@@ -144,13 +159,44 @@ export default Vue.extend({
                 this.$store.dispatch(`${this.datasource}/updateSelectedGroups`, {colors});
             }
         },
+        async updateGroupCounts() {
+            try {
+                this.group_counts = await LoadData(this.$store.getters[`datasets/resolve`]('samples'), [{type: 'map'}])
+                    .then((data: any[]) => {
+                        return data.reduce((acc, curr) => {
+                            if (acc[curr.default_group] === undefined) {
+                                acc[curr.default_group] = 1;
+                            } else {
+                                acc[curr.default_group] += 1;
+                            }
+                            return acc;
+                        }, {});
+                    });
+            } catch {
+                return;
+            }
+        },
+        getContrast(hexcolor: string): string {
+            const c = getContrastingColor(hexcolor);
+            if (c === 'dark') {
+                return 'black';
+            } else {
+                return 'white';
+            }
+        },
     },
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
+.list-group {
+    margin: -1px;
+}
 .list-group-item {
     padding: 0.5em 0.25em;
+}
+.group-wrap {
+    height:24px;
 }
 .group-wrap::after{
   content:"\22EE";
@@ -176,5 +222,19 @@ export default Vue.extend({
     border:1px solid #efefef;
     margin: 0 10px 0 5px;
     border-radius: 24px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 10px;
+    line-height: 21px;
+    font-weight: bold;
+}
+.group_name {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 175px;
+    font-size: 13px;
+    padding:2.5px 0px;
 }
 </style>
