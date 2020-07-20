@@ -6,8 +6,25 @@ jobs:
       language: node_js
       node_js: 12
       before_install:
-        - unset CSC_LINK
-        - unset CSC_KEY_PASSWORD
+        - export CERTIFICATE_P12=cert.p12
+        - echo $MACOS_CERT_P12 | base64 --decode > $CERTIFICATE_P12
+        - certutil -p $CSC_KEY_PASSWORD -importpfx ./cert.p12
+        - CSC_LINK=./cert.p12
+        - export $KEYCHAIN=build.keychain
+          # Here the password is travis, but we can make an env var to replace it
+        - security create-keychain -p travis $KEYCHAIN
+        - security default-keychain -s $KEYCHAIN
+        - security unlock-keychain -p travis $KEYCHAIN
+        # 1) Apple Worldwide Developer Relations Certification Authority
+        - security import ./assets/certs/apple.cer -k ~/Library/Keychains/$KEYCHAIN -T /usr/bin/codesign
+        # 2) Developer Authentication Certification Authority
+        - security import ./assets/certs/dac.cer -k ~/Library/Keychains/$KEYCHAIN -T /usr/bin/codesign
+        # 3) Developer ID (That's you!)
+        - security import $CERTIFICATE_P12 -k $KEYCHAIN -P $MACOS_CERT_PASSWORD -T /usr/bin/codesign 2>&1 >/dev/null
+        - security set-key-partition-list -S apple-tool:,apple: -s -k travis $KEYCHAIN
+        # Echo the identity, just so that we know it worked.
+        # This won't display anything secret.
+        - security find-identity -v -p codesigning
       script:
         - npm install
         - npm run lint
