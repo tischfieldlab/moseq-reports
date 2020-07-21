@@ -13,7 +13,7 @@ jobs:
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
         - git tag ${PACKAGE_VERSION}
-        - if [ $TRAVIS_BRANCH  == "master"]; then npm run package-release; else npm run package; fi
+        - if [ $TRAVIS_BRANCH  == "master" ]; then npm run package-release; else npm run package; fi
 
     - stage: build
       os: windows
@@ -30,7 +30,7 @@ jobs:
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
         - git tag ${PACKAGE_VERSION}
-        - if [ $TRAVIS_BRANCH  == "master"]; then npm run package-release; else npm run package; fi
+        - if [ $TRAVIS_BRANCH  == "master" ]; then npm run package-release; else npm run package; fi
 
     - stage: build
       os: linux
@@ -45,6 +45,6 @@ jobs:
         - npm run lint
         - export PACKAGE_VERSION=$(npm run --silent version)
         - git tag ${PACKAGE_VERSION}
-        - if [ $TRAVIS_BRANCH  == "master"]; then npm run package-release; else npm run package; fi
+        - if [ $TRAVIS_BRANCH  == "master" ]; then npm run package-release; else npm run package; fi
 
 
