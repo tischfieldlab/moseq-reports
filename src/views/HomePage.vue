@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <Sidebar :right="false" />
-        <NoDataPresent />
+<!--        <NoDataPresent />-->
         <WindowContainer />
         <FileDropAcceptor />
     </div>

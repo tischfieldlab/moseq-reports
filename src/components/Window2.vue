@@ -1,150 +1,175 @@
 <template>
-    <div
-            ref="window"
-            class="window"
-            :style="{width:width+'px', height:height+'px', top:position.y+'px', left: position.x+'px'}"
-
-    >
-        <div class="header" @mousedown="dragMouseDown">
-            <div class="title">{{ title }}</div>
-            <div class="buttons">
-                <a @click="show_modal=true">@</a>
-                <a @click="is_collapsed = !is_collapsed">^</a>
-                <a @click="removeWindow">x</a>
-            </div>
-        </div>
-        <div class="body" v-show="!is_collapsed">
-            <component ref="body" :id="id" :is="spec.component_type" />
-        </div>
+  <div class="custom-window" ref="window">
+    <!--  This is the where the top bar stuff exists  -->
+    <div class="custom-window-top-bar" @mousedown="dragMouseDown">
+      <p class="custom-window-title">Title</p>
+      <p class="close-image-button" v-on:click="onClosed($event)">x</p>
+      <img class="window-icon-button" src="/img/gear.png"
+           v-on:click="settingsClick($event)"
+      />
+      <img class="window-icon-button" src="/img/camera.png" />
     </div>
+
+    <!--  This is where the body of the window exists  -->
+    <div class="custom-window-body">
+
+      <!-- This is where a component goes -->
+      <b-overlay :show="is_loading" no-fade>
+      </b-overlay>
+
+      <!-- For settings and top bar button clicks -->
+      <b-modal
+          title="Test"
+          v-model="show_settings_modal"
+          header-bg-variant="dark"
+          header-text-variant="light"
+          body-bg-variant="light"
+          body-text-variant="dark"
+          hide-footer>
+        <b-tabs>
+          <b-tab title="Layout"></b-tab>
+          <b-tab title="Data"></b-tab>
+          <b-tab title="Component"></b-tab>
+          <b-tab title="Snapshots"></b-tab>
+        </b-tabs>
+
+      </b-modal>
+    </div>
+  </div>
 </template>
 
-
 <script lang="ts">
-    import Vue, { PropType } from 'vue';
-    import {ComponentRegistration} from '../store/root.types';
-    export default Vue.component('ui-window2', {
-        components: {},
-        props: {
-            id: {
-                type: Number,
-                required: true,
-            },
-        },
-        data() {
-            return {
-                is_collapsed: false,
-                show_modal: false,
-                watchers: Array<(() => void)>(),
-                pos1: 0,
-                pos2: 0,
-                pos3: 0,
-                pos4: 0,
-            };
-        },
-        computed: {
-            spec(): ComponentRegistration {
-                return this.$store.getters.getWindowById(this.id).spec;
-            },
-            title(): string {
-                return this.$store.getters.getWindowById(this.id).title;
-            },
-            settings_title(): string {
-                return this.title + ' Settings';
-            },
-            width(): number {
-                return this.$store.getters.getWindowLayout(this.id).width;
-            },
-            height(): number {
-                return this.$store.getters.getWindowLayout(this.id).height;
-            },
-            position(): Position {
-                return this.$store.getters.getWindowLayout(this.id).position;
-            },
-        },
-        beforeDestroy() {
-            // un-watch the store
-            this.watchers.forEach((w) => w());
-        },
-        methods: {
-            removeWindow() {
-                this.$store.commit('removeWindow', this.id);
-            },
-            dragMouseDown(e) {
-                e = e || window.event;
-                e.preventDefault();
-                // get the mouse cursor position at startup:
-                this.pos3 = e.clientX;
-                this.pos4 = e.clientY;
-                document.onmouseup = this.closeDragElement;
-                // call a function whenever the cursor moves:
-                // document.onmousemove = throttled(50, this.elementDrag);
-            },
-            elementDrag(e) {
-                e = e || window.event;
-                e.preventDefault();
-                // calculate the new cursor position:
-                this.pos1 = this.pos3 - e.clientX;
-                this.pos2 = this.pos4 - e.clientY;
-                this.pos3 = e.clientX;
-                this.pos4 = e.clientY;
-                // set the element's new position:
-                this.$store.commit('updateComponentLayout', {
-                    id: this.id,
-                    // position_x: this.position.x - this.pos1,
-                    // position_y: this.position.y - this.pos2,
-                });
-            },
-            closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-            },
-        },
-    });
+import Vue from 'vue';
+import mixins from 'vue-typed-mixins';
+import { Size, Position, Layout } from '@/store/datawindow.types';
+import WindowMixin from '@/components/Core/WindowMixin';
+
+export default mixins(WindowMixin).extend({
+  data() {
+    return {
+      component_loading: 0,
+      show_settings_modal: false,
+      pos1: 0,
+      pos2: 0,
+      pos3: 0,
+      pos4: 0,
+      watchers: Array<(() => void)>(),
+    }
+  },
+  computed: {
+    is_loading(): boolean {
+      // const s = this.dataview;
+      // return this.component_loading > 0 || (s && s.loading);
+      return false;
+    },
+    settings_title(): string {
+      return this.title + ' Settings';
+    },
+    max_width(): number {
+      return window.innerWidth;
+    },
+    titlebar_color(): string {
+      return this.dataview.color;
+    },
+    swatch_title(): string {
+      return `Using ${this.dataview.name}`;
+    }
+  },
+  methods: {
+    settingsClick(event: any) {
+      this.show_settings_modal = true;
+    },
+    onResized(event: any) {
+      const s = event.args as Size;
+      this.$store.commit(`${this.id}/UpdateComponentLayout`, {
+        id: this.id,
+        width: s.width,
+        height: s.height,
+      });
+    },
+    onClosed(event: any) {
+      // this.$store.dispatch('datawindows/removeWindow', this.id);
+    },
+    dragMouseDown(e: any) {
+      e = e || window.event;
+      e.preventDefault();
+      this.pos3 = e.clientX;
+      this.pos4 = e.clientY;
+      document.onmouseup = this.closeDragElement;
+      console.log(this.pos1, this.pos2, this.pos3, this.pos4);
+    },
+    closeDragElement(e: any) {
+      e = e || window.event;
+      e.preventDefault();
+      document.onmouseup = null;
+      document.onmousemove = null;
+
+      // calculate the new cursor position:
+      this.pos1 = this.pos3 - e.clientX;
+      this.pos2 = this.pos4 - e.clientY;
+      this.pos3 = e.clientX;
+      this.pos4 = e.clientY;
+
+      console.log(this.pos1, this.pos2, this.pos3, this.pos4);
+    },
+  }
+});
 </script>
 
-<style lang="scss">
-    .window {
-        position: fixed;
-        border: 1px solid #c5c5c5;
-        border-radius: 0.25rem;
-        background: #fff;
-    }
-    .header {
-        background:#fff;
-        border-bottom: 1px solid #c5c5c5;
-        background: #e8e8e8;
-        text-align: left;
-        font-family: Verdana,Arial,sans-serif;
-        font-style: normal;
-        font-size: 13px;
-        font-weight:400;
-        line-height: 1.231;
-        box-sizing: content-box;
-        padding:7px;
-    }
-    .buttons {
-        position: absolute;
-        top:7px;
-        right:12px;
-    }
-    .body {
-        background: #fff;
-    }
-    .UiCard__body {
-        padding: 1em;
-    }
-    .hidden{
-        display:none !important;
-    }
-    .settings-button{
-        width: 16px;
-        height: 16px;
-        margin-right: 7px;
-        margin-left: 0px;
-        position: absolute;
-        right: 32px;
-        cursor:pointer;
-        //background: url(https://static.thenounproject.com/png/333746-200.png);
-    }
+<style>
+.custom-window {
+  width: 500px;
+  height: 800px;
+  left: 80px;
+  position: absolute;
+  background-color: white;
+  border: 1px solid gray;
+  border-radius: 10px;
+  margin-top: 10px;
+  resize: both;
+  overflow: auto;
+}
+
+.custom-window-top-bar {
+  width: 498px;
+  height: 30px;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid gray;
+  border-radius: 10px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+.custom-window-title {
+  padding-left: 10px;
+  padding-top: 5px;
+  display: inline-block;
+}
+.window-icon-button {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  float: right;
+  margin-top: 6px;
+  margin-right: 8px;
+}
+
+.window-icon-button:hover {
+  cursor: pointer;
+}
+
+.close-image-button {
+  display: inline-block;
+  float: right;
+  font-size: large;
+  font-weight: bold;
+  padding-top: 2px;
+  padding-right: 10px;
+  color: #696969;
+}
+
+.close-image-button:hover {
+  cursor: pointer;
+}
+
 </style>
