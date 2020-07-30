@@ -3,7 +3,7 @@
     <svg :width="width" :height="height" @mousemove="debouncedHover" @mouseout="hoverItem = undefined">
         <template v-if="graph.nodes.length > 0 && graph.links.length > 0">
             <text class="axis-label" :transform="`translate(${width / 2}, 15)`">
-                {{plotTitle}}
+                {{title}}
             </text>
             <g>
                 <text class="axis-label" :transform="`translate(10, ${(innerHeight / 2) + margin.top}) rotate(-90)`">Incoming</text>
@@ -39,7 +39,6 @@
                         fill="none"
                         :stroke="scale.l(l)"
                         :stroke-width="Math.max(1, l.width)"
-                        :data-color="color_id"
                         :data-transitionid="l.id"
                         @click="onEdgeClick($event, l)">
                     </path>

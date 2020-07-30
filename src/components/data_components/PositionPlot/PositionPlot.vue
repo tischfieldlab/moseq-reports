@@ -57,7 +57,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
-            individualUseageData: null,
+            individualUseageData: [],
         };
     },
     computed: {
@@ -99,8 +99,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             handler(newValue) {
                 this.emitStartLoading();
                 LoadData(newValue[0], newValue[1])
-                .then((data) => this.individualUseageData = data)
-                .then(() => this.emitFinishLoading());
+                    .then((data) => this.individualUseageData = data)
+                    .then(() => this.emitFinishLoading());
             },
             immediate: true,
         },

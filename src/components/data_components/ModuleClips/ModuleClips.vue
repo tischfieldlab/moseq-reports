@@ -9,7 +9,7 @@
                 :limit="num_examples"
                 :aria-controls="$id('video')"
                 align="fill"
-                hide-goto-end-buttons="true"
+                :hide-goto-end-buttons="true"
                 size="sm"></b-pagination>
             <div class="info">
                 <span>

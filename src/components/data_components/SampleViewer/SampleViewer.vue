@@ -17,8 +17,8 @@
         :items="items"
         :fields="fields"
         :filter="filter_string"
-        striped="true"
-        hover="true"
+        :striped="true"
+        :hover="true"
         :sticky-header="`${this.layout.height - 31 - 31}px`"
         ></b-table>
 </div>

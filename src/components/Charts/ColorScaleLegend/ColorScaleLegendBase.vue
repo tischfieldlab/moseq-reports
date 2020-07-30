@@ -14,7 +14,7 @@ export enum Orientation {
 export default Vue.component('color-scale-legend', {
     props: {
         scale: {
-            type: Object,
+            type: [Function, Object],
             required: true,
         },
         width: {
@@ -30,7 +30,7 @@ export default Vue.component('color-scale-legend', {
             required: true,
         },
         orientation: {
-            type: Object,
+            type: String,
             default: Orientation.Horizontal,
         },
         maxticks: {

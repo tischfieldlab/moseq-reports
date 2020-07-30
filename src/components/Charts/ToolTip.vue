@@ -18,16 +18,14 @@ export default Vue.extend({
         Portal,
     },
     props: {
-        container: {
-            required: true,
-        },
         show: {
             type: Boolean,
             default: false,
         },
         position: {
             type: Object,
-            default: { x: 0, y: 0 },
+            // tslint:disable-next-line:only-arrow-functions
+            default() { return { x: 0, y: 0 }; },
         },
     },
     data() {
