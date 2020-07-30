@@ -4,7 +4,7 @@
             <linearGradient :id="$id('color-gradiant')" :x1="offsets.x1" :x2="offsets.x2" :y1="offsets.y1" :y2="offsets.y2">
                 <template v-for="(d, i) in scale.domain()">
                     <stop 
-                        :key="d"
+                        :key="`${d}-${i}`"
                         :offset="`${(i/(scale.domain().length-1))*100}%`"
                         :stop-color="scale(d)" />
                 </template>

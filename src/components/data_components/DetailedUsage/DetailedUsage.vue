@@ -26,8 +26,10 @@ import WindowMixin from '@/components/Core/WindowMixin';
 import BoxPlot from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
 import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import { CountMethod } from '../../../store/dataview.types';
+import { CountMethod } from '@/store/dataview.types';
 import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import { Operation } from '../../Core/DataLoader/DataLoader.types';
+
 
 
 RegisterDataComponent({
@@ -49,6 +51,20 @@ RegisterDataComponent({
 export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
         BoxPlot,
+    },
+    data() {
+        return {
+            individualUseageData: [],
+        };
+    },
+    watch: {
+        dataset: {
+            handler(): any {
+                LoadData(this.dataset[0], this.dataset[1])
+                .then((data) => this.individualUseageData = data);
+            },
+            immediate: true,
+        },
     },
     computed: {
         selectedSyllable(): number {
@@ -73,14 +89,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         groupColors(): string[] {
             return this.dataview.groupColors;
         },
-        dataset(): string {
-            return this.$store.getters[`datasets/resolve`]('usage');
-        },
-    },
-    asyncComputed: {
-        individualUseageData(): any {
-            return LoadData(this.dataset, [
-                {
+        dataset(): [string, Operation[]] {
+            return [
+                this.$store.getters[`datasets/resolve`]('usage'),
+                [{
                     type: 'map',
                     columns: [
                         [`usage_${this.countMethod.toLowerCase()}`, 'value'],
@@ -100,8 +112,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                     type: 'sort',
                     columns: ['value'],
                     direction: 'asc',
-                },
-            ]);
+                }],
+            ];
         },
     },
     methods: {

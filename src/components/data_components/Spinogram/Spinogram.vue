@@ -8,7 +8,7 @@
                 :per-page="1"
                 :limit="num_examples"
                 align="fill"
-                hide-goto-end-buttons="true"
+                :hide-goto-end-buttons="true"
                 size="sm"></b-pagination>
             
             <svg :width="outsideWidth" :height="outsideHeight">

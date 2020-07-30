@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
-import { OrderingType, SortOrderDirection, HeatmapTile } from './ClusterHeatmap.types';
+import { OrderingType, SortOrderDirection, HeatmapTile, ClusterDistance, ClusterLinkage } from './ClusterHeatmap.types';
 import * as d3 from 'd3';
 import { cluster, hierarchy, extent } from 'd3';
 import { scaleBand, scaleSequential } from 'd3-scale';
@@ -62,11 +62,11 @@ export default Vue.extend({
         },
         columnClusterDistance: {
             type: String,
-            default: 'euclidean',
+            default: ClusterDistance.Euclidean,
         },
         columnClusterLinkage: {
             type: String,
-            default: 'avg',
+            default: ClusterLinkage.Avg,
         },
         columnOrderValue: {
             type: String,
@@ -84,11 +84,11 @@ export default Vue.extend({
         },
         rowClusterDistance: {
             type: String,
-            default: 'euclidean',
+            default: ClusterDistance.Euclidean,
         },
         rowClusterLinkage: {
             type: String,
-            default: 'avg',
+            default: ClusterLinkage.Avg,
         },
         rowOrderValue: {
             type: String,
@@ -118,7 +118,7 @@ export default Vue.extend({
             default: 'Value',
         },
         selectedRow: {
-            type: String,
+            type: [String, Number],
             default: null,
         },
         selectedCol: {
@@ -371,8 +371,8 @@ export default Vue.extend({
         async clusterColumns() {
             if (this.data !== null && this.data.length > 0) {
                 const tree = await worker.clusterColumns(this.data, this.columnKey, this.valueKey,
-                    this.columnClusterDistance,
-                    this.columnClusterLinkage);
+                    this.columnClusterDistance as ClusterDistance,
+                    this.columnClusterLinkage as ClusterLinkage);
                 this.clusteredColumnOrder = getDendrogramOrder(tree);
                 this.columnHierarchy = hierarchy(tree);
             }
@@ -380,8 +380,8 @@ export default Vue.extend({
         async clusterRows() {
             if (this.data !== null && this.data.length > 0) {
                 const tree = await worker.clusterRows(this.data, this.rowKey, this.valueKey,
-                    this.rowClusterDistance,
-                    this.rowClusterLinkage);
+                    this.rowClusterDistance as ClusterDistance,
+                    this.rowClusterLinkage as ClusterLinkage);
                 this.clusteredRowOrder = getDendrogramOrder(tree);
                 this.rowHierarchy = hierarchy(tree);
             }
