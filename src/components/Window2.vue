@@ -1,72 +1,101 @@
 <template>
-  <div class="custom-window" ref="window">
-    <!--  This is the where the top bar stuff exists  -->
-    <div class="custom-window-top-bar" @mousedown="dragMouseDown">
-      <p class="custom-window-title">Title</p>
-      <p class="close-image-button" v-on:click="onClosed($event)">x</p>
-      <img class="window-icon-button" src="/img/gear.png"
-           v-on:click="settingsClick($event)"
-      />
-      <img class="window-icon-button" src="/img/camera.png" />
-    </div>
-
-    <!--  This is where the body of the window exists  -->
-    <div class="custom-window-body">
-
-      <!-- This is where a component goes -->
+  <BaseWindow ref="window"
+              :id="id"
+              :width="layout.width"
+              :height="layout.height"
+              :position="layout.position"
+              :title="title"
+              :titlebar_color="titlebar_color"
+              @onClosed="onClosed"
+              @onSnapshotClicked="onSnapshotClicked"
+              @onSettingsClicked="onSettingsClicked"
+              @onMoved="onMoved"
+              @onResized="onResized"
+  >
+    <div>
       <b-overlay :show="is_loading" no-fade>
+        <component ref="body" :id="id" :is="spec.component_type" />
       </b-overlay>
 
-      <!-- For settings and top bar button clicks -->
       <b-modal
-          title="Test"
-          v-model="show_settings_modal"
-          header-bg-variant="dark"
-          header-text-variant="light"
-          body-bg-variant="light"
-          body-text-variant="dark"
-          hide-footer>
+        :title="settings_title"
+        v-model="show_settings_modal"
+        header-bg-variant="dark"
+        header-text-variant="light"
+        body-bg-variant="light"
+        body-text-variant="dark"
+        hide-footer
+      >
         <b-tabs>
-          <b-tab title="Layout"></b-tab>
-          <b-tab title="Data"></b-tab>
-          <b-tab title="Component"></b-tab>
-          <b-tab title="Snapshots"></b-tab>
+          <b-tab title="Layout">
+            <LayoutSettings :id="id" />
+          </b-tab>
+          <b-tab title="Data">
+            <DataSettings :id="id" />
+          </b-tab>
+          <b-tab title="Component">
+            <component v-if="spec.settings_type" ref="modal_component" :id="id" :is="spec.settings_type" />
+            <p v-else class="no-settings text-muted">No settings available for this component</p>
+          </b-tab>
+          <b-tab title="Snapshots">
+            <SnapshotSettings :id="id" />
+          </b-tab>
         </b-tabs>
-
       </b-modal>
     </div>
-  </div>
+  </BaseWindow>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+
+import BaseWindow from '@/components/BaseWindow';
 import mixins from 'vue-typed-mixins';
-import { Size, Position, Layout } from '@/store/datawindow.types';
 import WindowMixin from '@/components/Core/WindowMixin';
+import { Size, Position, Layout } from '@/store/datawindow.types';
+import Snapshot, {ensureDefaults} from '@/components/Core/SnapshotHelper';
 
 export default mixins(WindowMixin).extend({
+  components: {
+    BaseWindow,
+  },
   data() {
     return {
+      title_offset: 30,
       component_loading: 0,
       show_settings_modal: false,
-      pos1: 0,
-      pos2: 0,
-      pos3: 0,
-      pos4: 0,
       watchers: Array<(() => void)>(),
-    }
+    };
+  },
+  mounted() {
+    // Create the settings button on the next tick when the DOM is ready
+    this.$nextTick().then(() => {
+      this.updateWindowLayout(this.layout);
+      ensureDefaults(this.$refs.body as Vue, this.$store);
+    });
+    (this.$refs.body as Vue).$on('start-loading', () => {
+      this.component_loading++;
+    });
+    (this.$refs.body as Vue).$on('finish-loading', () => {
+      this.component_loading = clamp(this.component_loading - 1, 0);
+    });
+  },
+  beforeDestroy() {
+    this.watchers.forEach((w) => w());
   },
   computed: {
-    is_loading(): boolean {
-      // const s = this.dataview;
-      // return this.component_loading > 0 || (s && s.loading);
-      return false;
-    },
     settings_title(): string {
       return this.title + ' Settings';
     },
+    is_loading(): boolean {
+      const s = this.dataview;
+      return this.component_loading > 0 || (s && s.loading);
+    },
     max_width(): number {
       return window.innerWidth;
+    },
+    max_height(): number {
+      return window.innerHeight - 30;
     },
     titlebar_color(): string {
       return this.dataview.color;
@@ -76,100 +105,86 @@ export default mixins(WindowMixin).extend({
     }
   },
   methods: {
-    settingsClick(event: any) {
-      this.show_settings_modal = true;
+    updateWindowLayout(layout: Layout) {
+      (this.$refs.window as any).width = layout.width;
+      (this.$refs.window as any).height = layout.height;
+      (this.$refs.window as any).position = {
+        x: layout.position.x,
+        y: layout.position.y,
+      } as Position;
     },
     onResized(event: any) {
-      const s = event.args as Size;
-      this.$store.commit(`${this.id}/UpdateComponentLayout`, {
+      // const s = event.args as Size;
+      // this.$store.commit(`${this.id}/updateComponentLayout`, {
+      //   id: this.id,
+      //   width: s.width,
+      //   height: s.height,
+      // });
+    },
+    onSettingsClicked(event: any) {
+      this.show_settings_modal = true;
+    },
+    onSnapshotClicked(event: any) {
+      this.snapshotContent(event);
+    },
+    onMoved(event: any) {
+      const p: Position = {
+        x: (this.$refs.window as any).position.x + event.x,
+        y: (this.$refs.window as any).position.y + event.y
+      };
+
+      this.$store.commit(`${this.id}/updateComponentLayout`, {
         id: this.id,
-        width: s.width,
-        height: s.height,
+        position_x: p.x,
+        position_y: clamp(p.y, 0),
       });
     },
     onClosed(event: any) {
-      // this.$store.dispatch('datawindows/removeWindow', this.id);
+      this.$store.dispatch('datawindows/removeWindow', this.id);
     },
-    dragMouseDown(e: any) {
-      e = e || window.event;
-      e.preventDefault();
-      this.pos3 = e.clientX;
-      this.pos4 = e.clientY;
-      document.onmouseup = this.closeDragElement;
-      console.log(this.pos1, this.pos2, this.pos3, this.pos4);
+    async snapshotContent(event: MouseEvent) {
+      await Snapshot(this.$refs.body as Vue, this.title, this.settings.snapshot);
     },
-    closeDragElement(e: any) {
-      e = e || window.event;
-      e.preventDefault();
-      document.onmouseup = null;
-      document.onmousemove = null;
-
-      // calculate the new cursor position:
-      this.pos1 = this.pos3 - e.clientX;
-      this.pos2 = this.pos4 - e.clientY;
-      this.pos3 = e.clientX;
-      this.pos4 = e.clientY;
-
-      console.log(this.pos1, this.pos2, this.pos3, this.pos4);
+  },
+  watch: {
+    layout: {
+      deep: true,
+      handler(newValue: Layout) {
+        this.updateWindowLayout(newValue);
+      },
+    },
+    title(newValue) {
+      (this.$refs.window as any).title = newValue;
+    },
+    titlebar_color: {
+      handler(newValue) {
+        const swatch = document.getElementById(this.$id('swatch'));
+        if (swatch) swatch.style.backgroundColor = newValue;
+      },
+    },
+    swatch_title: {
+      handler(newValue) {
+        const swatch = document.getElementById(this.$id('swatch'));
+        if (swatch) swatch.title = newValue;
+      },
     },
   }
 });
+
+function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
+  if (value < min) {
+    return min;
+  }
+  if (value > max) {
+    return max;
+  }
+  return value;
+}
 </script>
 
 <style>
-.custom-window {
-  width: 500px;
-  height: 800px;
-  left: 80px;
-  position: absolute;
-  background-color: white;
-  border: 1px solid gray;
-  border-radius: 10px;
-  margin-top: 10px;
-  resize: both;
-  overflow: auto;
+.no-settings{
+  text-align: center;
+  //margin:20px 0;
 }
-
-.custom-window-top-bar {
-  width: 498px;
-  height: 30px;
-  background-color: #f0f0f0;
-  border-bottom: 1px solid gray;
-  border-radius: 10px;
-  border-bottom-right-radius: 0px;
-  border-bottom-left-radius: 0px;
-}
-
-.custom-window-title {
-  padding-left: 10px;
-  padding-top: 5px;
-  display: inline-block;
-}
-.window-icon-button {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  float: right;
-  margin-top: 6px;
-  margin-right: 8px;
-}
-
-.window-icon-button:hover {
-  cursor: pointer;
-}
-
-.close-image-button {
-  display: inline-block;
-  float: right;
-  font-size: large;
-  font-weight: bold;
-  padding-top: 2px;
-  padding-right: 10px;
-  color: #696969;
-}
-
-.close-image-button:hover {
-  cursor: pointer;
-}
-
 </style>

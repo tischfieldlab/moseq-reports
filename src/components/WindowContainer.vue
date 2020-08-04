@@ -1,9 +1,9 @@
 <template>
     <div>
-<!--        <template v-for="wid in windows">-->
-<!--            <UiCard :key="wid" :id="wid" />-->
-<!--        </template>-->
-      <UiCard id="test-id" />
+        <template v-for="wid in windows">
+            <UiCard :key="wid" :id="wid" />
+        </template>
+<!--      <UiCard id="test-id" />-->
     </div>
 </template>
 
@@ -16,10 +16,10 @@ export default Vue.extend({
     components: {
         UiCard,
     },
-    // computed: {
-    //     windows(): string[] {
-    //         return this.$store.state.datawindows.items;
-    //     },
-    // },
+    computed: {
+        windows(): string[] {
+            return this.$store.state.datawindows.items;
+        },
+    },
 });
 </script>
