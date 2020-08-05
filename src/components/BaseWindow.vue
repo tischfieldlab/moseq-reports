@@ -1,5 +1,5 @@
 <template>
-  <div v-bind:id="id" class="msqWindow"
+  <div v-bind:id="id" class="msqWindow" @mousedown="dragMouseBorder"
        :style="{
           width: `${window_width}px`,
           height: `${window_height}px`,
@@ -7,7 +7,7 @@
           top: `${window_ypos}px`,
        }"
   >
-    <div class="msq-window-titlebar" @mousedown="dragMouseDown">
+    <div class="msq-window-titlebar" @mousedown="dragMouseTitlebar" :id="`titlebar-${id}`">
       <span class="dataview-swatch" :id="$id('swatch')" :style="{background: titlebar_color}" :title="title">
         <img src="/img/gear.png" class="settings-button" v-on:click="onSettingsClicked" />
         <img src="/img/camera.png" class="snapshot-button" v-on:click="onSnapshotClicked" />
@@ -21,6 +21,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import {left, right} from '@popperjs/core';
 
 export default Vue.component('BaseWindow', {
   props: {
@@ -74,7 +75,45 @@ export default Vue.component('BaseWindow', {
     }
   },
   methods: {
-    dragMouseDown(event: any) {
+    dragMouseBorder(event: any) {
+      if (this.$data.resizable === false) return;
+
+      event = event || window.event;
+      event.preventDefault();
+
+      // Make sure we are near the edges
+      const x: number = event.clientX;
+      const y: number = event.clientY;
+
+      const titleBar = document.getElementById('titlebar-' + this.$data.id);
+      const wind = document.getElementById(this.$data.id);
+
+      // This controls how much space we should allow for the resize events to happen
+      const delta: number = 5;
+      const leftBorder: number = this.$data.position.x;
+      const rightBorder: number = this.$data.position.x + this.$data.width;
+      const topBorder: number = this.$data.position.y;
+      const titleBarHeight: number = titleBar!.clientHeight;
+      const bottomBorder: number = this.$data.position.y + this.$data.height;
+
+      let resizeRight: boolean = false;
+      let resiseLeft: boolean = false;
+      let resizeBottom: boolean = false;
+
+      console.log(x, y, bottomBorder);
+
+      // If we are resizing from right border, but not where the titlebar is
+      if (x >= (rightBorder - delta) && x <= rightBorder && y >= (topBorder + 2.1 * titleBarHeight)) {
+        resizeRight = true;
+        console.log('resize right');
+      }
+
+      if (x >= leftBorder && x <= (leftBorder + delta) && y >= (topBorder + 2.1 * titleBarHeight)) {
+        resiseLeft = true;
+        console.log('resize left');
+      }
+    },
+    dragMouseTitlebar(event: any) {
       if (this.$data.draggable === false) return;
 
       event = event || window.event;
@@ -90,6 +129,9 @@ export default Vue.component('BaseWindow', {
           x: deltaX,
           y: deltaY
         };
+
+        this.$data.position.x += deltaX;
+        this.$data.position.y += deltaY;
 
         this.$emit('onMoved', resizedObj);
         prevX += deltaX;
@@ -109,12 +151,6 @@ export default Vue.component('BaseWindow', {
     },
     onSnapshotClicked(event: any) {
       this.$emit('onSnapshotClicked', event);
-    },
-    onResize(event: any) {
-      this.$emit('onResized', event);
-    },
-    onMove(event: any) {
-      this.$emit('onMoved', event);
     },
   }
 });
