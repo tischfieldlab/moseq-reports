@@ -49,7 +49,7 @@
 <script lang="ts">
 import Vue from 'vue';
 
-import BaseWindow from '@/components/BaseWindow';
+import BaseWindow from '@/components/BaseWindow.vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import { Size, Position, Layout } from '@/store/datawindow.types';
@@ -114,12 +114,16 @@ export default mixins(WindowMixin).extend({
       } as Position;
     },
     onResized(event: any) {
-      // const s = event.args as Size;
-      // this.$store.commit(`${this.id}/updateComponentLayout`, {
-      //   id: this.id,
-      //   width: s.width,
-      //   height: s.height,
-      // });
+      const s: Size = {
+        width: event.width,
+        height: event.height
+      };
+
+      this.$store.commit(`${this.id}/updateComponentLayout`, {
+        id: this.id,
+        width: s.width,
+        height: s.height,
+      });
     },
     onSettingsClicked(event: any) {
       this.show_settings_modal = true;
@@ -185,6 +189,6 @@ function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
 <style>
 .no-settings{
   text-align: center;
-  //margin:20px 0;
+  margin:20px 0;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div v-bind:id="id" class="msqWindow" @mousedown="dragMouseBorder"
+  <div v-bind:id="id" class="msqWindow" @mousedown="onWindowClick" @mousemove="onMouseMove"
        :style="{
           width: `${window_width}px`,
           height: `${window_height}px`,
@@ -7,7 +7,7 @@
           top: `${window_ypos}px`,
        }"
   >
-    <div class="msq-window-titlebar" @mousedown="dragMouseTitlebar" :id="`titlebar-${id}`">
+    <div class="msq-window-titlebar" :id="`titlebar-${id}`">
       <span class="dataview-swatch" :id="$id('swatch')" :style="{background: titlebar_color}" :title="title">
         <img src="/img/gear.png" class="settings-button" v-on:click="onSettingsClicked" />
         <img src="/img/camera.png" class="snapshot-button" v-on:click="onSnapshotClicked" />
@@ -75,55 +75,122 @@ export default Vue.component('BaseWindow', {
     }
   },
   methods: {
-    dragMouseBorder(event: any) {
-      if (this.$data.resizable === false) return;
+    onClose(event: any) {
+      this.$emit('onClosed', event);
+    },
+    onSettingsClicked(event: any) {
+      this.$emit('onSettingsClicked', event);
+    },
+    onSnapshotClicked(event: any) {
+      this.$emit('onSnapshotClicked', event);
+    },
+    isAtBorder(x: number, y: number) {
+      const element: HTMLElement|null = document.getElementById(this.$data.id);
+      const titleBar: HTMLElement|null = document.getElementById('titlebar-' + this.$data.id);
+      const titleBarRect: DOMRect = titleBar!.getBoundingClientRect();
+      const rect: DOMRect = element!.getBoundingClientRect();
 
+      const topBorder: number = rect.y;
+      const bottomBorder: number = rect.y + rect.height;
+      const leftBorder: number = rect.x;
+      const rightBorder: number = rect.x + rect.width;
+
+      // NOTE: this is the number of pixels from each border in which to
+      // register a resize drag event
+      const delta: number = 6;
+
+      let leftResize: boolean = false;
+      let rightResize: boolean = false;
+      let bottomResize: boolean = false;
+      // NOTE: check if we are at the right border but ignore the top bar
+      if (x >= (rightBorder - delta) && x <= rightBorder && y >= (topBorder + titleBarRect.height)) {
+        rightResize = true;
+      }
+
+      // NOTE: check if we are at the left border but ignore the top bar
+      if (x >= leftBorder && x <= (leftBorder + delta) && y >= (topBorder + titleBarRect.height)) {
+        leftResize = true;
+      }
+
+      // NOTE: check if we are at the bottom border
+      if (y >= (bottomBorder - delta) && y <= bottomBorder) {
+        bottomResize = true;
+      }
+
+      const res: any = {};
+      res['left'] = leftResize;
+      res['right'] = rightResize;
+      res['bottom'] = bottomResize;
+      return res;
+    },
+    onMouseMove(event: any) {
       event = event || window.event;
       event.preventDefault();
 
-      // Make sure we are near the edges
-      const x: number = event.clientX;
-      const y: number = event.clientY;
-
-      const titleBar = document.getElementById('titlebar-' + this.$data.id);
-      const wind = document.getElementById(this.$data.id);
-
-      // This controls how much space we should allow for the resize events to happen
-      const delta: number = 5;
-      const leftBorder: number = this.$data.position.x;
-      const rightBorder: number = this.$data.position.x + this.$data.width;
-      const topBorder: number = this.$data.position.y;
-      const titleBarHeight: number = titleBar!.clientHeight;
-      const bottomBorder: number = this.$data.position.y + this.$data.height;
-
-      let resizeRight: boolean = false;
-      let resiseLeft: boolean = false;
-      let resizeBottom: boolean = false;
-
-      console.log(x, y, bottomBorder);
-
-      // If we are resizing from right border, but not where the titlebar is
-      if (x >= (rightBorder - delta) && x <= rightBorder && y >= (topBorder + 2.1 * titleBarHeight)) {
-        resizeRight = true;
-        console.log('resize right');
-      }
-
-      if (x >= leftBorder && x <= (leftBorder + delta) && y >= (topBorder + 2.1 * titleBarHeight)) {
-        resiseLeft = true;
-        console.log('resize left');
+      const borderRes: any = this.isAtBorder(event.x, event.y);
+      if (borderRes['left'] && borderRes['bottom']) {
+        document.body.style.cursor = 'nesw-resize';
+      } else if (borderRes['right'] && borderRes['bottom']) {
+        document.body.style.cursor = 'nwse-resize';
+      } else if (borderRes['right'] || borderRes['left']) {
+        document.body.style.cursor = 'ew-resize';
+      } else if (borderRes['bottom']) {
+        document.body.style.cursor = 'ns-resize';
+      } else {
+        document.body.style.cursor = 'default';
       }
     },
-    dragMouseTitlebar(event: any) {
+    onWindowClick(event: any) {
       if (this.$data.draggable === false) return;
 
       event = event || window.event;
       event.preventDefault();
 
-      let prevX: number = event.clientX;
-      let prevY: number = event.clientY;
+      const titleElement: HTMLElement|null = document.getElementById('titlebar-' + this.$data.id);
+      const titleRect: DOMRect = titleElement!.getBoundingClientRect();
+
+      const x: number = event.x;
+      const y: number = event.y;
+
+      // NOTE: this means we are in the title bar
+      if (x >= titleRect.x && x <= (titleRect.x + titleRect.width)
+        && y >= titleRect.y && y <= (titleRect.y + titleRect.height)) {
+          this.dragMouseTitlebar(event);
+          return;
+      }
+
+      // NOTE: this means we are trying to resize the window
+      let prevX: number = event.x;
+      let prevY: number = event.y;
       document.onmousemove = (e: any) => {
-        const deltaX: number = e.clientX - prevX;
-        const deltaY: number = e.clientY - prevY;
+        const deltaX: number = e.x - prevX;
+        const deltaY: number = e.y - prevY;
+
+        this.$data.height += deltaY;
+        this.$data.width += deltaX;
+
+        const resizedObj: any = {
+          width: this.$data.width,
+          height: this.$data.height,
+        };
+
+        // this.$emit('onMoved', resizedObj);
+        this.$emit('onResized', resizedObj);
+        prevX += deltaX;
+        prevY += deltaY;
+      }
+
+      document.onmouseup = (e: any) => {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      };
+    },
+    dragMouseTitlebar(event: any) {
+      let prevX: number = event.x;
+      let prevY: number = event.y;
+      document.onmousemove = (e: any) => {
+        const deltaX: number = e.x - prevX;
+        const deltaY: number = e.y - prevY;
 
         const resizedObj: any = {
           x: deltaX,
@@ -142,16 +209,7 @@ export default Vue.component('BaseWindow', {
         document.onmouseup = null;
         document.onmousemove = null;
       };
-    },
-    onClose(event: any) {
-      this.$emit('onClosed', event);
-    },
-    onSettingsClicked(event: any) {
-      this.$emit('onSettingsClicked', event);
-    },
-    onSnapshotClicked(event: any) {
-      this.$emit('onSnapshotClicked', event);
-    },
+    }
   }
 });
 </script>
