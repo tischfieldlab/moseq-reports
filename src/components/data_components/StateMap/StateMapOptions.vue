@@ -23,7 +23,7 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="Prune Transitions Threshold">
-                    <b-form-input v-model="prune_threshold" type="number" number="true" step="0.001" min="0" max="1" />
+                    <b-form-input v-model="prune_threshold" type="number" :number="true" step="0.001" min="0" max="1" />
                 </b-input-group>
             </b-col>
         </b-row>

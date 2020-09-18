@@ -1,6 +1,6 @@
 <template>
     <div class="picker-container">
-        <b-dropdown variant="white" no-flip="true">
+        <b-dropdown variant="white" :no-flip="true">
             <template v-slot:button-content>
                 <div v-if="selected" class="selected-value">
                     <svg height="20px" width="150">
