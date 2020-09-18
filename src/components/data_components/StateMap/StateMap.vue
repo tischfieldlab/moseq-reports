@@ -1,14 +1,14 @@
 <template>
-    <div class="component-container">
+    <div class="component-container" data-snapshot-target="snapshot">
         <div ref="container" class="cytoscape-container"></div>
-        <svg class="legend-container">
+        <SVGHost class="legend-container" ref="legendHost">
             <ColorScaleLegend
                 title="P(transition)"
                 :scale="scale.zo"
                 :width="150"
                 :height="10"
                 :transform="`translate(100, 0)`" />
-        </svg>
+        </SVGHost>
     </div>
 </template>
 
@@ -25,7 +25,8 @@ import { GetScale, GetScaleWithOpacity } from '@/components/Charts/D3ColorProvid
 import { extent, max } from 'd3-array';
 import cytoscape from 'cytoscape';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
-
+import {composite_images, SnapshotOptions, SubImage, targetToDataURI} from '@/components/Core/SnapshotHelper';
+import SVGHost from '@/components/Charts/SVGHost.vue';
 
 import avsdf from 'cytoscape-avsdf';
 cytoscape.use(avsdf);
@@ -70,6 +71,7 @@ interface Link {
 export default mixins(WindowMixin, LoadingMixin).extend({
     components: {
         ColorScaleLegend,
+        SVGHost,
     },
     data() {
         return {
@@ -397,6 +399,41 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             if (event.target && event.target._private.data.id) {
                 this.selectedSyllable = Number.parseInt(event.target._private.data.id, 10);
             }
+        },
+        snapshot(options: SnapshotOptions): Promise<string> {
+            return new Promise((resolve, reject) => {
+                return (this as any).cy.png({
+                    output: 'blob-promise',
+                    bg: options.backgroundColor,
+                    full: false,
+                    scale: options.scale,
+                }).then((blob: Blob) => {
+                    const r = new FileReader();
+                    r.onload = (e) => resolve(e?.target?.result as string);
+                    r.readAsDataURL(blob);
+                });
+            })
+            .then((graphURI) => {
+                const graphContainer = this.$refs.container as HTMLElement;
+                return {
+                    dataURI: graphURI,
+                    pos_x: 0,
+                    pos_y: 0,
+                    width: graphContainer.clientWidth,
+                    height: graphContainer.clientHeight,
+                } as SubImage;
+            })
+            .then(async (graphSubImage) => {
+                const lel = (this.$refs.legendHost as Vue).$el as HTMLElement;
+                const legend = {
+                    dataURI: await targetToDataURI(this.$refs.legendHost as Vue, options),
+                    pos_x: 0,
+                    pos_y: graphSubImage.height,
+                    width: lel.clientWidth,
+                    height: lel.clientHeight,
+                } as SubImage;
+                return composite_images([graphSubImage, legend], options);
+            });
         },
     },
 });
