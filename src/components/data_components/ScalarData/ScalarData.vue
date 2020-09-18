@@ -55,7 +55,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
-            individualUseageData: null,
+            individualUseageData: [],
             availableMetrics: {
                 angle: {
                     title: 'Angle',

@@ -1,8 +1,8 @@
 
 
 export enum WhiskerType {
-    TUKEY,
-    MIN_MAX,
+    TUKEY = 'tukey',
+    MIN_MAX = 'min_max',
 }
 
 export interface DataPoint {

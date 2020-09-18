@@ -15,7 +15,7 @@
         :nodeColorProperty="nodeColoring.prop"
         :linkColorMode="linkColoring.mode"
         :linkColorProperty="linkColoring.prop"
-        :categoricalColormap="schemeDark2"
+        :categoricalColormap="'schemeDark2'"
         :quantitativeColormap="settings.colorscale"
         @node-click="onNodeClick"
     />
