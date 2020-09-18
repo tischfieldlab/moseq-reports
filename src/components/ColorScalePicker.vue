@@ -28,34 +28,37 @@
                     Please select a color map
                 </template>
             </template>
-            <b-dropdown-item
-                v-for="option in options"
-                :key="option.value"
-                :disabled="option.disabled"
-                @click="select(option)" >
-                <div>
-                    <svg height="20px" width="150">
-                        <defs>
-                            <linearGradient :id="$id(`color-gradiant-${option.value}`)" :x1="offsets.x1" :x2="offsets.x2" :y1="offsets.y1" :y2="offsets.y2">
-                                <template v-for="d in scale(option.value)">
-                                    <stop 
-                                        :key="d.v"
-                                        :offset="`${d.v}%`"
-                                        :stop-color="d.z" />
-                                </template>
-                            </linearGradient>
-                        </defs>
-                        <rect
-                            x="0"
-                            y="0"
-                            width="100%"
-                            height="100%"
-                            :fill="`url(${$idRef(`color-gradiant-${option.value}`)})`"
-                            />
-                    </svg>
-                    {{option.text}}
-                </div>
-            </b-dropdown-item>
+            <template v-for="(scales, cat) in options">
+                <b-dropdown-header :key="cat">{{ cat }}</b-dropdown-header>
+                <b-dropdown-item
+                    v-for="option in scales"
+                    :key="option.value"
+                    :disabled="option.disabled"
+                    @click="select(option)" >
+                    <div>
+                        <svg height="20px" width="150">
+                            <defs>
+                                <linearGradient :id="$id(`color-gradiant-${option.value}`)" :x1="offsets.x1" :x2="offsets.x2" :y1="offsets.y1" :y2="offsets.y2">
+                                    <template v-for="d in scale(option.value)">
+                                        <stop 
+                                            :key="d.v"
+                                            :offset="`${d.v}%`"
+                                            :stop-color="d.z" />
+                                    </template>
+                                </linearGradient>
+                            </defs>
+                            <rect
+                                x="0"
+                                y="0"
+                                width="100%"
+                                height="100%"
+                                :fill="`url(${$idRef(`color-gradiant-${option.value}`)})`"
+                                />
+                        </svg>
+                        {{option.text}}
+                    </div>
+                </b-dropdown-item>
+            </template>
         </b-dropdown>
     </div>
 </template>
@@ -90,7 +93,14 @@ export default Vue.extend({
     watch: {
         value: {
             handler(newValue) {
-                this.selected = this.options.find((o) => o.value === newValue);
+                for (const cat of Object.keys(this.options)) {
+                    for (const scale of this.options[cat]) {
+                        if (scale.value === newValue) {
+                            this.selected = scale;
+                            return;
+                        }
+                    }
+                }
             },
             immediate: true,
         },
