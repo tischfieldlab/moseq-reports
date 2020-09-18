@@ -3,7 +3,7 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="Colormap">
-                    <b-form-select v-model="abs_colorscale" :options="color_options"></b-form-select>
+                    <ColorScalePicker v-model="abs_colorscale" />
                 </b-input-group>
             </b-col>
         </b-row>
@@ -24,7 +24,7 @@
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Relative Colormap">
-                    <b-form-select v-model="rel_colorscale" :options="color_options"></b-form-select>
+                    <ColorScalePicker v-model="rel_colorscale" />
                 </b-input-group>
             </b-col>
         </b-row>
@@ -33,7 +33,6 @@
 
 <script scoped lang="ts">
 import Vue from 'vue';
-import {GetInterpolatedScaleOptions} from '@/components/Charts/D3ColorProvider';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
@@ -109,7 +108,6 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
-            color_options: GetInterpolatedScaleOptions(),
             relative_diff_group_options: new Array<{text: string, value: string}>(),
         };
     },

@@ -51,7 +51,6 @@
 
 <script scoped lang="ts">
 import Vue from 'vue';
-import {GetInterpolatedScaleOptions} from '@/components/Charts/D3ColorProvider';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import ColorScalePicker from '@/components/ColorScalePicker.vue';
