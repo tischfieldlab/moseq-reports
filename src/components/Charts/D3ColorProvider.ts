@@ -4,18 +4,75 @@
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {ScaleLinear, ScaleContinuousNumeric} from 'd3-scale';
 
+const ScaleCategories = {
+    'Diverging': [
+        'interpolateBrBG',
+        'interpolatePRGn',
+        'interpolatePiYG',
+        'interpolatePuOr',
+        'interpolateRdBu',
+        'interpolateRdGy',
+        'interpolateRdYlBu',
+        'interpolateRdYlGn',
+        'interpolateSpectral',
+    ],
+    'Sequential (Single Hue)': [
+        'interpolateBlues',
+        'interpolateGreens',
+        'interpolateGreys',
+        'interpolateOranges',
+        'interpolatePurples',
+        'interpolateReds',
+    ],
+    'Sequential (Multi-Hue)': [
+        'interpolateTurbo',
+        'interpolateViridis',
+        'interpolateInferno',
+        'interpolateMagma',
+        'interpolatePlasma',
+        'interpolateCividis',
+        'interpolateWarm',
+        'interpolateCool',
+        'interpolateCubehelixDefault',
+        'interpolateBuGn',
+        'interpolateBuPu',
+        'interpolateGnBu',
+        'interpolateOrRd',
+        'interpolatePuBuGn',
+        'interpolatePuBu',
+        'interpolatePuRd',
+        'interpolateRdPu',
+        'interpolateYlGnBu',
+        'interpolateYlGn',
+        'interpolateYlOrBr',
+        'interpolateYlOrRd',
+    ],
+    'Cyclical': [
+        'interpolateRainbow',
+        'interpolateSinebow',
+    ],
+};
 
-export function GetInterpolatedScaleOptions() {
-    const options = new Array<{text: string, value: string}>();
-    for (const scale in d3ScaleChromatic) {
-        if (scale.startsWith('interpolate')) {
-            options.push({
-                text: scale.replace('interpolate', ''),
-                value: scale,
-            });
+function GetCategoryForScale(scaleName: string): string {
+    const cats = Object.getOwnPropertyNames(ScaleCategories);
+    for(const cat in cats) {
+        if((ScaleCategories[cat] as string[]).includes(scaleName)){
+            return cat;
         }
     }
-    return options;
+    return 'Unknown';
+}
+
+export function GetInterpolatedScaleOptions() {
+    return Object.fromEntries(Object.entries(ScaleCategories).map(([cat, catScales]) => {
+        return [cat, catScales.map((scale) => {
+            return {
+                text: scale.replace('interpolate', ''),
+                category: cat,
+                value: scale,
+            };
+        })];
+    }));
 }
 export function GetScale(name: string) {
     return d3ScaleChromatic[name] as ((t: number) => string) | string[];

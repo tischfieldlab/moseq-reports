@@ -9,7 +9,7 @@ import mime from 'mime-types';
 import { DataWindowState } from '@/store/datawindow.types';
 
 
-interface SnapshotOptions {
+export interface SnapshotOptions {
     format: string;
     quality: number;
     scale: number;
@@ -99,12 +99,71 @@ export async function SnapshotWorkspace() {
         return;
     }
 
-    const dims = toSnapshot.reduce((accum, item) => {
+    Promise.all(toSnapshot.map(async (item) => {
         const wstate = (item as any).$wstate as DataWindowState;
-        accum.minX = Math.min(accum.minX, wstate.pos_x);
-        accum.maxX = Math.max(accum.maxX, wstate.pos_x + wstate.width);
-        accum.minY = Math.min(accum.minY, wstate.pos_y);
-        accum.maxY = Math.max(accum.maxY, wstate.pos_y + wstate.height);
+        return {
+            dataURI: await targetToDataURI(item, opts),
+            pos_x: wstate.pos_x,
+            pos_y: wstate.pos_y,
+            width: wstate.width,
+            height: wstate.height,
+        } as SubImage;
+    }))
+    .then((images) => {
+        return composite_images(images, opts)
+    })
+    .then((composite) => {
+        const finfo = dataUriToFile(composite);
+        const dest = remote.dialog.showSaveDialogSync({
+            title: 'Save Snapshot',
+            defaultPath: 'WorkspaceSnapshot.png',
+            filters: filtersForFinfo(finfo),
+        });
+        if (dest === undefined) {
+            throw new SaveCancelledError();
+        }
+        return {
+                finfo,
+                dest
+        };
+    })
+    .then((data) => {
+        return new Promise((resolve, reject) => {
+            fs.writeFile(data.dest, data.finfo.buffer, (err) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(data.dest);
+            });
+        });
+    })
+    .then((dest) => showSuccessToast(dest as string))
+    .catch((err) => {
+        if (err instanceof SaveCancelledError) {
+            return; // don't care the user cancelled of their own accord
+        }
+        app.$bvToast.toast(err.toString(), {
+            title: 'Error Creating Workspace Snapshot!',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+        });
+    });
+}
+
+export interface SubImage {
+    dataURI: string;
+    pos_x: number;
+    pos_y: number;
+    width: number;
+    height: number;
+}
+
+export function composite_images(images: SubImage[], opts: SnapshotOptions): Promise<string> {
+    const dims = images.reduce((accum, item) => {
+        accum.minX = Math.min(accum.minX, item.pos_x);
+        accum.maxX = Math.max(accum.maxX, item.pos_x + item.width);
+        accum.minY = Math.min(accum.minY, item.pos_y);
+        accum.maxY = Math.max(accum.maxY, item.pos_y + item.height);
         return accum;
     }, {
         minX: Number.MAX_VALUE,
@@ -121,79 +180,42 @@ export async function SnapshotWorkspace() {
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
-    const drawers = toSnapshot.map((item) => {
-        return targetToDataURI(item, opts)
-        .then((data) => {
-            return new Promise((resolve, reject) => {
-                const subInfo = dataUriToFile(data as string)
-                if (subInfo.extension !== 'png') {
-                    reject('non-image data');
-                    return;
+    const drawers = images.map((item) => {
+        return new Promise((resolve, reject) => {
+            const subInfo = dataUriToFile(item.dataURI)
+            if (subInfo.extension !== 'png') {
+                reject('non-image data');
+                return;
+            }
+            const img = new Image();
+            img.onload = () => {
+                if (ctx === null) {
+                    return reject('no context!');
                 }
-                const wstate = (item as any).$wstate as DataWindowState;
-                const img = new Image();
-                img.onload = () => {
-                    if (ctx === null) {
-                        return reject('no context!');
-                    }
-                    const isNotScaled = img.width / opts.scale / wstate.width < 1;
-                    if (isNotScaled) {
-                        ctx.drawImage(img,
-                            wstate.pos_x * opts.scale, wstate.pos_y * opts.scale,
-                            img.width * opts.scale, img.height * opts.scale);
-                    } else {
-                        ctx.drawImage(img,
-                            wstate.pos_x * opts.scale, wstate.pos_y * opts.scale,
-                            img.width, img.height);
-                    }
-                    resolve();
-                };
-                img.src = data as string;
-            });
+                const isNotScaled = img.width / opts.scale / item.width < 1;
+                if (isNotScaled) {
+                    ctx.drawImage(img,
+                        item.pos_x * opts.scale, item.pos_y * opts.scale,
+                        img.width * opts.scale, img.height * opts.scale);
+                } else {
+                    ctx.drawImage(img,
+                        item.pos_x * opts.scale, item.pos_y * opts.scale,
+                        img.width, img.height);
+                }
+                resolve();
+            };
+            img.src = item.dataURI as string;
         });
     });
-    Promise.allSettled(drawers)
+    return Promise.allSettled(drawers)
         .then(() => {
-            const finfo = dataUriToFile(canvas.toDataURL('image/png'));
+            const data = canvas.toDataURL('image/png');
             document.body.removeChild(canvas);
-            return finfo;
-        })
-        .then((finfo) => {
-            const dest = remote.dialog.showSaveDialogSync({
-                title: 'Save Snapshot',
-                defaultPath: 'WorkspaceSnapshot.png',
-                filters: filtersForFinfo(finfo),
-            });
-            if (dest === undefined) {
-                throw new SaveCancelledError();
-            }
-            return {
-                 finfo,
-                 dest
-            };
-        })
-        .then((data) => {
-            return new Promise((resolve, reject) => {
-                fs.writeFile(data.dest, data.finfo.buffer, (err) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    resolve(data.dest);
-                });
-            });
-        })
-        .then((dest) => showSuccessToast(dest as string))
-        .catch((err) => {
-            if (err instanceof SaveCancelledError) {
-                return; // don't care the user cancelled of their own accord
-            }
-            app.$bvToast.toast(err.toString(), {
-                title: 'Error Creating Workspace Snapshot!',
-                variant: 'danger',
-                toaster: 'b-toaster-bottom-right',
-            });
+            return data;
         });
 }
+
+
 
 function getAllVues(root: Vue) {
     const items = [root];
@@ -244,15 +266,22 @@ function filtersForFinfo(finfo) {
     return infos;
 }
 
-export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html', target:HTMLElement} {
-    const eattr = '[data-snapshot-target]';
+export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html'|'callback', target:HTMLElement|((options: SnapshotOptions) => Promise<string>)} {
+    const eattr = 'data-snapshot-target';
 
     const explicit = (target.$el.hasAttribute(eattr)
         ? target.$el
         : target.$el.querySelector('[data-snapshot-target]')) as HTMLElement;
     if (explicit !== null) {
         const etag = explicit.tagName;
-        if (etag === 'svg') {
+        const callback = explicit.getAttribute(eattr);
+
+        if (callback !== null && callback !== '') {
+            return {
+                type: 'callback',
+                target: target[callback],
+            };
+        } else if (etag === 'svg') {
             return {
                 type: 'svg',
                 target: explicit,
@@ -322,30 +351,33 @@ function getSuggestedFilename(target: Vue) {
     return undefined;
 }
 
-async function targetToDataURI(target: Vue, options: SnapshotOptions) {
+export async function targetToDataURI(target: Vue, options: SnapshotOptions) {
     const tgt = resolveTarget(target);
     let uri: Promise<string>|undefined;
-    if (tgt.type === 'html') {
+    if (tgt.type === 'callback') {
+        const callback = tgt.target as (options: SnapshotOptions) => Promise<string>;
+        uri = callback(options);
+    } else if (tgt.type === 'html') {
         if (options.format === 'png') {
-            uri = toPng(tgt.target, {
+            uri = toPng(tgt.target as HTMLElement, {
                 quality: options.quality,
                 backgroundColor: options.backgroundColor,
             });
         } else if (options.format === 'svg') {
-            uri = toSvgDataURL(tgt.target, {
+            uri = toSvgDataURL(tgt.target as HTMLElement, {
                 quality: options.quality,
                 backgroundColor: options.backgroundColor,
             });
         }
     } else if (tgt.type === 'svg') {
         if (options.format === 'png') {
-            uri = svgAsPngUri(tgt.target, {
+            uri = svgAsPngUri(tgt.target as HTMLElement, {
                 scale: options.scale,
                 encoderOptions: options.quality,
                 backgroundColor: options.backgroundColor,
             });
         } else if (options.format === 'svg') {
-            uri = svgAsDataUri(tgt.target, {
+            uri = svgAsDataUri(tgt.target as HTMLElement, {
                 scale: options.scale,
                 encoderOptions: options.quality,
                 backgroundColor: options.backgroundColor,
