@@ -31,6 +31,12 @@ import SVGHost from '@/components/Charts/SVGHost.vue';
 import avsdf from 'cytoscape-avsdf';
 cytoscape.use(avsdf);
 
+import fcose from 'cytoscape-fcose';
+cytoscape.use(fcose);
+
+import cise from 'cytoscape-cise';
+cytoscape.use(cise);
+
 
 RegisterDataComponent({
     friendly_name: 'State Map',
@@ -123,6 +129,10 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             const cy = (this as any).cy;
             cy.style(this.graph_styles);
         },
+        graph_styles() {
+            const cy = (this as any).cy;
+            cy.style(this.graph_styles);
+        }
     },
     created() {
         if (this.settings.plot_group === undefined || this.settings.plot_group === '') {
