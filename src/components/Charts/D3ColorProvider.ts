@@ -3,6 +3,7 @@
 
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import {ScaleLinear, ScaleContinuousNumeric} from 'd3-scale';
+import {interpolateRgb, interpolateRgbBasis} from 'd3-interpolate';
 
 const ScaleCategories = {
     'Diverging': [
@@ -23,6 +24,7 @@ const ScaleCategories = {
         'interpolateOranges',
         'interpolatePurples',
         'interpolateReds',
+        'interpolateYellows',
     ],
     'Sequential (Multi-Hue)': [
         'interpolateTurbo',
@@ -53,6 +55,11 @@ const ScaleCategories = {
     ],
 };
 
+Object.defineProperty(d3ScaleChromatic, 'interpolateYellows', {
+    value: interpolateRgbBasis(['#FFFFFF', /*'#CCC0A4'*/'#BFB499']),
+});
+
+
 function GetCategoryForScale(scaleName: string): string {
     const cats = Object.getOwnPropertyNames(ScaleCategories);
     for(const cat in cats) {
@@ -75,7 +82,12 @@ export function GetInterpolatedScaleOptions() {
     }));
 }
 export function GetScale(name: string) {
-    return d3ScaleChromatic[name] as ((t: number) => string) | string[];
+    if (name.startsWith('custom:')) {
+        const parts = name.split(':');
+        return interpolateRgb(parts[1], parts[2]);
+    } else {
+        return d3ScaleChromatic[name] as ((t: number) => string) | string[];
+    }
 }
 export function GetScaleWithOpacity(name: string, opacity: any) {
     const base = GetScale(name) as (t: number) => string;
