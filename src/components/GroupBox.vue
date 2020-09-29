@@ -16,7 +16,7 @@
                         </div>
                         <b-popover :target="$id(option.id)" triggers="click blur" placement="top">
                             <template v-slot:title>Group Color ({{ option.name }})</template>
-                            <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
+                            <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" :disableAlpha="true" />
                         </b-popover>
                         <span class="group_name" :title="option.name">{{ option.name }}</span>
                     </div>

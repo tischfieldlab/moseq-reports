@@ -20,7 +20,7 @@
                 </b-button>
                 <b-popover :target="$id(datasource)" triggers="click blur" placement="top">
                     <template v-slot:title>Dataview `{{filter_name}}` Color</template>
-                    <chrome-picker v-model="color" disableAlpha="true" />
+                    <chrome-picker v-model="color" :disableAlpha="true" />
                 </b-popover>
              </div>
         </template>
