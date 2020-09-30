@@ -5,7 +5,7 @@
                 <label class="font-weight-bold pt-0">Line Weight</label>
             </b-col>
             <b-col>
-                <b-form-input v-model="line_weight" type="number" number="true" min="1" max="10" />
+                <b-form-input v-model="line_weight" type="number" :number="true" min="1" max="10" />
             </b-col>
         </b-row>
         <b-row>
@@ -13,7 +13,7 @@
                 <label class="font-weight-bold pt-0">Line Color</label>
             </b-col>
             <b-col>
-                <chrome-picker v-model="line_color" disableAlpha="true" />
+                <chrome-picker v-model="line_color" :disableAlpha="true" />
             </b-col>
         </b-row>
     </b-container>
