@@ -27,7 +27,8 @@
     "preinstall": "npx npm-force-resolutions",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'"
+    "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'",
+    "backend:build": "cd backend && pyinstaller ./startup.py -y --clean -F -n backend && cd .."
   },
   "resolutions": {
     "minimist": "1.2.3"

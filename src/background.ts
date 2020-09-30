@@ -67,9 +67,25 @@ function createWindow(argv: string[]) {
         instances.splice(instances.indexOf(win), 1);
     });
     instances.push(win);
+
+    const fileName = "W:/Lab Work/moseq-reports/backend/dist/backend.exe";
+    const params = ["-p 12345"];
+    const p = execute(fileName, params, process.cwd())
+
     return win;
 }
 
+var exec = require('child_process').execFile;
+function execute(fileName: string, params: string[], path: string) {
+    let promise = new Promise((resolve, reject) => {
+        exec(fileName, params, { cwd: path }, (err, data) => {
+            if (err) reject(err);
+            else resolve(data);
+        });
+
+    });
+    return promise;
+}
 
 function attachApp() {
     // Scheme must be registered before the app is ready

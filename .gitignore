@@ -6,6 +6,13 @@ selenium-debug.log
 dist
 /data
 
+# backend build
+*.spec
+__pycache__
+build
+dist
+
+
 
 # package file
 package-lock.json
