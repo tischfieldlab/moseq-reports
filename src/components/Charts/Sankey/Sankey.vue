@@ -76,7 +76,7 @@ import { scaleOrdinal, scaleDiverging } from 'd3-scale';
 import { max } from 'd3-array';
 import { throttle } from '@/util/Events';
 import ToolTip from '@/components/Charts/ToolTip.vue';
-import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
+import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';
 
 
 function default_tooltip_formatter(hoverItem, that) {

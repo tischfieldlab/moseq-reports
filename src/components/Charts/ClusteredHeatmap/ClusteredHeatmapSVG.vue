@@ -55,7 +55,7 @@ import RegisterDataComponent from '@/components/Core';
 import { HeatmapTile } from './ClusterHeatmap.types';
 import * as d3 from 'd3';
 import { sum, tree } from 'd3';
-import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
+import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';
 import mixins from 'vue-typed-mixins';
 import ClusteredHeatmapBase from './ClusteredHeatmapBase.vue';
 import ToolTip from '@/components/Charts/ToolTip.vue';

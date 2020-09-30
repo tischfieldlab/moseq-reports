@@ -71,7 +71,7 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
 import mixins from 'vue-typed-mixins';
 import {rgb} from 'd3-color';
-import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
+import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { extent } from 'd3';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';

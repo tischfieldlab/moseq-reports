@@ -58,7 +58,7 @@ import * as d3 from 'd3';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { range } from 'd3-array';
-import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';
+import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
