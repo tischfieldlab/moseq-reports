@@ -21,7 +21,7 @@ import WindowMixin from '@/components/Core/WindowMixin';
 import { CountMethod } from '@/store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { scaleSequential, scaleLinear, scaleDiverging } from 'd3-scale';
-import { GetScale, GetScaleWithOpacity } from '@/components/Charts/D3ColorProvider';
+import { GetScale, GetScaleWithOpacity } from '@/components/Charts/Colors/D3ColorProvider';
 import { extent, max } from 'd3-array';
 import cytoscape from 'cytoscape';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';

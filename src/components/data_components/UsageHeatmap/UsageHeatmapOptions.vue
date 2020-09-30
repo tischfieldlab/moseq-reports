@@ -86,7 +86,7 @@ import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import DatasetPicker from '@/components/DatasetPicker.vue';
-import ColorScalePicker from '@/components/ColorScalePicker.vue';
+import ColorScalePicker from '@/components/Charts/Colors/ColorScalePicker.vue';
 
 
 export default mixins(WindowMixin).extend({

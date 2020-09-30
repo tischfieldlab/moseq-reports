@@ -55,7 +55,7 @@
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import * as d3 from 'd3';
-import { GetScale } from '@/components/Charts/D3ColorProvider';
+import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { range } from 'd3-array';
 import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendSVG.vue';

@@ -52,7 +52,7 @@ import { Size, Position, Layout } from '@/store/datawindow.types';
 import Snapshot, { ensureDefaults } from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin.ts';
-import {getContrastingColor} from '@/components/Charts/D3ColorProvider';
+import {getContrastingColor} from '@/components/Charts/Colors/D3ColorProvider';
 
 
 export default mixins(WindowMixin).extend({

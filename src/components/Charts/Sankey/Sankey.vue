@@ -71,7 +71,7 @@ import { Node, Link, NodeAlignment, ColoringMode } from './Sankey.types';
 import { sankey, sankeyCenter, sankeyLeft, sankeyRight, sankeyJustify } from 'd3-sankey';
 import { linkHorizontal } from 'd3-shape';
 import { color } from 'd3-color';
-import { GetScale } from '@/components/Charts/D3ColorProvider';
+import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { scaleOrdinal, scaleDiverging } from 'd3-scale';
 import { max } from 'd3-array';
 import { throttle } from '@/util/Events';
