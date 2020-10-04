@@ -12,6 +12,8 @@ __pycache__
 build
 dist
 
+# sqlite database
+*.sqlite3
 
 
 # package file
