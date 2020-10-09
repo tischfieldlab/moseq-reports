@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="overflow:hidden;">
         <template v-if="has_data">
             <b-pagination
                 v-if="num_examples > 0"
@@ -15,7 +15,7 @@
                 <text class="title" :x="this.outsideWidth / 2" :y="20">
                     Module #{{ selectedSyllable }} ({{countMethod}}) Spinogram
                 </text>
-                <g :transform="`translate(${margin.left}, ${margin.top})`">
+                <g :transform="`translate(${margin.left}, ${dims.y - dims.h})`">
                     <template v-for="(tp, idx) in spinogram_data">
                         <path 
                             v-bind:key="idx"
@@ -26,16 +26,16 @@
                             :data-time="tp.t" />
                     </template>
                 </g>
-                <g class="x-axis" v-axis:x="scale" :transform="`translate(${margin.left},${origin.y})`">
-                    <text class="label" :x="this.width / 2" :y="40">
+                <g class="x-axis" v-axis:x="scale" :transform="`translate(${margin.left},${dims.y})`">
+                    <text class="label" :x="dims.w / 2" :y="35">
                         Relative Lateral Position (mm)
                     </text>
                 </g>
-                <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${margin.top})`">
+                <g class="y-axis" v-axis:y="scale" :transform="`translate(${margin.left},${dims.y - dims.h})`">
                     <text class="label"
                         transform="rotate(-90)"
                         :y="-45"
-                        :x="0 - (height / 2)"
+                        :x="0 - (dims.h / 2)"
                         dy="1em">
                         Height (mm)
                     </text>
@@ -94,7 +94,7 @@ RegisterDataComponent({
     component_type: 'Spinogram',
     settings_type: 'SpinogramOptions',
     init_width: 400,
-    init_height: 250,
+    init_height: 300,
     default_settings: {
         line_color: '#FF0000',
         line_weight: 2,
@@ -149,21 +149,26 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         outsideHeight(): number {
             return this.layout.height - 31 - 31;
         },
-        origin(): any {
+        dims(): any {
+            const targetW = 200;
+            const targetH = 100;
+            const targetAspect = targetW / targetH;
+            const actualAspect = this.width / this.height;
+
+            const w = actualAspect > targetAspect ? targetW * this.height / targetH : this.width;
+            const h = actualAspect > targetAspect ? this.height : targetH * this.width / targetW;
             const x = this.margin.left;
-            const y = this.height + this.margin.top;
-            return { x, y };
+            const y = this.outsideHeight - this.margin.bottom;
+
+            return { x, y, w, h };
         },
         scale(): any {
             if (this.spinogram_data === undefined || this.spinogram_data.length === 0) {
                 return { x: scaleLinear(), y: scaleLinear(), t: scaleSequential((n) => n) };
             }
-            const x = scaleLinear()
-                .domain([0, 200])
-                .rangeRound([0, this.width]);
-            const y = scaleLinear()
-                .domain([0, 100])
-                .rangeRound([this.height, 0]);
+
+            const x = scaleLinear().domain([0, 200]).rangeRound([0, this.dims.w]);
+            const y = scaleLinear().domain([0, 100]).rangeRound([this.dims.h, 0]);
 
             const c = rgb(this.line_color);
             const ae = extent(this.spinogram_data.map((tp) => tp.a)) as [number, number];
