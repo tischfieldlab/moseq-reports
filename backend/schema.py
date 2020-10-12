@@ -1,21 +1,41 @@
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from models import db_session, Department as DepartmentModel, Employee as EmployeeModel
+from models import db_session, Group as GroupModel, Label_Map as LabelMapModel,\
+    Crowd_Movies as CrowdMoviesModel, Sample as SampleModel, Usage as UsageModel
 
-class Department(SQLAlchemyObjectType):
+class Group(SQLAlchemyObjectType):
     class Meta:
-        model = DepartmentModel
+        model = GroupModel
         interfaces = (relay.Node, )
 
-class Employee(SQLAlchemyObjectType):
+class Label_Map(SQLAlchemyObjectType):
     class Meta:
-        model = EmployeeModel
+        model = LabelMapModel
         interfaces = (relay.Node, )
+
+class Crowd_Movies(SQLAlchemyObjectType):
+    class Meta:
+        model = CrowdMoviesModel
+        interfaces = (relay.Node, )
+
+class Sample(SQLAlchemyObjectType):
+    class Meta:
+        model = SampleModel
+        interfaces = (relay.Node, )
+
+class Usage(SQLAlchemyObjectType):
+    class Meta:
+        model = UsageModel
+        interfaces = (relay.Node, )
+
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
-    all_employees = SQLAlchemyConnectionField(Employee.connection)
-    all_departments = SQLAlchemyConnectionField(Department.connection)
+    all_groups = SQLAlchemyConnectionField(Group.connection)
+    all_label_maps = SQLAlchemyConnectionField(Label_Map.connection)
+    all_crowd_movies = SQLAlchemyConnectionField(Crowd_Movies.connection)
+    all_samples = SQLAlchemyConnectionField(Sample.connection)
+    all_usages = SQLAlchemyConnectionField(Usage.connection)
 
 schema = graphene.Schema(query=Query)
