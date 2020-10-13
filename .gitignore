@@ -12,6 +12,9 @@ __pycache__
 build
 dist
 
+# python environment (venv)
+flaskql_env/
+
 # sqlite database
 *.sqlite3
 

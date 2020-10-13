@@ -1,8 +1,8 @@
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from models import db_session, Group as GroupModel, Label_Map as LabelMapModel,\
-    Crowd_Movies as CrowdMoviesModel, Sample as SampleModel, Usage as UsageModel
+from models import db_session, Group as GroupModel, Label_Map as LabelMapModel, Crowd_Movies as CrowdMoviesModel,\
+    Sample as SampleModel, Usage as UsageModel
 
 class Group(SQLAlchemyObjectType):
     class Meta:
@@ -28,8 +28,7 @@ class Usage(SQLAlchemyObjectType):
     class Meta:
         model = UsageModel
         interfaces = (relay.Node, )
-
-
+    
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     all_groups = SQLAlchemyConnectionField(Group.connection)
