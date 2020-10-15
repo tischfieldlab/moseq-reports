@@ -27,7 +27,7 @@
     "title": "Spinogram",
     "layout": {
         "width": 400,
-        "height": 200,
+        "height": 300,
         "position": {
             "x": 900,
             "y": 165
@@ -54,7 +54,7 @@
         "height": 360,
         "position": {
             "x": 900,
-            "y": 370
+            "y": 470
         }
     },
     "settings": {}

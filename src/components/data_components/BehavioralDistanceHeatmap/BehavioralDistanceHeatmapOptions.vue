@@ -119,7 +119,7 @@ import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHea
 import DatasetPicker from '@/components/DatasetPicker.vue';
 import { CountMethod } from '../../../store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import ColorScalePicker from '@/components/ColorScalePicker.vue';
+import ColorScalePicker from '@/components/Charts/Colors/ColorScalePicker.vue';
 
 
 export default mixins(WindowMixin).extend({

@@ -35,7 +35,7 @@ import { unnest } from '@/util/Vuex';
 import deepEqual from 'deep-equal';
 import { DataviewState } from '../store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import {getContrastingColor} from '@/components/Charts/D3ColorProvider';
+import {getContrastingColor} from '@/components/Charts/Colors/D3ColorProvider';
 
 
 

@@ -5,7 +5,7 @@ import { OrderingType, SortOrderDirection, HeatmapTile, ClusterDistance, Cluster
 import * as d3 from 'd3';
 import { cluster, hierarchy, extent } from 'd3';
 import { scaleBand, scaleSequential } from 'd3-scale';
-import { GetScale } from '@/components/Charts/D3ColorProvider';
+import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV } from '@/components/Charts/D3Clustering';
 import { spawn, Worker, ModuleThread, Thread } from 'threads';
 import { ClusterWorker } from './Worker';

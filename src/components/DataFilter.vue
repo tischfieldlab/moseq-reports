@@ -52,7 +52,7 @@ import SyllableIdFilter from '@/components/SyllableIdFilter.vue';
 import { unnest } from '@/util/Vuex';
 import EditableText from './EditableText.vue';
 import { Chrome } from 'vue-color';
-import {getContrastingColor} from '@/components/Charts/D3ColorProvider';
+import {getContrastingColor} from '@/components/Charts/Colors/D3ColorProvider';
 
 
 export default Vue.component('datafilter', {

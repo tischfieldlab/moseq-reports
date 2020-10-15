@@ -63,7 +63,7 @@
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import ColorScalePicker from '@/components/ColorScalePicker.vue';
+import ColorScalePicker from '@/components/Charts/Colors/ColorScalePicker.vue';
 import {NodeAlignment} from '@/components/Charts/Sankey/Sankey.types';
 
 
