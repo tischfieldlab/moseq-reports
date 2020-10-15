@@ -55,10 +55,12 @@ const ScaleCategories = {
     ],
 };
 
+/*
+// example: how to inject custom interpolators globally
 Object.defineProperty(d3ScaleChromatic, 'interpolateYellows', {
-    value: interpolateRgbBasis(['#FFFFFF', /*'#CCC0A4'*/'#BFB499']),
+    value: interpolateRgbBasis(['#FFFFFF', '#BFB499']),
 });
-
+*/
 
 function GetCategoryForScale(scaleName: string): string {
     const cats = Object.getOwnPropertyNames(ScaleCategories);
