@@ -24,7 +24,6 @@ const ScaleCategories = {
         'interpolateOranges',
         'interpolatePurples',
         'interpolateReds',
-        'interpolateYellows',
     ],
     'Sequential (Multi-Hue)': [
         'interpolateTurbo',
@@ -60,7 +59,9 @@ const ScaleCategories = {
 Object.defineProperty(d3ScaleChromatic, 'interpolateYellows', {
     value: interpolateRgbBasis(['#FFFFFF', '#BFB499']),
 });
+ScaleCategories['Sequential (Single Hue)'].push('interpolateYellows');
 */
+
 
 function GetCategoryForScale(scaleName: string): string {
     const cats = Object.getOwnPropertyNames(ScaleCategories);
