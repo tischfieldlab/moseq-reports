@@ -35,6 +35,7 @@ import fcose from 'cytoscape-fcose';
 cytoscape.use(fcose);
 
 import cise from 'cytoscape-cise';
+import { end } from '@popperjs/core';
 cytoscape.use(cise);
 
 
@@ -165,9 +166,41 @@ export default mixins(WindowMixin, LoadingMixin).extend({
     },
     computed: {
         graph_layout() {
-            return {
-                name: this.settings.graph_layout,
-            };
+            const retLayout = {
+                name: this.settings.graph_layout
+            }
+
+            if(this.settings.graph_layout === 'fcose'){
+                console.log('FCOSE HERE');
+                // Add default settings here
+                // retLayout['quality'] = 'draft';
+
+                // retLayout['padding'] = 0;
+                // retLayout['nodeSeparation'] = 150;
+                // retLayout['nodeRepulsion'] = 100;
+                // retLayout['edgeElasticity'] = .05;
+                // retLayout['gravity'] = .1; 
+                // retLayout['idealEdgeLength'] = 100;
+
+
+                // default quality settings
+                retLayout['sampleSize'] = 75; 
+                retLayout['nodeSeparation'] = 100;
+                retLayout['nodeRepulsion'] = 4500;
+                retLayout['idealEdgeLength'] = 100;
+                retLayout['edgeElasticity'] = .1;
+                retLayout['gravityRangeCompound'] = 2;
+                retLayout['gravityRange'] = 8;
+            }
+            else if(this.settings.graph_layout === 'cise'){
+                console.log('CISE HERE');
+                // Add default settings here
+                retLayout['nodeRepulsion'] = 50;
+                retLayout['nodeSeparation'] = 50;
+                retLayout['springCoeff'] = .10;
+
+            }
+            return retLayout;
         },
         graph_styles(): any[] {
             return [ // the stylesheet for the graph
@@ -457,7 +490,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
 .cytoscape-container {
     width: 100%;
     height: calc(100% - 60px);
-    position: abosulte;
+    position: absolute;
     top:0px;
     left: 0px;
 }
