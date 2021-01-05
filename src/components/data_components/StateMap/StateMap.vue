@@ -169,37 +169,26 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             const retLayout = {
                 name: this.settings.graph_layout
             }
-
+            // Add default settings here
             if(this.settings.graph_layout === 'fcose'){
-                console.log('FCOSE HERE');
-                // Add default settings here
-                // retLayout['quality'] = 'draft';
-
-                // retLayout['padding'] = 0;
-                // retLayout['nodeSeparation'] = 150;
-                // retLayout['nodeRepulsion'] = 100;
-                // retLayout['edgeElasticity'] = .05;
-                // retLayout['gravity'] = .1; 
-                // retLayout['idealEdgeLength'] = 100;
-
-
-                // default quality settings
                 retLayout['sampleSize'] = 75; 
                 retLayout['nodeSeparation'] = 100;
-                retLayout['nodeRepulsion'] = 4500;
+                retLayout['nodeRepulsion'] = 7000;
                 retLayout['idealEdgeLength'] = 100;
                 retLayout['edgeElasticity'] = .1;
                 retLayout['gravityRangeCompound'] = 2;
-                retLayout['gravityRange'] = 8;
+                retLayout['gravityRange'] = 15;
             }
             else if(this.settings.graph_layout === 'cise'){
-                console.log('CISE HERE');
-                // Add default settings here
-                retLayout['nodeRepulsion'] = 50;
-                retLayout['nodeSeparation'] = 50;
-                retLayout['springCoeff'] = .10;
-
+                retLayout['nodeRepulsion'] = 5;
+                retLayout['nodeSeparation'] = 5;
+                retLayout['springCoeff'] = .05;
+                retLayout['edgeElasticity'] = .1;
+                retLayout['idealEdgeLength'] = 5;
+                retLayout['gravity'] = .5;
+                retLayout['gravityRange'] = 2;
             }
+            
             return retLayout;
         },
         graph_styles(): any[] {
