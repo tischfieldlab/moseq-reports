@@ -165,7 +165,7 @@ export default mixins(WindowMixin).extend({
     data() {
         return {
             available_layouts: [
-                'grid', 'circle', 'concentric', 'avsdf', 'fcose', 'cise',
+                'grid', 'circle', 'concentric', 'avsdf'
             ],
         };
     },
