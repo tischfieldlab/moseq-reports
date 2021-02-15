@@ -124,7 +124,7 @@ function showSaveSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'show') 
     if (showOrOpen === 'show') {
         clickHandler = () => shell.showItemInFolder(dest);
     } else {
-        clickHandler = () => shell.openItem(dest);
+        clickHandler = () => shell.openPath(dest);
     }
 
     const body = [
