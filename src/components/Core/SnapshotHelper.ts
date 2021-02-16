@@ -230,7 +230,7 @@ function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
     if (showOrOpen === 'show') {
         clickHandler = () => shell.showItemInFolder(dest);
     } else {
-        clickHandler = () => shell.openItem(dest);
+        clickHandler = () => shell.openPath(dest);
     }
 
     const body = [
