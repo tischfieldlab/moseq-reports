@@ -47,7 +47,7 @@
     "cytoscape": "^3.15.0",
     "cytoscape-avsdf": "^1.0.0",
     "cytoscape-cise": "^1.0.0",
-    "cytoscape-fcose": "^1.2.3",
+    "cytoscape-fcose": "^2.0.0",
     "d3": "^5.16.0",
     "d3-force": "^2.0.1",
     "d3-hexbin": "^0.2.2",

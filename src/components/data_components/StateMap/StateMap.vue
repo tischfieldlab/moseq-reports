@@ -14,6 +14,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { debounce } from '@/util/Events';
 import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
@@ -52,16 +53,34 @@ RegisterDataComponent({
         show_relative_diff: false,
         relative_diff_group: '',
         layout: 'avsdf',
-        prune_threshold: 0.001, 
-        node_separation: 100,
-        node_repulsion: 50,
-        ideal_edge_length: 100,
-        edge_elasticity: .1,
-        gravity_range: 10,
-        sample_size: 10,
-        gravity_range_compound: 2,
-        spring_coeff: .05,
-        gravity: .5
+        prune_threshold: 0.001,
+        grid_settings: {
+            avoid_overlap: true,
+            avoid_overlap_padding: 10
+        },
+        circle_settings: {
+            avoid_overlap: true,
+            clockwise: true
+        },
+        concentric_settings: {
+            avoid_overlap: true,
+            clockwise: true,
+            equidistant: false,
+            min_node_spacing: 30
+        },
+        avsdf_settings: {
+            node_separation: 60
+        },
+        fcose_settings: {
+            node_separation: 45,
+            node_repulsion: 2000,
+            ideal_edge_length: 60,
+        },
+        cise_settings: {
+            node_separation: 6,
+            node_repulsion: 5,
+            ideal_edge_length: 10,
+        }
     },
 });
 
@@ -84,10 +103,48 @@ interface Link {
     };
 }
 
-interface GraphLayoutObj {
-    name: string,
+type LayoutOptions = DefaultLayout|GridLayoutOptions|CircleLayoutOptions|ConcentricLayoutOptions|AvsdfLayoutOptions
+                        |FcoseLayoutOptions|CiseLayoutOptions;
+
+interface DefaultLayout {
+    name: string
+}
+interface GridLayoutOptions {
+    name: 'grid',
+    avoidOverlap: boolean,
+    avoidOverlapPadding: number
+}
+
+interface CircleLayoutOptions {
+    name: 'circle',
+    avoidOverlap: boolean,
+    clockwise: boolean
+}
+
+interface ConcentricLayoutOptions {
+    name: 'concentric',
+    avoidOverlap: boolean,
+    clockwise: boolean,
+    equidistant: boolean,
+    minNodeSpacing: number
+}
+
+interface AvsdfLayoutOptions {
+    name: 'avsdf',
+    nodeSeparation: number
+}
+interface FcoseLayoutOptions {
+    name: 'fcose',
     nodeSeparation: number,
-    sampleSize: number
+    nodeRepulsion: number,
+    idealEdgeLength: number
+}
+
+interface CiseLayoutOptions {
+    name: 'cise',
+    nodeSeparation: number,
+    nodeRepulsion: number,
+    idealEdgeLength: number
 }
 
 export default mixins(WindowMixin, LoadingMixin).extend({
@@ -122,7 +179,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         elements: {
             handler(newValue) {
                 const cy = (this as any).cy;
-                if (cy === undefined) {
+                if (cy === undefined || newValue === undefined || newValue.length <= 0) {
                     return;
                 }
                 cy.startBatch();
@@ -133,43 +190,14 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 cy.endBatch();
             },
         },
-        // aggregate(){
-        //     console.log('running watch aggregate');
-        //     const cy = (this as any).cy;
-        //     console.log(this.aggregate);
-        //     this.$nextTick(() => {
-        //         cy.layout(this.aggregate).run();
-        //     });
-        // },
-        // layout() {
-        //     console.log('running watch layout');
-        //     const cy = (this as any).cy;
-        //     // cy.layout(this.graph_layout).run();
-        //     cy.layout({name: this.graph_layout}).run();
-
-        // },
         graph_layout(){
-            console.log('running graph_layout watch');
-            const cy = (this as any).cy;
-            cy.layout(this.graph_layout).run();
-        },
-        layout_name(){
-            console.log(`running layout_name watch ${this.settings.node_separation}`);
-            const cy = (this as any).cy;
-            cy.layout(this.layout_name).run();
-        },
-        layout() {
-            console.log('running layout watch');
-            const cy = (this as any).cy;
-            cy.layout(this.graph_layout).run();
+            (this as any).debouncedLayout();
         },
         scale() {
-            console.log('running watch scale');
             const cy = (this as any).cy;
             cy.style(this.graph_styles);
         },
         graph_styles() {
-            console.log('running watch graph_styles');
             const cy = (this as any).cy;
             cy.style(this.graph_styles);
         }
@@ -193,6 +221,8 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         }
     },
     mounted() {
+        (this as any).debouncedLayout = debounce(this.generateLayout, 1000);
+
         const cy = cytoscape({
             container: this.$refs.container,
             elements: [],
@@ -204,65 +234,51 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         (this as any).cy = cy;
     },
     computed: {
-        // returns graph layout object
-        // all other computed should just update the parameters to the store; this returns it
-        // no watchers for any parameters. only have 1 watch aggregate() which calls computed aggregate() which always runs on parameter changes bc it references those params
-        // aggregate() : any{
-        //     console.log('running computed aggregate');
-        //     return {
-        //         name: this.graph_layout,
-        //         nodeSeparation: this.node_separation,
-        //         sampleSize: this.sample_size
-        //     }
-        // },
-        // // change in actual layout (avsdf, fcose, cise, ...)
-        // graph_layout() : string{
-        //     console.log('running computed graph_layout');
-        //     return this.settings.graph_layout;
-        // },
-        // node_separation() : number{
-        //     console.log('running computed node_sep');
-        //     return this.settings.node_separation;
-        // },
-        // sample_size() : number{
-        //     console.log('running computed sample size');
-        //     return this.settings.sample_size;
-        // },
-        graph_layout(){
-            const retLayout = {
-                name: this.settings.layout
+        graph_layout(): LayoutOptions{
+            switch(this.settings.layout){
+                case 'grid':
+                    return {
+                        name: 'grid',
+                        avoidOverlap: this.settings.grid_settings.avoid_overlap,
+                        avoidOverlapPadding: this.settings.grid_settings.avoid_overlap_padding
+                    }
+                case 'circle':
+                    return {
+                        name: 'circle',
+                        avoidOverlap: this.settings.circle_settings.avoid_overlap,
+                        clockwise: this.settings.circle_settings.clockwise
+                    }
+                case 'concentric':
+                    return {
+                        name: 'concentric',
+                        avoidOverlap: this.settings.concentric_settings.avoid_overlap,
+                        clockwise: this.settings.concentric_settings.clockwise,
+                        equidistant: this.settings.concentric_settings.equidistant,
+                        minNodeSpacing: this.settings.concentric_settings.min_node_spacing
+                    }
+                case 'avsdf':
+                    return {
+                        name: 'avsdf',
+                        nodeSeparation: this.settings.avsdf_settings.node_separation
+                    }
+                case 'fcose':
+                    return {
+                        name: 'fcose',
+                        nodeSeparation: this.settings.fcose_settings.node_separation,
+                        nodeRepulsion: this.settings.fcose_settings.node_repulsion,
+                        idealEdgeLength: this.settings.fcose_settings.ideal_edge_length,
+                    }
+                case 'cise':
+                    return {
+                        name: 'cise',
+                        nodeSeparation: this.settings.cise_settings.node_separation,
+                        nodeRepulsion: this.settings.cise_settings.node_repulsion,
+                        idealEdgeLength: this.settings.cise_settings.ideal_edge_length,
+                    }
             }
-            retLayout['nodeSeparation'] = this.settings.node_separation;
-            retLayout['nodeRepulsion'] = this.settings.node_repulsion;
-            retLayout['idealEdgeLength'] = this.settings.ideal_edge_length;
-            retLayout['edgeElasticity'] = this.settings.edge_elasticity;
-            retLayout['gravityRange'] = this.settings.gravity_range;
-            if(this.settings.layout === 'fcose'){
-                retLayout['sampleSize'] = this.settings.sample_size; 
-                retLayout['gravityRangeCompound'] = this.settings.gravity_range_compound;
-            }
-            else if(this.settings.layout === 'cise'){
-                retLayout['springCoeff'] = this.settings.spring_coeff;
-                retLayout['gravity'] = this.settings.gravity;
-            }
-            console.log('running graph_layout computed');
-            return retLayout;
+            // Layout currently not customizable - return default layout object
+            return {name: this.settings.layout}
         },
-        // layout_name(){
-            
-        //     const retLayout = {
-        //         name: this.settings.layout
-        //     }
-        //     if(this.settings.layout === 'fcose'){
-        //         this.settings.node_separation = 500;
-        //     }
-        //     else if(this.settings.layout === 'cise'){
-        //         retLayout['nodeSeparation'] = 10;
-        //     }
-        //     console.log(`running layout_name computed`);
-           
-        //     return retLayout;
-        // },
         graph_styles(): any[] {
             return [ // the stylesheet for the graph
                 {
@@ -490,7 +506,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             },
         },
     },
-    
+
     methods: {
         nodeColor(n) {
             return this.scale.r(n.data('usage'));
@@ -540,7 +556,10 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 return composite_images([graphSubImage, legend], options);
             });
         },
-        
+        generateLayout(){
+            const cy = (this as any).cy;
+            cy.layout(this.graph_layout).run();
+        }
     },
 });
 </script>

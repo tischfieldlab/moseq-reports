@@ -34,75 +34,117 @@
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-if="layout === 'fcose' || layout === 'cise'">
+        <!-- grid layout settings -->
+        <b-row v-if="layout === 'grid'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="grid_avoid_overlap">Avoid Overlap</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'grid' && grid_avoid_overlap === true">
+            <b-col cols="2"></b-col>
+            <b-col>
+                <b-input-group prepend="Avoid Overlap Padding">
+                    <b-form-input v-model="grid_avoid_overlap_padding" type="number" :number="true" step="10" min="0" max="150"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <!-- circle layout settings -->
+        <b-row v-if="layout === 'circle'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="circle_avoid_overlap">Avoid Overlap</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'circle'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="circle_clockwise">Clockwise</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <!-- concentric layout settings -->
+        <b-row v-if="layout === 'concentric'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="concentric_avoid_overlap">Avoid Overlap</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'concentric'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="concentric_clockwise">Clockwise</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'concentric'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="concentric_equidistant">Equidistant</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'concentric'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Minimum Node Spacing">
+                    <b-form-input v-model="concentric_min_node_spacing" type="number" :number="true" step="10" min="0" max="100"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <!-- avsdf layout settings -->
+        <b-row v-if="layout === 'avsdf'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Node Separation">
-                    <b-form-input v-model="node_separation" type="number" :number="true" step="10" min="0" max="1000"/>
+                    <b-form-input v-model="avsdf_node_separation" type="number" :number="true" step="10" min="0" max="200"/>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-if="layout === 'fcose' || layout === 'cise'">
+        <!-- fcose layout settings -->
+        <b-row v-if="layout === 'fcose'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Node Separation">
+                    <b-form-input v-model="fcose_node_separation" type="number" :number="true" step="10" min="0" max="1000"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'fcose'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Node Repulsion">
-                    <b-form-input v-model="node_repulsion" type="number" :number="true" step="100" min="0" max="10000"/>
+                    <b-form-input v-model="fcose_node_repulsion" type="number" :number="true" step="100" min="0" max="10000"/>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-if="layout === 'fcose' || layout === 'cise'">
+        <b-row v-if="layout === 'fcose'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Ideal Edge Length">
-                    <b-form-input v-model="ideal_edge_length" type="number" :number="true" step="5" min="0" max="100"/>
+                    <b-form-input v-model="fcose_ideal_edge_length" type="number" :number="true" step="5" min="0" max="100"/>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-if="layout === 'fcose' || layout === 'cise'">
+        <!-- cise layout settings -->
+        <b-row v-if="layout === 'cise'">
             <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Edge Elasticity">
-                    <b-form-input v-model="edge_elasticity" type="number" :number="true" step=".1" min="0" max="1"/>
+                <b-input-group prepend="Node Separation">
+                    <b-form-input v-model="cise_node_separation" type="number" :number="true" step="1" min="0" max="100"/>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-if="layout === 'fcose' || layout === 'cise'">
+        <b-row v-if="layout === 'cise'">
             <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Gravity Range">
-                    <b-form-input v-model="gravity_range" type="number" :number="true" step="1" min="0" max="30"/>
+                <b-input-group prepend="Node Repulsion">
+                    <b-form-input v-model="cise_node_repulsion" type="number" :number="true" step="1" min="0" max="100"/>
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="layout === 'fcose'">
+        <b-row v-if="layout === 'cise'">
             <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Sample Size">
-                    <b-form-input v-model="sample_size" type="number" :number="true" step="10" min="0" max="1000" />
-                </b-input-group>
-            </b-col>
-        </b-row>
-        <b-row v-show="layout === 'fcose'">
-            <b-col cols="1"></b-col>
-            <b-col>
-                <b-input-group prepend="Gravity Range Compound">
-                    <b-form-input v-model="gravity_range_compound" type="number" :number="true" step="1" min="0" max="20" />
-                </b-input-group>
-            </b-col>
-        </b-row>
-        <b-row v-show="layout === 'cise'">
-            <b-col cols="1"></b-col>
-            <b-col>
-                <b-input-group prepend="Spring Coefficient">
-                    <b-form-input v-model="spring_coeff" type="number" :number="true" step=".01" min="0" max=".1" />
-                </b-input-group>
-            </b-col>
-        </b-row>
-        <b-row v-show="layout === 'cise'">
-            <b-col cols="1"></b-col>
-            <b-col>
-                <b-input-group prepend="gravity">
-                    <b-form-input v-model="gravity" type="number" :number="true" step=".1" min="0" max="1" />
+                <b-input-group prepend="Ideal Edge Length">
+                    <b-form-input v-model="cise_ideal_edge_length" type="number" :number="true" step="1" min="0" max="100"/>
                 </b-input-group>
             </b-col>
         </b-row>
@@ -233,119 +275,233 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        node_separation: {
+        // grid
+        grid_avoid_overlap: {
+            get(): boolean {
+                return this.settings.grid_settings.avoid_overlap;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        grid_settings: {
+                            avoid_overlap: value,
+                        }
+                    },
+                });
+            }
+        },
+        grid_avoid_overlap_padding: {
             get(): number {
-                return this.settings.node_separation;
+                return this.settings.grid_settings.avoid_overlap_padding;
             },
             set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        node_separation: value,
+                        grid_settings: {
+                            avoid_overlap_padding: value,
+                        }
+                    },
+                });
+            }
+        },
+        // circle
+        circle_avoid_overlap: {
+            get(): boolean {
+                return this.settings.circle_settings.avoid_overlap;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        circle_settings: {
+                            avoid_overlap: value,
+                        }
+                    },
+                });
+            }
+        },
+        circle_clockwise: {
+            get(): boolean {
+                return this.settings.circle_settings.clockwise;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        circle_settings: {
+                            clockwise: value,
+                        }
+                    },
+                });
+            }
+        },
+        // concentric
+        concentric_avoid_overlap: {
+            get(): boolean {
+                return this.settings.concentric_settings.avoid_overlap;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        concentric_settings: {
+                            avoid_overlap: value,
+                        }
+                    },
+                });
+            }
+        },
+        concentric_clockwise: {
+            get(): boolean {
+                return this.settings.concentric_settings.clockwise;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        concentric_settings: {
+                            clockwise: value,
+                        }
+                    },
+                });
+            }
+        },
+        concentric_equidistant: {
+            get(): boolean {
+                return this.settings.concentric_settings.equidistant;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        concentric_settings: {
+                            equidistant: value,
+                        }
+                    },
+                });
+            }
+        },
+        concentric_min_node_spacing: {
+            get(): number {
+                return this.settings.concentric_settings.min_node_spacing;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        concentric_settings: {
+                            min_node_spacing: value,
+                        }
                     },
                 });
             },
         },
-        node_repulsion: {
+        // avsdf
+        avsdf_node_separation: {
             get(): number {
-                return this.settings.node_repulsion;
+                return this.settings.avsdf_settings.node_separation;
             },
             set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        node_repulsion: value,
+                        avsdf_settings: {
+                            node_separation: value,
+                        }
                     },
                 });
             },
         },
-        ideal_edge_length: {
+        // fcose
+        fcose_node_separation: {
             get(): number {
-                return this.settings.ideal_edge_length;
+                return this.settings.fcose_settings.node_separation;
             },
             set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        ideal_edge_length: value,
+                        fcose_settings: {
+                            node_separation: value,
+                        }
                     },
                 });
             },
         },
-        edge_elasticity: {
+        fcose_node_repulsion: {
             get(): number {
-                return this.settings.edge_elasticity;
+                return this.settings.fcose_settings.node_repulsion;
             },
             set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        edge_elasticity: value,
+                        fcose_settings: {
+                            node_repulsion: value,
+                        }
                     },
                 });
             },
         },
-        gravity_range: {
+        fcose_ideal_edge_length: {
             get(): number {
-                return this.settings.gravity_range;
+                return this.settings.fcose_settings.ideal_edge_length;
             },
             set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        gravity_range: value,
+                        fcose_settings: {
+                            ideal_edge_length: value,
+                        }
                     },
                 });
             },
         },
-        sample_size: {
+        // cise
+        cise_node_separation: {
             get(): number {
-                return this.settings.sample_size;
+                return this.settings.cise_settings.node_separation;
             },
             set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        sample_size: value,
+                        cise_settings: {
+                            node_separation: value,
+                        }
                     },
                 });
             },
         },
-        gravity_range_compound: {
+        cise_node_repulsion: {
             get(): number {
-                return this.settings.gravity_range_compound;
+                return this.settings.cise_settings.node_repulsion;
             },
             set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        gravity_range_compound: value,
+                        cise_settings: {
+                            node_repulsion: value,
+                        }
                     },
                 });
             },
         },
-        spring_coeff: {
+        cise_ideal_edge_length: {
             get(): number {
-                return this.settings.spring_coeff;
+                return this.settings.cise_settings.ideal_edge_length;
             },
             set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        spring_coeff: value,
-                    },
-                });
-            },
-        },
-        gravity: {
-            get(): number {
-                return this.settings.gravity;
-            },
-            set(value: number) {
-                this.$store.commit(`${this.id}/updateComponentSettings`, {
-                    id: this.id,
-                    settings: {
-                        gravity: value,
+                        cise_settings: {
+                            ideal_edge_length: value,
+                        }
                     },
                 });
             },
