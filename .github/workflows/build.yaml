@@ -22,25 +22,25 @@ jobs:
         with:
           node-version: 12
 
-      - name: Prep Windows Cert
-        if: ${{ runner.os == 'Windows' }}
-        # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
-        run: |
-          echo $CSC_LINK | base64 --decode > cert.p12
-          certutil -p $CSC_KEY_PASSWORD -importpfx ./cert.p12
-          echo CSC_LINK=./cert.p12 >> $GITHUB_ENV
+      # - name: Prep Windows Cert
+      #   if: ${{ runner.os == 'Windows' }}
+      #   # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
+      #   run: |
+      #     echo $CSC_LINK | base64 --decode > cert.p12
+      #     certutil -p $CSC_KEY_PASSWORD -importpfx ./cert.p12
+      #     echo CSC_LINK=./cert.p12 >> $GITHUB_ENV
 
-      - name: Prep OSX Cert
-        if: ${{ runner.os == 'macOS' }}
-        run: |
-          unset CSC_LINK
-          unset CSC_KEY_PASSWORD
+      # - name: Prep OSX Cert
+      #   if: ${{ runner.os == 'macOS' }}
+      #   run: |
+      #     unset CSC_LINK
+      #     unset CSC_KEY_PASSWORD
 
-      - name: Prep Linux Cert
-        if: ${{ runner.os == 'Linux' }}
-        run: |
-          unset CSC_LINK
-          unset CSC_KEY_PASSWORD
+      # - name: Prep Linux Cert
+      #   if: ${{ runner.os == 'Linux' }}
+      #   run: |
+      #     unset CSC_LINK
+      #     unset CSC_KEY_PASSWORD
 
 
       - name: Install
