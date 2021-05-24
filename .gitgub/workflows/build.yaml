@@ -62,3 +62,4 @@ jobs:
     - name: Package (dev)
       if: ${{ github.ref != "/refs/heads/master" }}
       run: npm run package
+
