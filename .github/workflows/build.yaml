@@ -23,7 +23,7 @@ jobs:
         node-version: 12
 
     - name: Prep Windows Cert
-      if: runner.os == 'Windows'
+      if: ${{ runner.os == 'Windows' }}
       # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
       run: |
         echo $CSC_LINK | base64 --decode > cert.p12
@@ -31,13 +31,13 @@ jobs:
         CSC_LINK=./cert.p12
 
     - name Prep OSX Cert
-      if: runner.os == 'macOS'
+      if: ${{ runner.os == 'macOS' }}
       run: |
         unset CSC_LINK
         unset CSC_KEY_PASSWORD
 
     - name: Prep Linux Cert
-      if: runner.os == 'Linux'
+      if: ${{ runner.os == 'Linux' }}
       run: |
         unset CSC_LINK
         unset CSC_KEY_PASSWORD
