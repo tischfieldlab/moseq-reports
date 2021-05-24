@@ -30,7 +30,7 @@ jobs:
         certutil -p $CSC_KEY_PASSWORD -importpfx ./cert.p12
         CSC_LINK=./cert.p12
 
-    - name Prep OSX Cert
+    - name: Prep OSX Cert
       if: ${{ runner.os == 'macOS' }}
       run: |
         unset CSC_LINK
