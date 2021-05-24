@@ -1,9 +1,6 @@
-
-<script lang="ts">
 import Vue from 'vue';
-import * as d3 from 'd3';
 import { scaleLinear, ScaleLinear } from 'd3-scale';
-import { axisBottom, axisRight } from 'd3-axis';
+import { range } from 'd3-array';
 
 export enum Orientation {
     Horizontal = 'horizontal',
@@ -96,32 +93,22 @@ export default Vue.component('color-scale-legend', {
             return this.orientation === Orientation.Horizontal;
         },
         linearscale(): ScaleLinear<number, number> {
-            const range = this.isHorizontal ? [-this.width / 2, this.width / 2] : [this.height / 2, -this.height / 2];
+            const r = this.isHorizontal ? [-this.width / 2, this.width / 2] : [this.height / 2, -this.height / 2];
             const d = this.scale.domain();
             return scaleLinear()
                 .domain([d[0], d[d.length - 1]])
-                .range(range);
+                .range(r);
+        },
+        stops(): {v:number, z: string}[] {
+            const d = this.scale.domain();
+            const start = d[0];
+            const stop = d[d.length - 1];
+            return range(start, stop, (stop - start) / 20).map((v) => ({ v: this.percentRange(v, start, stop), z: this.scale(v) }));
+        },
+    },
+    methods: {
+        percentRange(value: number, start: number, stop: number): number {
+            return ((value - start) / (stop - start)) * 100;
         },
     },
 });
-</script>
-
-<style>
-g.legend text.label {
-    font-family: Verdana,Arial,sans-serif;
-    font-size: 13px;
-    text-anchor:middle;
-    fill:#000;
-}
-g.legend g.tick line {
-    stroke: #888;
-    shape-rendering: crispEdges;
-}
-g.legend g.tick text,
-g.legend text.label {
-    fill: #888;
-}
-g.legend path.domain {
-    stroke:none;
-}
-</style>

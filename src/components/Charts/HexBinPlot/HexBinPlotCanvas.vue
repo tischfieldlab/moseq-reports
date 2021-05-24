@@ -17,7 +17,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { debounce } from '@/util/Events';
-import ColorScaleLegend from '@/components/Charts/ColorScaleLegend/ColorScaleLegendCanvas.vue';
+import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendCanvas.vue';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import HexBinPlotBase from './HexBinPlotBase.vue';

@@ -2,11 +2,11 @@
     <g class="legend">
         <defs>
             <linearGradient :id="$id('color-gradiant')" :x1="offsets.x1" :x2="offsets.x2" :y1="offsets.y1" :y2="offsets.y2">
-                <template v-for="(d, i) in scale.domain()">
+                <template v-for="d in stops">
                     <stop 
-                        :key="`${d}-${i}`"
-                        :offset="`${(i/(scale.domain().length-1))*100}%`"
-                        :stop-color="scale(d)" />
+                        :key="`${d.v}_${d.z}`"
+                        :offset="`${d.v}%`"
+                        :stop-color="d.z" />
                 </template>
             </linearGradient>
         </defs>
@@ -32,7 +32,7 @@ import Vue from 'vue';
 import * as d3 from 'd3';
 import { scaleLinear, ScaleLinear } from 'd3-scale';
 import { axisBottom, axisRight } from 'd3-axis';
-import ColorScaleLegendBase, {Orientation} from './ColorScaleLegendBase.vue';
+import ColorScaleLegendBase, {Orientation} from './ColorScaleLegendBase';
 import mixins from 'vue-typed-mixins';
 
 

@@ -31,7 +31,7 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="Prune Transitions Threshold">
-                    <b-form-input v-model="prune_threshold" type="number" number="true" step="0.001" min="0" max="1" />
+                    <b-form-input v-model="prune_threshold" type="number" :number="true" step="0.001" min="0" max="1" />
                 </b-input-group>
             </b-col>
         </b-row>
@@ -45,14 +45,14 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="Node Width">
-                    <b-form-input v-model="node_width" type="number" number="true" step="1" min="5" max="50" />
+                    <b-form-input v-model="node_width" type="number" :number="true" step="1" min="5" max="50" />
                 </b-input-group>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
                 <b-input-group prepend="Node Padding">
-                    <b-form-input v-model="node_padding" type="number" number="true" step="1" min="0" max="50" />
+                    <b-form-input v-model="node_padding" type="number" :number="true" step="1" min="0" max="50" />
                 </b-input-group>
             </b-col>
         </b-row>
@@ -63,7 +63,7 @@
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import ColorScalePicker from '@/components/ColorScalePicker.vue';
+import ColorScalePicker from '@/components/Charts/Colors/ColorScalePicker.vue';
 import {NodeAlignment} from '@/components/Charts/Sankey/Sankey.types';
 
 

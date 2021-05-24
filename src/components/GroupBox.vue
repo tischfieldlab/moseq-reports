@@ -16,7 +16,7 @@
                         </div>
                         <b-popover :target="$id(option.id)" triggers="click blur" placement="top">
                             <template v-slot:title>Group Color ({{ option.name }})</template>
-                            <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" disableAlpha="true" />
+                            <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" :disableAlpha="true" />
                         </b-popover>
                         <span class="group_name" :title="option.name">{{ option.name }}</span>
                     </div>
@@ -35,7 +35,7 @@ import { unnest } from '@/util/Vuex';
 import deepEqual from 'deep-equal';
 import { DataviewState } from '../store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import {getContrastingColor} from '@/components/Charts/D3ColorProvider';
+import {getContrastingColor} from '@/components/Charts/Colors/D3ColorProvider';
 
 
 
