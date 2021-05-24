@@ -28,7 +28,7 @@ jobs:
         run: |
           echo $CSC_LINK | base64 --decode > cert.p12
           certutil -p $CSC_KEY_PASSWORD -importpfx ./cert.p12
-          CSC_LINK=./cert.p12
+          echo CSC_LINK=./cert.p12 >> $GITHUB_ENV
 
       - name: Prep OSX Cert
         if: ${{ runner.os == 'macOS' }}
