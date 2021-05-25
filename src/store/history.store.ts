@@ -16,9 +16,10 @@ const HistoryModule: Module<HistoryState, RootState> = {
     mutations: {
         addEntry(state, payload: Partial<HistoryItem>) {
             state.items.push({
-                time: new Date(),
+                time: payload.time || new Date(),
                 message: payload.message || '',
                 variant: payload.variant || 'default',
+                details: payload.details || null
             });
         },
     },
