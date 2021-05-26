@@ -24,10 +24,10 @@ jobs:
           node-version: 12
 
       - name: Prep Windows Cert
-        if: ${{ runner.os == 'Windows' }}
         with: # Set the secret as an input
           WINDOWS_CERTIFICATE_P12: ${{ secrets.WINDOWS_CERTIFICATE_P12 }}
           WINDOWS_CERTIFICATE_PSWD: ${{ secrets.WINDOWS_CERTIFICATE_PSWD }}
+        if: ${{ runner.os == 'Windows' }}
         # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
         run: |
           echo $WINDOWS_CERTIFICATE_P12 | base64 --decode > cert.p12
