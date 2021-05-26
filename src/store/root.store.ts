@@ -33,6 +33,8 @@ const store: StoreOptions<RootState> = {
             if (loc === -1) {
                 state.registry.push(payload);
             } else {
+                // tslint:disable-next-line:no-console
+                console.warn(`${payload.component_type} has already been registered! Merging...`)
                 state.registry.splice(loc, 1, payload);
             }
         },
