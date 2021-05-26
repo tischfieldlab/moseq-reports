@@ -65,9 +65,8 @@ jobs:
         run: git tag ${{ env.PACKAGE_VERSION }}
 
       - name: Package (release)
-        if: ${{ github.ref == '/refs/heads/windows-sign-action' }}
+        # if: ${{ github.ref == '/refs/heads/master' }}
         run: npm run package-release
-
-      - name: Package (dev)
-        if: ${{ github.ref != '/refs/heads/master' }}
-        run: npm run package
+      # - name: Package (dev)
+      # if: ${{ github.ref != '/refs/heads/master' }}
+      # run: npm run package
