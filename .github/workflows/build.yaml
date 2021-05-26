@@ -22,13 +22,17 @@ jobs:
         with:
           node-version: 12
 
-      # - name: Prep Windows Cert
-      #   if: ${{ runner.os == 'Windows' }}
-      #   # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
-      #   run: |
-      #     echo $CSC_LINK | base64 --decode > cert.p12
-      #     certutil -p $CSC_KEY_PASSWORD -importpfx ./cert.p12
-      #     echo CSC_LINK=./cert.p12 >> $GITHUB_ENV
+      - name: Prep Windows Cert
+        if: ${{ runner.os == 'Windows' }}
+        with: # Set the secret as an input
+          WINDOWS_CERTIFICATE_P12: ${{ secrets.WINDOWS_CERTIFICATE_P12 }}
+          WINDOWS_CERTIFICATE_PSWD: ${{ secrets.WINDOWS_CERTIFICATE_PSWD }}
+        # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
+        run: |
+          echo $WINDOWS_CERTIFICATE_P12 | base64 --decode > cert.p12
+          certutil -p $WINDOWS_CERTIFICATE_PSWD -importpfx ./cert.p12
+          echo CSC_LINK=./cert.p12 >> $GITHUB_ENV
+          echo CSC_KEY_PASSWORD=WINDOWS_CERTIFICATE_PSWD >> $GITHUB_ENV
 
       # - name: Prep OSX Cert
       #   if: ${{ runner.os == 'macOS' }}
@@ -57,10 +61,12 @@ jobs:
         run: git tag ${{ env.PACKAGE_VERSION }}
 
       - name: Package (release)
-        if: ${{ github.ref == '/refs/heads/master' }}
+        uses: montudor/action-zip@v1
+        if: ${{ github.ref == '/refs/heads/windows-sign-action' }}
         run: npm run package-release
 
       - name: Package (dev)
+        uses: montudor/action-zip@v1
         if: ${{ github.ref != '/refs/heads/master' }}
         run: npm run package
 
