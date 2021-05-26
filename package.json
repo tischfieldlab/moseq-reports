@@ -108,7 +108,7 @@
     "electron": "^9.4.0",
     "electron-log": "^4.2.0",
     "geckodriver": "^1.19.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "lodash.defaultsdeep": "^4.6.1",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
