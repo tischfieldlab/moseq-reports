@@ -2,6 +2,13 @@
     <b-container>
         <b-row>
             <b-col>
+                <b-input-group prepend="Preferred Renderer">
+                    <b-form-select v-model="renderer" :options="supported_renderers" />
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <b-input-group prepend="Output Format">
                     <b-form-select v-model="format" :options="supported_formats" />
                 </b-input-group>
@@ -45,6 +52,7 @@ import Snapshot, {resolveTarget} from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import { Chrome } from 'vue-color';
+import { RenderMode } from '@/store/datawindow.types';
 
 
 export default mixins(WindowMixin).extend({
@@ -55,17 +63,42 @@ export default mixins(WindowMixin).extend({
         return {
             is_taking_snapshot: false,
             quality_str: '',
-            supported_formats: Array<string>(),
         };
     },
     beforeMount() {
         this.updateQualityStr();
     },
-    mounted() {
-        const target = resolveTarget(this.getComponent());
-        this.supported_formats = this.getSupportedFormats(target);
-    },
     computed: {
+        supported_renderers(): string[] {
+            return this.spec.available_render_modes
+        },
+        supported_formats(): string[] {
+            switch(this.renderer) {
+                case RenderMode.CANVAS:
+                    return ['png'];
+                case RenderMode.SVG:
+                    return ['svg', 'png'];
+                case RenderMode.VIDEO:
+                    return ['video', 'png'];
+                case RenderMode.HTML:
+                    return ['png'];
+                case RenderMode.UNDEFINED:
+                default:
+                    // tslint:disable-next-line:no-console
+                    console.warn(`Invalid Render Mode '${this.renderer}`);
+                    return [];
+            }
+        },
+        renderer: {
+            get(): string {
+                return this.$wstate.render_mode;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentRenderMode`, {
+                    render_mode: value as RenderMode
+                });
+            },
+        },
         snapshot_settings(): any {
             return this.settings.snapshot;
         },
@@ -144,13 +177,6 @@ export default mixins(WindowMixin).extend({
                 Snapshot(this.getComponent(), this.title, this.snapshot_settings)
                     .finally(() => this.is_taking_snapshot = false);
             });
-        },
-        getSupportedFormats(info): string[] {
-            if (info.type === 'video') {
-                return ['video', 'png']
-            } else {
-                return ['png', 'svg'];
-            }
         },
         backgroundColorChanged(event) {
             this.backgroundColor = event.hex;
