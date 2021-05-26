@@ -23,20 +23,21 @@ jobs:
         with:
           node-version: 12
 
+      - name: Add Zip to path
+        if: ${{ runner.os == 'Windows'}}
+        uses: montudor/action-zip@v1
+
       - name: Prep Windows Cert
         env: # Set the secret as an input
           WINDOWS_CERTIFICATE_P12: ${{ secrets.WINDOWS_CERTIFICATE_P12 }}
           WINDOWS_CERTIFICATE_PSWD: ${{ secrets.WINDOWS_CERTIFICATE_PSWD }}
         if: ${{ runner.os == 'Windows' }}
         # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
-        # run: |
-          # echo $WINDOWS_CERTIFICATE_P12 | base64 --decode > cert.p12
-        #   certutil -p $WINDOWS_CERTIFICATE_PSWD -importpfx ./cert.p12
-        #   echo CSC_LINK=./cert.p12 >> $GITHUB_ENV
-        #   echo CSC_KEY_PASSWORD=WINDOWS_CERTIFICATE_PSWD >> $GITHUB_ENV
         run: |
-          echo $WINDOWS_CERTIFICATE_P12 | base64 --decode > cert.p12
-          certutil -p $WINDOWS_CERTIFICATE_PSWD -importpfx ./cert.p12
+          echo "${WINDOWS_CERTIFICATE_P12}" | base64 --decode > cert.p12
+          certutil -p "${WINDOWS_CERTIFICATE_PSWD}" -importpfx ./cert.p12
+          echo CSC_LINK=./cert.p12 >> $GITHUB_ENV
+          echo CSC_KEY_PASSWORD="${WINDOWS_CERTIFICATE_PSWD}" >> $GITHUB_ENV
 
       # - name: Prep OSX Cert
       #   if: ${{ runner.os == 'macOS' }}
