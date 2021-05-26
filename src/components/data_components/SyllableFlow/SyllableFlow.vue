@@ -27,11 +27,11 @@ import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
-import { CountMethod } from '../../../store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 
 import Sankey from '@/components/Charts/Sankey/Sankey.vue';
 import {Node, Link, NodeAlignment, ColoringMode} from '@/components/Charts/Sankey/Sankey.types';
+import { RenderMode } from '@/store/datawindow.types';
 
 
 RegisterDataComponent({
@@ -40,6 +40,8 @@ RegisterDataComponent({
     settings_type: 'SyllableFlowOptions',
     init_width: 400,
     init_height: 500,
+    available_render_modes: [RenderMode.SVG],
+    default_render_mode: RenderMode.SVG,
     default_settings: {
         plot_group: '',
         show_relative_diff: false,

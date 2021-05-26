@@ -1,5 +1,5 @@
 <template>
-    <HexBinPlotSVG
+    <component :is="render_mode"
         :width="this.layout.width"
         :height="this.layout.height - 31"
         :data="individualUseageData"
@@ -21,17 +21,12 @@ import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-
 import HexBinPlotCanvas from '@/components/Charts/HexBinPlot/HexBinPlotCanvas.vue';
 import HexBinPlotSVG from '@/components/Charts/HexBinPlot/HexBinPlotSVG.vue';
-
-import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
-
 import { CountMethod } from '@/store/dataview.types';
-import path from 'path';
-import fs from 'fs';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { PositionPlotMode } from './PositionPlotOptions.vue';
+import { RenderMode } from '@/store/datawindow.types';
 
 
 
@@ -43,6 +38,8 @@ RegisterDataComponent({
     settings_type: 'PositionPlotOptions',
     init_width: 400,
     init_height: 380,
+    available_render_modes: [RenderMode.SVG, RenderMode.CANVAS],
+    default_render_mode: RenderMode.SVG,
     default_settings: {
         mode: PositionPlotMode.Overall,
         resolution: 5,
@@ -61,6 +58,17 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         };
     },
     computed: {
+        render_mode(): string {
+            if (this.$wstate.render_mode === RenderMode.CANVAS) {
+                return 'HexBinPlotCanvas';
+            } else if (this.$wstate.render_mode === RenderMode.SVG) {
+                return 'HexBinPlotSVG';
+            } else {
+                // tslint:disable-next-line:no-console
+                console.error('invalid render mode', this.$wstate.render_mode);
+                return 'HexBinPlotSVG';
+            }
+        },
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
         },

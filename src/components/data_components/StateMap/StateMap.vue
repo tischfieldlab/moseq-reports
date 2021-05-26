@@ -18,7 +18,6 @@ import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
-import { CountMethod } from '@/store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { scaleSequential, scaleLinear, scaleDiverging } from 'd3-scale';
 import { GetScale, GetScaleWithOpacity } from '@/components/Charts/Colors/D3ColorProvider';
@@ -29,6 +28,7 @@ import {composite_images, SnapshotOptions, SubImage, targetToDataURI} from '@/co
 import SVGHost from '@/components/Charts/SVGHost.vue';
 
 import avsdf from 'cytoscape-avsdf';
+import { RenderMode } from '@/store/datawindow.types';
 cytoscape.use(avsdf);
 
 
@@ -38,6 +38,8 @@ RegisterDataComponent({
     settings_type: 'StateMapOptions',
     init_width: 400,
     init_height: 500,
+    available_render_modes: [RenderMode.CANVAS],
+    default_render_mode: RenderMode.CANVAS,
     default_settings: {
         plot_group: '',
         colorscale: 'interpolateGreens',
