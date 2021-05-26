@@ -23,10 +23,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Add Zip to path
-        if: ${{ runner.os == 'Windows'}}
-        uses: montudor/action-zip@v1
-
       - name: Prep Windows Cert
         env: # Set the secret as an input
           WINDOWS_CERTIFICATE_P12: ${{ secrets.WINDOWS_CERTIFICATE_P12 }}
