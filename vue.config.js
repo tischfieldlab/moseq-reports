@@ -1,80 +1,77 @@
-const ThreadsPlugin = require('threads-plugin');
+const ThreadsPlugin = require("threads-plugin");
 
 module.exports = {
-    publicPath: '',
-    assetsDir: '',
-    configureWebpack: {
-        devtool: 'source-map',
-        plugins: [
-            new ThreadsPlugin({
-                target: 'electron-node-worker',
-                globalObject: 'self',
-            })
+  publicPath: "",
+  assetsDir: "",
+  configureWebpack: {
+    devtool: "source-map",
+    plugins: [
+      new ThreadsPlugin({
+        target: "electron-node-worker",
+        globalObject: "self",
+      }),
+    ],
+  },
+  pluginOptions: {
+    electronBuilder: {
+      externals: ["plotly.js-dist", "hclusterjs", "about-window"],
+      chainWebpackRendererProcess(config) {
+        config.plugins.delete("workbox");
+        config.plugins.delete("pwa");
+      },
+      builderOptions: {
+        productName: "moseq-reports",
+        appId: "org.tischfieldlab.reports",
+        fileAssociations: [
+          {
+            ext: "msq",
+            name: "Moseq Data File",
+            role: "Editor",
+          },
         ],
-    },
-    pluginOptions: {
-        electronBuilder: {
-            externals: ['plotly.js-dist', 'hclusterjs', 'about-window'],
-            chainWebpackRendererProcess(config) {
-                config.plugins.delete('workbox')
-                config.plugins.delete('pwa')
+        dmg: {
+          contents: [
+            {
+              x: 120,
+              y: 220,
             },
-            builderOptions: {
-                productName: "moseq-reports",
-                appId: "org.tischfieldlab.reports",
-                fileAssociations: [
-                    {
-                        ext: "msq",
-                        name: "Moseq Data File",
-                        role: "Editor"
-                    }
-                ],
-                dmg: {
-                    contents: [
-                        {
-                            x: 120,
-                            y: 220
-                        },
-                        {
-                            x: 420,
-                            y: 220,
-                            type: "link",
-                            path: "/Applications"
-                        }
-                    ],
-                    publish: ["github"]
-                },
-                linux: {
-                    target: [
-                        "deb",
-                        "AppImage",
-                    ],
-                    category: "Development",
-                    fileAssociations: [
-                        {
-                            ext: 'msq',
-                        },
-                    ],
-                },
-                win: {
-                    // For some reason, this fails on the nsi version... so we are leaving it
-                    // out for the moment...
-                    target: [
-                        // "msi",
-                        "nsis"
-                    ],
-                    icon: "public/img/icons/winapp256x256.ico",
-                    certificateSubjectName: "Rutgers, The State University of New Jersey",
-                    // certificateFile: "test.pfx",
-                    publish: ["github"],
-                },
-                publish: {
-                    provider: "github",
-                    owner: "tischfieldlab",
-                    repo: "moseq-reports",
-                    private: true,
-                }
-            }
-        }
-    }
-}
+            {
+              x: 420,
+              y: 220,
+              type: "link",
+              path: "/Applications",
+            },
+          ],
+          publish: ["github"],
+        },
+        linux: {
+          target: ["deb", "AppImage"],
+          category: "Development",
+          fileAssociations: [
+            {
+              ext: "msq",
+            },
+          ],
+        },
+        win: {
+          // For some reason, this fails on the nsi version... so we are leaving it
+          // out for the moment...
+          target: [
+            // "msi",
+            "nsis",
+          ],
+          icon: "public/img/icons/winapp256x256.ico",
+          // certificateSubjectName: "Rutgers, The State University of New Jersey",
+          // certificateFile: "test.pfx",
+          publish: ["github"],
+        },
+        publish: {
+          provider: "github",
+          owner: "tischfieldlab",
+          repo: "moseq-reports",
+          private: true,
+        },
+      },
+    },
+  },
+};
