@@ -52,7 +52,7 @@ jobs:
       #     unset CSC_KEY_PASSWORD
 
       - name: Install
-        run: npm install --legacy-peer-deps
+        run: npm install
 
       - name: Version
         run: |
