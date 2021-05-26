@@ -3,7 +3,7 @@ name: Build Moseq-Reports
 on:
   push:
   pull_request:
-    branches: [ master ]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -23,19 +23,23 @@ jobs:
         with:
           node-version: 12
 
-      - name: Prep Windows Cert
-        env: # Set the secret as an input
-          WINDOWS_CERTIFICATE_P12: ${{ secrets.WINDOWS_CERTIFICATE_P12 }}
-          WINDOWS_CERTIFICATE_PSWD: ${{ secrets.WINDOWS_CERTIFICATE_PSWD }}
+      - name: Decode and Prep Windows Cert
         if: ${{ runner.os == 'Windows' }}
-        # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
-        run: |
-          echo "${WINDOWS_CERTIFICATE_P12}" | base64 --decode > cert.p12
-          certutil -p "${WINDOWS_CERTIFICATE_PSWD}" -importpfx ./cert.p12
-          echo CSC_LINK=./cert.p12 >> $GITHUB_ENV
-          echo CSC_KEY_PASSWORD="${WINDOWS_CERTIFICATE_PSWD}" >> $GITHUB_ENV
+        id: windows_pfx
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: "win-certificate.pfx"
+          encodedString: ${{secrets.WINDOWS_CERTIFICATE_P12}}
 
-      # - name: Prep OSX Cert
+      - name: Windows Add Variables to Path
+        if: ${{ runner.os == 'Windows' }}
+        env:
+          CERT_PATH: ${{steps.windows_pfx.outputs.filePath}}
+          CERT_PASSWORD: ${{secrets.WINDOWS_CERTIFICATE_PSWD}}
+        run: |
+          echo CSC_LINK=${CERT_PATH} >> $GITHUB_ENV
+          echo CSC_KEY_PASSWORD=${CERT_PASSWORD} >> $GITHUB_ENV
+
       #   if: ${{ runner.os == 'macOS' }}
       #   run: |
       #     unset CSC_LINK
@@ -46,7 +50,6 @@ jobs:
       #   run: |
       #     unset CSC_LINK
       #     unset CSC_KEY_PASSWORD
-
 
       - name: Install
         run: npm install
@@ -68,4 +71,3 @@ jobs:
       - name: Package (dev)
         if: ${{ github.ref != '/refs/heads/master' }}
         run: npm run package
-
