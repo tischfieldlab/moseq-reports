@@ -37,6 +37,7 @@ jobs:
           CERT_PATH: ${{steps.windows_pfx.outputs.filePath}}
           CERT_PASSWORD: ${{secrets.WINDOWS_CERTIFICATE_PSWD}}
         run: |
+          certutil -p ${CERT_PASSWORD} -importpfx ${CERT_PATH}
           echo CSC_LINK=${CERT_PATH} >> $GITHUB_ENV
           echo CSC_KEY_PASSWORD=${CERT_PASSWORD} >> $GITHUB_ENV
 
@@ -68,8 +69,6 @@ jobs:
         # if: ${{ github.ref == '/refs/heads/master' && runner.os == 'Windows'}}
         env:
           GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
-          CSC_LINK: ${{env.CSC_LINK}}
-          CSC_KEY_PASSWORD: ${{env.CSC_KEY_PASSWORD}}
         run: |
           npm run package-release
       # - name: Package (dev)
