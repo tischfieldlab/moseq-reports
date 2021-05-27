@@ -62,7 +62,7 @@ jobs:
         run: npm run lint
 
       - name: Add Service Account Token to Env
-        if: ${{ github.ref == '/refs/heads/master' }}
+        # if: ${{ github.ref == '/refs/heads/master' }}
         env:
           ACCOUNT_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
         run: |
