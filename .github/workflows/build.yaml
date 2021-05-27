@@ -70,7 +70,7 @@ jobs:
         env:
           GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
         run: |
-          certutil -p "${{secrets.WINDOWS_CERTIFICATE_PSWD}}"" -importpfx "${{steps.windows_pfx.outputs.filePath}}"
+          certutil -p "${{secrets.WINDOWS_CERTIFICATE_PSWD}}" -importpfx "${{steps.windows_pfx.outputs.filePath}}"
           npm run package-release
       # - name: Package (dev)
       #   if: ${{ github.ref != '/refs/heads/master' }}
