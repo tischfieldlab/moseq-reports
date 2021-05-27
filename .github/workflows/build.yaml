@@ -37,9 +37,9 @@ jobs:
           CERT_PATH: ${{steps.windows_pfx.outputs.filePath}}
           CERT_PASSWORD: ${{secrets.WINDOWS_CERTIFICATE_PSWD}}
         run: |
-          certutil -p ${CERT_PASSWORD} -importpfx ${CERT_PATH}
           echo CSC_LINK=${CERT_PATH} >> $GITHUB_ENV
           echo CSC_KEY_PASSWORD=${CERT_PASSWORD} >> $GITHUB_ENV
+          certutil -p "${{secrets.WINDOWS_CERTIFICATE_PSWD}}" -importpfx "${{steps.windows_pfx.outputs.filePath}}"
 
       #   if: ${{ runner.os == 'macOS' }}
       #   run: |
@@ -65,12 +65,11 @@ jobs:
       - name: Git Tag
         run: git tag ${{ env.PACKAGE_VERSION }}
 
-      - name: Windows Package (release)
+      - name: Package (release)
         # if: ${{ github.ref == '/refs/heads/master' && runner.os == 'Windows'}}
         env:
           GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
         run: |
-          certutil -p "${{secrets.WINDOWS_CERTIFICATE_PSWD}}" -importpfx "${{steps.windows_pfx.outputs.filePath}}"
           npm run package-release
       # - name: Package (dev)
       #   if: ${{ github.ref != '/refs/heads/master' }}
