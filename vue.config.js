@@ -54,13 +54,11 @@ module.exports = {
           ],
         },
         win: {
-          // For some reason, this fails on the nsi version... so we are leaving it
-          // out for the moment...
           target: [
             // "msi",
             "nsis",
           ],
-          icon: "public/img/icons/winapp256x256.ico",
+          icon: "public/img/icons/winapp256x256.svg",
           // certificateSubjectName: "Rutgers, The State University of New Jersey",
           // certificateFile: "test.pfx",
           publish: ["github"],
