@@ -61,6 +61,13 @@ jobs:
       - name: Linting
         run: npm run lint
 
+      - name: Add Service Account Token to Env
+        if: ${{ github.ref == '/refs/heads/master' }}
+        env:
+          ACCOUNT_TOKEN: ${{secrets.GH_TOKEN}}
+        run: |
+          echo ${ACCOUNT_TOKEN} >> $GITHUB_ENV
+
       - name: Git Tag
         run: git tag ${{ env.PACKAGE_VERSION }}
 
