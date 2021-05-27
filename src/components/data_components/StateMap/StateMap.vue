@@ -14,6 +14,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { debounce } from '@/util/Events';
 import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
@@ -31,6 +32,13 @@ import SVGHost from '@/components/Charts/SVGHost.vue';
 import avsdf from 'cytoscape-avsdf';
 cytoscape.use(avsdf);
 
+import fcose from 'cytoscape-fcose';
+cytoscape.use(fcose);
+
+import cise from 'cytoscape-cise';
+import { end } from '@popperjs/core';
+cytoscape.use(cise);
+
 
 RegisterDataComponent({
     friendly_name: 'State Map',
@@ -44,8 +52,35 @@ RegisterDataComponent({
         use_opacity: true,
         show_relative_diff: false,
         relative_diff_group: '',
-        graph_layout: 'avsdf',
+        layout: 'avsdf',
         prune_threshold: 0.001,
+        grid_settings: {
+            avoid_overlap: true,
+            avoid_overlap_padding: 10
+        },
+        circle_settings: {
+            avoid_overlap: true,
+            clockwise: true
+        },
+        concentric_settings: {
+            avoid_overlap: true,
+            clockwise: true,
+            equidistant: false,
+            min_node_spacing: 30
+        },
+        avsdf_settings: {
+            node_separation: 60
+        },
+        fcose_settings: {
+            node_separation: 45,
+            node_repulsion: 2000,
+            ideal_edge_length: 60,
+        },
+        cise_settings: {
+            node_separation: 6,
+            node_repulsion: 5,
+            ideal_edge_length: 10,
+        }
     },
 });
 
@@ -66,6 +101,50 @@ interface Link {
         target: number;
         weight: number;
     };
+}
+
+type LayoutOptions = DefaultLayout|GridLayoutOptions|CircleLayoutOptions|ConcentricLayoutOptions|AvsdfLayoutOptions
+                        |FcoseLayoutOptions|CiseLayoutOptions;
+
+interface DefaultLayout {
+    name: string
+}
+interface GridLayoutOptions {
+    name: 'grid',
+    avoidOverlap: boolean,
+    avoidOverlapPadding: number
+}
+
+interface CircleLayoutOptions {
+    name: 'circle',
+    avoidOverlap: boolean,
+    clockwise: boolean
+}
+
+interface ConcentricLayoutOptions {
+    name: 'concentric',
+    avoidOverlap: boolean,
+    clockwise: boolean,
+    equidistant: boolean,
+    minNodeSpacing: number
+}
+
+interface AvsdfLayoutOptions {
+    name: 'avsdf',
+    nodeSeparation: number
+}
+interface FcoseLayoutOptions {
+    name: 'fcose',
+    nodeSeparation: number,
+    nodeRepulsion: number,
+    idealEdgeLength: number
+}
+
+interface CiseLayoutOptions {
+    name: 'cise',
+    nodeSeparation: number,
+    nodeRepulsion: number,
+    idealEdgeLength: number
 }
 
 export default mixins(WindowMixin, LoadingMixin).extend({
@@ -100,7 +179,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         elements: {
             handler(newValue) {
                 const cy = (this as any).cy;
-                if (cy === undefined) {
+                if (cy === undefined || newValue === undefined || newValue.length <= 0) {
                     return;
                 }
                 cy.startBatch();
@@ -111,18 +190,17 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 cy.endBatch();
             },
         },
-        graph_layout() {
-            const cy = (this as any).cy;
-            cy.layout(this.graph_layout).run();
-        },
-        layout() {
-            const cy = (this as any).cy;
-            cy.layout(this.graph_layout).run();
+        graph_layout(){
+            (this as any).debouncedLayout();
         },
         scale() {
             const cy = (this as any).cy;
             cy.style(this.graph_styles);
         },
+        graph_styles() {
+            const cy = (this as any).cy;
+            cy.style(this.graph_styles);
+        }
     },
     created() {
         if (this.settings.plot_group === undefined || this.settings.plot_group === '') {
@@ -143,6 +221,8 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         }
     },
     mounted() {
+        (this as any).debouncedLayout = debounce(this.generateLayout, 1000);
+
         const cy = cytoscape({
             container: this.$refs.container,
             elements: [],
@@ -154,10 +234,50 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         (this as any).cy = cy;
     },
     computed: {
-        graph_layout() {
-            return {
-                name: this.settings.graph_layout,
-            };
+        graph_layout(): LayoutOptions{
+            switch(this.settings.layout){
+                case 'grid':
+                    return {
+                        name: 'grid',
+                        avoidOverlap: this.settings.grid_settings.avoid_overlap,
+                        avoidOverlapPadding: this.settings.grid_settings.avoid_overlap_padding
+                    }
+                case 'circle':
+                    return {
+                        name: 'circle',
+                        avoidOverlap: this.settings.circle_settings.avoid_overlap,
+                        clockwise: this.settings.circle_settings.clockwise
+                    }
+                case 'concentric':
+                    return {
+                        name: 'concentric',
+                        avoidOverlap: this.settings.concentric_settings.avoid_overlap,
+                        clockwise: this.settings.concentric_settings.clockwise,
+                        equidistant: this.settings.concentric_settings.equidistant,
+                        minNodeSpacing: this.settings.concentric_settings.min_node_spacing
+                    }
+                case 'avsdf':
+                    return {
+                        name: 'avsdf',
+                        nodeSeparation: this.settings.avsdf_settings.node_separation
+                    }
+                case 'fcose':
+                    return {
+                        name: 'fcose',
+                        nodeSeparation: this.settings.fcose_settings.node_separation,
+                        nodeRepulsion: this.settings.fcose_settings.node_repulsion,
+                        idealEdgeLength: this.settings.fcose_settings.ideal_edge_length,
+                    }
+                case 'cise':
+                    return {
+                        name: 'cise',
+                        nodeSeparation: this.settings.cise_settings.node_separation,
+                        nodeRepulsion: this.settings.cise_settings.node_repulsion,
+                        idealEdgeLength: this.settings.cise_settings.ideal_edge_length,
+                    }
+            }
+            // Layout currently not customizable - return default layout object
+            return {name: this.settings.layout}
         },
         graph_styles(): any[] {
             return [ // the stylesheet for the graph
@@ -386,6 +506,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             },
         },
     },
+
     methods: {
         nodeColor(n) {
             return this.scale.r(n.data('usage'));
@@ -435,6 +556,10 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 return composite_images([graphSubImage, legend], options);
             });
         },
+        generateLayout(){
+            const cy = (this as any).cy;
+            cy.layout(this.graph_layout).run();
+        }
     },
 });
 </script>
@@ -447,7 +572,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
 .cytoscape-container {
     width: 100%;
     height: calc(100% - 60px);
-    position: abosulte;
+    position: absolute;
     top:0px;
     left: 0px;
 }
