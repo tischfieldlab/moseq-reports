@@ -82,8 +82,8 @@ jobs:
       - name: Zip package
         run: 7z a ${{ env.ARTIFACT_DEST }} ./dist_electron/*
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_DEST }}
+      #- name: Upload build artifacts
+      #  uses: actions/upload-artifact@v2
+      #  with:
+      #    name: ${{ env.ARTIFACT_NAME }}
+      #    path: ${{ env.ARTIFACT_DEST }}
