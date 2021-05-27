@@ -11,8 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -70,5 +69,5 @@ jobs:
           GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
         run: npm run package-release
       # - name: Package (dev)
-      # if: ${{ github.ref != '/refs/heads/master' }}
-      # run: npm run package
+      #   if: ${{ github.ref != '/refs/heads/master' }}
+      #   run: npm run package
