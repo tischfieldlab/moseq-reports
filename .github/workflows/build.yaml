@@ -70,8 +70,6 @@ jobs:
         env:
           GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
         run: |
-          echo ${{env.CSC_LINK}}
-          echo ${{env.CSC_KEY_PASSWORD}}
           certutil -p ${{secrets.WINDOWS_CERTIFICATE_PSWD}} -importpfx ${steps.windows_pfx.outputs.filePath}
           npm run package-release
       # - name: Package (dev)
