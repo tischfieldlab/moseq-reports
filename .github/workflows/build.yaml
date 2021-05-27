@@ -64,10 +64,12 @@ jobs:
       - name: Git Tag
         run: git tag ${{ env.PACKAGE_VERSION }}
 
-      - name: Package (release)
-        # if: ${{ github.ref == '/refs/heads/master' }}
+      - name: Windows Package (release)
+        # if: ${{ github.ref == '/refs/heads/master' && runner.os == 'Windows'}}
         env:
           GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
+          CSC_LINK: ${{env.CSC_LINK}}
+          CSC_KEY_PASSWORD: ${{env.CSC_KEY_PASSWORD}}
         run: |
           npm run package-release
       # - name: Package (dev)
