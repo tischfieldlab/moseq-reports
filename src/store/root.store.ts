@@ -3,6 +3,7 @@ import Vuex, {StoreOptions} from 'vuex';
 import {
     RootState,
     ComponentRegistration,
+    SidebarPosition
 } from './root.types';
 import DatasetsStore from '@/store/datasets.store';
 import FiltersModule from '@/store/filters.store';
@@ -21,6 +22,7 @@ const store: StoreOptions<RootState> = {
     },
     state: {
         registry: Array<ComponentRegistration>(),
+        sidebarPosition: SidebarPosition.Left,
     },
     getters: {
         getSpecification: (state) => (componentType: string) => {
@@ -35,6 +37,9 @@ const store: StoreOptions<RootState> = {
             } else {
                 state.registry.splice(loc, 1, payload);
             }
+        },
+        setSidebarPosition(state, payload: SidebarPosition) {
+            state.sidebarPosition = payload;
         },
     },
     actions: {
