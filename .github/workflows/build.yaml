@@ -61,18 +61,13 @@ jobs:
       - name: Linting
         run: npm run lint
 
-      - name: Add Service Account Token to Env
-        # if: ${{ github.ref == '/refs/heads/master' }}
-        env:
-          ACCOUNT_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
-        run: |
-          echo GH_TOKEN=${ACCOUNT_TOKEN} >> $GITHUB_ENV
-
       - name: Git Tag
         run: git tag ${{ env.PACKAGE_VERSION }}
 
       - name: Package (release)
         # if: ${{ github.ref == '/refs/heads/master' }}
+        env:
+          GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
         run: npm run package-release
       # - name: Package (dev)
       # if: ${{ github.ref != '/refs/heads/master' }}
