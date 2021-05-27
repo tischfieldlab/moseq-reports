@@ -66,7 +66,7 @@ jobs:
         env:
           ACCOUNT_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
         run: |
-          echo ${ACCOUNT_TOKEN} >> $GITHUB_ENV
+          echo GH_TOKEN=${ACCOUNT_TOKEN} >> $GITHUB_ENV
 
       - name: Git Tag
         run: git tag ${{ env.PACKAGE_VERSION }}
