@@ -75,8 +75,15 @@ jobs:
         if: ${{ github.ref != '/refs/heads/master' }}
         run: npm run package
 
+      - name: Zip package
+        with:
+          artifact_dest: "build-${{ matrix.os }}.zip"
+        run: |
+          7z a ${{ INPUT_ARTIFACT_DEST }} ./dist_electron/*
+          echo ARTIFACT_DEST=${{ INPUT_ARTIFACT_DEST }} >> $GITHUB_ENV
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: build-${{ matrix.os }}
-          path: dist_electron
+          path: ${{ env.ARTIFACT_DEST }}
