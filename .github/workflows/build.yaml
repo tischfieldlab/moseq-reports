@@ -65,11 +65,12 @@ jobs:
         run: git tag ${{ env.PACKAGE_VERSION }}
 
       - name: Package (release)
-        # if: ${{ github.ref == '/refs/heads/master' && runner.os == 'Windows'}}
+        if: ${{ github.ref == '/refs/heads/master' }}
         env:
           GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
         run: |
           npm run package-release
-      # - name: Package (dev)
-      #   if: ${{ github.ref != '/refs/heads/master' }}
-      #   run: npm run package
+
+      - name: Package (dev)
+        if: ${{ github.ref != '/refs/heads/master' }}
+        run: npm run package
