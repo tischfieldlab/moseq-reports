@@ -74,3 +74,9 @@ jobs:
       - name: Package (dev)
         if: ${{ github.ref != '/refs/heads/master' }}
         run: npm run package
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-${{ matrix.os }}
+          path: dist_electron
