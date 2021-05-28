@@ -47,6 +47,7 @@ import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import { GetAddress } from '@/components/Core/DataLoader/DataServer';
+import { RenderMode } from '@/store/datawindow.types';
 
 RegisterDataComponent({
     friendly_name: 'Module Clips',
@@ -54,6 +55,8 @@ RegisterDataComponent({
     init_width: 330,
     init_height: 360,
     settings_type: 'ModuleClipsOptions',
+    available_render_modes: [RenderMode.VIDEO],
+    default_render_mode: RenderMode.VIDEO,
     default_settings: {
         stream: 'rgb',
         loop: true,

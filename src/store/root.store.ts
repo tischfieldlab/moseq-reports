@@ -3,6 +3,7 @@ import Vuex, {StoreOptions} from 'vuex';
 import {
     RootState,
     ComponentRegistration,
+    SidebarPosition
 } from './root.types';
 import DatasetsStore from '@/store/datasets.store';
 import FiltersModule from '@/store/filters.store';
@@ -21,6 +22,7 @@ const store: StoreOptions<RootState> = {
     },
     state: {
         registry: Array<ComponentRegistration>(),
+        sidebarPosition: SidebarPosition.Left,
     },
     getters: {
         getSpecification: (state) => (componentType: string) => {
@@ -33,8 +35,13 @@ const store: StoreOptions<RootState> = {
             if (loc === -1) {
                 state.registry.push(payload);
             } else {
+                // tslint:disable-next-line:no-console
+                console.warn(`${payload.component_type} has already been registered! Merging...`)
                 state.registry.splice(loc, 1, payload);
             }
+        },
+        setSidebarPosition(state, payload: SidebarPosition) {
+            state.sidebarPosition = payload;
         },
     },
     actions: {

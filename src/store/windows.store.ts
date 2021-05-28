@@ -1,6 +1,6 @@
 import { Module } from 'vuex';
 import { RootState, ComponentRegistration } from '@/store/root.types';
-import { DehydratedDataWindow, DataWindowState } from './datawindow.types';
+import { DehydratedDataWindow, DataWindowState, RenderMode } from './datawindow.types';
 import store from './root.store';
 import { getModuleNamespace, unnest } from '@/util/Vuex';
 import DataWindowModule from './datawindow.store';
@@ -92,7 +92,7 @@ export default WindowsModule;
 
 
 
-function createDataWindow(component: ComponentRegistration) {
+function createDataWindow(component: ComponentRegistration): DataWindowState {
     return {
         type: component.component_type,
         title: component.friendly_name,
@@ -101,6 +101,7 @@ function createDataWindow(component: ComponentRegistration) {
         pos_x: 250,
         pos_y: 10,
         datasource: store.getters['filters/default'],
+        render_mode: component.default_render_mode,
         settings: clone(component.default_settings || {}), // deep clone
     } as DataWindowState;
 }
@@ -118,6 +119,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
             },
         },
         source: window.datasource,
+        render_mode: window.render_mode,
         settings: window.settings,
     };
     return dehydrated;
@@ -132,6 +134,7 @@ function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     win.pos_x = data.layout.position.x || win.pos_x;
     win.pos_y = data.layout.position.y || win.pos_y;
     win.datasource = data.source || win.datasource;
+    win.render_mode = data.render_mode || win.render_mode;
     win.settings = { ...win.settings, ...clone(data.settings) };
     return win;
 }

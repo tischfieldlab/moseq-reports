@@ -30,7 +30,121 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="Layout">
-                    <b-form-select v-model="graph_layout" :options="available_layouts"></b-form-select>
+                    <b-form-select v-model="layout" :options="available_layouts"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <!-- grid layout settings -->
+        <b-row v-if="layout === 'grid'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="grid_avoid_overlap">Avoid Overlap</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'grid' && grid_avoid_overlap === true">
+            <b-col cols="2"></b-col>
+            <b-col>
+                <b-input-group prepend="Avoid Overlap Padding">
+                    <b-form-input v-model="grid_avoid_overlap_padding" type="number" :number="true" step="10" min="0" max="150"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <!-- circle layout settings -->
+        <b-row v-if="layout === 'circle'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="circle_avoid_overlap">Avoid Overlap</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'circle'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="circle_clockwise">Clockwise</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <!-- concentric layout settings -->
+        <b-row v-if="layout === 'concentric'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="concentric_avoid_overlap">Avoid Overlap</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'concentric'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="concentric_clockwise">Clockwise</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'concentric'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-form-checkbox switch v-model="concentric_equidistant">Equidistant</b-form-checkbox>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'concentric'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Minimum Node Spacing">
+                    <b-form-input v-model="concentric_min_node_spacing" type="number" :number="true" step="10" min="0" max="100"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <!-- avsdf layout settings -->
+        <b-row v-if="layout === 'avsdf'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Node Separation">
+                    <b-form-input v-model="avsdf_node_separation" type="number" :number="true" step="10" min="0" max="200"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <!-- fcose layout settings -->
+        <b-row v-if="layout === 'fcose'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Node Separation">
+                    <b-form-input v-model="fcose_node_separation" type="number" :number="true" step="10" min="0" max="1000"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'fcose'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Node Repulsion">
+                    <b-form-input v-model="fcose_node_repulsion" type="number" :number="true" step="100" min="0" max="10000"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'fcose'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Ideal Edge Length">
+                    <b-form-input v-model="fcose_ideal_edge_length" type="number" :number="true" step="5" min="0" max="100"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <!-- cise layout settings -->
+        <b-row v-if="layout === 'cise'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Node Separation">
+                    <b-form-input v-model="cise_node_separation" type="number" :number="true" step="1" min="0" max="100"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'cise'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Node Repulsion">
+                    <b-form-input v-model="cise_node_repulsion" type="number" :number="true" step="1" min="0" max="100"/>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-if="layout === 'cise'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Ideal Edge Length">
+                    <b-form-input v-model="cise_ideal_edge_length" type="number" :number="true" step="1" min="0" max="100"/>
                 </b-input-group>
             </b-col>
         </b-row>
@@ -122,15 +236,15 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        graph_layout: {
+        layout: {
             get(): string {
-                return this.settings.graph_layout;
+                return this.settings.layout;
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        graph_layout: value,
+                        layout: value,
                     },
                 });
             },
@@ -161,11 +275,242 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        // grid
+        grid_avoid_overlap: {
+            get(): boolean {
+                return this.settings.grid_settings.avoid_overlap;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        grid_settings: {
+                            avoid_overlap: value,
+                        }
+                    },
+                });
+            }
+        },
+        grid_avoid_overlap_padding: {
+            get(): number {
+                return this.settings.grid_settings.avoid_overlap_padding;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        grid_settings: {
+                            avoid_overlap_padding: value,
+                        }
+                    },
+                });
+            }
+        },
+        // circle
+        circle_avoid_overlap: {
+            get(): boolean {
+                return this.settings.circle_settings.avoid_overlap;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        circle_settings: {
+                            avoid_overlap: value,
+                        }
+                    },
+                });
+            }
+        },
+        circle_clockwise: {
+            get(): boolean {
+                return this.settings.circle_settings.clockwise;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        circle_settings: {
+                            clockwise: value,
+                        }
+                    },
+                });
+            }
+        },
+        // concentric
+        concentric_avoid_overlap: {
+            get(): boolean {
+                return this.settings.concentric_settings.avoid_overlap;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        concentric_settings: {
+                            avoid_overlap: value,
+                        }
+                    },
+                });
+            }
+        },
+        concentric_clockwise: {
+            get(): boolean {
+                return this.settings.concentric_settings.clockwise;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        concentric_settings: {
+                            clockwise: value,
+                        }
+                    },
+                });
+            }
+        },
+        concentric_equidistant: {
+            get(): boolean {
+                return this.settings.concentric_settings.equidistant;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        concentric_settings: {
+                            equidistant: value,
+                        }
+                    },
+                });
+            }
+        },
+        concentric_min_node_spacing: {
+            get(): number {
+                return this.settings.concentric_settings.min_node_spacing;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        concentric_settings: {
+                            min_node_spacing: value,
+                        }
+                    },
+                });
+            },
+        },
+        // avsdf
+        avsdf_node_separation: {
+            get(): number {
+                return this.settings.avsdf_settings.node_separation;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        avsdf_settings: {
+                            node_separation: value,
+                        }
+                    },
+                });
+            },
+        },
+        // fcose
+        fcose_node_separation: {
+            get(): number {
+                return this.settings.fcose_settings.node_separation;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        fcose_settings: {
+                            node_separation: value,
+                        }
+                    },
+                });
+            },
+        },
+        fcose_node_repulsion: {
+            get(): number {
+                return this.settings.fcose_settings.node_repulsion;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        fcose_settings: {
+                            node_repulsion: value,
+                        }
+                    },
+                });
+            },
+        },
+        fcose_ideal_edge_length: {
+            get(): number {
+                return this.settings.fcose_settings.ideal_edge_length;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        fcose_settings: {
+                            ideal_edge_length: value,
+                        }
+                    },
+                });
+            },
+        },
+        // cise
+        cise_node_separation: {
+            get(): number {
+                return this.settings.cise_settings.node_separation;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        cise_settings: {
+                            node_separation: value,
+                        }
+                    },
+                });
+            },
+        },
+        cise_node_repulsion: {
+            get(): number {
+                return this.settings.cise_settings.node_repulsion;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        cise_settings: {
+                            node_repulsion: value,
+                        }
+                    },
+                });
+            },
+        },
+        cise_ideal_edge_length: {
+            get(): number {
+                return this.settings.cise_settings.ideal_edge_length;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        cise_settings: {
+                            ideal_edge_length: value,
+                        }
+                    },
+                });
+            },
+        },
     },
     data() {
         return {
             available_layouts: [
-                'grid', 'circle', 'concentric', 'avsdf',
+                'grid', 'circle', 'concentric', 'avsdf', 'fcose', 'cise',
             ],
         };
     },

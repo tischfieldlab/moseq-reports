@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <Sidebar :right="false" />
+        <Sidebar :right="isSidebarRight" />
         <NoDataPresent />
         <WindowContainer />
         <FileDropAcceptor />
@@ -14,6 +14,7 @@ import WindowContainer from '@/components/WindowContainer.vue';
 import NoDataPresent from '@/components/NoDataPresent.vue';
 import FileDropAcceptor from '@/components/FileDropAcceptor.vue';
 import {UpdateTitle} from '@/WindowChrome';
+import {SidebarPosition} from '@/store/root.types';
 
 
 export default Vue.component('homepage', {
@@ -32,6 +33,9 @@ export default Vue.component('homepage', {
                 title += ' - ' + currFile;
             }
             return title;
+        },
+        isSidebarRight(): boolean {
+            return this.$store.state.sidebarPosition === SidebarPosition.Right
         },
     },
     watch: {

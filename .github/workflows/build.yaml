@@ -3,15 +3,19 @@ name: Build Moseq-Reports
 on:
   push:
   pull_request:
-    branches: [ master ]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+    env:
+      ARTIFACT_NAME: "build-${{ matrix.os }}"
+      ARTIFACT_DEST: "build-${{ matrix.os }}.zip"
 
     steps:
       - name: Check out Git repository
@@ -22,15 +26,24 @@ jobs:
         with:
           node-version: 12
 
-      # - name: Prep Windows Cert
-      #   if: ${{ runner.os == 'Windows' }}
-      #   # Ref https://github.com/electron-userland/electron-builder/issues/3629#issuecomment-554126964
-      #   run: |
-      #     echo $CSC_LINK | base64 --decode > cert.p12
-      #     certutil -p $CSC_KEY_PASSWORD -importpfx ./cert.p12
-      #     echo CSC_LINK=./cert.p12 >> $GITHUB_ENV
+      - name: Decode and Prep Windows Cert
+        if: ${{ runner.os == 'Windows' }}
+        id: windows_pfx
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: "win-certificate.pfx"
+          encodedString: ${{secrets.WINDOWS_CERTIFICATE_P12}}
 
-      # - name: Prep OSX Cert
+      - name: Windows Add Variables to Path
+        if: ${{ runner.os == 'Windows' }}
+        env:
+          CERT_PATH: ${{steps.windows_pfx.outputs.filePath}}
+          CERT_PASSWORD: ${{secrets.WINDOWS_CERTIFICATE_PSWD}}
+        run: |
+          echo CSC_LINK=${CERT_PATH} >> $GITHUB_ENV
+          echo CSC_KEY_PASSWORD=${CERT_PASSWORD} >> $GITHUB_ENV
+          certutil -p "${{secrets.WINDOWS_CERTIFICATE_PSWD}}" -importpfx "${{steps.windows_pfx.outputs.filePath}}"
+
       #   if: ${{ runner.os == 'macOS' }}
       #   run: |
       #     unset CSC_LINK
@@ -41,7 +54,6 @@ jobs:
       #   run: |
       #     unset CSC_LINK
       #     unset CSC_KEY_PASSWORD
-
 
       - name: Install
         run: npm install
@@ -58,9 +70,20 @@ jobs:
 
       - name: Package (release)
         if: ${{ github.ref == '/refs/heads/master' }}
-        run: npm run package-release
+        env:
+          GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
+        run: |
+          npm run package-release
 
       - name: Package (dev)
         if: ${{ github.ref != '/refs/heads/master' }}
         run: npm run package
 
+      - name: Zip package
+        run: 7z a ${{ env.ARTIFACT_DEST }} ./dist_electron/*
+
+      #- name: Upload build artifacts
+      #  uses: actions/upload-artifact@v2
+      #  with:
+      #    name: ${{ env.ARTIFACT_NAME }}
+      #    path: ${{ env.ARTIFACT_DEST }}

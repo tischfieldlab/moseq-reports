@@ -5,7 +5,7 @@
         </b-row>
         <b-row>
             <b-input-group prepend="Playback rate">
-                <b-form-input v-model="playback_rate" type="number" number="true" min="0" max="10" step="0.1" />
+                <b-form-input v-model="playback_rate" type="number" :number="true" min="0" max="10" step="0.1" />
                 <div class="figure-caption">
                     A value of 1.0 results in normal playback speed. Values &gt; 1.0 result in faster playback,
                     and values &gt; 0 and &lt; 1.0 result in slower playback.</div>

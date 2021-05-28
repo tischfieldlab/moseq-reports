@@ -4,6 +4,7 @@ import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/c
 import {AvailableComponents, CreateComponent} from '@/commands/Windows';
 import showAboutWindow from '@/commands/ShowAbout';
 import {CheckUpdates} from '@/commands/LoadUpdates';
+import {SetSidebarLeft, SetSidebarRight, isSidebarLeft, isSidebarRight} from '@/commands/SidebarPosition';
 import {SnapshotWorkspace} from '@/components/Core/SnapshotHelper';
 
 /**
@@ -110,6 +111,30 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: 'Snapshot Workspace...',
                     type: 'normal',
                     click: () => SnapshotWorkspace(),
+                },
+                {
+                    label: 'Sidebar Position...',
+                    type: 'normal',
+                    submenu: [
+                        {
+                            label: 'Left',
+                            type: 'radio',
+                            checked: isSidebarLeft(),
+                            click: (mi) => {
+                                SetSidebarLeft();
+                                mi.checked = true;
+                            },
+                        },
+                        {
+                            label: 'Right',
+                            type: 'radio',
+                            checked: isSidebarRight(),
+                            click: (mi) => {
+                                SetSidebarRight();
+                                mi.checked = true;
+                            },
+                        },
+                    ]
                 },
                 {
                     type: 'separator',

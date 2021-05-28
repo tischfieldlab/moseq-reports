@@ -1,6 +1,8 @@
+import { RenderMode } from './datawindow.types';
 
 export interface RootState {
     registry: ComponentRegistration[];
+    sidebarPosition: SidebarPosition;
 }
 
 export interface ComponentRegistration {
@@ -10,4 +12,11 @@ export interface ComponentRegistration {
     default_settings?: object;
     init_width?: number;
     init_height?: number;
+    available_render_modes: RenderMode[];
+    default_render_mode: RenderMode;
+}
+
+export enum SidebarPosition {
+    Left,
+    Right
 }

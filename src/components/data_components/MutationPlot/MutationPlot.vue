@@ -29,15 +29,18 @@ import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { CountMethod } from '@/store/dataview.types';
 import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
+import { RenderMode } from '@/store/datawindow.types';
 
 
-
+/*
 RegisterDataComponent({
-    friendly_name: 'Usage Details',
-    component_type: 'DetailedUsage',
-    settings_type: 'DetailedUsageOptions',
+    friendly_name: 'Mutation Plot',
+    component_type: 'MutationPlot',
+    settings_type: 'MutationPlotOptions',
     init_width: 400,
     init_height: 500,
+    available_render_modes: [RenderMode.CANVAS],
+    default_render_mode: RenderMode.CANVAS,
     default_settings: {
         show_points: true,
         point_size: 2,
@@ -47,6 +50,7 @@ RegisterDataComponent({
         group_order_type: OrderingType.Natural,
     },
 });
+*/
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
