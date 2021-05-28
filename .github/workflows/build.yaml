@@ -69,14 +69,14 @@ jobs:
         run: git tag ${{ env.PACKAGE_VERSION }}
 
       - name: Package (release)
-        if: ${{ github.ref == '/refs/heads/master' }}
+        if: ${{ endsWith(github.ref, 'master') }}
         env:
           GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
         run: |
           npm run package-release
 
       - name: Package (dev)
-        if: ${{ github.ref != '/refs/heads/master' }}
+        if: ${{ !endsWith(github.ref, 'master') }}
         run: npm run package
 
       - name: Zip package
