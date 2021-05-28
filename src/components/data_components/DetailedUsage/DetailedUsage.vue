@@ -1,5 +1,5 @@
 <template>
-    <box-plot
+    <component :is="render_mode"
         :width="this.layout.width"
         :height="this.layout.height - 31"
         :data="individualUseageData"
@@ -23,13 +23,13 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import BoxPlot from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
+import BoxPlotCanvas from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
+import BoxPlotSVG from '@/components/Charts/BoxPlot/BoxPlotSVG.vue';
 import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import { CountMethod } from '@/store/dataview.types';
 import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
-
+import { RenderMode } from '@/store/datawindow.types';
 
 
 RegisterDataComponent({
@@ -38,6 +38,8 @@ RegisterDataComponent({
     settings_type: 'DetailedUsageOptions',
     init_width: 400,
     init_height: 500,
+    available_render_modes: [RenderMode.CANVAS, RenderMode.SVG],
+    default_render_mode: RenderMode.SVG,
     default_settings: {
         show_points: true,
         point_size: 2,
@@ -50,7 +52,8 @@ RegisterDataComponent({
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
-        BoxPlot,
+        BoxPlotCanvas,
+        BoxPlotSVG,
     },
     data() {
         return {
@@ -67,6 +70,17 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     computed: {
+        render_mode(): string {
+            if (this.$wstate.render_mode === RenderMode.CANVAS) {
+                return 'BoxPlotCanvas';
+            } else if (this.$wstate.render_mode === RenderMode.SVG) {
+                return 'BoxPlotSVG';
+            } else {
+                // tslint:disable-next-line:no-console
+                console.error('invalid render mode', this.$wstate.render_mode);
+                return 'BoxPlotCanvas';
+            }
+        },
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
         },

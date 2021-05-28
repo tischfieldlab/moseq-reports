@@ -36,6 +36,7 @@ import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import { GetAddress } from '@/components/Core/DataLoader/DataServer';
+import { RenderMode } from '@/store/datawindow.types';
 
 RegisterDataComponent({
     friendly_name: 'Crowd Movies',
@@ -43,6 +44,8 @@ RegisterDataComponent({
     init_width: 330,
     init_height: 360,
     settings_type: 'CrowdMoviesOptions',
+    available_render_modes: [RenderMode.VIDEO],
+    default_render_mode: RenderMode.VIDEO,
     default_settings: {
         loop: true,
         playback_rate: 1.0,

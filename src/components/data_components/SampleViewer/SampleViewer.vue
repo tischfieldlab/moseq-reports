@@ -30,6 +30,7 @@ import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import RegisterDataComponent from '@/components/Core';
+import { RenderMode } from '@/store/datawindow.types';
 
 
 RegisterDataComponent({
@@ -38,6 +39,8 @@ RegisterDataComponent({
     settings_type: undefined,
     init_width: 400,
     init_height: 500,
+    available_render_modes: [RenderMode.HTML],
+    default_render_mode: RenderMode.HTML,
     default_settings: {},
 });
 

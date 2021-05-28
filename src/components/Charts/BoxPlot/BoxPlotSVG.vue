@@ -17,7 +17,7 @@
                         :data-group="node.group"
                         stroke="#000000"
                         :width="halfBandwith * 2"
-                        :height="scale.y(node.q3) - scale.y(node.q1)"
+                        :height="scale.y(node.q3) - scale.y(node.q1) || 0"
                         :x="scale.x(node.group)"
                         :y="scale.y(node.q1)"
                         :style="{'fill': scale.c(node.group)}" />

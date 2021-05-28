@@ -1,5 +1,5 @@
 <template>
-    <ClusteredHeatmap
+    <component :is="render_mode"
         :width="this.layout.width"
         :height="this.layout.height - 31"
         :data="this.aggregateView"
@@ -37,14 +37,14 @@
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import { unnest } from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import ClusteredHeatmap from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapCanvas.vue';
+import ClusteredHeatmapCanvas from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapCanvas.vue';
+import ClusteredHeatmapSVG from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapSVG.vue';
 import { OrderingType, SortOrderDirection } from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import { CountMethod } from '../../../store/dataview.types';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
+import { RenderMode } from '@/store/datawindow.types';
 
 
 RegisterDataComponent({
@@ -53,6 +53,8 @@ RegisterDataComponent({
     settings_type: 'IndividualUsageHeatmapOptions',
     init_width: 400,
     init_height: 500,
+    available_render_modes: [RenderMode.CANVAS, RenderMode.SVG],
+    default_render_mode: RenderMode.CANVAS,
     default_settings: {
         syllable_order_type: OrderingType.Cluster,
         syllable_order_group_value: undefined,
@@ -69,7 +71,8 @@ RegisterDataComponent({
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
-        ClusteredHeatmap,
+        ClusteredHeatmapCanvas,
+        ClusteredHeatmapSVG,
     },
     data() {
         return {
@@ -77,6 +80,17 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         };
     },
     computed: {
+        render_mode(): string {
+            if (this.$wstate.render_mode === RenderMode.CANVAS) {
+                return 'ClusteredHeatmapCanvas';
+            } else if (this.$wstate.render_mode === RenderMode.SVG) {
+                return 'ClusteredHeatmapSVG';
+            } else {
+                // tslint:disable-next-line:no-console
+                console.error('invalid render mode', this.$wstate.render_mode);
+                return 'ClusteredHeatmapSVG';
+            }
+        },
         selectedGroups(): string[] {
             return [...new Set(this.aggregateView.slice()
                                    .sort((a,b) => (a.group as string).localeCompare(b.group))

@@ -1,5 +1,5 @@
 <template>
-    <ClusteredHeatmapCanvas
+    <component :is="render_mode"
         :width="this.layout.width"
         :height="this.layout.height - 31"
         :data="this.aggregateView"
@@ -40,7 +40,6 @@
 import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import { unnest } from '@/util/Vuex';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import ClusteredHeatmapSVG from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapSVG.vue';
@@ -48,8 +47,8 @@ import ClusteredHeatmapCanvas from '@/components/Charts/ClusteredHeatmap/Cluster
 
 import { OrderingType, SortOrderDirection } from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import { CountMethod } from '../../../store/dataview.types';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
+import { RenderMode } from '@/store/datawindow.types';
 
 
 RegisterDataComponent({
@@ -58,6 +57,8 @@ RegisterDataComponent({
     settings_type: 'BehavioralDistanceHeatmapOptions',
     init_width: 400,
     init_height: 500,
+    available_render_modes: [RenderMode.CANVAS, RenderMode.SVG],
+    default_render_mode: RenderMode.CANVAS,
     default_settings: {
         distance_metric: 'ar[init]',
         row_order_type: OrderingType.Cluster,
@@ -84,6 +85,17 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         };
     },
     computed: {
+        render_mode(): string {
+            if (this.$wstate.render_mode === RenderMode.CANVAS) {
+                return 'ClusteredHeatmapCanvas';
+            } else if (this.$wstate.render_mode === RenderMode.SVG) {
+                return 'ClusteredHeatmapSVG';
+            } else {
+                // tslint:disable-next-line:no-console
+                console.error('invalid render mode', this.$wstate.render_mode);
+                return 'ClusteredHeatmapSVG';
+            }
+        },
         rowOrderDataset(): any[] {
             if (this.settings.row_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.row_order_dataset].data;

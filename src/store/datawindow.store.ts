@@ -5,6 +5,8 @@ import {
     UpdateComponentTitlePayload,
     UpdateComponentDataSourcePayload,
     UpdateComponentSettingsPayload,
+    RenderMode,
+    UpdateComponentRenderModePayload,
 } from './datawindow.types';
 import { Module } from 'vuex';
 import stateMerge from 'vue-object-merge';
@@ -22,6 +24,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             pos_x: 0,
             pos_y: 0,
             datasource: '',
+            render_mode: RenderMode.UNDEFINED,
             settings: {},
          };
     },
@@ -39,6 +42,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             state.pos_y = payload.pos_y;
             state.title = payload.title;
             state.datasource = payload.datasource;
+            state.render_mode = payload.render_mode;
             stateMerge(state.settings, payload.settings);
         },
         updateComponentLayout(state, payload: UpdateComponentLayoutPayload) {
@@ -52,6 +56,9 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
         },
         updateComponentDataSource(state, payload: UpdateComponentDataSourcePayload) {
             state.datasource = payload.source;
+        },
+        updateComponentRenderMode(state, payload: UpdateComponentRenderModePayload) {
+            state.render_mode = payload.render_mode;
         },
         updateComponentSettings(state, payload: UpdateComponentSettingsPayload) {
             stateMerge(state.settings, payload.settings);

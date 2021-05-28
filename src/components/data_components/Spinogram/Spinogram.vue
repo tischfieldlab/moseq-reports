@@ -66,7 +66,6 @@ import RegisterDataComponent from '@/components/Core';
 import * as d3 from 'd3';
 import { line } from 'd3-shape';
 import { scaleLinear, scaleSequential } from 'd3-scale';
-import { CountMethod } from '@/store/dataview.types';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import WindowMixin from '@/components/Core/WindowMixin';
 import mixins from 'vue-typed-mixins';
@@ -75,6 +74,7 @@ import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { extent } from 'd3';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
+import { RenderMode } from '@/store/datawindow.types';
 
 
 interface Spinogram {
@@ -95,6 +95,8 @@ RegisterDataComponent({
     settings_type: 'SpinogramOptions',
     init_width: 400,
     init_height: 300,
+    available_render_modes: [RenderMode.SVG],
+    default_render_mode: RenderMode.SVG,
     default_settings: {
         line_color: '#FF0000',
         line_weight: 2,

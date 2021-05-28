@@ -77,7 +77,11 @@ export default async function Snapshot(target: Vue, basename: string, options: S
                 variant: 'danger',
                 toaster: 'b-toaster-bottom-right',
             });
-            app.$store.commit('history/addEntry', {message: err.toString(), variant: 'danger'});
+            app.$store.commit('history/addEntry', {
+                message: err.toString(),
+                variant: 'danger',
+                details: err.stack
+            });
         });
 }
 
@@ -181,7 +185,7 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
     const ctx = canvas.getContext('2d');
 
     const drawers = images.map((item) => {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             const subInfo = dataUriToFile(item.dataURI)
             if (subInfo.extension !== 'png') {
                 reject('non-image data');
@@ -331,14 +335,14 @@ function findTag(target: Vue, tag: string) {
 function dataUriToFile(dataUri: string) {
     const matches = dataUri.match(/^data:([A-Za-z0-9-+\/]+);([A-Za-z0-9-]+),(.+)$/);
     if (matches === null || matches.length !== 4) {
-        throw new Error('Invalid input string');
+        throw new Error('Invalid input string: ' + dataUri);
     }
 
     return {
         mimeType: matches[1],
         encoding: matches[2],
         extension: mime.extension(matches[1]),
-        buffer: new Buffer(matches[3], 'base64'),
+        buffer: Buffer.from(matches[3], 'base64'),
     };
 }
 

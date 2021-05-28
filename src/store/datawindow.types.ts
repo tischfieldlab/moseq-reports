@@ -8,6 +8,7 @@ export interface DataWindowState {
     pos_x: number;
     pos_y: number;
     datasource: string;
+    render_mode: RenderMode;
     settings: object;
 }
 
@@ -27,6 +28,9 @@ export interface UpdateComponentTitlePayload {
 }
 export interface UpdateComponentDataSourcePayload {
     source: string;
+}
+export interface UpdateComponentRenderModePayload {
+    render_mode: RenderMode;
 }
 
 export interface Size {
@@ -52,6 +56,16 @@ export interface DehydratedDataWindow {
     title: string;
     layout: Layout;
     source?: string;
+    render_mode?: RenderMode;
     settings: object | undefined;
+}
+
+
+export enum RenderMode {
+    CANVAS = 'canvas',
+    SVG = 'svg',
+    HTML = 'html',
+    VIDEO = 'video',
+    UNDEFINED = 'undefined',
 }
 
