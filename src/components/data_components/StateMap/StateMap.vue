@@ -36,7 +36,6 @@ import fcose from 'cytoscape-fcose';
 cytoscape.use(fcose);
 
 import cise from 'cytoscape-cise';
-import { end } from '@popperjs/core';
 cytoscape.use(cise);
 
 
@@ -159,7 +158,8 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             raw_data: {
                 transitions: [] as any[],
                 usages: [] as any[],
-            }
+            },
+            debouncedLayout: () => {/**/},
         };
     },
     watch: {
@@ -193,7 +193,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             },
         },
         graph_layout(){
-            (this as any).debouncedLayout();
+            this.debouncedLayout();
         },
         scale() {
             const cy = (this as any).cy;
@@ -223,7 +223,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         }
     },
     mounted() {
-        (this as any).debouncedLayout = debounce(this.generateLayout, 1000);
+        this.debouncedLayout = debounce(this.generateLayout, 500);
 
         const cy = cytoscape({
             container: this.$refs.container,
@@ -574,7 +574,6 @@ export default mixins(WindowMixin, LoadingMixin).extend({
 .cytoscape-container {
     width: 100%;
     height: calc(100% - 60px);
-    position: absolute;
     top:0px;
     left: 0px;
 }
