@@ -3,7 +3,7 @@
         <!--<b-button @click="pushFakeItem">add</b-button>-->
         <h3>Notification History</h3>
         <template v-if="items.length > 0">
-            <b-toast :key="itm" v-for="itm in items"
+            <b-toast :key="idx" v-for="(itm, idx) in items"
                 :static="true"
                 :visible="true"
                 :no-auto-hide="true"
@@ -12,7 +12,14 @@
                 :variant="itm.variant">
 
                 <RenderNode class="message" :data="itm.message"></RenderNode>
-                <small><Timeago :datetime="itm.time" autoUpdate="60"></Timeago></small>
+                <small>
+                    <Timeago :datetime="itm.time" :autoUpdate="60"></Timeago>
+                    <a v-if="itm.details != null" href="#" v-b-toggle="$id('details-'+idx)" class="details-link">details</a>
+                </small>
+
+                <b-collapse v-if="itm.details != null" :id="$id('details-'+idx)"  class="mt-2">
+                    {{ itm.details }}
+                </b-collapse>
             </b-toast>
         </template>
         <template v-else>
@@ -67,5 +74,8 @@ h3 {
     font-size: 13px;
     color: #a5a5a5;
     margin-top: 24px;
+}
+a.details-link {
+    margin-left: 10px;
 }
 </style>
