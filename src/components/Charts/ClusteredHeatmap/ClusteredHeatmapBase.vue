@@ -229,8 +229,8 @@ export default Vue.extend({
             return this.height - this.margin.top - this.margin.bottom;
         },
         dims(): any {
-            const rtreeWidth =  this.isRowsClustered ? Math.min(this.innerWidth * .10, 50) : 0;
-            const ctreeHeight = this.isColumnsClustered ? Math.min(this.innerHeight * .10, 50) : 0;
+            const rtreeWidth =  this.isRowsHClustered ? Math.min(this.innerWidth * .10, 50) : 0;
+            const ctreeHeight = this.isColumnsHClustered ? Math.min(this.innerHeight * .10, 50) : 0;
             const yaxisWidth = 45;
             let xaxisHeight = 45;
             let xaxisLabelYOffset = 40;
@@ -423,8 +423,10 @@ export default Vue.extend({
                         type: OrderingType.KCluster,
                         k: this.columnClusterK
                     });
-                    this.clusteredColumnOrder = data.flatMap((c) => c.clusterInd).map((idx) => this.groupLabels[idx]);
-                    console.log(data, this.clusteredColumnOrder);
+                    const cco = data.reduce((acc, c, idx) => acc.concat(c.clusterInd, [-1*(idx+1)]), [])
+                        .map((idx: number) => this.groupLabels[idx] || idx.toString());
+                    cco.pop();
+                    this.clusteredColumnOrder = cco;
                 }
             }
         },
@@ -443,10 +445,14 @@ export default Vue.extend({
                         type: OrderingType.KCluster,
                         k: this.rowClusterK
                     });
-                    this.clusteredRowOrder = data.flatMap((c) => c.clusterInd);
-                    console.log(data, this.clusteredRowOrder);
+                    const cro = data.reduce((acc: number[], c, idx) => acc.concat(c.clusterInd, [-1*(idx+1)]), []);
+                    cro.pop();
+                    this.clusteredRowOrder = cro
                 }
             }
+        },
+        shouldHideLabel(label) {
+            return Number.parseInt(label, 10) < 0;
         },
         handleHeatmapClick(event: Event) {
             this.$emit('heatmapClick', {

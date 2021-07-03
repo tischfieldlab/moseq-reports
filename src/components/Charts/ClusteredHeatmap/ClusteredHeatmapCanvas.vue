@@ -139,9 +139,11 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
 
             // iterate over our x domain values
             this.scale.x.domain().forEach((d) => {
-                // tell canvas to draw lines at the bottom of our bars
-                ctx.moveTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 0);
-                ctx.lineTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 6);
+                if (!this.shouldHideLabel(d)) {
+                    // tell canvas to draw lines at the bottom of our bars
+                    ctx.moveTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 0);
+                    ctx.lineTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 6);
+                }
             });
 
             // set our stroke style to black & draw it
@@ -150,25 +152,29 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
 
             // apply x-axis labels
             if  (this.rotate_labels) {
-                this.scale.x.domain().forEach((d, i) => {
-                    ctx.save();
-                    ctx.translate(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 6);
-                    ctx.rotate(-Math.PI / 4);
-                    ctx.textAlign = 'right';
-                    ctx.textBaseline = 'top';
-                    ctx.fillStyle = 'black';
-                    ctx.fillText(d, 0, 0);
-                    ctx.restore();
+                this.scale.x.domain().forEach((d) => {
+                    if (!this.shouldHideLabel(d)) {
+                        ctx.save();
+                        ctx.translate(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 6);
+                        ctx.rotate(-Math.PI / 4);
+                        ctx.textAlign = 'right';
+                        ctx.textBaseline = 'top';
+                        ctx.fillStyle = 'black';
+                        ctx.fillText(d, 0, 0);
+                        ctx.restore();
+                    }
                 });
             } else {
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
                 ctx.fillStyle = 'black';
 
-                this.scale.x.domain().forEach((d, i) => {
-                    ctx.fillText(d,
-                                this.scale.x(d) + (this.scale.x.bandwidth() / 2),
-                                6);
+                this.scale.x.domain().forEach((d) => {
+                    if (!this.shouldHideLabel(d)) {
+                        ctx.fillText(d,
+                                    this.scale.x(d) + (this.scale.x.bandwidth() / 2),
+                                    6);
+                    }
                 });
             }
 
@@ -200,20 +206,22 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                 ctx.textBaseline = 'middle';
                 ctx.fillStyle = 'black';
                 ctx.font = '8px Verdana,Arial,sans-serif';
-                if (this.selectedRow.toString() === d.toString()) {
-                    ctx.beginPath();
-                    ctx.lineWidth = 2;
-                    ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                    ctx.lineTo(18, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                    ctx.stroke();
-                    ctx.font = 'bold 16px Verdana,Arial,sans-serif';
-                    ctx.fillText(d, 20, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                } else {
-                    ctx.beginPath();
-                    ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                    ctx.lineTo(6, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                    ctx.stroke();
-                    ctx.fillText(d, 9, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                if (!this.shouldHideLabel(d)) {
+                    if (this.selectedRow.toString() === d.toString()) {
+                        ctx.beginPath();
+                        ctx.lineWidth = 2;
+                        ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                        ctx.lineTo(18, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                        ctx.stroke();
+                        ctx.font = 'bold 16px Verdana,Arial,sans-serif';
+                        ctx.fillText(d, 20, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    } else {
+                        ctx.beginPath();
+                        ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                        ctx.lineTo(6, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                        ctx.stroke();
+                        ctx.fillText(d, 9, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    }
                 }
             });
 

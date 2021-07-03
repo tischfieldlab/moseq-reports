@@ -154,7 +154,8 @@ export default mixins(ClusteredHeatmapBase).extend({
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisRight' }[axis];
                 const methodArg = binding.value[axis];
-                const actualAxis = d3[axisMethod](methodArg);
+                const actualAxis = d3[axisMethod as string](methodArg);
+                const self = vnode.context as any || undefined;
 
                 // build the axis
                 d3.select(el).call(actualAxis);
@@ -168,9 +169,11 @@ export default mixins(ClusteredHeatmapBase).extend({
                     ticks.attr('data-col', (d: any, i: number) => d);
                 }
 
+                d3.selectAll('.tick').filter((datum) =>self && self.shouldHideLabel(datum)).attr('visibility', 'hidden')
+
                 // if x-axis, check rotation
                 if (axis === 'x') {
-                    if (vnode && vnode.context && (vnode.context as any).rotate_labels) {
+                    if (self && self.rotate_labels) {
                         el.classList.add('rotate');
                     } else {
                         el.classList.remove('rotate');
