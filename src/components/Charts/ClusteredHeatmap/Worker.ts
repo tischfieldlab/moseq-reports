@@ -1,11 +1,12 @@
 import { expose } from 'threads/worker';
 import hcluster from 'hclusterjs';
+import kmeans from 'node-kmeans';
 import {groupby} from '@/util/Array';
-import { HeatmapTile,  ClusterDistance, ClusterLinkage } from './ClusterHeatmap.types';
+import { HeatmapTile, ClusterOptions, HClusterOptions, KClusterOptions, OrderingType } from './ClusterHeatmap.types';
 
 
 const exposedMethods = {
-    clusterColumns(df, colKey: string, valKey: string, distance: ClusterDistance, linkage: ClusterLinkage) {
+    clusterColumns(df, colKey: string, valKey: string, options: ClusterOptions) {
         const grouped = groupby(df as HeatmapTile[], (item) => item[colKey]);
         const toCluster = Object.entries(grouped).map(([column, vals]) => {
             return {
@@ -13,9 +14,13 @@ const exposedMethods = {
                 values: vals.map((v) => v[valKey]),
             };
         });
-        return cluster(toCluster, distance, linkage);
+        if (options.type === OrderingType.HCluster) {
+            return perform_hcluster(toCluster, options);
+        } else if (options.type === OrderingType.KCluster) {
+            return perform_kmeans_cluster(toCluster, options);
+        }
     },
-    clusterRows(df, rowKey: string, valKey: string, distance: ClusterDistance, linkage: ClusterLinkage) {
+    clusterRows(df, rowKey: string, valKey: string, options: ClusterOptions) {
         const grouped = groupby(df as HeatmapTile[], (item) => item[rowKey].toString());
         const toCluster = Object.entries(grouped).map(([row, vals]) => {
             return {
@@ -23,19 +28,39 @@ const exposedMethods = {
                 values: vals.map((v) => v[valKey]),
             };
         });
-        return cluster(toCluster, distance, linkage);
+        if (options.type === OrderingType.HCluster) {
+            return perform_hcluster(toCluster, options);
+        } else if (options.type === OrderingType.KCluster) {
+            return perform_kmeans_cluster(toCluster, options);
+        }
     },
 };
 expose(exposedMethods);
 export type ClusterWorker = typeof exposedMethods;
 
-function cluster(data: any[], distance: ClusterDistance = ClusterDistance.Euclidean,
-    linkage: ClusterLinkage = ClusterLinkage.Avg, key: string = 'values') {
+interface ClusterInputData {
+    name: string;
+    values: number[];
+}
+
+function perform_hcluster(data: ClusterInputData[], options: HClusterOptions, key: string = 'values') {
 
     return hcluster()
-        .distance(distance) // support for 'euclidean' and 'angular'
-        .linkage(linkage)   // support for 'avg', 'max' and 'min'
+        .distance(options.distance) // support for 'euclidean' and 'angular'
+        .linkage(options.linkage)   // support for 'avg', 'max' and 'min'
         .posKey(key)        // object key holding value
         .data(data)         // pass in an array of objects
         .tree();            // finally return the tree
+}
+
+function perform_kmeans_cluster(data: ClusterInputData[], options: KClusterOptions, key: string = 'values') {
+    return (async () => await new Promise((resolve, reject) => {
+        kmeans.clusterize(data.map((itm) => itm[key]), options, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+    }))();
 }

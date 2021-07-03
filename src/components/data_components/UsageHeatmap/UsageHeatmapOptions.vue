@@ -30,7 +30,7 @@
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="syllable_order_type === 'cluster'">
+        <b-row v-show="syllable_order_type === 'hcluster'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Distance">
@@ -38,11 +38,19 @@
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="syllable_order_type === 'cluster'">
+        <b-row v-show="syllable_order_type === 'hcluster'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Linkage">
                     <b-form-select v-model="syllable_cluster_linkage" :options="cluster_linkage_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="syllable_order_type === 'kcluster'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Number of Clusters (K)">
+                    <b-form-input type="number" v-model="syllable_cluster_k" min="1" max="100" ></b-form-input>
                 </b-input-group>
             </b-col>
         </b-row>
@@ -61,7 +69,7 @@
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="group_order_type === 'cluster'">
+        <b-row v-show="group_order_type === 'hcluster'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Distance">
@@ -69,11 +77,19 @@
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="group_order_type === 'cluster'">
+        <b-row v-show="group_order_type === 'hcluster'">
             <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Linkage">
                     <b-form-select v-model="group_cluster_linkage" :options="cluster_linkage_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="group_order_type === 'kcluster'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Number of Clusters (K)">
+                    <b-form-input type="number" v-model="group_cluster_k" min="1" max="100" ></b-form-input>
                 </b-input-group>
             </b-col>
         </b-row>
@@ -200,6 +216,19 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        syllable_cluster_k: {
+            get(): number {
+                return this.settings.syllable_cluster_k;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        syllable_cluster_k: Number.parseInt(value, 10),
+                    },
+                });
+            },
+        },
         group_order_type: {
             get(): OrderingType {
                 return this.settings.group_order_type;
@@ -239,13 +268,27 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        group_cluster_k: {
+            get(): number {
+                return this.settings.group_cluster_k;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        group_cluster_k: Number.parseInt(value, 10),
+                    },
+                });
+            },
+        },
     },
     data() {
         return {
             syllable_order_options: [
                 { text: 'Syllable ID', value: OrderingType.Natural },
                 { text: 'Syllable Value', value: OrderingType.Value },
-                { text: 'Clustered', value: OrderingType.Cluster },
+                { text: 'Hierarchical Cluster', value: OrderingType.HCluster },
+                { text: 'K-means Cluster', value: OrderingType.KCluster },
                 { text: 'Dataset', value: OrderingType.Dataset },
             ],
             syllable_order_group_value_options: new Array<{text: string, value: string}>(),
@@ -267,7 +310,8 @@ export default mixins(WindowMixin).extend({
             ],
             group_order_options: [
                 { text: 'Data Source Order', value: OrderingType.Natural },
-                { text: 'Clustered', value: OrderingType.Cluster },
+                { text: 'Hierarchical Cluster', value: OrderingType.HCluster },
+                { text: 'K-means Cluster', value: OrderingType.KCluster },
             ],
         };
     },

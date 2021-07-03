@@ -339,7 +339,8 @@ export default mixins(WindowMixin).extend({
             row_order_options: [
                 { text: 'Syllable ID', value: OrderingType.Natural },
                 { text: 'Distance Value', value: OrderingType.Value },
-                { text: 'Clustered', value: OrderingType.Cluster },
+                { text: 'Hierarchical Cluster', value: OrderingType.HCluster },
+                { text: 'K-means Cluster', value: OrderingType.KCluster },
                 { text: 'Dataset', value: OrderingType.Dataset },
             ],
             order_direction_options: [
@@ -361,7 +362,8 @@ export default mixins(WindowMixin).extend({
             column_order_options: [
                 { text: 'Syllable ID', value: OrderingType.Natural },
                 { text: 'Distance Value', value: OrderingType.Value },
-                { text: 'Clustered', value: OrderingType.Cluster },
+                { text: 'Hierarchical Cluster', value: OrderingType.HCluster },
+                { text: 'K-means Cluster', value: OrderingType.KCluster },
                 { text: 'Dataset', value: OrderingType.Dataset },
             ],
         };

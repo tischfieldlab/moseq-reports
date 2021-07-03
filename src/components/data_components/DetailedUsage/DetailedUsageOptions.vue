@@ -104,10 +104,10 @@ export default mixins(WindowMixin).extend({
             },
         },
         point_size: {
-            get(): boolean {
+            get(): number {
                 return this.settings.point_size;
             },
-            set(value: boolean) {
+            set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {

@@ -245,7 +245,8 @@ export default mixins(WindowMixin).extend({
             syllable_order_options: [
                 { text: 'Syllable ID', value: OrderingType.Natural },
                 { text: 'Syllable Value', value: OrderingType.Value },
-                { text: 'Clustered', value: OrderingType.Cluster },
+                { text: 'Hierarchical Cluster', value: OrderingType.HCluster },
+                { text: 'K-means Cluster', value: OrderingType.KCluster },
                 { text: 'Dataset', value: OrderingType.Dataset },
             ],
             syllable_order_group_value_options: new Array<{text: string, value: string}>(),
@@ -267,7 +268,8 @@ export default mixins(WindowMixin).extend({
             ],
             group_order_options: [
                 { text: 'Data Source Order', value: OrderingType.Natural },
-                { text: 'Clustered', value: OrderingType.Cluster },
+                { text: 'Hierarchical Cluster', value: OrderingType.HCluster },
+                { text: 'K-means Cluster', value: OrderingType.KCluster },
             ],
         };
     },

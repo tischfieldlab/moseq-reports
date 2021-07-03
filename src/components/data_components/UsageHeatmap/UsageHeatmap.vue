@@ -9,10 +9,12 @@
         :columnOrderType="this.settings.group_order_type"
         :columnClusterDistance="this.settings.group_cluster_distance"
         :columnClusterLinkage="this.settings.group_cluster_linkage"
+        :columnClusterK="this.settings.group_cluster_k"
 
         :rowOrderType="this.settings.syllable_order_type"
         :rowClusterDistance="this.settings.syllable_cluster_distance"
         :rowClusterLinkage="this.settings.syllable_cluster_linkage"
+        :rowClusterK="this.settings.syllable_cluster_k"
         :rowOrderValue="this.settings.syllable_order_group_value"
         :rowOrderDirection="this.settings.syllable_order_direction"
         :rowOrderDataset="rowOrderDataset"
@@ -55,14 +57,16 @@ RegisterDataComponent({
     available_render_modes: [RenderMode.SVG, RenderMode.CANVAS],
     default_render_mode: RenderMode.SVG,
     default_settings: {
-        syllable_order_type: OrderingType.Cluster,
+        syllable_order_type: OrderingType.HCluster,
         syllable_order_group_value: undefined,
         syllable_order_direction: SortOrderDirection.Asc,
         syllable_cluster_distance: 'euclidean',
         syllable_cluster_linkage: 'avg',
+        syllable_cluster_k: 3,
         group_order_type: OrderingType.Natural,
         group_cluster_distance: 'euclidean',
         group_cluster_linkage: 'avg',
+        group_cluster_k: 2,
         colormap: 'interpolateViridis',
     },
 });

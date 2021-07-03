@@ -56,14 +56,16 @@ RegisterDataComponent({
     available_render_modes: [RenderMode.CANVAS, RenderMode.SVG],
     default_render_mode: RenderMode.CANVAS,
     default_settings: {
-        syllable_order_type: OrderingType.Cluster,
+        syllable_order_type: OrderingType.HCluster,
         syllable_order_group_value: undefined,
         syllable_order_direction: SortOrderDirection.Asc,
         syllable_cluster_distance: 'euclidean',
         syllable_cluster_linkage: 'avg',
+        syllable_cluster_k: 3,
         group_order_type: OrderingType.Natural,
         group_cluster_distance: 'euclidean',
         group_cluster_linkage: 'avg',
+        group_cluster_k: 2,
         colormap: 'interpolateViridis',
     },
 });

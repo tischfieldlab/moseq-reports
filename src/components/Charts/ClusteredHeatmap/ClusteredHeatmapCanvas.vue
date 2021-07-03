@@ -99,7 +99,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             cxt.restore();
         },
         drawRowDendrogram(cxt: CanvasRenderingContext2D) {
-            if (!this.isRowsClustered) {
+            if (!this.isRowsHClustered) {
                 return;
             }
             cxt.save();
@@ -114,7 +114,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             cxt.restore();
         },
         drawColumnDendrogram(cxt: CanvasRenderingContext2D) {
-            if (!this.isColumnsClustered) {
+            if (!this.isColumnsHClustered) {
                 return;
             }
             cxt.save();

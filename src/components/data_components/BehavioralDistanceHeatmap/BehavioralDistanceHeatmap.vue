@@ -61,14 +61,16 @@ RegisterDataComponent({
     default_render_mode: RenderMode.CANVAS,
     default_settings: {
         distance_metric: 'ar[init]',
-        row_order_type: OrderingType.Cluster,
+        row_order_type: OrderingType.HCluster,
         row_order_col_value: undefined,
         row_order_direction: SortOrderDirection.Asc,
         row_cluster_distance: 'euclidean',
         row_cluster_linkage: 'avg',
-        column_order_type: OrderingType.Cluster,
+        row_cluster_k: 3,
+        column_order_type: OrderingType.HCluster,
         column_cluster_distance: 'euclidean',
         column_cluster_linkage: 'avg',
+        column_cluster_k: 2,
         colormap: 'interpolateViridis',
     },
 });

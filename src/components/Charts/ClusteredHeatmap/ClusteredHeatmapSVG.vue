@@ -17,12 +17,12 @@
                         /><!-- v-b-tooltip.html :title="heatmap_node_tooltip(node)"-->
                 </template>
             </g>
-            <g class="rtree" v-show="isRowsClustered" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
+            <g class="rtree" v-show="isRowsHClustered" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
                 <template v-for="(link, index) in rowLinks">
                     <path class="rlink" :key="index" :d="elbowH(link)" />
                 </template>
             </g>
-            <g class="ctree" v-show="isColumnsClustered" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
+            <g class="ctree" v-show="isColumnsHClustered" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
                 <template v-for="(link, index) in columnLinks">
                     <path class="clink" :key="index" :d="elbowV(link)" />
                 </template>
@@ -51,8 +51,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/Core';
-import { HeatmapTile } from './ClusterHeatmap.types';
 import * as d3 from 'd3';
 import { sum, tree } from 'd3';
 import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';
