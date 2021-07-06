@@ -10,6 +10,7 @@ import { unnest } from '@/util/Vuex';
 const DatasetsModule: Module<DatasetsState, RootState> = {
     namespaced: true,
     state: {
+        isLoaded: false,
         bundle: '',
         name: '',
         manifest: {},
@@ -45,6 +46,7 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
     },
     mutations: {
         Unload(state) {
+            state.isLoaded = false;
             state.bundle = '';
             state.name = '';
             state.manifest = {};
@@ -62,6 +64,9 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         SetLabelMap(state, data: DatasetsState) {
             state.label_map = data.label_map;
         },
+        SetLoaded(state) {
+            state.isLoaded = true;
+        },
     },
     actions: {
         Unload(context) {
@@ -71,6 +76,7 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
             context.commit('SetDataSourceInfo', payload);
             context.commit('SetGroupInfo', payload);
             context.commit('SetLabelMap', payload);
+            context.commit('SetLoaded');
         },
     },
 };
