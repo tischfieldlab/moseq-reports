@@ -1,6 +1,6 @@
 <script lang="ts">
-import Vue from 'vue';
-import { OrderingType, SortOrderDirection, HeatmapTile, HClusterDistance, HClusterLinkage } from './ClusterHeatmap.types';
+import Vue, { PropType } from 'vue';
+import { OrderingType, SortOrderDirection, HClusterDistance, HClusterLinkage } from './ClusterHeatmap.types';
 import { cluster, hierarchy, extent } from 'd3';
 import { scaleBand, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
@@ -28,7 +28,7 @@ export default Vue.extend({
     props: {
         data: {
             required: true,
-            type: Array,
+            type: Array as PropType<object[]>,
         },
         width: {
             required: true,
@@ -290,32 +290,6 @@ export default Vue.extend({
                 legend,
             };
         },
-        columnOrder(): string[] {
-            switch (this.columnOrderType) {
-                case OrderingType.HCluster:
-                case OrderingType.KCluster:
-                    return this.clusteredColumnOrder;
-
-                case OrderingType.Value:
-                    return (this.data as HeatmapTile[])
-                               .filter((u) => u[this.rowKey] === this.rowOrderValue)
-                               .sort((a, b) => {
-                                   if (this.columnOrderDirection === SortOrderDirection.Asc) {
-                                       return b[this.valueKey] - a[this.valueKey];
-                                   } else {
-                                       return a[this.valueKey] - b[this.valueKey];
-                                   }
-                               })
-                               .map((u) => u[this.columnKey]);
-
-                case OrderingType.Dataset:
-                    return this.columnOrderDataset as string[] || [];
-
-                case OrderingType.Natural:
-                default:
-                    return this.groupLabels as string[];
-            }
-        },
         isColumnsClustered(): boolean {
             return [OrderingType.HCluster, OrderingType.KCluster].includes(this.columnOrderType as OrderingType);
         },
@@ -334,6 +308,31 @@ export default Vue.extend({
         isRowsKClustered(): boolean {
             return this.rowOrderType === OrderingType.KCluster;
         },
+        columnOrder(): string[] {
+            switch (this.columnOrderType) {
+                case OrderingType.HCluster:
+                case OrderingType.KCluster:
+                    return this.clusteredColumnOrder;
+
+                case OrderingType.Value:
+                    return this.data.filter((u) => u[this.rowKey].toString() === this.columnOrderValue.toString())
+                                    .sort((a, b) => {
+                                        if (this.columnOrderDirection === SortOrderDirection.Asc) {
+                                            return b[this.valueKey] - a[this.valueKey];
+                                        } else {
+                                            return a[this.valueKey] - b[this.valueKey];
+                                        }
+                                    })
+                                    .map((u) => u[this.columnKey]);
+
+                case OrderingType.Dataset:
+                    return this.columnOrderDataset as string[] || [];
+
+                case OrderingType.Natural:
+                default:
+                    return this.groupLabels as string[];
+            }
+        },
         rowOrder(): number[] {
             switch (this.rowOrderType) {
                 case OrderingType.HCluster:
@@ -341,23 +340,22 @@ export default Vue.extend({
                     return this.clusteredRowOrder;
 
                 case OrderingType.Value:
-                    return (this.data as HeatmapTile[])
-                               .filter((u) => u[this.columnKey] === this.rowOrderValue)
-                               .sort((a, b) => {
-                                   if (this.rowOrderDirection === SortOrderDirection.Asc) {
-                                       return b[this.valueKey] - a[this.valueKey];
-                                   } else {
-                                       return a[this.valueKey] - b[this.valueKey];
-                                   }
-                               })
-                               .map((u) => u[this.rowKey]);
+                    return this.data.filter((u) => u[this.columnKey].toString() === this.rowOrderValue.toString())
+                                    .sort((a, b) => {
+                                        if (this.rowOrderDirection === SortOrderDirection.Asc) {
+                                            return b[this.valueKey] - a[this.valueKey];
+                                        } else {
+                                            return a[this.valueKey] - b[this.valueKey];
+                                        }
+                                    })
+                                    .map((u) => u[this.rowKey]);
 
                 case OrderingType.Dataset:
                     return this.rowOrderDataset as number[] || [];
 
                 case OrderingType.Natural:
                 default:
-                    return [...new Set((this.data as HeatmapTile[]).map((u) => u[this.rowKey]))].sort((a, b) => a - b);
+                    return [...new Set(this.data.map((u) => u[this.rowKey]))].sort((a, b) => a - b);
             }
         },
         colormap(): any {
@@ -365,7 +363,7 @@ export default Vue.extend({
         },
         scale(): any {
             const x = scaleBand()
-                .domain(this.columnOrder)
+                .domain(this.columnOrder.map((s) => s.toString()))
                 .range([0, this.dims.heatmap.w])
                 .padding(0);
             const y = scaleBand()
@@ -374,7 +372,7 @@ export default Vue.extend({
                 .padding(0);
             let ext = [0, 0];
             if (this.data !== null) {
-                ext = extent((this.data as HeatmapTile[]).map((n) => n[this.valueKey])) as [number, number];
+                ext = extent(this.data.map((n) => n[this.valueKey])) as [number, number];
             }
             const z = scaleSequential(this.colormap || ((t) => t))
                 .domain(ext as [number, number]);

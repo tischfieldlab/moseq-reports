@@ -9,6 +9,7 @@
         :columnOrderType="this.settings.column_order_type"
         :columnClusterDistance="this.settings.column_cluster_distance"
         :columnClusterLinkage="this.settings.column_cluster_linkage"
+        :columnClusterK="this.settings.column_cluster_k"
         :columnOrderValue="this.settings.column_order_row_value"
         :columnOrderDirection="this.settings.column_order_direction"
         :columnOrderDataset="rowOrderDataset"
@@ -16,7 +17,8 @@
         :rowOrderType="this.settings.row_order_type"
         :rowClusterDistance="this.settings.row_cluster_distance"
         :rowClusterLinkage="this.settings.row_cluster_linkage"
-        :rowOrderValue="this.settings.row_order_col_value"
+        :rowClusterK="this.settings.row_cluster_k"
+        :rowOrderValue="this.settings.row_order_column_value"
         :rowOrderDirection="this.settings.row_order_direction"
         :rowOrderDataset="rowOrderDataset"
 
@@ -45,10 +47,10 @@ import WindowMixin from '@/components/Core/WindowMixin';
 import ClusteredHeatmapSVG from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapSVG.vue';
 import ClusteredHeatmapCanvas from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapCanvas.vue';
 
-import { OrderingType, SortOrderDirection } from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
 import { RenderMode } from '@/store/datawindow.types';
+import {get_column_ordering_options, get_colormap_options, get_row_ordering_options} from '@/components/Charts/ClusteredHeatmap/Options';
 
 
 RegisterDataComponent({
@@ -61,17 +63,9 @@ RegisterDataComponent({
     default_render_mode: RenderMode.CANVAS,
     default_settings: {
         distance_metric: 'ar[init]',
-        row_order_type: OrderingType.HCluster,
-        row_order_col_value: undefined,
-        row_order_direction: SortOrderDirection.Asc,
-        row_cluster_distance: 'euclidean',
-        row_cluster_linkage: 'avg',
-        row_cluster_k: 3,
-        column_order_type: OrderingType.HCluster,
-        column_cluster_distance: 'euclidean',
-        column_cluster_linkage: 'avg',
-        column_cluster_k: 2,
-        colormap: 'interpolateViridis',
+        ...get_colormap_options(),
+        ...get_column_ordering_options(),
+        ...get_row_ordering_options(),
     },
 });
 

@@ -6,15 +6,19 @@
         :groupLabels="this.selectedGroups"
         :colorscale="this.settings.colormap"
 
-        :columnOrderType="this.settings.group_order_type"
-        :columnClusterDistance="this.settings.group_cluster_distance"
-        :columnClusterLinkage="this.settings.group_cluster_linkage"
+        :columnOrderType="this.settings.column_order_type"
+        :columnClusterDistance="this.settings.column_cluster_distance"
+        :columnClusterLinkage="this.settings.column_cluster_linkage"
+        :columnClusterK="this.settings.column_cluster_k"
+        :columnOrderValue="this.settings.column_order_row_value"
+        :columnOrderDirection="this.settings.column_order_direction"
 
-        :rowOrderType="this.settings.syllable_order_type"
-        :rowClusterDistance="this.settings.syllable_cluster_distance"
-        :rowClusterLinkage="this.settings.syllable_cluster_linkage"
-        :rowOrderValue="this.settings.syllable_order_group_value"
-        :rowOrderDirection="this.settings.syllable_order_direction"
+        :rowOrderType="this.settings.row_order_type"
+        :rowClusterDistance="this.settings.row_cluster_distance"
+        :rowClusterLinkage="this.settings.row_cluster_linkage"
+        :rowClusterK="this.settings.row_cluster_k"
+        :rowOrderValue="this.settings.row_order_column_value"
+        :rowOrderDirection="this.settings.row_order_direction"
         :rowOrderDataset="rowOrderDataset"
 
         xAxisTitle="Individual"
@@ -29,7 +33,10 @@
         @col-order-changed="colOrderChanged"
         :tooltipFormatter="heatmap_node_tooltip"
     />
-    <!--:columnOrderValue=""   -->
+    <!--
+        :columnOrderDataset="columnOrderDataset"
+        :columnOrderValue=""
+    -->
 </template>
 
 
@@ -41,10 +48,10 @@ import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import ClusteredHeatmapCanvas from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapCanvas.vue';
 import ClusteredHeatmapSVG from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapSVG.vue';
-import { OrderingType, SortOrderDirection } from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
 import { RenderMode } from '@/store/datawindow.types';
+import {get_column_ordering_options, get_colormap_options, get_row_ordering_options} from '@/components/Charts/ClusteredHeatmap/Options';
 
 
 RegisterDataComponent({
@@ -56,17 +63,9 @@ RegisterDataComponent({
     available_render_modes: [RenderMode.CANVAS, RenderMode.SVG],
     default_render_mode: RenderMode.CANVAS,
     default_settings: {
-        syllable_order_type: OrderingType.HCluster,
-        syllable_order_group_value: undefined,
-        syllable_order_direction: SortOrderDirection.Asc,
-        syllable_cluster_distance: 'euclidean',
-        syllable_cluster_linkage: 'avg',
-        syllable_cluster_k: 3,
-        group_order_type: OrderingType.Natural,
-        group_cluster_distance: 'euclidean',
-        group_cluster_linkage: 'avg',
-        group_cluster_k: 2,
-        colormap: 'interpolateViridis',
+        ...get_colormap_options(),
+        ...get_column_ordering_options(),
+        ...get_row_ordering_options(),
     },
 });
 
@@ -110,18 +109,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.dataview.countMethod;
         },
         rowOrderDataset(): any[] {
-            if (this.settings.syllable_order_dataset in this.dataview.views) {
-                return this.dataview.views[this.settings.syllable_order_dataset].data;
+            if (this.settings.row_order_dataset in this.dataview.views) {
+                return this.dataview.views[this.settings.row_order_dataset].data;
             }
             return [];
         },
         dataset(): [string, Operation[]] {
-            let syllables;
-            if (this.dataview.moduleIdFilter.length === 0) {
-                syllables = this.$store.getters[`${this.datasource}/availableModuleIds`];
-            } else {
-                syllables = this.dataview.moduleIdFilter;
-            }
+            const syllables = this.$store.getters[`${this.datasource}/selectedSyllables`];
             return [
                 this.$store.getters[`datasets/resolve`]('usage'),
                 [

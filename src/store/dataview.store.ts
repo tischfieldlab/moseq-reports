@@ -53,6 +53,15 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 return undefined;
             }
         },
+        selectedSyllables: (state, getters) => {
+            let syllables;
+            if (state.moduleIdFilter.length === 0) {
+                syllables = getters.availableModuleIds;
+            } else {
+                syllables = state.moduleIdFilter;
+            }
+            return syllables;
+        },
         availableModuleIds: (state, getters, rootState, rootGetters) => {
             if (state.countMethod === CountMethod.Usage) {
                 return rootGetters['datasets/availableUsageModuleIds'];

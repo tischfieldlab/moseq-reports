@@ -2,12 +2,12 @@ import { expose } from 'threads/worker';
 import hcluster from 'hclusterjs';
 import kmeans from 'node-kmeans';
 import {groupby} from '@/util/Array';
-import { HeatmapTile, ClusterOptions, HClusterOptions, KClusterOptions, OrderingType } from './ClusterHeatmap.types';
+import { ClusterOptions, HClusterOptions, KClusterOptions, OrderingType } from './ClusterHeatmap.types';
 
 
 const exposedMethods = {
-    clusterColumns(df, colKey: string, valKey: string, options: ClusterOptions) {
-        const grouped = groupby(df as HeatmapTile[], (item) => item[colKey]);
+    clusterColumns(df: object[], colKey: string, valKey: string, options: ClusterOptions) {
+        const grouped = groupby(df, (item) => item[colKey].toString());
         const toCluster = Object.entries(grouped).map(([column, vals]) => {
             return {
                 name: column,
@@ -20,8 +20,8 @@ const exposedMethods = {
             return perform_kmeans_cluster(toCluster, options);
         }
     },
-    clusterRows(df, rowKey: string, valKey: string, options: ClusterOptions) {
-        const grouped = groupby(df as HeatmapTile[], (item) => item[rowKey].toString());
+    clusterRows(df: object[], rowKey: string, valKey: string, options: ClusterOptions) {
+        const grouped = groupby(df, (item) => item[rowKey].toString());
         const toCluster = Object.entries(grouped).map(([row, vals]) => {
             return {
                 name: row,
