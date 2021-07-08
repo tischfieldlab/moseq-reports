@@ -232,7 +232,7 @@ export default mixins(LoadingMixin).extend({
             const x = scalePoint()
                 .domain(this.varOrdering as string[])
                 .range([0, this.innerWidth])
-                .padding(0.2);
+                .padding(0.5);
 
             let ext = [0, 0];
             if (this.data !== null) {
