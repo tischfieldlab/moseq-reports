@@ -1,5 +1,5 @@
 <template>
-    <line-plot
+    <component :is="render_mode"
         :width="this.layout.width"
         :height="this.layout.height - 31"
         :data="aggregateView"
@@ -10,10 +10,10 @@
         :varOrdering="syllable_ordering"
         :seriesLabels="groupNames"
         :seriesColors="groupColors"
-        :show_points="settings.show_points"
-        :point_size="settings.point_size"
-        :show_lines="settings.show_lines"
-        :line_weight="settings.line_weight"
+        :showPoints="settings.show_points"
+        :pointSize="settings.point_size"
+        :showLines="settings.show_lines"
+        :lineWeight="settings.line_weight"
         xAxisTitle="Module ID"
         :yAxisTitle="`Module Usage (${countMethod})`"
         :tooltipFormatter="format_tooltip"
@@ -28,7 +28,9 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import LinePlot from '@/components/Charts/LinePlot/LinePlot.vue';
+import LinePlotSVG from '@/components/Charts/LinePlot/LinePlotSVG.vue';
+import LinePlotCanvas from '@/components/Charts/LinePlot/LinePlotCanvas.vue';
+
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
@@ -42,8 +44,8 @@ RegisterDataComponent({
     settings_type: 'MutationPlotOptions',
     init_width: 400,
     init_height: 500,
-    available_render_modes: [RenderMode.CANVAS],
-    default_render_mode: RenderMode.CANVAS,
+    available_render_modes: [RenderMode.SVG, RenderMode.CANVAS],
+    default_render_mode: RenderMode.SVG,
     default_settings: {
         show_points: true,
         point_size: 4,
@@ -72,7 +74,8 @@ interface PlotData {
 
 export default mixins(LoadingMixin, WindowMixin).extend({
     components: {
-        LinePlot,
+        LinePlotSVG,
+        LinePlotCanvas,
     },
     data() {
         return {
@@ -95,6 +98,17 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     computed: {
+        render_mode(): string {
+            if (this.$wstate.render_mode === RenderMode.CANVAS) {
+                return 'LinePlotCanvas';
+            } else if (this.$wstate.render_mode === RenderMode.SVG) {
+                return 'LinePlotSVG';
+            } else {
+                // tslint:disable-next-line:no-console
+                console.error('invalid render mode', this.$wstate.render_mode);
+                return 'LinePlotSVG';
+            }
+        },
         syllable_ordering(): any[] {
             if (this.settings.syllable_order_type === OrderingType.Natural) {
                 return this.$store.getters[`${this.datasource}/selectedSyllables`];

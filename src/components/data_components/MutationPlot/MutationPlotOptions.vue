@@ -72,7 +72,7 @@
                 </b-input-group>
             </b-col>
         </b-row>
-        <b-row v-show="show_lines">
+        <b-row>
             <b-col>
                 <b-input-group prepend="Line Weight">
                     <b-form-input type="number" v-model="line_weight" :disabled="!show_lines" min="1" max="10" ></b-form-input>
