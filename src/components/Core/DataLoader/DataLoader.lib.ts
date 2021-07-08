@@ -9,8 +9,7 @@ import {
     KeysOperation,
 } from './DataLoader.types';
 import { groupby } from '@/util/Array';
-import { unnest } from '@/util/Vuex';
-import { mean, median, sum, min, max } from 'd3-array';
+import { mean, median, sum, min, max, extent, variance, deviation } from 'd3-array';
 import { tsvParse, csvParse } from 'd3-dsv';
 import StreamZip from 'node-stream-zip';
 import fs from 'fs';
@@ -89,6 +88,10 @@ const statops = {
     sum,
     min,
     max,
+    extent,
+    variance,
+    deviation,
+    'count': (items: any[]) => items.length,
 };
 export function aggregate(data: object[], op: AggregateOperation) {
     const grouper = (item) => (op.groupby as string[]).map((c) => item[c]).toString();

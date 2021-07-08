@@ -40,7 +40,7 @@ export interface AggregateOperation {
     groupby: string[];
     aggregate: {[key: string]: Statistic|Statistic[]};
 }
-type Statistic = ('mean'|'median'|'sum'|'min'|'max');
+export type Statistic = ('mean'|'median'|'sum'|'min'|'max'|'extent'|'variance'|'deviation'|'count');
 
 
 
