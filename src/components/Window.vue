@@ -143,7 +143,9 @@ export default mixins(WindowMixin).extend({
             // HACK: We sometimes need to force a layout/reflow
             // to avoid unnecessary scrollbars from showing
             // https://gist.github.com/paulirish/5d52fb081b3570c81e3a
-            (this.$refs.window as any).getClientRects();
+            this.$nextTick().then(() => {
+                (this.$refs.window as Vue).$el.getClientRects();
+            });
         },
         onResized(event: any) {
             const s = event.args as Size;
