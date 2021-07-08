@@ -6,6 +6,7 @@ export enum OrderingType {
     HCluster = 'hcluster',
     KCluster = 'kcluster',
     Dataset = 'dataset',
+    Computed = 'computed',
 }
 export enum SortOrderDirection {
     Asc = 'asc',
