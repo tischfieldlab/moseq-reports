@@ -51,7 +51,7 @@ import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue';
 import { Size, Position, Layout } from '@/store/datawindow.types';
 import Snapshot, { ensureDefaults } from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin.ts';
+import WindowMixin from '@/components/Core/WindowMixin';
 import {getContrastingColor} from '@/components/Charts/Colors/D3ColorProvider';
 
 
@@ -140,6 +140,10 @@ export default mixins(WindowMixin).extend({
                 x: layout.position.x,
                 y: layout.position.y + this.title_offset,
             } as Position;
+            // HACK: We sometimes need to force a layout/reflow
+            // to avoid unnecessary scrollbars from showing
+            // https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+            (this.$refs.window as any).getClientRects();
         },
         onResized(event: any) {
             const s = event.args as Size;
