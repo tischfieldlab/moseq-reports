@@ -2,17 +2,19 @@
 
 ## Project setup
 ```
+git clone https://github.com/tischfieldlab/moseq-reports.git
+cd moseq-reports
 npm install
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm run electron:serve
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+npm run electron:build
 ```
 
 ### Run your unit tests
