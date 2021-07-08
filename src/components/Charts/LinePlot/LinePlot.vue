@@ -3,7 +3,7 @@
     <svg ref="canvas" :width="width" :height="height" @mousemove="debouncedHover" @mouseleave="hoverItem = undefined">
         <g class="plot-area" :transform="`translate(${margin.left}, ${margin.top})`">
             <template v-for="(sdata, g) in groupedData">
-                <g class="series" :key="g">
+                <g class="series" :key="g" :data-series="`${g}`">
                     <g class="series-line" v-if="show_lines">
                         <path
                             :data-series="g"
@@ -14,20 +14,39 @@
                     </g>
                     <g class="series-points" v-if="show_points">
                         <template v-for="p in sdata">
-                            <g :key="`${p[seriesKey]}-${p[varKey]}`">
-                                <line class="error"
-                                    :x1="scale.x(p[varKey])"
-                                    :x2="scale.x(p[varKey])"
-                                    :y1="scale.y(p[valueKey] - p[errorKey])"
-                                    :y2="scale.y(p[valueKey] + p[errorKey])"
-                                    :stroke="scale.c(g)"
-                                    :stroke-width="line_weight"
-                                    />
+                            <g :key="`${p[seriesKey]}-${p[varKey]}`" :data-series="`${p[seriesKey]}`" :data-var="`${p[varKey]}`">
+                                <g v-if="errorKey" class="error">
+                                    <line class="error"
+                                        :x1="scale.x(p[varKey])"
+                                        :x2="scale.x(p[varKey])"
+                                        :y1="scale.y(p[valueKey] - p[errorKey])"
+                                        :y2="scale.y(p[valueKey] + p[errorKey])"
+                                        :stroke="scale.c(g)"
+                                        :stroke-width="line_weight"
+                                        />
+                                    <line class="error"
+                                        :x1="scale.x(p[varKey]) - (scale.x.step() / 8)"
+                                        :x2="scale.x(p[varKey]) + (scale.x.step() / 8)"
+                                        :y1="scale.y(p[valueKey] + p[errorKey])"
+                                        :y2="scale.y(p[valueKey] + p[errorKey])"
+                                        :stroke="scale.c(g)"
+                                        :stroke-width="line_weight"
+                                        />
+                                    <line class="error"
+                                        :x1="scale.x(p[varKey]) - (scale.x.step() / 8)"
+                                        :x2="scale.x(p[varKey]) + (scale.x.step() / 8)"
+                                        :y1="scale.y(p[valueKey] - p[errorKey])"
+                                        :y2="scale.y(p[valueKey] - p[errorKey])"
+                                        :stroke="scale.c(g)"
+                                        :stroke-width="line_weight"
+                                        />
+                                </g>
                                 <circle
                                     v-if="isPointValid(p)"
-                                    
+                                    @click="handleClick"
                                     :data-series="`${p[seriesKey]}`"
                                     :data-var="`${p[varKey]}`"
+                                    :data-value="p[valueKey]"
                                     :r="point_size"
                                     :cx="scale.x(p[varKey])"
                                     :cy="scale.y(p[valueKey])"
@@ -98,7 +117,6 @@ export default mixins(LoadingMixin).extend({
             type: String,
         },
         errorKey: {
-            required: true,
             type: String,
         },
         varOrdering: {
@@ -268,6 +286,14 @@ export default mixins(LoadingMixin).extend({
         },
         seriesData(seriesValue) {
             return this.data.filter((d) => d[this.seriesKey] === seriesValue);
+        },
+        handleClick(event: Event) {
+            this.$emit('lineplot-click', {
+                e: event,
+                series: (event.target as SVGCircleElement).dataset.series,
+                var: (event.target as SVGRectElement).dataset.var,
+                value: (event.target as SVGRectElement).dataset.value,
+            });
         },
         handleHover(event: MouseEvent) {
             if (event && event.target !== null){

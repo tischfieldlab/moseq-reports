@@ -17,7 +17,7 @@
         xAxisTitle="Module ID"
         :yAxisTitle="`Module Usage (${countMethod})`"
         :tooltipFormatter="format_tooltip"
-
+        @lineplot-click="onLineplotClick"
     />
 </template>
 
@@ -142,6 +142,14 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
+        selectedSyllable: {
+            get(): number {
+                return this.dataview.selectedSyllable;
+            },
+            set(event: number) {
+                this.$store.commit(`${this.datasource}/setSelectedSyllable`, event);
+            },
+        },
         groupNames(): string[] {
             if (this.settings.group_order_type === OrderingType.Natural) {
                 return this.dataview.selectedGroups;
@@ -200,6 +208,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     methods: {
+        onLineplotClick(event) {
+            if (event.var) {
+                this.selectedSyllable = Number.parseInt(event.var, 10);
+            }
+        },
         format_tooltip(itm: any): string {
             return `Module: ${itm.syllable}<br />
                     Group: ${itm.group}<br />
