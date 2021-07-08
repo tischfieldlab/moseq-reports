@@ -107,11 +107,11 @@ export default mixins(WindowMixin).extend({
             get(): number {
                 return this.settings.point_size;
             },
-            set(value: number) {
+            set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        point_size: value,
+                        point_size: Number.parseInt(value, 10),
                     },
                 });
             },

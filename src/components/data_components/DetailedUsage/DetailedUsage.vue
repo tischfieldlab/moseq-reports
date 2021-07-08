@@ -101,7 +101,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return [];
         },
         groupColors(): string[] {
-            return this.dataview.groupColors;
+            return this.groupNames.map((gn) => this.dataview.groupColors[this.dataview.selectedGroups.indexOf(gn)]);
         },
         dataset(): [string, Operation[]] {
             return [
