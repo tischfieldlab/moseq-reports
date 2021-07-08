@@ -1,13 +1,10 @@
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-import { max, min, mean, quantile, median, sum, extent } from 'd3-array';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
-import { axisBottom, axisLeft } from 'd3-axis';
-import { WhiskerType, GroupStats, DataPoint, DataPointQueueNode } from './BoxPlot.types';
-import {groupby} from '@/util/Array';
+import { WhiskerType, GroupStats, DataPoint } from './BoxPlot.types';
 import { spawn, Thread, Worker, ModuleThread } from 'threads';
 import { BoxPlotWorker } from './Worker';
 import LoadingMixin from '@/components/Core/LoadingMixin';
@@ -81,12 +78,12 @@ export default mixins(LoadingMixin).extend({
         },
         groupLabels: {
             required: true,
-            type: Array, /* Array<string> */
+            type: Array as PropType<string[]>,
             default: () => new Array<string>(),
         },
         groupColors: {
             required: true,
-            type: Array, /* Array<string> */
+            type: Array as PropType<string[]>,
             default: () => new Array<string>(),
         },
         xAxisTitle: {
@@ -160,11 +157,15 @@ export default mixins(LoadingMixin).extend({
             return { x, y };
         },
         scale(): any {
-            if (this.points === undefined) {
+            if (this.groupedData === undefined) {
                 return { x: scaleBand(), y: scaleLinear() };
             }
+            const orderedLabels = this.groupedData
+                .map((gs) => gs.group)
+                .sort((a, b) => this.groupLabels.indexOf(a) - this.groupLabels.indexOf(b))
+
             const x = scaleBand()
-                .domain(this.groupLabels as string[])
+                .domain(orderedLabels)
                 .range([0, this.innerWidth])
                 .padding(0.2);
 
