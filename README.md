@@ -1,4 +1,4 @@
-# moseq-reports [![Build Status](https://travis-ci.com/tischfieldlab/moseq-reports.svg?token=es6YKetAnwLEmS78p5ss&branch=master)](https://travis-ci.com/tischfieldlab/moseq-reports)
+# moseq-reports [![Build Status](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml/badge.svg)](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml)
 
 ## Project setup
 ```
