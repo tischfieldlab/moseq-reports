@@ -6,14 +6,14 @@ export { default as RowOrdering } from './RowOrdering.vue';
 
 
 
-export function get_colormap_options(){
+export function get_colormap_options() {
     return {
         colormap: 'interpolateViridis',
     };
 }
 
 
-export function get_column_ordering_options(){
+export function get_column_ordering_options() {
     return {
         column_order_type: OrderingType.HCluster,
         column_order_row_value: undefined,
@@ -25,7 +25,7 @@ export function get_column_ordering_options(){
     };
 }
 
-export function get_row_ordering_options(){
+export function get_row_ordering_options() {
     return {
         row_order_type: OrderingType.HCluster,
         row_order_column_value: undefined,

@@ -22,12 +22,6 @@ export enum HClusterLinkage {
     Min = 'min',
 }
 
-/*export interface HeatmapTile {
-    column: string;
-    row: string;
-    usage: number;
-}*/
-
 export type ClusterOptions = HClusterOptions | KClusterOptions
 
 export interface HClusterOptions {
