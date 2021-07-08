@@ -48,7 +48,7 @@
 
                     <g class="outliers">
                         <template v-for="(node) in points">
-                            <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
+                            <!-- Diamonds for each outlier node -->
                             <path v-if="is_outlier(node)"
                                 :data-identifier="node.id"
                                 :key="node.id"
@@ -69,7 +69,7 @@
         </g>
         <g v-if="actuallyShowPoints" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
             <template v-for="(node) in points">
-                <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
+                <!-- Circles for each node or diamonds for outliers -->
                 <path v-if="is_outlier(node)"
                     :key="node.id"
                     :data-identifier="node.id"
@@ -186,7 +186,7 @@ export default mixins(BoxPlotBase).extend({
         axis(el, binding) {
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis] as string;
                 const methodArg = binding.value[axis];
                 d3.select(el).call(d3[axisMethod](methodArg));
             }
