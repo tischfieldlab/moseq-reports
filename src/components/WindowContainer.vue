@@ -3,12 +3,13 @@
         <template v-for="wid in windows">
             <UiCard :key="wid" :id="wid" />
         </template>
+<!--      <UiCard id="test-id" />-->
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import UiCard from '@/components/Window.vue';
+import UiCard from '@/components/Window2.vue';
 
 
 export default Vue.extend({

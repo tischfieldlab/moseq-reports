@@ -33,8 +33,8 @@ function createWindow(argv: string[]) {
     // Create the browser window.
     const win = new BrowserWindow({
         icon: path.join(__static, 'img', 'mouse.png'),
-        width: 800,
-        height: 600,
+        width: 1280,
+        height: 720,
         frame: false,
         titleBarStyle: 'hidden',
         backgroundColor: '#FFFFFF',
@@ -100,6 +100,8 @@ function attachApp() {
             createWindow(process.argv);
         }
     });
+
+    app.allowRendererProcessReuse = false;
 
     // This needs to be added because somewhere in Vue this ready event gets
     // overwritten, so this wipes it all clean.
