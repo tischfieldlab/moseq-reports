@@ -79,6 +79,7 @@ export default mixins(LinePlotBase, CanvasMixin).extend({
             ctx.translate(this.margin.left, this.margin.top);
             for (const [g, sdata] of Object.entries(this.groupedData)) {
                 this.drawSeriesLine(ctx, g, sdata);
+                this.drawSeriesErrors(ctx, sdata);
                 this.drawSeriesPoints(ctx, sdata);
             }
             ctx.restore();
@@ -111,8 +112,30 @@ export default mixins(LinePlotBase, CanvasMixin).extend({
             }
             ctx.restore();
         },
-        drawError(ctx: CanvasRenderingContext2D, node: object) {
-            return;
+        drawSeriesErrors(ctx: CanvasRenderingContext2D, sdata: object[]) {
+            if (!this.showError) {
+                return;
+            }
+            ctx.save();
+            const offset = this.scale.x.step() / 8;
+            for (const node of sdata) {
+                // vertical
+                ctx.moveTo(this.scale.x(node[this.varKey]), this.scale.y(node[this.valueKey] - node[this.errorKey]));
+                ctx.lineTo(this.scale.x(node[this.varKey]), this.scale.y(node[this.valueKey] + node[this.errorKey]));
+
+                // upper fence
+                ctx.moveTo(this.scale.x(node[this.varKey]) - offset, this.scale.y(node[this.valueKey] + node[this.errorKey]));
+                ctx.lineTo(this.scale.x(node[this.varKey]) + offset, this.scale.y(node[this.valueKey] + node[this.errorKey]));
+
+                // lower fence
+                ctx.moveTo(this.scale.x(node[this.varKey]) - offset, this.scale.y(node[this.valueKey] - node[this.errorKey]));
+                ctx.lineTo(this.scale.x(node[this.varKey]) + offset, this.scale.y(node[this.valueKey] - node[this.errorKey]));
+
+                ctx.strokeStyle = this.scale.c(node[this.seriesKey]);
+                ctx.lineWidth = this.lineWeight / 2;
+                ctx.stroke();
+            }
+            ctx.restore();
         },
         drawAxisX(ctx: CanvasRenderingContext2D) {
             ctx.save();

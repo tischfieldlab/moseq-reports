@@ -22,7 +22,7 @@
                                         :y1="scale.y(p[valueKey] - p[errorKey])"
                                         :y2="scale.y(p[valueKey] + p[errorKey])"
                                         :stroke="scale.c(g)"
-                                        :stroke-width="lineWeight"
+                                        :stroke-width="lineWeight / 2"
                                         />
                                     <line class="error"
                                         :x1="scale.x(p[varKey]) - (scale.x.step() / 8)"
@@ -30,7 +30,7 @@
                                         :y1="scale.y(p[valueKey] + p[errorKey])"
                                         :y2="scale.y(p[valueKey] + p[errorKey])"
                                         :stroke="scale.c(g)"
-                                        :stroke-width="lineWeight"
+                                        :stroke-width="lineWeight / 2"
                                         />
                                     <line class="error"
                                         :x1="scale.x(p[varKey]) - (scale.x.step() / 8)"
@@ -38,7 +38,7 @@
                                         :y1="scale.y(p[valueKey] - p[errorKey])"
                                         :y2="scale.y(p[valueKey] - p[errorKey])"
                                         :stroke="scale.c(g)"
-                                        :stroke-width="lineWeight"
+                                        :stroke-width="lineWeight / 2"
                                         />
                                 </g>
                                 <circle
