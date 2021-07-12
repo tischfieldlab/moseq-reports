@@ -2,7 +2,7 @@ import { expose } from 'threads/worker';
 import hcluster from 'hclusterjs';
 import kmeans from 'node-kmeans';
 import {groupby} from '@/util/Array';
-import { ClusterOptions, HClusterOptions, KClusterOptions, OrderingType } from './ClusterHeatmap.types';
+import { ClusterOptions, HClusterOptions, KClusterOptions, OrderingType } from './ClusteredHeatmap.types';
 
 
 const exposedMethods = {

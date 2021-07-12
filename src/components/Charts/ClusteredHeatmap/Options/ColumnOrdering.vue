@@ -64,7 +64,7 @@ import mixins from 'vue-typed-mixins';
 import DatasetPicker from '@/components/DatasetPicker.vue';
 
 import Vue, { PropType } from 'vue'
-import { OrderingType, SortOrderDirection } from '../ClusterHeatmap.types';
+import { OrderingType, SortOrderDirection } from '../ClusteredHeatmap.types';
 
 
 

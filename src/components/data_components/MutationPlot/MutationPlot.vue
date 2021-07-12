@@ -28,11 +28,11 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import LinePlotSVG from '@/components/Charts/LinePlot/LinePlotSVG.vue';
-import LinePlotCanvas from '@/components/Charts/LinePlot/LinePlotCanvas.vue';
+import { LinePlotSVG, LinePlotCanvas} from '@/components/Charts/LinePlot';
+
 
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHeatmap';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
 import { RenderMode } from '@/store/datawindow.types';
 

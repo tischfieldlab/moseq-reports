@@ -23,10 +23,8 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import BoxPlotCanvas from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
-import BoxPlotSVG from '@/components/Charts/BoxPlot/BoxPlotSVG.vue';
+import {BoxPlotSVG, BoxPlotCanvas, WhiskerType} from '@/components/Charts/BoxPlot';
 
-import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 
 import { CountMethod } from '@/store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';

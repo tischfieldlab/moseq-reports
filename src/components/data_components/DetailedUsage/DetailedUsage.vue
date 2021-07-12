@@ -23,11 +23,9 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import BoxPlotCanvas from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
-import BoxPlotSVG from '@/components/Charts/BoxPlot/BoxPlotSVG.vue';
-import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
+import {BoxPlotSVG, BoxPlotCanvas, WhiskerType} from '@/components/Charts/BoxPlot';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import {OrderingType} from '@/components/Charts/ClusteredHeatmap';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
 import { RenderMode } from '@/store/datawindow.types';
 
