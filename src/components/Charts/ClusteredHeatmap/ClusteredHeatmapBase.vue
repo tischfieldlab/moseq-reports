@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { OrderingType, SortOrderDirection, HClusterDistance, HClusterLinkage } from '.';
+import { OrderingType, SortOrderDirection, HClusterDistance, HClusterLinkage } from './ClusteredHeatmap.types';
 import { cluster, hierarchy, extent } from 'd3';
 import { scaleBand, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';

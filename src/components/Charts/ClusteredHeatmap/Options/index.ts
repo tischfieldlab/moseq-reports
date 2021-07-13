@@ -1,4 +1,4 @@
-import { OrderingType, SortOrderDirection } from '..';
+import { OrderingType, SortOrderDirection } from '../ClusteredHeatmap.types';
 
 export { default as Colormap } from './Colormap.vue';
 export { default as ColumnOrdering } from './ColumnOrdering.vue';
