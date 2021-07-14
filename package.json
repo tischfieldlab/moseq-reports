@@ -40,7 +40,7 @@
   "dependencies": {
     "@popperjs/core": "^2.4.2",
     "@types/jszip": "^3.4.1",
-    "about-window": "^1.13.4",
+    "about-window": "^1.14.0",
     "chai-as-promised": "^7.1.1",
     "core-js": "^3.6.5",
     "custom-electron-titlebar": "^3.2.2",
