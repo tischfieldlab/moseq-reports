@@ -27,7 +27,7 @@ export function LoadDefaultLayout(showNotifications=true) {
     let chain;
     if (showNotifications) {
         chain = new Promise<void>((resolve) => {
-            app.$root.$once('bv::toast:shown', () => resolve());
+            app.$root.$once('bv::toast::shown', () => resolve());
             showStartLoadingToast();
         });
     } else {
@@ -53,7 +53,7 @@ export async function LoadLayoutFile(filename: string, showNotifications=true) {
     let chain;
     if (showNotifications) {
         chain = new Promise<void>((resolve) => {
-            app.$root.$once('bv::toast:shown', () => resolve());
+            app.$root.$once('bv::toast::shown', () => resolve());
             showStartLoadingToast();
         });
     } else {

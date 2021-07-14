@@ -46,7 +46,7 @@ export function LoadDataFile(filename: string) {
     // then actualy go ahead and load the data. Otherwise the toast
     // animation and loading will race and frequently the loading
     // notification will fail to show until after data is loaded.
-    app.$root.$once('bv::toast:shown', () => beginLoadingProcess(filename));
+    app.$root.$once('bv::toast::shown', () => beginLoadingProcess(filename));
     showStartLoadingToast();
 }
 
