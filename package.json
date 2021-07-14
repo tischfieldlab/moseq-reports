@@ -90,7 +90,6 @@
     "@types/bootstrap": "^4.5.0",
     "@types/chai": "^4.2.21",
     "@types/d3": "^7.0.0",
-    "@types/file-saver": "^2.0.1",
     "@types/mocha": "^7.0.2",
     "@vue/cli-plugin-babel": "^4.4.1",
     "@vue/cli-plugin-e2e-nightwatch": "^4.4.1",
