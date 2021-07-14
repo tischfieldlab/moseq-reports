@@ -62,7 +62,7 @@
     "lru-cache": "^5.1.1",
     "mime-types": "^2.1.27",
     "node-kmeans": "^1.1.9",
-    "node-stream-zip": "^1.11.1",
+    "node-stream-zip": "^1.13.6",
     "object-sizeof": "^1.6.0",
     "parse-numeric-range": "^1.2.0",
     "popper.js": "^1.16.1",

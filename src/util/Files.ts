@@ -34,33 +34,3 @@ export function deleteFolderRecursive(path: string) {
         fs.rmdirSync(path);
     }
 }
-
-/*
-async function ExtractDirectory(zip: StreamZip, dirname: string|null, basedest: string): Promise<object> {
-    let dest: string;
-    if (dirname !== null) {
-        dest = path.join(basedest, dirname);
-        fs.mkdirSync(dest);
-    } else {
-        dest = basedest;
-    }
-    return new Promise((resolve, reject) => {
-        zip.extract(dirname as string, dest, (err) => {
-            if (err !== null) {
-                reject(err);
-            }
-            resolve({});
-        });
-    });
-}
-async function jsonParseZipEntryContainingNaN(zip: StreamZip, entryName: string) {
-    try {
-        const entry = zip.entryDataSync(entryName);
-        return Promise.resolve(JSON.parse(entry.toString().replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
-                    return value === '***NaN***' ? NaN : value;
-                }));
-    } catch (e) {
-        return Promise.reject(new Error(`Entry ${entryName} is missing from data file!`));
-    }
-}
-*/
