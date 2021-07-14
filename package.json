@@ -103,7 +103,6 @@
     "@vue/cli-service": "^4.5.1",
     "@vue/test-utils": "^1.0.3",
     "bootstrap-vue": "^2.15.0",
-    "canvas": "^2.5.0",
     "chai": "^4.2.0",
     "chromedriver": "^83.0.0",
     "devtron": "^1.4.0",
