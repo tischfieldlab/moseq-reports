@@ -95,7 +95,7 @@
     "@vue/cli-plugin-typescript": "^4.5.13",
     "@vue/cli-plugin-unit-mocha": "^4.5.13",
     "@vue/cli-service": "^4.5.1",
-    "@vue/test-utils": "^1.0.3",
+    "@vue/test-utils": "^1.2.1",
     "bootstrap-vue": "^2.21.2",
     "chai": "^4.3.4",
     "chromedriver": "^91.0.1",
