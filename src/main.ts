@@ -48,9 +48,6 @@ Vue.use(VueForceNextTick);
 import UniqueId from 'vue-unique-id';
 Vue.use(UniqueId);
 
-import AsyncComputed from 'vue-async-computed';
-Vue.use(AsyncComputed);
-
 import VueTimeago from 'vue-timeago';
 Vue.use(VueTimeago, {
     name: 'Timeago',
