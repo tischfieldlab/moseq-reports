@@ -88,7 +88,7 @@
   "devDependencies": {
     "@linusborg/vue-simple-portal": "^0.1.5",
     "@types/bootstrap": "^4.5.0",
-    "@types/chai": "^4.2.11",
+    "@types/chai": "^4.2.21",
     "@types/d3": "^7.0.0",
     "@types/file-saver": "^2.0.1",
     "@types/mocha": "^7.0.2",
@@ -100,7 +100,7 @@
     "@vue/cli-service": "^4.5.1",
     "@vue/test-utils": "^1.0.3",
     "bootstrap-vue": "^2.21.2",
-    "chai": "^4.2.0",
+    "chai": "^4.3.4",
     "chromedriver": "^83.0.0",
     "devtron": "^1.4.0",
     "electron": "^9.4.0",
