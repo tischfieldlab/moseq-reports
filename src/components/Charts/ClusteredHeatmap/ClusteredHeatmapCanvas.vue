@@ -85,8 +85,8 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             cxt.translate(this.dims.heatmap.x, this.dims.heatmap.y);
             for (const node of this.data as object[]) {
                 cxt.beginPath();
-                cxt.rect(this.scale.x(node[this.columnKey]),
-                        this.scale.y(node[this.rowKey]),
+                cxt.rect(this.scale.x(node[this.columnKey].toString()),
+                        this.scale.y(node[this.rowKey].toString()),
                         this.scale.x.bandwidth(),
                         this.scale.y.bandwidth());
                 cxt.fillStyle = this.scale.z(node[this.valueKey]);

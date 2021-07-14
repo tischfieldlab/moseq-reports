@@ -6,8 +6,8 @@
                 <template v-for="node in data">
                     <rect 
                         :key="`${node[columnKey]}-${node[rowKey]}`"
-                        :x="scale.x(node[columnKey])"
-                        :y="scale.y(node[rowKey])"
+                        :x="scale.x(node[columnKey].toString())"
+                        :y="scale.y(node[rowKey].toString())"
                         :width="scale.x.bandwidth()"
                         :height="scale.y.bandwidth()"
                         :fill="scale.z(node[valueKey])"
