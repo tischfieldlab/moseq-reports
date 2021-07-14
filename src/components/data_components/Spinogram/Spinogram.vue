@@ -244,7 +244,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         axis(el, binding) {
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis] as string;
                 const methodArg = binding.value[axis];
                 d3.select(el).call(d3[axisMethod](methodArg));
             }

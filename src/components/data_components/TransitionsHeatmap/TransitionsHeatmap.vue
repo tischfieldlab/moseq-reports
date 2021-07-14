@@ -228,7 +228,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             // console.log('axis directive called', el, binding);
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis] as string;
                 const methodArg = binding.value[axis];
                 const actualAxis = d3[axisMethod](methodArg);
 
