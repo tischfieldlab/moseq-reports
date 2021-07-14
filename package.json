@@ -60,7 +60,7 @@
     "html-to-image": "^0.1.1",
     "jqwidgets-scripts": "^9.1.6",
     "lru-cache": "^5.1.1",
-    "mime-types": "^2.1.27",
+    "mime-types": "^2.1.31",
     "node-kmeans": "^1.1.9",
     "node-stream-zip": "^1.13.6",
     "object-sizeof": "^1.6.1",
