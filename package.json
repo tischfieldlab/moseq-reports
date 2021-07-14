@@ -42,7 +42,6 @@
     "@types/jszip": "^3.4.1",
     "about-window": "^1.14.0",
     "chai-as-promised": "^7.1.1",
-    "core-js": "^3.6.5",
     "custom-electron-titlebar": "^3.2.2",
     "cytoscape": "^3.19.0",
     "cytoscape-avsdf": "^1.0.0",
