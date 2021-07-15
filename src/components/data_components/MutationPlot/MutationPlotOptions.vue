@@ -82,6 +82,17 @@
                 </b-input-group>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col>
+                <b-input-group prepend="Error Bars">
+                    <!-- not used yet -->
+                    <b-form-select v-model="error_type" :options="error_type_options" :disabled="!show_errors"></b-form-select>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_errors" switch />
+                    </b-input-group-append>
+                </b-input-group>
+            </b-col>
+        </b-row>
     </b-container>
 </template>
 
@@ -230,14 +241,14 @@ export default mixins(WindowMixin).extend({
             },
         },
         point_size: {
-            get(): boolean {
+            get(): number {
                 return this.settings.point_size;
             },
-            set(value: boolean) {
+            set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        point_size: value,
+                        point_size: Number.parseInt(value, 10),
                     },
                 });
             },
@@ -256,14 +267,40 @@ export default mixins(WindowMixin).extend({
             },
         },
         line_weight: {
-            get(): boolean {
+            get(): number {
                 return this.settings.line_weight;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        line_weight: Number.parseInt(value, 10),
+                    },
+                });
+            },
+        },
+        show_errors: {
+            get(): boolean {
+                return this.settings.show_errors;
             },
             set(value: boolean) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        line_weight: value,
+                        show_errors: value,
+                    },
+                });
+            },
+        },
+        error_type: {
+            get(): string {
+                return this.settings.error_type;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        error_type: value,
                     },
                 });
             },
@@ -284,6 +321,10 @@ export default mixins(WindowMixin).extend({
             order_direction_options: [
                 { text: 'Ascending', value: SortOrderDirection.Asc },
                 { text: 'Descending', value: SortOrderDirection.Dec },
+            ],
+            error_type_options: [
+                { text: 'SEM', value: 'sem' },
+                { text: '95% CI', value: 'ci95' },
             ],
         };
     },

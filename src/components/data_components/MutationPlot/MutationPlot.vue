@@ -6,7 +6,8 @@
         varKey="syllable"
         valueKey="value"
         seriesKey="group"
-        errorKey="error"
+        :errorKey="settings.error_type"
+        :showError="settings.show_errors"
         :varOrdering="syllable_ordering"
         :seriesLabels="groupNames"
         :seriesColors="groupColors"
@@ -51,6 +52,8 @@ RegisterDataComponent({
         point_size: 4,
         show_lines: true,
         line_weight: 3,
+        show_errors: true,
+        error_type: 'sem',
         group_order_type: OrderingType.Natural,
         syllable_order_type: OrderingType.Natural,
         syllable_order_group_value: undefined,
@@ -68,7 +71,8 @@ interface PlotData {
     value: number;
     count: number;
     deviation: number;
-    error: number;
+    sem: number;
+    ci95: number
 }
 
 
@@ -84,15 +88,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     watch: {
         dataset: {
-            handler(): any {
-                LoadData(this.dataset[0], this.dataset[1])
-                .then((data: PlotData[]) => {
-                    data.forEach((item) => {
-                        item.error = item.deviation / Math.sqrt(item.count);
-                    })
-                    return data;
-                })
-                .then((data) => this.aggregateView = data);
+            handler(): void {
+                this.prepareData();
             },
             immediate: true,
         },
@@ -155,6 +152,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
         countMethod(): string {
             return this.dataview.countMethod;
+        },
+        errorType(): string {
+            return this.settings.error_type;
         },
         selectedSyllable: {
             get(): number {
@@ -222,6 +222,18 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     methods: {
+        prepareData() {
+            LoadData(this.dataset[0], this.dataset[1])
+                .then((data: PlotData[]) => this.calculateErrors(data))
+                .then((data) => this.aggregateView = data);
+        },
+        calculateErrors(data: PlotData[]) {
+            data.forEach((item) => {
+                item.sem = item.deviation / Math.sqrt(item.count);
+                item.ci95 = 1.960 * item.sem;
+            })
+            return data;
+        },
         onLineplotClick(event) {
             if (event.var) {
                 this.selectedSyllable = Number.parseInt(event.var, 10);
