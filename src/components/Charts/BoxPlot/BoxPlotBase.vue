@@ -72,6 +72,10 @@ export default mixins(LoadingMixin).extend({
             default: false,
             type: Boolean,
         },
+        kde_scale: {
+            default: 0.01,
+            type: Number,
+        },
         point_size: {
             default: 2,
             type: Number,
@@ -236,24 +240,8 @@ export default mixins(LoadingMixin).extend({
     },
     watch: {
         data: {
-            async handler(newData: DataPoint[]) {
-                if (newData === null) {
-                    return;
-                }
-                worker.prepareData(newData as any[],
-                            this.innerHeight,
-                            this.point_size,
-                            this.groupLabels as string[],
-                            this.show_points)
-                    .then((result) => {
-                        if (result !== undefined) {
-                            this.points = result.points;
-                            this.groupedData = result.groupedData,
-                            this.domainY = result.domainY;
-                            this.domainKde = result.domainKde,
-                            this.compute_label_stats(this.groupLabels as string[]);
-                        }
-                    });
+            handler(newData: DataPoint[]) {
+                this.prepareData(newData);
             },
             immediate: true,
         },
@@ -267,8 +255,31 @@ export default mixins(LoadingMixin).extend({
                                                      this.point_size);
             this.points = result;
         },
+        kde_scale() {
+            this.prepareData(this.data as DataPoint[]);
+        }
     },
     methods: {
+        prepareData(newData: DataPoint[]) {
+            if (newData === null) {
+                return;
+            }
+            worker.prepareData(newData,
+                        this.innerHeight,
+                        this.point_size,
+                        this.groupLabels,
+                        this.show_points,
+                        this.kde_scale)
+                .then((result) => {
+                    if (result !== undefined) {
+                        this.points = result.points;
+                        this.groupedData = result.groupedData,
+                        this.domainY = result.domainY;
+                        this.domainKde = result.domainKde,
+                        this.compute_label_stats(this.groupLabels);
+                    }
+                });
+        },
         is_outlier(node: DataPoint): boolean {
             const group = this.groupedData.find((v) => v.group === node.group);
             if (group) {
