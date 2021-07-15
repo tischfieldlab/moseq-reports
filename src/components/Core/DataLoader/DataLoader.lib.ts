@@ -17,7 +17,11 @@ import fs from 'fs';
 export function mapColumns(obj: DataObject|object[], op: MapOperation): object[] {
     let objCols;
     if (Array.isArray(obj)) {
-        objCols = Object.getOwnPropertyNames(obj[0]);
+        if (obj.length > 0) {
+            objCols = Object.getOwnPropertyNames(obj[0]);
+        } else {
+            objCols = [];
+        }
     } else if (obj.columns !== undefined && obj.data !== undefined) {
         objCols = obj.columns;
     }
