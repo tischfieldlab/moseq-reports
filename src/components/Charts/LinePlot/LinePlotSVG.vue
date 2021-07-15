@@ -12,7 +12,7 @@
                             :stroke-width="lineWeight"
                             fill="none" />
                     </g>
-                    <g class="series-points" v-if="showPoints">
+                    <g class="series-points">
                         <template v-for="p in sdata">
                             <g :key="`${p[seriesKey]}-${p[varKey]}`" :data-series="`${p[seriesKey]}`" :data-var="`${p[varKey]}`">
                                 <g v-if="errorKey && showError" class="error">
@@ -42,7 +42,7 @@
                                         />
                                 </g>
                                 <circle
-                                    v-if="isPointValid(p)"
+                                    v-if="showPoints && isPointValid(p)"
                                     @click="handleClick"
                                     :data-series="`${p[seriesKey]}`"
                                     :data-var="`${p[varKey]}`"
