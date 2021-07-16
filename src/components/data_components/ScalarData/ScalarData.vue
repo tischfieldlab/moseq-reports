@@ -5,13 +5,15 @@
         :data="individualUseageData"
         :groupLabels="groupNames"
         :groupColors="groupColors"
-        :whisker_type="settings.boxplot_whiskers"
         :show_boxplot="settings.show_boxplot"
+        :whisker_type="settings.boxplot_whiskers"
         :show_points="settings.show_points"
-        :show_violinplot="settings.show_violinplot"
         :point_size="settings.point_size"
+        :show_violinplot="settings.show_violinplot"
+        :kde_scale="settings.kde_scale"
+        :tooltipFormatter="tooltip_formatter"
         xAxisTitle="Group"
-        :yAxisTitle="`${metricTitle} (${metricUnits})`"
+        :yAxisTitle="`Module #${selectedSyllable} (${countMethod}) ${metricTitle} (${metricUnits})`"
         :noDataMessage="`Sorry, there is no scalar data available for Syllable ${selectedSyllable} (${countMethod})`"
     />
 </template>
@@ -23,7 +25,7 @@ import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import {BoxPlotSVG, BoxPlotCanvas, WhiskerType} from '@/components/Charts/BoxPlot';
+import {BoxPlotSVG, BoxPlotCanvas, WhiskerType, DataPoint, GroupStats} from '@/components/Charts/BoxPlot';
 
 
 import { CountMethod } from '@/store/dataview.types';
@@ -43,11 +45,12 @@ RegisterDataComponent({
     default_render_mode: RenderMode.CANVAS,
     default_settings: {
         metric: 'velocity_2d_mm',
-        show_points: false,
+        show_points: true,
         point_size: 2,
         show_boxplot: true,
-        show_violinplot: false,
         boxplot_whiskers: WhiskerType.TUKEY,
+        show_violinplot: false,
+        kde_scale: 0.25,
     },
 });
 
@@ -132,16 +135,25 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             const rID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Raw);
             return [
                 this.$store.getters[`datasets/resolve`](`scalars/${rID}`),
-                [
-                    {
-                        type: 'map',
-                        columns: [
-                            ['uuid', 'id'],
-                            [this.currentMetric, 'value'],
-                            'group',
-                        ],
+                [{
+                    type: 'map',
+                    columns: [
+                        ['uuid', 'id'],
+                        [this.currentMetric, 'value'],
+                        'group',
+                    ],
+                }, {
+                    type: 'filter',
+                    filters: {
+                        group: this.dataview.selectedGroups,
                     },
-                ],
+                }, {
+                    type: 'aggregate',
+                    groupby: ['id', 'group'],
+                    aggregate: {
+                        value: 'mean'
+                    }
+                }],
             ];
         },
     },
@@ -157,13 +169,23 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     methods: {
-        /*point_tooltip(item: UsageItem): string {
-            return `<div style="text-align:left;">
-                        ${item.group}<br />
-                        ${new Date(item.StartTime).toLocaleString('en-US')}<br />
-                        ${item.usage.toExponential(3)}
-                    </div>`;
-        },*/
+        tooltip_formatter(value: DataPoint|GroupStats, sender: Vue) {
+            if (value !== undefined){
+                if (value.hasOwnProperty('id')) {
+                    const itm = value as DataPoint;
+                    return `ID: ${itm.id.split('-').pop()}<br />
+                            Value: ${itm.value.toExponential(3)}`;
+                } else if(value.hasOwnProperty('count')) {
+                    const itm = value as GroupStats;
+                    return `Group: ${itm.group}<br />
+                            Count: ${itm.count.toString()}<br />
+                            Median: ${itm.q2.toExponential(3)}<br />`;
+                } else {
+                    return JSON.stringify(value, undefined, '\t');
+                }
+            }
+            return '';
+        },
     },
 });
 </script>

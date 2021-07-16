@@ -8,26 +8,35 @@
             </b-col>
         </b-row>
         <b-row>
-             <label class="font-weight-bold pt-0">Plot Element Visibility</label>
-        </b-row>
-        <b-row>
-            <b-form-checkbox v-model="show_boxplot" switch>
-                Show Boxplot
-            </b-form-checkbox>
-        </b-row>
-        <b-row v-show="show_boxplot">
-            <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Whiskers">
-                    <b-form-select v-model="boxplot_whiskers" :options="whisker_options"></b-form-select>
-                    <div class="figure-caption">{{ boxplot_whisker_description }}</div>
+                <b-input-group prepend="Point Size">
+                    <b-form-input type="number" v-model.number="point_size" :disabled="!show_points" min="1" max="10" ></b-form-input>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_points" switch />
+                    </b-input-group-append>
                 </b-input-group>
             </b-col>
         </b-row>
         <b-row>
-            <b-form-checkbox v-model="show_violinplot" switch>
-                Show Violin Plot
-            </b-form-checkbox>
+            <b-col>
+                <b-input-group prepend="Boxplot Whiskers">
+                    <b-form-select v-model="boxplot_whiskers" :options="whisker_options" :disabled="!show_boxplot"></b-form-select>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_boxplot" switch />
+                    </b-input-group-append>
+                </b-input-group>
+                <div v-show="show_boxplot" class="figure-caption">{{ boxplot_whisker_description }}</div>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <b-input-group prepend="Violin KDE Scale">
+                    <b-form-input type="number" v-model.number="kde_scale" :disabled="!show_violinplot" min="0.0" step="0.001" max="1" debounce="300" ></b-form-input>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_violinplot" switch />
+                    </b-input-group-append>
+                </b-input-group>
+            </b-col>
         </b-row>
     </b-container>
 </template>
@@ -36,7 +45,7 @@
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
+import {WhiskerType} from '@/components/Charts/BoxPlot';
 import {availableMetrics} from './ScalarData.types';
 
 
@@ -55,11 +64,24 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        point_size: {
+        show_points: {
             get(): boolean {
-                return this.settings.point_size;
+                return this.settings.show_points;
             },
             set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        show_points: value,
+                    },
+                });
+            },
+        },
+        point_size: {
+            get(): number {
+                return this.settings.point_size;
+            },
+            set(value: number) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
@@ -108,6 +130,19 @@ export default mixins(WindowMixin).extend({
                     id: this.id,
                     settings: {
                         show_violinplot: value,
+                    },
+                });
+            },
+        },
+        kde_scale: {
+            get(): number {
+                return this.settings.kde_scale;
+            },
+            set(value: number) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        kde_scale: value,
                     },
                 });
             },
