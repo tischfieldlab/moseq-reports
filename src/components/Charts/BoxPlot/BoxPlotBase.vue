@@ -23,7 +23,7 @@ let worker: ModuleThread<BoxPlotWorker>;
 })();
 
 
-function default_tooltip_formatter(value: any, that) {
+function default_tooltip_formatter(value: DataPoint|GroupStats, sender: Vue) {
     if (value !== undefined){
         if (value.hasOwnProperty('id')) {
             const itm = value as DataPoint;
@@ -99,7 +99,7 @@ export default mixins(LoadingMixin).extend({
             default: 'Value',
         },
         tooltipFormatter: {
-            type: Function,
+            type: Function as PropType<(item:DataPoint|GroupStats, sender:Vue) => string>,
             default: default_tooltip_formatter,
         },
         noDataMessage: {
