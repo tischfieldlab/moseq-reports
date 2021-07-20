@@ -129,7 +129,7 @@ export default mixins(BoxPlotBase).extend({
         this.debouncedHover = throttle(this.handleHover, 10);
     },
     methods: {
-        compute_label_stats(labels: string[]) {
+        compute_label_stats(labels: Array<string>) {
             const canvas = this.$refs.canvas as SVGSVGElement;
             if (canvas === undefined) {
                 // if canvas is not available yet (i.e. before fully mounted)
@@ -151,13 +151,13 @@ export default mixins(BoxPlotBase).extend({
             };
         },
         handleHover(event: MouseEvent) {
-            if (event && event.target !== null){
+            if (event && event.target !== null) {
                 const target = event.target as HTMLElement;
                 // individual points have data-id set
                 if (target.dataset.identifier) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY
+                        y: event.clientY,
                     };
                     this.hoverItem = this.points.find((itm) => {
                         return itm.id.toString() === target.dataset.identifier;
@@ -168,7 +168,7 @@ export default mixins(BoxPlotBase).extend({
                 if (target.dataset.group) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY
+                        y: event.clientY,
                     };
                     this.hoverItem = this.groupedData.find((itm) => {
                         return itm.group.toString() === target.dataset.group;

@@ -13,7 +13,7 @@ const cache = new LRU({
 });
 
 const exposedMethods = {
-    async LoadJson(path: string, operations: Operation[], debug?: boolean) {
+    async LoadJson(path: string, operations: Array<Operation>, debug?: boolean) {
         const cacheName = path;
         let hit = true;
         if (!cache.has(cacheName)) {

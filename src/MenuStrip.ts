@@ -28,7 +28,7 @@ export default function createMainMenu(): Menu {
  * @returns {Electron.MenuItemConstructorOptions[]}      Electron menu to be made the main
  *                      menu strip for the app.
  */
-function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
+function createMainMenuStripOptions(): Array<Electron.MenuItemConstructorOptions> {
     return [
         // ********************** FILE MENU **********************
         {
@@ -134,7 +134,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                                 mi.checked = true;
                             },
                         },
-                    ]
+                    ],
                 },
                 {
                     type: 'separator',

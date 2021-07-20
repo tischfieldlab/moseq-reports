@@ -32,7 +32,7 @@ export default mixins(WindowMixin).extend({
         };
     },
     computed: {
-        available_sources(): string[] {
+        available_sources(): Array<string> {
             return this.$store.state.filters.items.map((sourceId) => {
                 const source = unnest(this.$store.state, sourceId);
                 return {text: source.name, value: sourceId};

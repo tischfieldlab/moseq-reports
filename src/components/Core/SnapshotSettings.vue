@@ -69,11 +69,11 @@ export default mixins(WindowMixin).extend({
         this.updateQualityStr();
     },
     computed: {
-        supported_renderers(): string[] {
-            return this.spec.available_render_modes
+        supported_renderers(): Array<string> {
+            return this.spec.available_render_modes;
         },
-        supported_formats(): string[] {
-            switch(this.renderer) {
+        supported_formats(): Array<string> {
+            switch (this.renderer) {
                 case RenderMode.CANVAS:
                     return ['png'];
                 case RenderMode.SVG:
@@ -95,7 +95,7 @@ export default mixins(WindowMixin).extend({
             },
             set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentRenderMode`, {
-                    render_mode: value as RenderMode
+                    render_mode: value as RenderMode,
                 });
             },
         },
@@ -183,8 +183,6 @@ export default mixins(WindowMixin).extend({
         },
     },
 });
-
-
 </script>
 
 <style>

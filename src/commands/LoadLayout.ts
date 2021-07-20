@@ -8,7 +8,7 @@ export const LayoutFileExt = 'msl';
 const LayoutFileFilters = [
     { name: 'MoSeq Layout Files', extensions: [LayoutFileExt] },
     { name: 'All Files', extensions: ['*'] },
-]
+];
 const toastId = 'msl-loading-toast';
 
 export default function() {
@@ -23,7 +23,7 @@ export default function() {
     LoadLayoutFile(filenames[0]);
 }
 
-export function LoadDefaultLayout(showNotifications=true) {
+export function LoadDefaultLayout(showNotifications= true) {
     let chain;
     if (showNotifications) {
         chain = new Promise<void>((resolve) => {
@@ -39,7 +39,7 @@ export function LoadDefaultLayout(showNotifications=true) {
     })
     .then((data) => {
         store.dispatch('datawindows/loadLayout', data);
-    })
+    });
     if (showNotifications) {
         chain = chain.then(() => {
             app.$bvToast.hide(toastId);
@@ -49,7 +49,7 @@ export function LoadDefaultLayout(showNotifications=true) {
     return chain;
 }
 
-export async function LoadLayoutFile(filename: string, showNotifications=true) {
+export async function LoadLayoutFile(filename: string, showNotifications= true) {
     let chain;
     if (showNotifications) {
         chain = new Promise<void>((resolve) => {
@@ -132,8 +132,8 @@ function showSaveSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'show') 
             'Your layout was saved successfully to ',
             h('a', {
                 attrs: { href: 'javascript:void(0)', title: 'Click to open' },
-                on: { click: clickHandler, },
-            }, dest)
+                on: { click: clickHandler },
+            }, dest),
         ]),
     ];
 

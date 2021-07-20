@@ -57,20 +57,20 @@ RegisterDataComponent({
         prune_threshold: 0.001,
         grid_settings: {
             avoid_overlap: true,
-            avoid_overlap_padding: 10
+            avoid_overlap_padding: 10,
         },
         circle_settings: {
             avoid_overlap: true,
-            clockwise: true
+            clockwise: true,
         },
         concentric_settings: {
             avoid_overlap: true,
             clockwise: true,
             equidistant: false,
-            min_node_spacing: 30
+            min_node_spacing: 30,
         },
         avsdf_settings: {
-            node_separation: 60
+            node_separation: 60,
         },
         fcose_settings: {
             node_separation: 45,
@@ -81,7 +81,7 @@ RegisterDataComponent({
             node_separation: 6,
             node_repulsion: 5,
             ideal_edge_length: 10,
-        }
+        },
     },
 });
 
@@ -108,44 +108,44 @@ type LayoutOptions = DefaultLayout|GridLayoutOptions|CircleLayoutOptions|Concent
                         |FcoseLayoutOptions|CiseLayoutOptions;
 
 interface DefaultLayout {
-    name: string
+    name: string;
 }
 interface GridLayoutOptions {
-    name: 'grid',
-    avoidOverlap: boolean,
-    avoidOverlapPadding: number
+    name: 'grid';
+    avoidOverlap: boolean;
+    avoidOverlapPadding: number;
 }
 
 interface CircleLayoutOptions {
-    name: 'circle',
-    avoidOverlap: boolean,
-    clockwise: boolean
+    name: 'circle';
+    avoidOverlap: boolean;
+    clockwise: boolean;
 }
 
 interface ConcentricLayoutOptions {
-    name: 'concentric',
-    avoidOverlap: boolean,
-    clockwise: boolean,
-    equidistant: boolean,
-    minNodeSpacing: number
+    name: 'concentric';
+    avoidOverlap: boolean;
+    clockwise: boolean;
+    equidistant: boolean;
+    minNodeSpacing: number;
 }
 
 interface AvsdfLayoutOptions {
-    name: 'avsdf',
-    nodeSeparation: number
+    name: 'avsdf';
+    nodeSeparation: number;
 }
 interface FcoseLayoutOptions {
-    name: 'fcose',
-    nodeSeparation: number,
-    nodeRepulsion: number,
-    idealEdgeLength: number
+    name: 'fcose';
+    nodeSeparation: number;
+    nodeRepulsion: number;
+    idealEdgeLength: number;
 }
 
 interface CiseLayoutOptions {
-    name: 'cise',
-    nodeSeparation: number,
-    nodeRepulsion: number,
-    idealEdgeLength: number
+    name: 'cise';
+    nodeSeparation: number;
+    nodeRepulsion: number;
+    idealEdgeLength: number;
 }
 
 export default mixins(WindowMixin, LoadingMixin).extend({
@@ -156,8 +156,8 @@ export default mixins(WindowMixin, LoadingMixin).extend({
     data() {
         return {
             raw_data: {
-                transitions: [] as any[],
-                usages: [] as any[],
+                transitions: [] as Array<any>,
+                usages: [] as Array<any>,
             },
             debouncedLayout: () => {/**/},
         };
@@ -192,7 +192,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 cy.endBatch();
             },
         },
-        graph_layout(){
+        graph_layout() {
             this.debouncedLayout();
         },
         scale() {
@@ -202,7 +202,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         graph_styles() {
             const cy = (this as any).cy;
             cy.style(this.graph_styles);
-        }
+        },
     },
     created() {
         if (this.settings.plot_group === undefined || this.settings.plot_group === '') {
@@ -236,52 +236,52 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         (this as any).cy = cy;
     },
     computed: {
-        graph_layout(): LayoutOptions{
-            switch(this.settings.layout){
+        graph_layout(): LayoutOptions {
+            switch (this.settings.layout) {
                 case 'grid':
                     return {
                         name: 'grid',
                         avoidOverlap: this.settings.grid_settings.avoid_overlap,
-                        avoidOverlapPadding: this.settings.grid_settings.avoid_overlap_padding
-                    }
+                        avoidOverlapPadding: this.settings.grid_settings.avoid_overlap_padding,
+                    };
                 case 'circle':
                     return {
                         name: 'circle',
                         avoidOverlap: this.settings.circle_settings.avoid_overlap,
-                        clockwise: this.settings.circle_settings.clockwise
-                    }
+                        clockwise: this.settings.circle_settings.clockwise,
+                    };
                 case 'concentric':
                     return {
                         name: 'concentric',
                         avoidOverlap: this.settings.concentric_settings.avoid_overlap,
                         clockwise: this.settings.concentric_settings.clockwise,
                         equidistant: this.settings.concentric_settings.equidistant,
-                        minNodeSpacing: this.settings.concentric_settings.min_node_spacing
-                    }
+                        minNodeSpacing: this.settings.concentric_settings.min_node_spacing,
+                    };
                 case 'avsdf':
                     return {
                         name: 'avsdf',
-                        nodeSeparation: this.settings.avsdf_settings.node_separation
-                    }
+                        nodeSeparation: this.settings.avsdf_settings.node_separation,
+                    };
                 case 'fcose':
                     return {
                         name: 'fcose',
                         nodeSeparation: this.settings.fcose_settings.node_separation,
                         nodeRepulsion: this.settings.fcose_settings.node_repulsion,
                         idealEdgeLength: this.settings.fcose_settings.ideal_edge_length,
-                    }
+                    };
                 case 'cise':
                     return {
                         name: 'cise',
                         nodeSeparation: this.settings.cise_settings.node_separation,
                         nodeRepulsion: this.settings.cise_settings.node_repulsion,
                         idealEdgeLength: this.settings.cise_settings.ideal_edge_length,
-                    }
+                    };
             }
             // Layout currently not customizable - return default layout object
-            return {name: this.settings.layout}
+            return {name: this.settings.layout};
         },
-        graph_styles(): any[] {
+        graph_styles(): Array<any> {
             return [ // the stylesheet for the graph
                 {
                     selector: 'node',
@@ -311,7 +311,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 },
             ];
         },
-        elements(): any[] {
+        elements(): Array<any> {
             const trans = this.raw_data.transitions.filter((row) => row.group === this.settings.plot_group);
             const transSum = trans.reduce((acc, curr) => acc + curr.raw, 0);
             const relTrans = this.raw_data.transitions.filter((row) => row.group === this.settings.relative_diff_group);
@@ -325,7 +325,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 return [];
             }
 
-            const elements = [] as (Node|Link)[];
+            const elements = [] as Array<Node|Link>;
             for (const s of this.activeSyllables) {
                 const n = this.raw_data.usages.find((row) => row.syllable === s);
                 if (n !== undefined) {
@@ -370,11 +370,11 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                         .domain(extent((this.raw_data.usages).map((n) => n.usage)) as [number, number])
                         .range([5, 20]);
 
-            const links = this.elements.filter((d) => d.data.type === 'edge')
+            const links = this.elements.filter((d) => d.data.type === 'edge');
             const abstransMax = links.length > 0 ? max(links, (d) => Math.abs(d.data.weight)) as number : 1;
             const transExtent = links.length > 0 ? extent(links, (d) => d.data.weight) as [number, number] : 1;
 
-            let transDomain: number[];
+            let transDomain: Array<number>;
             let t;
             let o;
             let z;
@@ -461,7 +461,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                         [`row_id_${this.dataview.countMethod.toLowerCase()}`, 'row_id'],
                         [`col_id_${this.dataview.countMethod.toLowerCase()}`, 'col_id'],
                         'raw',
-                    ]
+                    ],
                 },
                 {
                     type: 'filter',
@@ -477,14 +477,14 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                         'col_id',
                     ],
                     aggregate: {
-                        raw: 'sum'
+                        raw: 'sum',
                     },
                 },
                 {
                     type: 'sort',
-                    columns: ['row_id', 'col_id',],
+                    columns: ['row_id', 'col_id'],
                     direction: 'asc',
-                }
+                },
             ];
             return {
                 usage: [usageSource, usageFilters],
@@ -492,7 +492,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 is_valid: filterGroups.filter((g) => g !== '' && g !== undefined).length > 0,
             };
         },
-        activeSyllables(): number[] {
+        activeSyllables(): Array<number> {
             if (this.dataview.moduleIdFilter.length === 0) {
                 return this.$store.getters[`${this.datasource}/availableModuleIds`];
             } else {
@@ -558,10 +558,10 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 return composite_images([graphSubImage, legend], options);
             });
         },
-        generateLayout(){
+        generateLayout() {
             const cy = (this as any).cy;
             cy.layout(this.graph_layout).run();
-        }
+        },
     },
 });
 </script>

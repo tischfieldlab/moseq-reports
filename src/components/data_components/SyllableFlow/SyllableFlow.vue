@@ -76,11 +76,11 @@ export default mixins(WindowMixin, LoadingMixin).extend({
     },
     data() {
         return {
-            raw_data: [] as {group: string, row_id: number, col_id: number, raw: number}[],
+            raw_data: [] as Array<{group: string, row_id: number, col_id: number, raw: number}>,
         };
     },
     watch: {
-        'sourceData': {
+        sourceData: {
             handler(s) {
                 if (s === undefined || !s.is_valid) {
                     return;
@@ -164,7 +164,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                         [`row_id_${this.dataview.countMethod.toLowerCase()}`, 'row_id'],
                         [`col_id_${this.dataview.countMethod.toLowerCase()}`, 'col_id'],
                         'raw',
-                    ]
+                    ],
                 },
                 {
                     type: 'filter',
@@ -180,27 +180,27 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                         'col_id',
                     ],
                     aggregate: {
-                        raw: 'sum'
+                        raw: 'sum',
                     },
                 },
                 {
                     type: 'sort',
-                    columns: ['row_id', 'col_id',],
+                    columns: ['row_id', 'col_id'],
                     direction: 'asc',
-                }
+                },
             ];
             return {
                 transitions: [transSource, transFilters],
                 is_valid: filterGroups.filter((g) => g !== '' && g !== undefined).length > 0,
             };
         },
-        graph(): {nodes: Node[], links: Link[]} {
+        graph(): {nodes: Array<Node>, links: Array<Link>} {
             const trans = this.raw_data.filter((row) => row.group === this.settings.plot_group);
             const transSum = trans.reduce((acc, curr) => acc + curr.raw, 0);
             const relTrans = this.raw_data.filter((row) => row.group === this.settings.relative_diff_group);
             const relTransSum = relTrans.reduce((acc, curr) => acc + curr.raw, 0);
 
-            const g = { nodes: [] as Node[], links: [] as Link[] };
+            const g = { nodes: [] as Array<Node>, links: [] as Array<Link> };
             if (trans === undefined || trans.length === 0) {
                 return g;
             }
@@ -268,7 +268,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             }
             return g;
         },
-        activeSyllables(): number[] {
+        activeSyllables(): Array<number> {
             if (this.dataview.moduleIdFilter.length === 0) {
                 return this.$store.getters[`${this.datasource}/availableModuleIds`];
             } else {

@@ -75,7 +75,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
-            aggregateView: [] as any[],
+            aggregateView: [] as Array<any>,
         };
     },
     computed: {
@@ -90,9 +90,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return 'ClusteredHeatmapSVG';
             }
         },
-        selectedGroups(): string[] {
+        selectedGroups(): Array<string> {
             return [...new Set(this.aggregateView.slice()
-                                   .sort((a,b) => (a.group as string).localeCompare(b.group))
+                                   .sort((a, b) => (a.group as string).localeCompare(b.group))
                                    .map((row) => row.uuid))];
         },
         selectedSyllable: {
@@ -106,13 +106,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        rowOrderDataset(): any[] {
+        rowOrderDataset(): Array<any> {
             if (this.settings.syllable_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.syllable_order_dataset].data;
             }
             return [];
         },
-        dataset(): [string, Operation[]] {
+        dataset(): [string, Array<Operation>] {
             let syllables;
             if (this.dataview.moduleIdFilter.length === 0) {
                 syllables = this.$store.getters[`${this.datasource}/availableModuleIds`];
@@ -147,7 +147,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             handler(): any {
                 LoadData(this.dataset[0], this.dataset[1], false)
                     .then((data) => {
-                        data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop() });
+                        data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop(); });
                         return data;
                     })
                     .then((data) => this.aggregateView = data);

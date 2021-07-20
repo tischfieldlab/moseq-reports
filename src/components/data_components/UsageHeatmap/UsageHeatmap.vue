@@ -89,7 +89,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return 'ClusteredHeatmapSVG';
             }
         },
-        selectedGroups(): string[] {
+        selectedGroups(): Array<string> {
             return this.dataview.selectedGroups;
         },
         selectedSyllable: {
@@ -103,13 +103,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        rowOrderDataset(): any[] {
+        rowOrderDataset(): Array<any> {
             if (this.settings.syllable_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.syllable_order_dataset].data;
             }
             return [];
         },
-        dataset(): [string, Operation[]] {
+        dataset(): [string, Array<Operation>] {
             let syllables;
             if (this.dataview.moduleIdFilter.length === 0) {
                 syllables = this.$store.getters[`${this.datasource}/availableModuleIds`];

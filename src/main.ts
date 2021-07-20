@@ -74,7 +74,7 @@ const vm = new Vue({
     },
     beforeDestroy() {
         ShutdownServer();
-    }
+    },
 });
 
 

@@ -78,8 +78,8 @@ export default mixins(ClusteredHeatmapBase).extend({
         this.debouncedHover = throttle(this.handleHeatmapHover, 10);
     },
     methods: {
-        compute_label_stats(labels: string[]) {
-            const widths = [] as number[];
+        compute_label_stats(labels: Array<string>) {
+            const widths = [] as Array<number>;
             const canvas = this.$refs.canvas as SVGSVGElement;
             if (!canvas) { return; }
             const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
@@ -104,14 +104,14 @@ export default mixins(ClusteredHeatmapBase).extend({
             });
         },
         handleHeatmapHover(event: MouseEvent) {
-            if (event && event.target !== null){
+            if (event && event.target !== null) {
                 const target = event.target as HTMLElement;
                 if (target.tagName === 'rect' && target.dataset.row && target.dataset.col) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY
+                        y: event.clientY,
                     };
-                    this.hoverItem = (this.data as any[]).find((itm) => {
+                    this.hoverItem = (this.data as Array<any>).find((itm) => {
                         return itm[this.columnKey].toString() === target.dataset.col
                             && itm[this.rowKey].toString() === target.dataset.row;
                     });
@@ -126,7 +126,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             if (!canvas) {
                 return;
             }
-            const labels = [...canvas.querySelectorAll('g.y-axis .tick')] as SVGTextElement[];
+            const labels = [...canvas.querySelectorAll('g.y-axis .tick')] as Array<SVGTextElement>;
             for (const l of labels) {
                 if (l.getAttribute('data-row') === id.toString()) {
                     l.classList.add('selected');
@@ -140,7 +140,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             if (!canvas) {
                 return;
             }
-            const labels = [...canvas.querySelectorAll('g.x-axis .tick')] as SVGTextElement[];
+            const labels = [...canvas.querySelectorAll('g.x-axis .tick')] as Array<SVGTextElement>;
             for (const l of labels) {
                 if (l.getAttribute('data-col') === id.toString()) {
                     l.classList.add('selected');

@@ -3,7 +3,7 @@ import Vuex, {StoreOptions} from 'vuex';
 import {
     RootState,
     ComponentRegistration,
-    SidebarPosition
+    SidebarPosition,
 } from './root.types';
 import DatasetsStore from '@/store/datasets.store';
 import FiltersModule from '@/store/filters.store';
@@ -36,7 +36,7 @@ const store: StoreOptions<RootState> = {
                 state.registry.push(payload);
             } else {
                 // tslint:disable-next-line:no-console
-                console.warn(`${payload.component_type} has already been registered! Merging...`)
+                console.warn(`${payload.component_type} has already been registered! Merging...`);
                 state.registry.splice(loc, 1, payload);
             }
         },

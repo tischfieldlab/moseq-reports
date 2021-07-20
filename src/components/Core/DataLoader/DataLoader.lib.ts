@@ -14,7 +14,7 @@ import { tsvParse, csvParse } from 'd3-dsv';
 import StreamZip from 'node-stream-zip';
 import fs from 'fs';
 
-export function mapColumns(obj: DataObject|object[], op: MapOperation): object[] {
+export function mapColumns(obj: DataObject|Array<object>, op: MapOperation): Array<object> {
     let objCols;
     if (Array.isArray(obj)) {
         objCols = Object.getOwnPropertyNames(obj[0]);
@@ -41,7 +41,7 @@ export function mapColumns(obj: DataObject|object[], op: MapOperation): object[]
     });
 
     const mapData = Array.isArray(obj) ? obj : obj.data;
-    return (mapData as any[][]).map((row) => {
+    return (mapData as Array<Array<any>>).map((row) => {
         return Object.fromEntries(
             coldefs.map((cd) => {
                 return [cd.dest, Array.isArray(row) ? row[cd.idx] : row[cd.src]];
@@ -50,14 +50,14 @@ export function mapColumns(obj: DataObject|object[], op: MapOperation): object[]
     });
 }
 
-export function sortBy(data: object[], op: SortOperation): object[] {
+export function sortBy(data: Array<object>, op: SortOperation): Array<object> {
     // Schwartzian Transform.
     if (op.direction === SortDirection.Asc) {
         return data.map((e, i) => ({index: i, value: e}))
             .sort((a, b) => {
                 for (const c of op.columns) {
-                    if (a.value[c] > b.value[c]) return 1;
-                    if (a.value[c] < b.value[c]) return -1;
+                    if (a.value[c] > b.value[c]) { return 1; }
+                    if (a.value[c] < b.value[c]) { return -1; }
                 }
                 return 0;
             })
@@ -66,8 +66,8 @@ export function sortBy(data: object[], op: SortOperation): object[] {
         return data.map((e, i) => ({index: i, value: e}))
             .sort((a, b) => {
                 for (const c of op.columns) {
-                    if (a.value[c] < b.value[c]) return 1;
-                    if (a.value[c] > b.value[c]) return -1;
+                    if (a.value[c] < b.value[c]) { return 1; }
+                    if (a.value[c] > b.value[c]) { return -1; }
                 }
                 return 0;
             })
@@ -77,7 +77,7 @@ export function sortBy(data: object[], op: SortOperation): object[] {
     }
 }
 
-export function filterBy(data: object[], op: FilterOperation) {
+export function filterBy(data: Array<object>, op: FilterOperation) {
     return data.filter((row) => Object.entries(op.filters)
                                .every(([col, criterum]) => criterum.includes(row[col])));
 }
@@ -89,8 +89,8 @@ const statops = {
     min,
     max,
 };
-export function aggregate(data: object[], op: AggregateOperation) {
-    const grouper = (item) => (op.groupby as string[]).map((c) => item[c]).toString();
+export function aggregate(data: Array<object>, op: AggregateOperation) {
+    const grouper = (item) => (op.groupby as Array<string>).map((c) => item[c]).toString();
     return Object.entries(groupby(data, grouper))
         .map(([group, vals]) => {
             return Object.fromEntries([
@@ -109,11 +109,11 @@ export function aggregate(data: object[], op: AggregateOperation) {
         });
 }
 
-export function pluck(data: object|object[], op: PluckOperation) {
+export function pluck(data: object|Array<object>, op: PluckOperation) {
     if (Array.isArray(data)) {
         if (Array.isArray(op.column)) {
             return data.map((row) => {
-                return Object.fromEntries((op.column as string[]).map((c) => {
+                return Object.fromEntries((op.column as Array<string>).map((c) => {
                     return [c, row[c]];
                 }));
             });
@@ -178,7 +178,7 @@ export function readFileContents(path: string) {
 
 export function getParser(filename) {
     const ext = filename.split('.').pop();
-    switch(ext) {
+    switch (ext) {
         case 'json':
             return jsonParseZipEntryContainingNaN;
         case 'tsv':
@@ -193,7 +193,7 @@ export function getParser(filename) {
 
 /* This should be imported from d3-dsv, but isnt present in types! */
 function autoType(object) {
-    const pattern = /^([-+]\d{2})?\d{4}(-\d{2}(-\d{2})?)?(T\d{2}:\d{2}(:\d{2}(\.\d{3})?)?(Z|[-+]\d{2}:\d{2})?)?$/
+    const pattern = /^([-+]\d{2})?\d{4}(-\d{2}(-\d{2})?)?(T\d{2}:\d{2}(:\d{2}(\.\d{3})?)?(Z|[-+]\d{2}:\d{2})?)?$/;
     for (const key of Object.keys(object)) {
         let value = object[key].trim();
         let num;
@@ -209,7 +209,7 @@ function autoType(object) {
         } else if (!isNaN(num = +value)) {
             value = num;
         } else if (value.match(pattern)) {
-            m = value.match(pattern)
+            m = value.match(pattern);
             if (fixtz && !!m[4] && !m[7]) {
                 value = value.replace(/-/g, '/').replace(/T/, ' ');
             }

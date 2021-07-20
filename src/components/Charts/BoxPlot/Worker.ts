@@ -6,13 +6,14 @@ import { GroupStats, DataPoint, DataPointQueueNode } from './BoxPlot.types';
 
 
 interface LinearScale {
-    domain: [number, number] | number[];
-    range: [number, number] | number[];
+    domain: [number, number] | Array<number>;
+    range: [number, number] | Array<number>;
 }
 
 
 const exposedMethods = {
-    prepareData(points: DataPoint[], height: number, pointSize: number, groupLabels: string[], swarmPoints: boolean) {
+    prepareData(points: Array<DataPoint>, height: number, pointSize: number,
+        groupLabels: Array<string>, swarmPoints: boolean) {
         const yExtent = extent(points.map((i) => i.value));
         if (yExtent[0] as number > 0) {
             yExtent[0] = 0;
@@ -21,7 +22,7 @@ const exposedMethods = {
             yExtent[1] = 0;
         }
         const y = scaleLinear()
-            .domain(yExtent as number[])
+            .domain(yExtent as Array<number>)
             .range([height, 0]);
 
         if (swarmPoints) {
@@ -43,7 +44,7 @@ const exposedMethods = {
             domainKde: [-kdeMax, kdeMax],
         };
     },
-    computeGroupStats(data: number[], group: string, scaleY): GroupStats {
+    computeGroupStats(data: Array<number>, group: string, scaleY): GroupStats {
         data = data.filter((v) => typeof v === 'number').sort((a, b) => b - a);
         const kde = kernelDensityEstimator(epanechnikovKernel(.01), scaleY.ticks(100));
         const gstats = {
@@ -58,7 +59,7 @@ const exposedMethods = {
         gstats.iqr = gstats.q1 - gstats.q3;
         return gstats as GroupStats;
     },
-    swarm_points(data: DataPoint[], groupLabels: string[], scaleDefY: LinearScale, pointSize: number) {
+    swarm_points(data: Array<DataPoint>, groupLabels: Array<string>, scaleDefY: LinearScale, pointSize: number) {
         const scaleY = scaleLinear()
             .domain(scaleDefY.domain)
             .range(scaleDefY.range);
@@ -68,7 +69,7 @@ const exposedMethods = {
             let head: DataPointQueueNode | null = null;
             let tail: DataPointQueueNode | null = null;
             const indv = data.filter((ui) => ui.group === g)
-                             .map((ui) => { ui.jitter = 0; return ui; }) as DataPointQueueNode[];
+                             .map((ui) => { ui.jitter = 0; return ui; }) as Array<DataPointQueueNode>;
 
             const intersects = (x, y) => {
                 const epsilon = 1e-5;
@@ -124,9 +125,9 @@ const exposedMethods = {
     },
 };
 
-function kernelDensityEstimator(kernel: (u: number) => number, x: number[]): (sample: number[]) => number[][] {
-    return (sample: number[]) => {
-        return x.map((y) => [y, mean(sample, (v: number) => kernel(y - v))]) as number[][];
+function kernelDensityEstimator(kernel: (u: number) => number, x: Array<number>): (sample: Array<number>) => Array<Array<number>> {
+    return (sample: Array<number>) => {
+        return x.map((y) => [y, mean(sample, (v: number) => kernel(y - v))]) as Array<Array<number>>;
     };
 }
 function epanechnikovKernel(scale: number): (u: number) => number {

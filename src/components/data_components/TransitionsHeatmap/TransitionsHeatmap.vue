@@ -118,11 +118,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                     .rangeRound([0, this.outsideWidth])
                     .paddingInner(this.sub_padding / this.outsideWidth);
             const x = scaleBand()
-                    .domain(range(100) as any[])
+                    .domain(range(100) as Array<any>)
                     .range([0, o.bandwidth()])
                     .padding(0);
             const y = scaleBand()
-                    .domain(range(100) as any[])
+                    .domain(range(100) as Array<any>)
                     .range([o.bandwidth(), 0])
                     .padding(0);
             const absz = scaleSequential(this.abs_colormap)
@@ -140,7 +140,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         rel_colormap(): any {
             return GetScale(this.settings.rel_colormap);
         },
-        selectedGroups(): string[] {
+        selectedGroups(): Array<string> {
             return this.dataview.selectedGroups;
         },
         rootGroup(): string {

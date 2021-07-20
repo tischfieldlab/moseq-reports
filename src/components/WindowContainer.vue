@@ -1,25 +1,27 @@
 <template>
-    <div>
-        <template v-for="wid in windows">
-            <UiCard :key="wid" :id="wid" />
-        </template>
-<!--      <UiCard id="test-id" />-->
-    </div>
+  <div>
+    <template v-for="wid in windows">
+      <UiCard :key="wid" :id="wid" />
+    </template>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import UiCard from '@/components/Window2.vue';
-
+import UiCard from '@/components/Window.vue';
 
 export default Vue.extend({
-    components: {
-        UiCard,
+  components: {
+    UiCard,
+  },
+  computed: {
+    windows(): Array<string> {
+      return this.$store.state.datawindows.items;
     },
-    computed: {
-        windows(): string[] {
-            return this.$store.state.datawindows.items;
-        },
-    },
+  },
 });
 </script>
+
+<style scoped>
+
+</style>

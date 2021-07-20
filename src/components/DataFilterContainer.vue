@@ -31,7 +31,7 @@ export default Vue.extend({
         };
     },
     computed: {
-        filters(): string[] {
+        filters(): Array<string> {
             return this.$store.state.filters.items;
         },
     },

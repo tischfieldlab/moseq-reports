@@ -135,7 +135,7 @@ export default Vue.component('datafilter', {
                 }
             },
         },
-        syllableIdOptions(): { value: number, text: string }[] {
+        syllableIdOptions(): Array<{ value: number, text: string }> {
             if (this.dataview === undefined) {
                 return [];
             }

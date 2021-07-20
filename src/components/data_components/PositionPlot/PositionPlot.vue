@@ -77,13 +77,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         useGroups(): boolean {
             return this.settings.mode === PositionPlotMode.Grouped;
         },
-        groupNames(): string[] {
+        groupNames(): Array<string> {
             return this.dataview.selectedGroups;
         },
-        groupColors(): string[] {
+        groupColors(): Array<string> {
             return this.dataview.groupColors;
         },
-        dataspec(): string[] {
+        dataspec(): Array<string> {
             const rID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Raw);
             return [
                 this.$store.getters[`datasets/resolve`](`scalars/${rID}`),

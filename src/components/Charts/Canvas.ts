@@ -4,7 +4,7 @@ import Vue from 'vue';
 export function getScaledContext2d(canvas: HTMLCanvasElement, width: number, height: number) {
     const ctx = canvas.getContext('2d');
 
-    if(ctx !== null) {
+    if (ctx !== null) {
         // Set display size (css pixels).
         canvas.style.width = width + 'px';
         canvas.style.height = height + 'px';
@@ -49,7 +49,7 @@ const CanvasMixin = Vue.extend({
             const cssWidth = binding.value.width + 'px';
             const cssHeight = binding.value.height + 'px';
             const cnvWidth = Math.floor(binding.value.width * that.canvas.scale);
-            const cnvHeight = Math.floor(binding.value.height * that.canvas.scale)
+            const cnvHeight = Math.floor(binding.value.height * that.canvas.scale);
 
             // Set display size (css pixels).
             if (c.style.width !== cssWidth || c.style.height !== cssHeight) {
@@ -67,7 +67,7 @@ const CanvasMixin = Vue.extend({
                 that.canvas.cxt.resetTransform();
                 that.canvas.cxt.scale(that.canvas.scale, that.canvas.scale);
             }
-        }
-    }
+        },
+    },
 });
 export default CanvasMixin;

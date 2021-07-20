@@ -19,7 +19,7 @@ const HistoryModule: Module<HistoryState, RootState> = {
                 time: payload.time || new Date(),
                 message: payload.message || '',
                 variant: payload.variant || 'default',
-                details: payload.details || null
+                details: payload.details || null,
             });
         },
     },

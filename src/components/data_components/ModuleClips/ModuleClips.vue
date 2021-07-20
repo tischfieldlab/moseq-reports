@@ -96,7 +96,7 @@ export default mixins(WindowMixin).extend({
         count_method(): CountMethod {
             return this.dataview.countMethod;
         },
-        items(): any[] {
+        items(): Array<any> {
             const ids = this.$store.getters[`${this.datasource}/selectedSyllableMap`];
             if (this.$store.state.datasets.manifest.hasOwnProperty('syllable_clips')) {
                 const items = this.$store.state.datasets.manifest.syllable_clips.manifest.filter((row) => {
@@ -232,7 +232,7 @@ export default mixins(WindowMixin).extend({
             this.example_num++;
         },
         timeToSeconds(time: string) {
-            return time.split(':').reduce((acc,t) => (60 * acc) + Number.parseFloat(t), 0);
+            return time.split(':').reduce((acc, t) => (60 * acc) + Number.parseFloat(t), 0);
         },
     },
 });

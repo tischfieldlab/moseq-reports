@@ -72,7 +72,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        groupNames(): string[] {
+        groupNames(): Array<string> {
             if (this.settings.group_order_type === OrderingType.Natural) {
                 return this.dataview.selectedGroups;
             } else if (this.settings.group_order_type === OrderingType.Dataset) {
@@ -85,10 +85,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             }
             return [];
         },
-        groupColors(): string[] {
+        groupColors(): Array<string> {
             return this.dataview.groupColors;
         },
-        dataset(): [string, Operation[]] {
+        dataset(): [string, Array<Operation>] {
             return [
                 this.$store.getters[`datasets/resolve`]('usage'),
                 [{
@@ -120,7 +120,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             if (itm.hasOwnProperty('id')) {
                 return `ID: ${itm.id.split('-').pop()}<br />
                         Usage: ${itm.value.toExponential(3)}`;
-            } else if(itm.hasOwnProperty('count')) {
+            } else if (itm.hasOwnProperty('count')) {
                 return `Group: ${itm.group}<br />
                         Count: ${itm.count.toString()}<br />
                         Median: ${itm.q2.toExponential(3)}<br />`;

@@ -41,7 +41,7 @@ export default Vue.extend({
             default: 'horizontal',
             validator: (value) => {
                 return ['horizontal', 'vertical'].indexOf(value) !== -1;
-            }
+            },
         },
         interpolator: {
             type: String,
@@ -56,7 +56,7 @@ export default Vue.extend({
                     x2: '100%',
                     y1: '0%',
                     y2: '0%',
-                }
+                };
             } else {
                 return {
                     x1: '0%',
@@ -71,6 +71,6 @@ export default Vue.extend({
                         .domain([0, 1]);
             return range(0, 1.1, 0.05).map((v) => ({ v: v * 100, z: z(v) }));
         },
-    }
+    },
 });
 </script>

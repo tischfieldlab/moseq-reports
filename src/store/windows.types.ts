@@ -2,5 +2,5 @@
 
 export interface WindowsState {
     basename: string;
-    items: string[];
+    items: Array<string>;
 }

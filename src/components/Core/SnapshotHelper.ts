@@ -54,7 +54,7 @@ export default async function Snapshot(target: Vue, basename: string, options: S
             }
             return {
                 finfo,
-                dest
+                dest,
             };
         })
         .then((data) => {
@@ -80,7 +80,7 @@ export default async function Snapshot(target: Vue, basename: string, options: S
             app.$store.commit('history/addEntry', {
                 message: err.toString(),
                 variant: 'danger',
-                details: err.stack
+                details: err.stack,
             });
         });
 }
@@ -114,7 +114,7 @@ export async function SnapshotWorkspace() {
         } as SubImage;
     }))
     .then((images) => {
-        return composite_images(images, opts)
+        return composite_images(images, opts);
     })
     .then((composite) => {
         const finfo = dataUriToFile(composite);
@@ -128,7 +128,7 @@ export async function SnapshotWorkspace() {
         }
         return {
                 finfo,
-                dest
+                dest,
         };
     })
     .then((data) => {
@@ -162,7 +162,7 @@ export interface SubImage {
     height: number;
 }
 
-export function composite_images(images: SubImage[], opts: SnapshotOptions): Promise<string> {
+export function composite_images(images: Array<SubImage>, opts: SnapshotOptions): Promise<string> {
     const dims = images.reduce((accum, item) => {
         accum.minX = Math.min(accum.minX, item.pos_x);
         accum.maxX = Math.max(accum.maxX, item.pos_x + item.width);
@@ -186,7 +186,7 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
 
     const drawers = images.map((item) => {
         return new Promise<void>((resolve, reject) => {
-            const subInfo = dataUriToFile(item.dataURI)
+            const subInfo = dataUriToFile(item.dataURI);
             if (subInfo.extension !== 'png') {
                 reject('non-image data');
                 return;
@@ -242,8 +242,8 @@ function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
             'Your snapshot was saved successfully to ',
             h('a', {
                 attrs: { href: 'javascript:void(0)', title: 'Click to open' },
-                on: { click: clickHandler, },
-            }, dest)
+                on: { click: clickHandler },
+            }, dest),
         ]),
     ];
 
@@ -256,7 +256,7 @@ function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
 }
 
 function filtersForFinfo(finfo) {
-    const infos = [] as any[];
+    const infos = [] as Array<any>;
     if (finfo.extension === 'png') {
         infos.push({ name: 'Image Files', extensions: ['png']});
     }
@@ -270,7 +270,11 @@ function filtersForFinfo(finfo) {
     return infos;
 }
 
-export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html'|'callback', target:HTMLElement|((options: SnapshotOptions) => Promise<string>)} {
+export function resolveTarget(target: Vue):
+    {
+        type: 'video' | 'svg' | 'html' | 'callback',
+        target: HTMLElement | ((options: SnapshotOptions) => Promise<string>),
+    } {
     const eattr = 'data-snapshot-target';
 
     const explicit = (target.$el.hasAttribute(eattr)
@@ -294,12 +298,12 @@ export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html'|'callbac
             return {
                 type: 'video',
                 target: explicit,
-            }
+            };
         } else {
             return {
                 type: 'html',
                 target: explicit,
-            }
+            };
         }
     }
 
@@ -308,7 +312,7 @@ export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html'|'callbac
         return {
             type: 'svg',
             target: svg,
-        }
+        };
     }
 
     const video = findTag(target, 'video');
@@ -316,7 +320,7 @@ export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html'|'callbac
         return {
             type: 'video',
             target: video,
-        }
+        };
     }
 
     return {
@@ -350,7 +354,7 @@ function getSuggestedFilename(target: Vue) {
     const tgt = resolveTarget(target);
     if (tgt.type === 'video') {
         const src = decodeURIComponent((tgt.target as HTMLVideoElement).src);
-        return src.replace(/[\#\?].*$/,'').replace(/\.[^/.]+$/, '');
+        return src.replace(/[\#\?].*$/, '').replace(/\.[^/.]+$/, '');
     }
     return undefined;
 }

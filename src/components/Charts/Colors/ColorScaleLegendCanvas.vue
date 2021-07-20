@@ -41,7 +41,7 @@ export default mixins(ColorScaleLegendBase).extend({
         } else {
             grad = cxt.createLinearGradient(0, this.height, 0, 0);
         }
-        if (!(this.scale.domain() as number[]).includes(NaN)) {
+        if (!(this.scale.domain() as Array<number>).includes(NaN)) {
             for (const d of this.stops) {
                 grad.addColorStop(d.v / 100, d.z);
             }

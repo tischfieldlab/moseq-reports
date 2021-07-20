@@ -6,7 +6,7 @@ import { HeatmapTile,  ClusterDistance, ClusterLinkage } from './ClusterHeatmap.
 
 const exposedMethods = {
     clusterColumns(df, colKey: string, valKey: string, distance: ClusterDistance, linkage: ClusterLinkage) {
-        const grouped = groupby(df as HeatmapTile[], (item) => item[colKey]);
+        const grouped = groupby(df as Array<HeatmapTile>, (item) => item[colKey]);
         const toCluster = Object.entries(grouped).map(([column, vals]) => {
             return {
                 name: column,
@@ -16,7 +16,7 @@ const exposedMethods = {
         return cluster(toCluster, distance, linkage);
     },
     clusterRows(df, rowKey: string, valKey: string, distance: ClusterDistance, linkage: ClusterLinkage) {
-        const grouped = groupby(df as HeatmapTile[], (item) => item[rowKey].toString());
+        const grouped = groupby(df as Array<HeatmapTile>, (item) => item[rowKey].toString());
         const toCluster = Object.entries(grouped).map(([row, vals]) => {
             return {
                 name: row,
@@ -29,8 +29,8 @@ const exposedMethods = {
 expose(exposedMethods);
 export type ClusterWorker = typeof exposedMethods;
 
-function cluster(data: any[], distance: ClusterDistance = ClusterDistance.Euclidean,
-    linkage: ClusterLinkage = ClusterLinkage.Avg, key: string = 'values') {
+function cluster(data: Array<any>, distance: ClusterDistance = ClusterDistance.Euclidean,
+                 linkage: ClusterLinkage = ClusterLinkage.Avg, key: string = 'values') {
 
     return hcluster()
         .distance(distance) // support for 'euclidean' and 'angular'

@@ -80,7 +80,7 @@ export default Vue.extend({
         },
         categories: {
             type: Array,
-        } as PropValidator<string[]>,
+        } as PropValidator<Array<string>>,
     },
     data() {
         return {
@@ -113,7 +113,7 @@ export default Vue.extend({
         },
         customOption: {
             handler(newValue) {
-                this.select(this.customOption)
+                this.select(this.customOption);
             },
         },
     },
@@ -124,7 +124,7 @@ export default Vue.extend({
         customOption(): {text: string, value: string} {
             return {
                 text: 'Custom',
-                value: `custom:${this.custom1}:${this.custom2}`
+                value: `custom:${this.custom1}:${this.custom2}`,
             };
         },
     },

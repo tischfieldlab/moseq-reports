@@ -80,7 +80,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
-            aggregateView: [] as Readonly<any[]>,
+            aggregateView: [] as Readonly<Array<any>>,
         };
     },
     computed: {
@@ -95,19 +95,19 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return 'ClusteredHeatmapSVG';
             }
         },
-        rowOrderDataset(): any[] {
+        rowOrderDataset(): Array<any> {
             if (this.settings.row_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.row_order_dataset].data;
             }
             return [];
         },
-        columnOrderDataset(): any[] {
+        columnOrderDataset(): Array<any> {
             if (this.settings.column_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.column_order_dataset].data;
             }
             return [];
         },
-        selectedGroups(): any[] {
+        selectedGroups(): Array<any> {
             if (this.dataview.moduleIdFilter.length === 0) {
                 return this.$store.getters[`${this.datasource}/availableModuleIds`];
             } else {
@@ -125,7 +125,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        dataset(): [string, Operation[]] {
+        dataset(): [string, Array<Operation>] {
             const ds = this.$store.getters[`datasets/resolve`]('behave_dist');
 
             let syllables;

@@ -94,7 +94,7 @@ export default Vue.extend({
             if (this.current === item) {
                 this.close();
             } else {
-                this.openItem(item.name)
+                this.openItem(item.name);
             }
         },
         close() {

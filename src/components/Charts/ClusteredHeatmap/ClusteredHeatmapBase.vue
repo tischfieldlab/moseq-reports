@@ -17,7 +17,7 @@ let worker: ModuleThread<ClusterWorker>;
     worker = await spawn<ClusterWorker>(new Worker('./Worker.ts'));
 })();
 
-function default_tooltip_formatter(item, that){
+function default_tooltip_formatter(item, that) {
     return `Column: ${item[that.columnKey]}<br />
             Row: ${item[that.rowKey]}<br />
             Value: ${item[that.valueKey].toExponential(3)}`;
@@ -179,7 +179,7 @@ export default Vue.extend({
             },
             label_stats: {count: 0, total: 0, longest: 0},
             watchers: Array<(() => void)>(),
-            tooltipPosition: undefined as {x: number, y:number}|undefined,
+            tooltipPosition: undefined as {x: number, y: number}|undefined,
             hoverItem: undefined as object|undefined,
         };
     },
@@ -262,13 +262,13 @@ export default Vue.extend({
                 legend,
             };
         },
-        columnOrder(): string[] {
+        columnOrder(): Array<string> {
             switch (this.columnOrderType) {
                 case OrderingType.Cluster:
                     return this.clusteredColumnOrder;
 
                 case OrderingType.Value:
-                    return (this.data as HeatmapTile[])
+                    return (this.data as Array<HeatmapTile>)
                                .filter((u) => u[this.rowKey] === this.rowOrderValue)
                                .sort((a, b) => {
                                    if (this.columnOrderDirection === SortOrderDirection.Asc) {
@@ -280,11 +280,11 @@ export default Vue.extend({
                                .map((u) => u[this.columnKey]);
 
                 case OrderingType.Dataset:
-                    return this.columnOrderDataset as string[] || [];
+                    return this.columnOrderDataset as Array<string> || [];
 
                 case OrderingType.Natural:
                 default:
-                    return this.groupLabels as string[];
+                    return this.groupLabels as Array<string>;
             }
         },
         isColumnsClustered(): boolean {
@@ -293,13 +293,13 @@ export default Vue.extend({
         isRowsClustered(): boolean {
             return this.rowOrderType === OrderingType.Cluster;
         },
-        rowOrder(): number[] {
+        rowOrder(): Array<number> {
             switch (this.rowOrderType) {
                 case OrderingType.Cluster:
                     return this.clusteredRowOrder;
 
                 case OrderingType.Value:
-                    return (this.data as HeatmapTile[])
+                    return (this.data as Array<HeatmapTile>)
                                .filter((u) => u[this.columnKey] === this.rowOrderValue)
                                .sort((a, b) => {
                                    if (this.rowOrderDirection === SortOrderDirection.Asc) {
@@ -311,11 +311,11 @@ export default Vue.extend({
                                .map((u) => u[this.rowKey]);
 
                 case OrderingType.Dataset:
-                    return this.rowOrderDataset as number[] || [];
+                    return this.rowOrderDataset as Array<number> || [];
 
                 case OrderingType.Natural:
                 default:
-                    return [...new Set((this.data as HeatmapTile[]).map((u) => u[this.rowKey]))].sort((a, b) => a - b);
+                    return [...new Set((this.data as Array<HeatmapTile>).map((u) => u[this.rowKey]))].sort((a, b) => a - b);
             }
         },
         colormap(): any {
@@ -332,26 +332,26 @@ export default Vue.extend({
                 .padding(0);
             let ext = [0, 0];
             if (this.data !== null) {
-                ext = extent((this.data as HeatmapTile[]).map((n) => n[this.valueKey])) as [number, number];
+                ext = extent((this.data as Array<HeatmapTile>).map((n) => n[this.valueKey])) as [number, number];
             }
             const z = scaleSequential(this.colormap || ((t) => t))
                 .domain(ext as [number, number]);
             return { x, y, z };
         },
-        columnLinks(): any[] {
+        columnLinks(): Array<any> {
             if (this.columnHierarchy === undefined) {
                 return [];
             }
             return cluster().size([this.dims.ctree.w, this.dims.ctree.h])(this.columnHierarchy as any).links() as any;
         },
-        rowLinks(): any[] {
+        rowLinks(): Array<any> {
             if (this.rowHierarchy === undefined) {
                 return [];
             }
             return cluster().size([this.dims.rtree.h, this.dims.rtree.w])(this.rowHierarchy as any).links() as any;
         },
         tooltip_text(): string {
-            if (this.hoverItem !== undefined){
+            if (this.hoverItem !== undefined) {
                 return (this.tooltipFormatter as (itm, that) => string)(this.hoverItem, this);
             }
             return '';
@@ -362,7 +362,7 @@ export default Vue.extend({
             if (this.data !== null) {
                 this.clusterColumns();
                 this.clusterRows();
-                this.compute_label_stats(this.groupLabels as string[]);
+                this.compute_label_stats(this.groupLabels as Array<string>);
             }
         },
         elbowH, elbowV,
@@ -392,7 +392,7 @@ export default Vue.extend({
                 value: (event.target as SVGRectElement).dataset.val,
             });
         },
-        compute_label_stats(labels: string[]) {
+        compute_label_stats(labels: Array<string>) {
             // abstract
         },
         showSelectedRow(id: number) {

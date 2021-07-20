@@ -123,13 +123,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        groupNames(): string[] {
+        groupNames(): Array<string> {
             return this.dataview.selectedGroups;
         },
-        groupColors(): string[] {
+        groupColors(): Array<string> {
             return this.dataview.groupColors;
         },
-        dataspec(): [string, Operation[]] {
+        dataspec(): [string, Array<Operation>] {
             const rID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Raw);
             return [
                 this.$store.getters[`datasets/resolve`](`scalars/${rID}`),

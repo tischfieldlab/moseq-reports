@@ -99,11 +99,14 @@ export default Vue.component('color-scale-legend', {
                 .domain([d[0], d[d.length - 1]])
                 .range(r);
         },
-        stops(): {v:number, z: string}[] {
+        stops(): Array<{v: number, z: string}> {
             const d = this.scale.domain();
             const start = d[0];
             const stop = d[d.length - 1];
-            return range(start, stop, (stop - start) / 20).map((v) => ({ v: this.percentRange(v, start, stop), z: this.scale(v) }));
+            return range(start, stop, (stop - start) / 20).map((v) => ({
+                    v: this.percentRange(v, start, stop), z: this.scale(v),
+                }),
+            );
         },
     },
     methods: {

@@ -75,7 +75,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
         setLoading(state, loading: boolean) {
             state.loading = loading;
         },
-        setGroupColors(state, groupColors: string[]) {
+        setGroupColors(state, groupColors: Array<string>) {
             state.groupColors = groupColors;
         },
         setView(state, payload: DataviewPayload) {
@@ -123,7 +123,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
             } as DataviewPayload);
             context.commit('setSelectedSyllable', newSyllable);
         },
-        async updateModuleIdFilters(context, payload: number[]) {
+        async updateModuleIdFilters(context, payload: Array<number>) {
             await context.dispatch('updateView', {
                 moduleIdFilter: payload,
             } as DataviewPayload);

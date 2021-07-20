@@ -17,8 +17,8 @@ export default Vue.extend({
         show: {
             type: Boolean,
             default: true,
-        }
-    }
+        },
+    },
 });
 </script>
 

@@ -44,7 +44,7 @@ export default Vue.extend({
         RenderNode,
     },
     computed: {
-        items(): HistoryItem[] {
+        items(): Array<HistoryItem> {
             return this.$store.state.history.items.slice().reverse();
         },
     },
@@ -54,8 +54,6 @@ export default Vue.extend({
         },
     },
 });
-
-
 </script>
 
 <style scoped>

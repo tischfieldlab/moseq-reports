@@ -83,7 +83,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
         drawHeatmapCells(cxt: CanvasRenderingContext2D) {
             cxt.save();
             cxt.translate(this.dims.heatmap.x, this.dims.heatmap.y);
-            for (const node of this.data as object[]) {
+            for (const node of this.data as Array<object>) {
                 cxt.beginPath();
                 cxt.rect(this.scale.x(node[this.columnKey]),
                         this.scale.y(node[this.rowKey]),
@@ -225,7 +225,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
 
             ctx.restore();
         },
-        compute_label_stats(labels: string[]) {
+        compute_label_stats(labels: Array<string>) {
             const cxt = this.canvas.cxt;
             if (cxt !== null) {
                 const widths = labels.map((l) => {
@@ -244,7 +244,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             return;
         },
         handleHeatmapClick(event: MouseEvent) {
-            for (const node of this.data as object[]) {
+            for (const node of this.data as Array<object>) {
                 const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]);
                 const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]);
                 const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]) + this.scale.x.bandwidth();
@@ -263,7 +263,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             }
         },
         handleHeatmapHover(event: MouseEvent) {
-            for (const node of this.data as object[]) {
+            for (const node of this.data as Array<object>) {
                 const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]);
                 const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]);
                 const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]) + this.scale.x.bandwidth();
@@ -273,7 +273,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                  && event.offsetY > y1 && event.offsetY <= y2) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY
+                        y: event.clientY,
                     };
                     this.hoverItem = node;
                     (this.$el as HTMLElement).style.cursor = 'crosshair';

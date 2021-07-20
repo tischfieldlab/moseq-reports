@@ -71,13 +71,13 @@ const WindowsModule: Module<WindowsState, RootState> = {
                 store.unregisterModule(namespace.split('/'));
             }
         },
-        serializeLayout(context): DehydratedDataWindow[] {
+        serializeLayout(context): Array<DehydratedDataWindow> {
             const dehydrated = context.state.items.map((id) => {
                 return dehydrateWindow(unnest(context.rootState, id));
             });
             return dehydrated;
         },
-        async loadLayout(context, layout: DehydratedDataWindow[]) {
+        async loadLayout(context, layout: Array<DehydratedDataWindow>) {
             // clear out any existing windows
             await context.dispatch('clearLayout');
 

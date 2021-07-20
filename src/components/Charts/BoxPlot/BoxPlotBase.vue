@@ -22,12 +22,12 @@ let worker: ModuleThread<BoxPlotWorker>;
 
 
 function default_tooltip_formatter(value: any, that) {
-    if (value !== undefined){
+    if (value !== undefined) {
         if (value.hasOwnProperty('id')) {
             const itm = value as DataPoint;
             return `ID: ${itm.id}<br />
                     Value: ${itm.value.toExponential(3)}`;
-        } else if(value.hasOwnProperty('count')) {
+        } else if (value.hasOwnProperty('count')) {
             const itm = value as GroupStats;
             return `Group: ${itm.group}<br />
                     Count: ${itm.count.toString()}<br />
@@ -117,7 +117,7 @@ export default mixins(LoadingMixin).extend({
             label_stats: {count: 0, total: 0, longest: 0},
             domainY: [0, 0],
             domainKde: [0, 0],
-            tooltipPosition: undefined as {x: number, y:number}|undefined,
+            tooltipPosition: undefined as {x: number, y: number}|undefined,
             hoverItem: undefined as object|undefined,
         };
     },
@@ -159,7 +159,7 @@ export default mixins(LoadingMixin).extend({
                 return { x: scaleBand(), y: scaleLinear() };
             }
             const x = scaleBand()
-                .domain(this.groupLabels as string[])
+                .domain(this.groupLabels as Array<string>)
                 .range([0, this.innerWidth])
                 .padding(0.2);
 
@@ -172,8 +172,8 @@ export default mixins(LoadingMixin).extend({
                 .range([0, x.bandwidth()]);
 
             const c = scaleOrdinal()
-                .domain(this.groupLabels as string[])
-                .range(this.groupColors as string[]);
+                .domain(this.groupLabels as Array<string>)
+                .range(this.groupColors as Array<string>);
 
             return { x, y, w, c };
         },
@@ -222,7 +222,7 @@ export default mixins(LoadingMixin).extend({
             return this.show_points && !tooMany;
         },
         tooltip_text(): string {
-            if (this.hoverItem !== undefined){
+            if (this.hoverItem !== undefined) {
                 return (this.tooltipFormatter as (itm, that) => string)(this.hoverItem, this);
             }
             return '';
@@ -230,14 +230,14 @@ export default mixins(LoadingMixin).extend({
     },
     watch: {
         data: {
-            async handler(newData: DataPoint[]) {
+            async handler(newData: Array<DataPoint>) {
                 if (newData === null) {
                     return;
                 }
-                worker.prepareData(newData as any[],
+                worker.prepareData(newData as Array<any>,
                             this.innerHeight,
                             this.point_size,
-                            this.groupLabels as string[],
+                            this.groupLabels as Array<string>,
                             this.show_points)
                     .then((result) => {
                         if (result !== undefined) {
@@ -245,18 +245,18 @@ export default mixins(LoadingMixin).extend({
                             this.groupedData = result.groupedData,
                             this.domainY = result.domainY;
                             this.domainKde = result.domainKde,
-                            this.compute_label_stats(this.groupLabels as string[]);
+                            this.compute_label_stats(this.groupLabels as Array<string>);
                         }
                     });
             },
             immediate: true,
         },
         width() {
-            this.compute_label_stats(this.groupLabels as string[]);
+            this.compute_label_stats(this.groupLabels as Array<string>);
         },
         async point_size(newValue) {
             const result = await worker.swarm_points(this.points,
-                                                     this.groupLabels  as string[],
+                                                     this.groupLabels  as Array<string>,
                                                      {domain: this.scale.y.domain(), range: this.scale.y.range()},
                                                      this.point_size);
             this.points = result;
@@ -271,7 +271,7 @@ export default mixins(LoadingMixin).extend({
             }
             return false;
         },
-        compute_label_stats(labels: string[]) {
+        compute_label_stats(labels: Array<string>) {
             // abstract implementation
         },
     },

@@ -9,7 +9,7 @@ export default function gridLayout() {
     let widthTotal = 550;
     let heightTotal = 300;
 
-    function grid(d): GridCell[] {
+    function grid(d): Array<GridCell> {
         numCells = d.length;
 
         const widthIndividual = Math.sqrt(aspect * widthTotal * heightTotal / numCells);

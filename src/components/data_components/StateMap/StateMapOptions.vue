@@ -175,10 +175,10 @@ export default mixins(WindowMixin).extend({
     },
     methods: {},
     computed: {
-        available_groups(): {text: string, value: string}[] {
+        available_groups(): Array<{text: string, value: string}> {
             return this.dataview.selectedGroups.map((g) => ({text: g, value: g}));
         },
-        available_diff_groups(): any[] {
+        available_diff_groups(): Array<any> {
             return this.dataview.selectedGroups
                     .map((g) => ({text: g, value: g}))
                     .filter((el) => el.value !== this.plot_group);
@@ -285,10 +285,10 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         grid_settings: {
                             avoid_overlap: value,
-                        }
+                        },
                     },
                 });
-            }
+            },
         },
         grid_avoid_overlap_padding: {
             get(): number {
@@ -300,10 +300,10 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         grid_settings: {
                             avoid_overlap_padding: value,
-                        }
+                        },
                     },
                 });
-            }
+            },
         },
         // circle
         circle_avoid_overlap: {
@@ -316,10 +316,10 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         circle_settings: {
                             avoid_overlap: value,
-                        }
+                        },
                     },
                 });
-            }
+            },
         },
         circle_clockwise: {
             get(): boolean {
@@ -331,10 +331,10 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         circle_settings: {
                             clockwise: value,
-                        }
+                        },
                     },
                 });
-            }
+            },
         },
         // concentric
         concentric_avoid_overlap: {
@@ -347,10 +347,10 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         concentric_settings: {
                             avoid_overlap: value,
-                        }
+                        },
                     },
                 });
-            }
+            },
         },
         concentric_clockwise: {
             get(): boolean {
@@ -362,10 +362,10 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         concentric_settings: {
                             clockwise: value,
-                        }
+                        },
                     },
                 });
-            }
+            },
         },
         concentric_equidistant: {
             get(): boolean {
@@ -377,10 +377,10 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         concentric_settings: {
                             equidistant: value,
-                        }
+                        },
                     },
                 });
-            }
+            },
         },
         concentric_min_node_spacing: {
             get(): number {
@@ -392,7 +392,7 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         concentric_settings: {
                             min_node_spacing: value,
-                        }
+                        },
                     },
                 });
             },
@@ -408,7 +408,7 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         avsdf_settings: {
                             node_separation: value,
-                        }
+                        },
                     },
                 });
             },
@@ -424,7 +424,7 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         fcose_settings: {
                             node_separation: value,
-                        }
+                        },
                     },
                 });
             },
@@ -439,7 +439,7 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         fcose_settings: {
                             node_repulsion: value,
-                        }
+                        },
                     },
                 });
             },
@@ -454,7 +454,7 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         fcose_settings: {
                             ideal_edge_length: value,
-                        }
+                        },
                     },
                 });
             },
@@ -470,7 +470,7 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         cise_settings: {
                             node_separation: value,
-                        }
+                        },
                     },
                 });
             },
@@ -485,7 +485,7 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         cise_settings: {
                             node_repulsion: value,
-                        }
+                        },
                     },
                 });
             },
@@ -500,7 +500,7 @@ export default mixins(WindowMixin).extend({
                     settings: {
                         cise_settings: {
                             ideal_edge_length: value,
-                        }
+                        },
                     },
                 });
             },

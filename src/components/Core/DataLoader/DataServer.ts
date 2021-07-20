@@ -63,7 +63,7 @@ export async function CreateServer() {
                         if (start >= size || end >= size) {
                             // Return the 416 Range Not Satisfiable.
                             response.writeHead(416, {
-                                'Content-Range': `bytes */${size}`
+                                'Content-Range': `bytes */${size}`,
                             });
                             return response.end();
                         }
@@ -72,9 +72,9 @@ export async function CreateServer() {
                             'Content-Range': `bytes ${start}-${end}/${size}`,
                             'Accept-Ranges': 'bytes',
                             'Content-Length': end - start + 1,
-                            'Content-Type': fileType?.mime
+                            'Content-Type': fileType?.mime,
                         });
-                        response.end(buffer.slice(start, end+1))
+                        response.end(buffer.slice(start, end + 1));
                     } else {
                         readFileContents(fpath)
                             .then((data) => {
@@ -85,9 +85,9 @@ export async function CreateServer() {
                             });
                     }
                 }).resume();
-            })
+            });
             server.on('listening', () => resolve());
-            server.on('error', (err) => reject(err))
+            server.on('error', (err) => reject(err));
             server.listen(port);
         });
     });

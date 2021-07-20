@@ -4,8 +4,8 @@ export interface DatasetsState {
     bundle: string; // path to the bundle
     name: string; // basename of the bundle
     manifest: object;
-    groups: string[];
-    label_map: LabelMapRecord[];
+    groups: Array<string>;
+    label_map: Array<LabelMapRecord>;
 }
 
 export interface LabelMapRecord {

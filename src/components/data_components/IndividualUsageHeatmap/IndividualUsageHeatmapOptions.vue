@@ -105,7 +105,7 @@ export default mixins(WindowMixin).extend({
         },
     },
     computed: {
-        selectedGroups(): string[] {
+        selectedGroups(): Array<string> {
             return this.dataview.selectedGroups;
         },
         colorscale: {

@@ -77,13 +77,13 @@ import { RenderMode } from '@/store/datawindow.types';
 
 
 interface Spinogram {
-    data: SpinogramTimepoint[];
+    data: Array<SpinogramTimepoint>;
 }
 
 interface SpinogramTimepoint {
-    x: number[];
-    y: number[];
-    xy: number[][];
+    x: Array<number>;
+    y: Array<number>;
+    xy: Array<Array<number>>;
     a: number;
     t: number;
 }
@@ -109,7 +109,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
-            items: [] as Spinogram[],
+            items: [] as Array<Spinogram>,
             example_num: 1,
             margin: {
                 top: 30,
@@ -120,7 +120,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         };
     },
     computed: {
-        spinogram_data(): Readonly<SpinogramTimepoint[]> {
+        spinogram_data(): Readonly<Array<SpinogramTimepoint>> {
             if (this.example_num - 1 < this.items.length) {
                 return this.items[this.example_num - 1].data;
             }
@@ -203,7 +203,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         has_data(): boolean {
             return this.items.length > 0;
         },
-        dataspec(): [string, Operation[]] {
+        dataspec(): [string, Array<Operation>] {
             return [
                 this.$store.getters[`datasets/resolve`]('spinograms'),
                 [
@@ -224,7 +224,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         dataspec: {
             handler() {
                 LoadData(this.dataspec[0], this.dataspec[1])
-                .then((data: any[]) => {
+                .then((data: Array<any>) => {
                     if (data && data.length > 0) {
                         for (const itm of data) {
                             const d = itm.data;

@@ -30,7 +30,7 @@ function createCache() {
 
 let cache = createCache();
 
-export default function LoadData(path: string, operations: Operation[], debug?: boolean) {
+export default function LoadData(path: string, operations: Array<Operation>, debug?: boolean) {
     const cacheName = JSON.stringify(arguments);
     if (!cache.hasOwnProperty(cacheName)) {
         const tsk = pool.queue(async (loader) => loader.LoadJson(path, operations, debug))

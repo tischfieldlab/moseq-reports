@@ -35,7 +35,7 @@ export default Vue.component('homepage', {
             return title;
         },
         isSidebarRight(): boolean {
-            return this.$store.state.sidebarPosition === SidebarPosition.Right
+            return this.$store.state.sidebarPosition === SidebarPosition.Right;
         },
     },
     watch: {

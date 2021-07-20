@@ -73,10 +73,10 @@ export default mixins(WindowMixin).extend({
     },
     methods: {},
     computed: {
-        available_groups(): {text: string, value: string}[] {
+        available_groups(): Array<{text: string, value: string}> {
             return this.dataview.selectedGroups.map((g) => ({text: g, value: g}));
         },
-        available_diff_groups(): any[] {
+        available_diff_groups(): Array<any> {
             return this.dataview.selectedGroups
                     .map((g) => ({text: g, value: g}))
                     .filter((el) => el.value !== this.plot_group);
@@ -193,7 +193,7 @@ export default mixins(WindowMixin).extend({
                 { text: NodeAlignment.Left, value: NodeAlignment.Left },
                 { text: NodeAlignment.Right, value: NodeAlignment.Right },
                 { text: NodeAlignment.Center, value: NodeAlignment.Center },
-            ]
+            ],
         };
     },
 });

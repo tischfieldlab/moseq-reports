@@ -135,11 +135,11 @@ export default mixins(WindowMixin).extend({
         },
     },
     computed: {
-        method_options_spec(): any[] {
+        method_options_spec(): Array<any> {
             const ds = this.$store.getters[`datasets/resolve`]('behave_dist');
             return [ds, [{ type: 'pluck', column: 'columns' }]];
         },
-        group_options(): string[] {
+        group_options(): Array<string> {
             let vals;
             if (this.dataview.moduleIdFilter.length === 0) {
                 vals = this.$store.getters[`${this.datasource}/availableModuleIds`];
@@ -333,7 +333,7 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
-            method_options: [] as string[],
+            method_options: [] as Array<string>,
             row_order_options: [
                 { text: 'Syllable ID', value: OrderingType.Natural },
                 { text: 'Distance Value', value: OrderingType.Value },

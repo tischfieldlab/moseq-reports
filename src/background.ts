@@ -12,8 +12,8 @@ import logger from 'electron-log';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-const instances: BrowserWindow[] = [];
-const instanceArgs = {} as {[id:string]: string[]};
+const instances: Array<BrowserWindow> = [];
+const instanceArgs = {} as {[id: string]: Array<string>};
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 // let win: BrowserWindow | null;
@@ -29,7 +29,7 @@ if (!gotTheLock) {
 }
 
 
-function createWindow(argv: string[]) {
+function createWindow(argv: Array<string>) {
     // Create the browser window.
     const win = new BrowserWindow({
         icon: path.join(__static, 'img', 'mouse.png'),

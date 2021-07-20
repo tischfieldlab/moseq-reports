@@ -172,8 +172,8 @@ export default mixins(LoadingMixin).extend({
             }
             this.emitStartLoading();
 
-            worker.binData(this.data as any[],
-                        this.useGroups ? this.groupLabels as string[] : null,
+            worker.binData(this.data as Array<any>,
+                        this.useGroups ? this.groupLabels as Array<string> : null,
                         this.scale.x.range()[1],
                         this.resolution)
                 .then((result) => {

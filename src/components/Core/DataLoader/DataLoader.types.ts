@@ -1,7 +1,7 @@
 
 export interface DataObject {
-    columns: string[];
-    data: any[];
+    columns: Array<string>;
+    data: Array<any>;
 }
 export interface SortSpec {
     column: string;
@@ -17,28 +17,28 @@ export type Operation = KeysOperation|PluckOperation|SortOperation|FilterOperati
 
 export interface PluckOperation {
     type: 'pluck';
-    column: string|string[];
+    column: string|Array<string>;
 }
 export interface KeysOperation {
     type: 'keys';
 }
 export interface SortOperation {
     type: 'sort';
-    columns: string[];
+    columns: Array<string>;
     direction: SortDirection|'asc'|'desc';
 }
 export interface FilterOperation {
     type: 'filter';
-    filters: {[key: string]: any[]};
+    filters: {[key: string]: Array<any>};
 }
 export interface MapOperation {
     type: 'map';
-    columns?: ([string, string]|string)[];
+    columns?: Array<[string, string]|string>;
 }
 export interface AggregateOperation {
     type: 'aggregate';
-    groupby: string[];
-    aggregate: {[key: string]: Statistic|Statistic[]};
+    groupby: Array<string>;
+    aggregate: {[key: string]: Statistic|Array<Statistic>};
 }
 type Statistic = ('mean'|'median'|'sum'|'min'|'max');
 

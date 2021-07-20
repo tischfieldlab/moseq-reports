@@ -9,7 +9,7 @@ export interface Node {
 export interface Link {
     type: string;
     id: string;
-    color_id: number,
+    color_id: number;
     source: string;
     target: string;
     value: number;
