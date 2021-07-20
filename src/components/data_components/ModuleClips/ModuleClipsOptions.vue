@@ -23,7 +23,6 @@
 </template>
 
 <script scoped lang="ts">
-import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 

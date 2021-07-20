@@ -23,9 +23,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/Core';
 import { HeatmapTile } from './ClusterHeatmap.types';
-import * as d3 from 'd3';
 import { sum } from 'd3';
 import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendCanvas.vue';
 import mixins from 'vue-typed-mixins';

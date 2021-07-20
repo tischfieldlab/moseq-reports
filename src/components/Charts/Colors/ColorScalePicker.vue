@@ -61,7 +61,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {GetInterpolatedScaleOptions, GetScale, getContrastingColor} from '@/components/Charts/Colors/D3ColorProvider';
+import {GetInterpolatedScaleOptions, getContrastingColor} from '@/components/Charts/Colors/D3ColorProvider';
 import { PropValidator } from 'vue/types/options';
 import { Chrome } from 'vue-color';
 import ColorScaleBar from './ColorScaleBar.vue';

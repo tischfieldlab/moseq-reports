@@ -17,19 +17,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
 import BoxPlot from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
-import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import { CountMethod } from '@/store/dataview.types';
 import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
-import { RenderMode } from '@/store/datawindow.types';
 
 
 /*

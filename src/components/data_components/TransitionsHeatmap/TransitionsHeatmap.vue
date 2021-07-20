@@ -52,8 +52,6 @@
 
 
 <script lang="ts">
-import Vue from 'vue';
-import RegisterDataComponent from '@/components/Core';
 import * as d3 from 'd3';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
@@ -230,7 +228,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis];
                 const methodArg = binding.value[axis];
-                const actualAxis = d3[axisMethod](methodArg);
+                const actualAxis = d3[axisMethod!](methodArg);
 
                 // if colorbar axis, only show 5 ticks
                 if (axis === 'c') {

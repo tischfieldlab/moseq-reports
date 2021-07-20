@@ -1,8 +1,6 @@
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/Core';
 import { OrderingType, SortOrderDirection, HeatmapTile, ClusterDistance, ClusterLinkage } from './ClusterHeatmap.types';
-import * as d3 from 'd3';
 import { cluster, hierarchy, extent } from 'd3';
 import { scaleBand, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';

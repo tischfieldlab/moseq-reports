@@ -43,7 +43,6 @@
 
 
 <script lang="ts">
-import Vue from 'vue';
 import {UpdateComponentLayoutPayload, UpdateComponentTitlePayload} from '@/store/datawindow.types';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';

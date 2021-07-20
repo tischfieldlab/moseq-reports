@@ -112,12 +112,10 @@
 </template>
 
 <script scoped lang="ts">
-import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
 import DatasetPicker from '@/components/DatasetPicker.vue';
-import { CountMethod } from '../../../store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import ColorScalePicker from '@/components/Charts/Colors/ColorScalePicker.vue';
 

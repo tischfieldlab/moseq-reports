@@ -6,7 +6,6 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';

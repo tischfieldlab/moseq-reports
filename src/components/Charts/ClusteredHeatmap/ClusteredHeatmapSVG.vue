@@ -156,7 +156,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisRight' }[axis];
                 const methodArg = binding.value[axis];
-                const actualAxis = d3[axisMethod](methodArg);
+                const actualAxis = d3[axisMethod!](methodArg);
 
                 // build the axis
                 d3.select(el).call(actualAxis);

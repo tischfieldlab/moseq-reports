@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {left, right} from '@popperjs/core';
+import {throttle} from '@/util/Events';
 
 export default Vue.component('BaseWindow', {
   props: {
@@ -174,7 +174,6 @@ export default Vue.component('BaseWindow', {
           height: this.$data.height,
         };
 
-        // this.$emit('onMoved', resizedObj);
         this.$emit('onResized', resizedObj);
         prevX += deltaX;
         prevY += deltaY;
@@ -200,7 +199,8 @@ export default Vue.component('BaseWindow', {
         this.$data.position.x += deltaX;
         this.$data.position.y += deltaY;
 
-        this.$emit('onMoved', resizedObj);
+        // this.$emit('onMoved', resizedObj);
+        throttle(() => this.$emit('onMoved', resizedObj), 10);
         prevX += deltaX;
         prevY += deltaY;
       }

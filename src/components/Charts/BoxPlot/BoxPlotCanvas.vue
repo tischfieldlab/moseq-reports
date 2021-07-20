@@ -16,13 +16,11 @@
 </template>
 
 <script lang='ts'>
-import Vue from 'vue';
 import BoxPlotBase from './BoxPlotBase.vue';
 import { GroupStats, DataPoint } from './BoxPlot.types';
 import { sum } from 'd3-array';
 import { throttle, debounce } from '@/util/Events';
 import mixins from 'vue-typed-mixins';
-import {sample} from '@/util/Array';
 import ToolTip from '@/components/Charts/ToolTip.vue';
 import CanvasMixin from '@/components/Charts/Canvas';
 import MessageBox from '@/components/Charts/CenteredMessage.vue';

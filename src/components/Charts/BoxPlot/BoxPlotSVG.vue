@@ -105,9 +105,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import * as d3 from 'd3';
-import { axisBottom, axisLeft } from 'd3-axis';
 import BoxPlotBase from './BoxPlotBase.vue';
 import { sum } from 'd3-array';
 import mixins from 'vue-typed-mixins';
@@ -188,7 +186,7 @@ export default mixins(BoxPlotBase).extend({
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis];
                 const methodArg = binding.value[axis];
-                d3.select(el).call(d3[axisMethod](methodArg));
+                d3.select(el).call(d3[axisMethod!](methodArg));
             }
         },
     },

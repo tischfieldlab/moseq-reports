@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Snapshot, {resolveTarget} from '@/components/Core/SnapshotHelper';
+import Snapshot from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import { Chrome } from 'vue-color';

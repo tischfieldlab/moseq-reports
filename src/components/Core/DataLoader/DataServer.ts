@@ -19,7 +19,7 @@ export async function CreateServer() {
         return Promise.reject(`Server is alreay running on '${GetAddress()}'`);
     }
     return portscanner.findAPortNotInUse(minSearchPort, maxSearchPort).then((port) => {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             serverPort = port;
             server = http.createServer((request, response) => {
                 // Set CORS headers

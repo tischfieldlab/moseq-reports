@@ -1,7 +1,7 @@
 import { expose } from 'threads/worker';
 import { groupby } from '@/util/Array';
 import { scaleLinear } from 'd3-scale';
-import { max, mean, quantile, extent } from 'd3-array';
+import { mean, quantile, extent } from 'd3-array';
 import { GroupStats, DataPoint, DataPointQueueNode } from './BoxPlot.types';
 
 

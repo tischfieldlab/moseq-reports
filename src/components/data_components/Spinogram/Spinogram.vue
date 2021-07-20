@@ -60,7 +60,6 @@
 
 
 <script lang="ts">
-import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 
 import * as d3 from 'd3';
@@ -246,7 +245,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis];
                 const methodArg = binding.value[axis];
-                d3.select(el).call(d3[axisMethod](methodArg));
+                d3.select(el).call(d3[axisMethod!](methodArg));
             }
         },
     },

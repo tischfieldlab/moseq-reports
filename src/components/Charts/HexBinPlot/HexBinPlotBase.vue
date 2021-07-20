@@ -1,7 +1,6 @@
 <script lang="ts">
-import Vue from 'vue';
 import { hexbin } from 'd3-hexbin';
-import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
+import { scaleLinear, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { spawn, Thread, Worker, ModuleThread } from 'threads';
 import { HexbinWorker } from './Worker';

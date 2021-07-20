@@ -1,6 +1,5 @@
 
 <script lang="ts">
-import Vue from 'vue';
 import ColorScaleLegendBase, {Orientation} from './ColorScaleLegendBase';
 import mixins from 'vue-typed-mixins';
 

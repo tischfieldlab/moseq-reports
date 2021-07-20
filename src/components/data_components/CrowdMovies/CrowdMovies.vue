@@ -30,7 +30,6 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';

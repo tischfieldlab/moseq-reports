@@ -2,8 +2,7 @@
 
 
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
-import {ScaleLinear, ScaleContinuousNumeric} from 'd3-scale';
-import {interpolateRgb, interpolateRgbBasis} from 'd3-interpolate';
+import {interpolateRgb} from 'd3-interpolate';
 
 const ScaleCategories = {
     'Diverging': [

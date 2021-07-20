@@ -9,7 +9,6 @@ import {
     KeysOperation,
 } from './DataLoader.types';
 import { groupby } from '@/util/Array';
-import { unnest } from '@/util/Vuex';
 import { mean, median, sum, min, max } from 'd3-array';
 import { tsvParse, csvParse } from 'd3-dsv';
 import StreamZip from 'node-stream-zip';
