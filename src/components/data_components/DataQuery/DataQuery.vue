@@ -15,12 +15,12 @@
         <data-view :Dataset="intermediateResults[0]" :Collapsed="true" />
 
         <template v-for="(op, idx) in operations">
-            <b-card :key="idx" :no-body="!cardHasBody(op.type)">
+            <b-card :key="idx" :no-body="true">
                 <template #header>
                     <b-button-close @click="removeOperation(idx)" />
-                    <!-- @click="is_expanded = !is_expanded"
-                        :title="is_expanded ? 'Collapse' : 'Expand'"-->
                     <b-button
+                        @click="operationVisibilities[idx] = !operationVisibilities[idx]"
+                        :title="operationVisibilities[idx] ? 'Collapse' : 'Expand'"
                         v-b-toggle="$id(`op-collapse-${idx}`)"
                         variant="link"
                         class="text-dark collapse-button text-decoration-none">
@@ -29,13 +29,18 @@
                     </b-button>
                     <h6 class="mb-0" style="display:inline-block;">{{op.type}}</h6>
                 </template>
-                <b-collapse :visible="true" :id="$id(`op-collapse-${idx}`)">
-                    <component v-if="cardHasBody(op.type)" :is="operationToComponent(op.type)" :Operation="op" :PreviousResult="intermediateResults[idx]" />
+                <b-collapse :visible="operationVisibilities[idx]" :id="$id(`op-collapse-${idx}`)">
+                    <div class="operation-wrapper">
+                        <component v-if="cardHasBody(op.type)" :is="operationToComponent(op.type)" :Operation="op" :PreviousResult="intermediateResults[idx]" />
+                        <div v-else class="no-operation-settings">No settings for this operation</div>
+                    </div>
                 </b-collapse>
                 <!--Operation Type: <b-form-select  v-model="op.type" :options="operationTypes"></b-form-select> -->
             </b-card>
             <data-view :key="`dv-${idx+1}`" :Dataset="intermediateResults[idx+1]" :Collapsed="true" />
         </template>
+
+        <dataset-publisher :Owner="this.id" :Source="this.datasource" :Dataset="finalDataset" />
     </div>
 </template>
 
@@ -50,8 +55,8 @@ import { RenderMode } from '@/store/datawindow.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { Operation, SortDirection } from '@/components/Core/DataLoader/DataLoader.types';
 
-import {MapOperation, SortOperation, DataView, PluckOperation, FilterOperation, AggregateOperation} from './Operations';
-
+import {MapOperation, SortOperation, DataView, PluckOperation, FilterOperation, AggregateOperation, DatasetPublisher} from './Operations';
+import { clone } from '@/util/Object';
 
 RegisterDataComponent({
     friendly_name: 'Data Query',
@@ -61,7 +66,10 @@ RegisterDataComponent({
     init_height: 500,
     available_render_modes: [RenderMode.HTML],
     default_render_mode: RenderMode.HTML,
-    default_settings: {},
+    default_settings: {
+        dataset: '',
+        operations: [],
+    },
 });
 
 export default mixins(LoadingMixin, WindowMixin).extend({
@@ -72,18 +80,21 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         PluckOperation,
         FilterOperation,
         AggregateOperation,
+        DatasetPublisher,
     },
     data() {
         return {
-            selectedDataset: '',
-            operations: new Array<Operation>(),
             intermediateResults: [] as any,
-            view: [],
+            operationVisibilities: [] as boolean[],
+            operations: [] as Operation[],
 
-            operationTypes: ['map', 'pluck', 'keys', 'sort', 'filter', 'aggregate']
+            operationTypes: ['map', 'pluck', 'keys', 'values', 'sort', 'filter', 'aggregate']
         };
     },
-    mounted(){
+    mounted() {
+        if (this.settings.operations) {
+            this.operations = clone(this.settings.operations);
+        }
         // this.addOperation();
     },
     watch: {
@@ -94,19 +105,44 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
         operations: {
             handler() {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        operations: clone(this.operations),
+                    },
+                });
                 this.prepareData();
             },
             deep: true,
         },
     },
     computed: {
+        selectedDataset: {
+            get(): string {
+                return this.settings.dataset;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        dataset: value,
+                    },
+                });
+            },
+        },
+        /*operations(): Operation[] {
+            return this.settings.operations;
+        },*/
         availableDataSources(): {text: string, value: string}[] {
             return this.getDataSourceItems(this.$store.state.datasets.manifest);
+        },
+        finalDataset(): any {
+            return this.intermediateResults[this.intermediateResults.length - 1];
         },
     },
     methods: {
         cardHasBody(opType) {
-            if (['keys'].includes(opType)) {
+            if (['keys', 'values'].includes(opType)) {
                 return false;
             }
             return true;
@@ -118,10 +154,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             const op = this.operationFactory(opType);
             if (op !== undefined) {
                 this.operations.push(op);
+                this.operationVisibilities.push(this.cardHasBody(opType));
             }
         },
         removeOperation(opIndex) {
             this.operations.splice(opIndex, 1);
+            this.operationVisibilities.splice(opIndex, 1);
+            this.intermediateResults.splice(opIndex, 1);
         },
         operationFactory(opType: string): Operation|undefined {
             switch (opType) {
@@ -133,11 +172,15 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 case 'pluck':
                     return {
                         type: 'pluck',
-                        column: [],
+                        column: '',
                     };
                 case 'keys':
                     return {
                         type: 'keys',
+                    };
+                case 'values':
+                    return {
+                        type: 'values',
                     };
                 case 'sort':
                     return {
@@ -159,12 +202,14 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             }
         },
         prepareData(): void {
-            const dset = this.$store.getters[`datasets/resolve`](this.selectedDataset);
-            for (let i=0; i < this.operations.length+1; i++) {
-                const ops = this.operations.slice(0, i);
-                // console.log(i, ops);
-                LoadData(dset, ops)
-                    .then((data) => this.intermediateResults.splice(i, 1, data))
+            if (this.selectedDataset !== '') {
+                const dset = this.$store.getters[`datasets/resolve`](this.selectedDataset);
+                for (let i=0; i < this.operations.length+1; i++) {
+                    const ops = this.operations.slice(0, i);
+                    // console.log(i, ops);
+                    LoadData(dset, ops)
+                        .then((data) => this.intermediateResults.splice(i, 1, data));
+                }
             }
         },
         getDataSourceItems(manifest, prefix='/'): {text: string, value: string}[] {
@@ -200,5 +245,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
     display: none;
+}
+.operation-wrapper {
+    padding: 0.5rem;
+}
+.no-operation-settings {
+    text-align: center;
+    color: #555;
+    font-style: italic;
 }
 </style>

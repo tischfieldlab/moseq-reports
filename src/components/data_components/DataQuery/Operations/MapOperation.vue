@@ -49,14 +49,12 @@ export default Vue.extend({
         },
     },
     computed: {
-        /*localValue: {
-            get() {return this.value},
-            set(localValue) { this.$emit('input', localValue)}
-        },*/
         columnOptions() {
             const obj = this.PreviousResult as any;
             let objCols;
-            if (Array.isArray(obj)) {
+            if (obj === undefined) {
+                return [];
+            } else if (Array.isArray(obj)) {
                 if (obj.length > 0) {
                     objCols = Object.getOwnPropertyNames(obj[0]);
                 } else {

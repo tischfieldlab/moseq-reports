@@ -34,7 +34,7 @@ export default Vue.extend({
     },
     data() {
         return {
-            is_expanded: !this.Collapsed,
+            is_expanded: true,
         };
     },
     watch: {

@@ -36,7 +36,9 @@ export default Vue.extend({
         columnOptions() {
             const obj = this.PreviousResult as any;
             let objCols;
-            if (Array.isArray(obj)) {
+            if (obj === undefined){
+                return [];
+            } else if (Array.isArray(obj)) {
                 if (obj.length > 0) {
                     objCols = Object.getOwnPropertyNames(obj[0]);
                 } else {
