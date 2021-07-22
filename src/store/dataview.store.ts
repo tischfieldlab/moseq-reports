@@ -4,7 +4,7 @@ import { schemeDark2, schemePastel1  } from 'd3-scale-chromatic';
 import { scaleOrdinal } from 'd3-scale';
 import store from './root.store';
 import { getModuleNamespace } from '@/util/Vuex';
-import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, PublishedDataset } from '@/store/dataview.types';
+import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, PublishDatasetPayload, UnpublishDatasetPayload } from '@/store/dataview.types';
 import Vue from 'vue';
 import { DatasetsState } from './datasets.types';
 
@@ -105,8 +105,11 @@ const DataviewModule: Module<DataviewState, RootState> = {
         setSelectedSyllable(state, selectedSyllable: number) {
             state.selectedSyllable = selectedSyllable;
         },
-        publishDataset(state, payload: PublishedDataset) {
+        publishDataset(state, payload: PublishDatasetPayload) {
             Vue.set(state.views, `${payload.owner}/${payload.name}`, payload);
+        },
+        unpublishDataset(state, payload: UnpublishDatasetPayload) {
+            Vue.delete(state.views, `${payload.owner}/${payload.name}`);
         },
     },
     actions: {
