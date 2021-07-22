@@ -239,10 +239,12 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 this.selectedSyllable = Number.parseInt(event.var, 10);
             }
         },
-        format_tooltip(itm: any): string {
+        format_tooltip(itm: PlotData): string {
             return `Module: ${itm.syllable}<br />
                     Group: ${itm.group}<br />
-                    Value: ${itm.value.toExponential(3)}<br />`;
+                    Count: ${itm.count}<br />
+                    Value: ${itm.value.toExponential(2)}
+                        &#177; ${itm[this.errorType].toExponential(2)}<br />`;
         },
     },
 });
