@@ -13,14 +13,17 @@ export enum SortDirection {
 }
 
 
-export type Operation = KeysOperation|PluckOperation|SortOperation|FilterOperation|MapOperation|AggregateOperation;
+export type Operation = KeysOperation|ValuesOperation|PluckOperation|SortOperation|FilterOperation|MapOperation|AggregateOperation;
 
 export interface PluckOperation {
     type: 'pluck';
-    column: string|string[];
+    column: string;
 }
 export interface KeysOperation {
     type: 'keys';
+}
+export interface ValuesOperation {
+    type: 'values';
 }
 export interface SortOperation {
     type: 'sort';
@@ -40,7 +43,7 @@ export interface AggregateOperation {
     groupby: string[];
     aggregate: {[key: string]: Statistic|Statistic[]};
 }
-export type Statistic = ('mean'|'median'|'sum'|'min'|'max'|'extent'|'variance'|'deviation'|'count');
+export type Statistic = ('mean'|'median'|'mode'|'sum'|'cumsum'|'min'|'max'|'extent'|'variance'|'deviation'|'count');
 
 
 

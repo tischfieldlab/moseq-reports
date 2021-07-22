@@ -7,9 +7,10 @@ import {
     AggregateOperation,
     PluckOperation,
     KeysOperation,
+    ValuesOperation,
 } from './DataLoader.types';
 import { groupby } from '@/util/Array';
-import { mean, median, sum, min, max, extent, variance, deviation } from 'd3-array';
+import { mean, median, mode, sum, cumsum, min, max, extent, variance, deviation } from 'd3-array';
 import { tsvParse, csvParse } from 'd3-dsv';
 import StreamZip from 'node-stream-zip';
 import fs from 'fs';
@@ -89,7 +90,9 @@ export function filterBy(data: object[], op: FilterOperation) {
 const statops = {
     mean,
     median,
+    mode,
     sum,
+    cumsum,
     min,
     max,
     extent,
@@ -119,28 +122,17 @@ export function aggregate(data: object[], op: AggregateOperation) {
 
 export function pluck(data: object|object[], op: PluckOperation) {
     if (Array.isArray(data)) {
-        if (Array.isArray(op.column)) {
-            return data.map((row) => {
-                return Object.fromEntries((op.column as string[]).map((c) => {
-                    return [c, row[c]];
-                }));
-            });
-        } else {
-            return data.map((row) => row[op.column as string]);
-        }
+        return data.map((row) => row[op.column as string]);
     } else {
-        if (Array.isArray(op.column)) {
-            return Object.fromEntries(op.column.map((c) => {
-                return [c, data[c]];
-            }));
-        } else {
-            return data[op.column];
-        }
+        return data[op.column];
     }
 }
 
 export function keys(data: object, op: KeysOperation) {
     return Object.keys(data);
+}
+export function values(data: object, op: ValuesOperation) {
+    return Object.values(data);
 }
 
 export function jsonParseZipEntryContainingNaN(data: string) {
