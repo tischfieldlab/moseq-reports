@@ -363,11 +363,11 @@ export default Vue.extend({
         },
         scale(): any {
             const x = scaleBand()
-                .domain(this.columnOrder.map((s) => s.toString()))
+                .domain(this.columnOrder.map((s) => s.toString() || ''))
                 .range([0, this.dims.heatmap.w])
                 .padding(0);
             const y = scaleBand()
-                .domain(this.rowOrder.map((s) => s.toString()))
+                .domain(this.rowOrder.map((s) => s.toString() || ''))
                 .range([this.dims.heatmap.h, 0])
                 .padding(0);
             let ext = [0, 0];
