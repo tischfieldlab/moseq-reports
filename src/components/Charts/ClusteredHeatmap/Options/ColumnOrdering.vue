@@ -124,10 +124,16 @@ export default mixins(WindowMixin).extend({
             },
         },
     },
-    mounted() {
-        if (this.column_order_row_value === undefined) {
-            this.column_order_row_value = this.row_options[0].value;
-        }
+    watch: {
+        row_options: {
+            handler() {
+                if (this.column_order_row_value === undefined && this.row_options.length > 0) {
+                    this.column_order_row_value = this.row_options[0].value;
+                }
+            },
+            deep: true,
+            immediate: true,
+        },
     },
     computed: {
         column_order_type: {
