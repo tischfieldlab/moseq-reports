@@ -23,6 +23,8 @@
 
 <script lang="ts">
 import { FilterOperation } from '@/components/Core/DataLoader/DataLoader.types';
+import { DataviewState } from '@/store/dataview.types';
+import { unnest } from '@/util/Vuex';
 import Vue, { PropType } from 'vue';
 import ColumnSelector from './ColumnSelector.vue';
 
@@ -39,6 +41,10 @@ export default Vue.extend({
         PreviousResult: {
             required: true,
         },
+        Owner: {
+            type: String,
+            required: true,
+        },
     },
     data() {
         return {
@@ -52,9 +58,26 @@ export default Vue.extend({
             },
             deep: true,
         },
+        specialTokens: {
+            handler() {
+                this.Operation.filters = this.convertFiltersToTypedFilters(this.localFilters);
+            },
+        },
     },
     computed: {
-        columnOptions() {
+        specialTokens(): {[key: string]: any} {
+            return {
+                '$SelectedSyllable': this.dataview.selectedSyllable,
+                '$AvailableSyllables': this.$store.getters[`${this.datasource}/selectedSyllables`],
+            };
+        },
+        datasource(): string {
+            return this.$store.state.datawindows[this.Owner.replace('datawindows/', '')].datasource;
+        },
+        dataview(): DataviewState {
+            return unnest(this.$store.state, this.datasource);
+        },
+        columnOptions(): string[] {
             const obj = this.PreviousResult as any;
             let objCols;
             if (obj === undefined){
@@ -103,15 +126,24 @@ export default Vue.extend({
                     const colType = this.inferDataTypeForColumn(col);
                     let typedVals;
 
+                    const substituted = vals.flatMap((v) => {
+                        if (Object.keys(this.specialTokens).includes(v)) {
+                            return this.specialTokens[v];
+                        } else {
+                            return v;
+                        }
+                    });
+
                     if (colType === 'int') {
-                        typedVals = vals.map((v) => Number.parseInt(v, 10));
+                        typedVals = substituted.map((v) => Number.parseInt(v, 10));
                     } else if (colType === 'float') {
-                        typedVals = vals.map((v) => Number.parseFloat(v));
+                        typedVals = substituted.map((v) => Number.parseFloat(v));
                     } else if (colType === 'boolean') {
-                        typedVals = vals.map((v) => Boolean(v))
+                        typedVals = substituted.map((v) => Boolean(v))
                     } else {
-                        typedVals = vals;
+                        typedVals = substituted;
                     }
+                    // console.log(vals, substituted, typedVals)
                     return [col, typedVals];
                 }));
         },

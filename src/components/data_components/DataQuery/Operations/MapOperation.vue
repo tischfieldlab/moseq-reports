@@ -25,6 +25,10 @@ export default Vue.extend({
         PreviousResult: {
             required: true,
         },
+        Owner: {
+            type: String,
+            required: true,
+        },
     },
     data() {
         return {

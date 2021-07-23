@@ -31,7 +31,7 @@
                 </template>
                 <b-collapse :visible="operationVisibilities[idx]" :id="$id(`op-collapse-${idx}`)">
                     <div class="operation-wrapper">
-                        <component v-if="cardHasBody(op.type)" :is="operationToComponent(op.type)" :Operation="op" :PreviousResult="intermediateResults[idx]" />
+                        <component v-if="cardHasBody(op.type)" :is="operationToComponent(op.type)" :Operation="op" :PreviousResult="intermediateResults[idx]" :Owner="id" />
                         <div v-else class="no-operation-settings">No settings for this operation</div>
                     </div>
                 </b-collapse>
