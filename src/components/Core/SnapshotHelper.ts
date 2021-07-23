@@ -7,6 +7,8 @@ import { remote, shell } from 'electron';
 import fs from 'fs';
 import mime from 'mime-types';
 import { DataWindowState } from '@/store/datawindow.types';
+import { SaveCancelledError } from './IO/types';
+import { showSaveErrorToast, showSaveSuccessToast } from './IO/Toasts';
 
 
 export interface SnapshotOptions {
@@ -67,21 +69,12 @@ export default async function Snapshot(target: Vue, basename: string, options: S
                 });
             });
         })
-        .then((dest) => showSuccessToast(dest as string))
+        .then((dest) => showSaveSuccessToast(dest as string, 'snapshot'))
         .catch((err) => {
             if (err instanceof SaveCancelledError) {
                 return; // don't care the user cancelled of their own accord
             }
-            app.$bvToast.toast(err.toString(), {
-                title: 'Error Creating Snapshot!',
-                variant: 'danger',
-                toaster: 'b-toaster-bottom-right',
-            });
-            app.$store.commit('history/addEntry', {
-                message: err.toString(),
-                variant: 'danger',
-                details: err.stack
-            });
+            showSaveErrorToast(err, 'snapshot');
         });
 }
 
@@ -95,11 +88,7 @@ export async function SnapshotWorkspace() {
     });
 
     if (toSnapshot.length <= 0) {
-        app.$bvToast.toast('There are not any items to snapshot!', {
-            title: 'Error Creating Workspace Snapshot!',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-        });
+        showSaveErrorToast('There are not any items to snapshot!', 'workspace snapshot');
         return;
     }
 
@@ -141,16 +130,12 @@ export async function SnapshotWorkspace() {
             });
         });
     })
-    .then((dest) => showSuccessToast(dest as string))
+    .then((dest) => showSaveSuccessToast(dest as string, 'workspace snapshot'))
     .catch((err) => {
         if (err instanceof SaveCancelledError) {
             return; // don't care the user cancelled of their own accord
         }
-        app.$bvToast.toast(err.toString(), {
-            title: 'Error Creating Workspace Snapshot!',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-        });
+        showSaveErrorToast(err, 'workspace snapshot');
     });
 }
 
@@ -225,34 +210,6 @@ function getAllVues(root: Vue) {
     const items = [root];
     items.push(...root.$children.flatMap((child) => getAllVues(child)));
     return items;
-}
-
-function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
-    const h = app.$createElement;
-
-    let clickHandler;
-    if (showOrOpen === 'show') {
-        clickHandler = () => shell.showItemInFolder(dest);
-    } else {
-        clickHandler = () => shell.openPath(dest);
-    }
-
-    const body = [
-        h('div', {}, [
-            'Your snapshot was saved successfully to ',
-            h('a', {
-                attrs: { href: 'javascript:void(0)', title: 'Click to open' },
-                on: { click: clickHandler, },
-            }, dest)
-        ]),
-    ];
-
-    app.$bvToast.toast(body, {
-        title: 'Snapshot Success!',
-        variant: 'success',
-        toaster: 'b-toaster-bottom-right',
-    });
-    app.$store.commit('history/addEntry', {message: body, variant: 'success'});
 }
 
 function filtersForFinfo(finfo) {
@@ -459,5 +416,3 @@ function encode(input: ArrayBuffer): string {
     }
     return output;
 }
-
-class SaveCancelledError extends Error {}

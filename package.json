@@ -67,6 +67,7 @@
     "regenerator-runtime": "^0.13.5",
     "register-service-worker": "^1.7.1",
     "save-svg-as-png": "^1.4.17",
+    "sourcemapped-stacktrace": "^1.1.11",
     "threads": "^1.6.5",
     "tslint": "^6.1.2",
     "vue": "^2.6.14",
