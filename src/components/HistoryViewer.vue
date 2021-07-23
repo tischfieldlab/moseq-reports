@@ -18,7 +18,7 @@
                 </small>
 
                 <b-collapse v-if="itm.details != null" :id="$id('details-'+idx)"  class="mt-2">
-                    {{ itm.details }}
+                    <b-textarea :readonly="true" rows="5" v-model="itm.details" class="details-text" />
                 </b-collapse>
             </b-toast>
         </template>
@@ -77,5 +77,10 @@ h3 {
 }
 a.details-link {
     margin-left: 10px;
+}
+.details-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    white-space: pre;
 }
 </style>
