@@ -1,5 +1,5 @@
 <template>
-    <div style="width:100%">
+    <div style="width:100%" class="wrapper">
         <b-card no-body>
             <template #header>
                 <b-dropdown text="Add Operation" class="float-right add-op-button" size="sm">
@@ -9,7 +9,11 @@
                 </b-dropdown>
                 <h6 class="mb-0">Data Source</h6>
             </template>
-            <b-form-select v-model="selectedDataset" :options="availableDataSources" />
+            <b-form-select v-model="selectedDataset" :options="availableDataSources">
+                <template #first>
+                    <b-form-select-option value="" disabled>-- Please select a dataset --</b-form-select-option>
+                </template>
+            </b-form-select>
         </b-card>
 
         <data-view :Dataset="intermediateResults[0]" :Collapsed="true" />
@@ -61,7 +65,7 @@ import { clone } from '@/util/Object';
 RegisterDataComponent({
     friendly_name: 'Data Query',
     component_type: 'DataQuery',
-    settings_type: 'DataQueryOptions',
+    settings_type: undefined,
     init_width: 400,
     init_height: 500,
     available_render_modes: [RenderMode.HTML],
@@ -95,7 +99,6 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         if (this.settings.operations) {
             this.operations = clone(this.settings.operations);
         }
-        // this.addOperation();
     },
     watch: {
         selectedDataset: {
@@ -115,6 +118,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             },
             deep: true,
         },
+        specialTokens: {
+            handler() {
+                this.prepareData();
+            },
+        },
     },
     computed: {
         selectedDataset: {
@@ -130,14 +138,18 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 });
             },
         },
-        /*operations(): Operation[] {
-            return this.settings.operations;
-        },*/
         availableDataSources(): {text: string, value: string}[] {
             return this.getDataSourceItems(this.$store.state.datasets.manifest);
         },
         finalDataset(): any {
             return this.intermediateResults[this.intermediateResults.length - 1];
+        },
+        specialTokens(): {[key: string]: any} {
+            return {
+                '$SelectedSyllable': this.dataview.selectedSyllable,
+                '$AvailableSyllables': this.$store.getters[`${this.datasource}/selectedSyllables`],
+                '$SelectedGroups': this.dataview.selectedGroups,
+            };
         },
     },
     methods: {
@@ -205,19 +217,28 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             if (this.selectedDataset !== '') {
                 const dset = this.$store.getters[`datasets/resolve`](this.selectedDataset);
                 for (let i=0; i < this.operations.length+1; i++) {
-                    const ops = this.operations.slice(0, i);
-                    // console.log(i, ops);
+                    const ops = this.prepareOperations(this.operations.slice(0, i));
                     LoadData(dset, ops)
                         .then((data) => this.intermediateResults.splice(i, 1, data));
                 }
             }
+        },
+        prepareOperations(ops: Operation[]) {
+            return ops.map((op, idx) => {
+                if (op.type === 'filter') {
+                    const cln = clone(op);
+                    cln.filters = this.convertFiltersToTypedFilters(this.intermediateResults[idx], cln.filters);
+                    return cln;
+                } else {
+                    return clone(op);
+                }
+            });
         },
         getDataSourceItems(manifest, prefix='/'): {text: string, value: string}[] {
             const ignoreKeys = ['syllable_clips'];
 
             return Object.entries(manifest)
                 .flatMap(([k, v]) => {
-                    // console.log(k, v)
                     if (ignoreKeys.includes(k)){
                         return [];
                     } else if (typeof v === 'object') {
@@ -226,6 +247,47 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                         return { text: `${prefix}${k}`, value: v as string };
                     }
                 });
+        },
+        inferDataTypeForColumn(obj: any, colName: string) {
+            if (Array.isArray(obj)) {
+                if (obj.length > 0) {
+                    const value = obj[0][colName]
+                    const type = typeof value;
+                    if (type === 'number') {
+                        return Number.isInteger(value) ? 'int' : 'float';
+                    } else {
+                        return type;
+                    }
+                }
+            }
+            return 'undefined';
+        },
+        convertFiltersToTypedFilters(obj: any, filters: {[key: string]: string[]}): {[key: string]: any[]} {
+            return Object.fromEntries(Object.entries(filters)
+                .map(([col, vals]) => {
+                    const colType = this.inferDataTypeForColumn(obj, col);
+                    let typedVals;
+
+                    const substituted = vals.flatMap((v) => {
+                        if (Object.keys(this.specialTokens).includes(v)) {
+                            return this.specialTokens[v];
+                        } else {
+                            return v;
+                        }
+                    });
+
+                    if (colType === 'int') {
+                        typedVals = substituted.map((v) => Number.parseInt(v, 10));
+                    } else if (colType === 'float') {
+                        typedVals = substituted.map((v) => Number.parseFloat(v));
+                    } else if (colType === 'boolean') {
+                        typedVals = substituted.map((v) => Boolean(v))
+                    } else {
+                        typedVals = substituted;
+                    }
+
+                    return [col, typedVals];
+                }));
         },
     },
 });
@@ -236,7 +298,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     margin:0.75rem 1.75rem;
 }
 .add-op-button {
-    margin-top: -0.375rem;
+    margin-top: -0.125rem;
+    margin-bottom: -0.125rem;
 }
 .collapse-button {
     padding: 0;
@@ -253,5 +316,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     text-align: center;
     color: #555;
     font-style: italic;
+}
+.wrapper >>> h6 {
+    line-height: 26px;
+}
+.wrapper >>> .card-header {
+    padding: 0.5rem 1.25rem;
 }
 </style>

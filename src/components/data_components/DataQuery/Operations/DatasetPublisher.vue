@@ -1,6 +1,13 @@
 <template>
     <b-card no-body>
         <template #header>
+            <b-button
+                @click="downloadData()"
+                title="Download Result"
+                variant="link"
+                class="float-right download-button">
+                <b-icon icon="cloud-download" />
+            </b-button>
             <h6 class="mb-0">Publish Dataset</h6>
         </template>
         <div class="operation-wrapper">
@@ -15,7 +22,13 @@
 </template>
 
 <script lang="ts">
+import { remote } from 'electron';
 import Vue, { PropType } from 'vue';
+import {tsvFormat, csvFormat} from 'd3-dsv';
+import path from 'path';
+import fs from 'fs';
+import { SaveCancelledError } from '@/components/Core/IO/types';
+import { showSaveErrorToast, showSaveSuccessToast } from '@/components/Core/IO/Toasts';
 
 
 export default Vue.extend({
@@ -78,6 +91,77 @@ export default Vue.extend({
                 name: name || this.publishName,
             });
         },
+        getAllowedFormatsForData() {
+            const options = [
+                { name: 'JSON', extensions: ['json']},
+            ];
+            if (Array.isArray(this.Dataset)) {
+                options.push(...[
+                    { name: 'Comma Separated Values', extensions: ['csv']},
+                    { name: 'Tab Separated Values', extensions: ['tsv']},
+                ]);
+            }
+            options.push({ name: 'All Files', extensions: ['*']});
+            return options;
+        },
+        downloadData() {
+            Promise.resolve()
+                .then(() => {
+                    const dest = remote.dialog.showSaveDialogSync({
+                        title: 'Save Snapshot',
+                        defaultPath: `${this.publishName}.json`,
+                        filters: this.getAllowedFormatsForData(),
+                    });
+                    if (dest === undefined) {
+                        throw new SaveCancelledError();
+                    }
+                    return {
+                        dest,
+                    };
+                })
+                .then((rslt) => {
+                    let data;
+                    switch (path.extname(rslt.dest)) {
+                        case '.tsv':
+                            data = tsvFormat(this.Dataset as object[]);
+                            break;
+                        case '.csv':
+                            data = csvFormat(this.Dataset as object[]);
+                            break;
+                        case '.json':
+                        default:
+                            data = JSON.stringify(this.Dataset);
+                            break;
+                    }
+                    return {
+                        dest: rslt.dest,
+                        data,
+                    };
+                })
+                .then((rslt) => {
+                    return new Promise((resolve, reject) => {
+                        fs.writeFile(rslt.dest, rslt.data, (err) => {
+                            if (err) {
+                                reject(err);
+                            }
+                            resolve(rslt.dest);
+                        });
+                    });
+                })
+                .then((dest) => showSaveSuccessToast(dest as string, 'dataset'))
+                .catch((err) => {
+                    if (err instanceof SaveCancelledError) {
+                        return; // don't care the user cancelled of their own accord
+                    }
+                    showSaveErrorToast(err, 'dataset');
+                });
+        },
     },
 });
 </script>
+
+<style scoped>
+.download-button {
+    padding: 0;
+}
+</style>

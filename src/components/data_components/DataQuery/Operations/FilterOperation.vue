@@ -23,8 +23,6 @@
 
 <script lang="ts">
 import { FilterOperation } from '@/components/Core/DataLoader/DataLoader.types';
-import { DataviewState } from '@/store/dataview.types';
-import { unnest } from '@/util/Vuex';
 import Vue, { PropType } from 'vue';
 import ColumnSelector from './ColumnSelector.vue';
 
@@ -54,29 +52,12 @@ export default Vue.extend({
     watch: {
         localFilters: {
             handler(): void {
-                this.Operation.filters = this.convertFiltersToTypedFilters(this.localFilters);
+                this.Operation.filters = this.localFilters;
             },
             deep: true,
         },
-        specialTokens: {
-            handler() {
-                this.Operation.filters = this.convertFiltersToTypedFilters(this.localFilters);
-            },
-        },
     },
     computed: {
-        specialTokens(): {[key: string]: any} {
-            return {
-                '$SelectedSyllable': this.dataview.selectedSyllable,
-                '$AvailableSyllables': this.$store.getters[`${this.datasource}/selectedSyllables`],
-            };
-        },
-        datasource(): string {
-            return this.$store.state.datawindows[this.Owner.replace('datawindows/', '')].datasource;
-        },
-        dataview(): DataviewState {
-            return unnest(this.$store.state, this.datasource);
-        },
         columnOptions(): string[] {
             const obj = this.PreviousResult as any;
             let objCols;
@@ -105,8 +86,8 @@ export default Vue.extend({
         columnAlreadyInFilter(colName) {
             return Object.getOwnPropertyNames(this.localFilters).includes(colName);
         },
-        inferDataTypeForColumn(colName) {
-            const obj = this.PreviousResult as any;
+        inferDataTypeForColumn(colName: string) {
+            const obj = this.PreviousResult;
             if (Array.isArray(obj)) {
                 if (obj.length > 0) {
                     const value = obj[0][colName]
@@ -119,33 +100,6 @@ export default Vue.extend({
                 }
             }
             return 'undefined';
-        },
-        convertFiltersToTypedFilters(filters: {[key: string]: string[]}): {[key: string]: any[]} {
-            return Object.fromEntries(Object.entries(filters)
-                .map(([col, vals]) => {
-                    const colType = this.inferDataTypeForColumn(col);
-                    let typedVals;
-
-                    const substituted = vals.flatMap((v) => {
-                        if (Object.keys(this.specialTokens).includes(v)) {
-                            return this.specialTokens[v];
-                        } else {
-                            return v;
-                        }
-                    });
-
-                    if (colType === 'int') {
-                        typedVals = substituted.map((v) => Number.parseInt(v, 10));
-                    } else if (colType === 'float') {
-                        typedVals = substituted.map((v) => Number.parseFloat(v));
-                    } else if (colType === 'boolean') {
-                        typedVals = substituted.map((v) => Boolean(v))
-                    } else {
-                        typedVals = substituted;
-                    }
-                    // console.log(vals, substituted, typedVals)
-                    return [col, typedVals];
-                }));
         },
     },
 });
