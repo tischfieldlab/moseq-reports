@@ -6,7 +6,6 @@ import portscanner from 'portscanner';
 
 const minSearchPort = 3000;
 const maxSearchPort = 4000;
-let serverPort;
 let server: http.Server|undefined;
 
 export function GetAddress() {
@@ -20,7 +19,6 @@ export async function CreateServer() {
     }
     return portscanner.findAPortNotInUse(minSearchPort, maxSearchPort).then((port) => {
         return new Promise<void>((resolve, reject) => {
-            serverPort = port;
             server = http.createServer((request, response) => {
                 // Set CORS headers
                 response.setHeader('Access-Control-Allow-Origin', '*');
