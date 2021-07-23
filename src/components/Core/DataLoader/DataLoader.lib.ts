@@ -10,7 +10,7 @@ import {
     ValuesOperation,
 } from './DataLoader.types';
 import { groupby } from '@/util/Array';
-import { mean, median, mode, sum, cumsum, min, max, extent, variance, deviation } from 'd3-array';
+import { mean, median, /*mode,*/ sum, /*cumsum,*/ min, max, extent, variance, deviation } from 'd3-array';
 import { tsvParse, csvParse } from 'd3-dsv';
 import StreamZip from 'node-stream-zip';
 import fs from 'fs';
@@ -90,9 +90,9 @@ export function filterBy(data: object[], op: FilterOperation) {
 const statops = {
     mean,
     median,
-    mode,
+    // mode,
     sum,
-    cumsum,
+    // cumsum,
     min,
     max,
     extent,

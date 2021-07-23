@@ -43,7 +43,7 @@ export interface AggregateOperation {
     groupby: string[];
     aggregate: {[key: string]: Statistic|Statistic[]};
 }
-export type Statistic = ('mean'|'median'|'mode'|'sum'|'cumsum'|'min'|'max'|'extent'|'variance'|'deviation'|'count');
+export type Statistic = ('mean'|'median'/*|'mode'*/|'sum'/*|'cumsum'*/|'min'|'max'|'extent'|'variance'|'deviation'|'count');
 
 
 
