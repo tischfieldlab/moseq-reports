@@ -6,7 +6,7 @@
             </template>
         </b-dropdown>
         <template v-for="(value, key) in localFilters">
-            <b-input-group :key="key" :prepend="key">
+            <b-input-group :key="key" :prepend="`${key} (${inferDataTypeForColumn(key)})`">
                 <b-form-tags 
                     v-model="localFilters[key]"
                     placeholder="Add filter value..."
@@ -48,8 +48,9 @@ export default Vue.extend({
     watch: {
         localFilters: {
             handler(): void {
-                this.Operation.filters = this.localFilters;
-            }
+                this.Operation.filters = this.convertFiltersToTypedFilters(this.localFilters);
+            },
+            deep: true,
         },
     },
     computed: {
@@ -80,6 +81,39 @@ export default Vue.extend({
         },
         columnAlreadyInFilter(colName) {
             return Object.getOwnPropertyNames(this.localFilters).includes(colName);
+        },
+        inferDataTypeForColumn(colName) {
+            const obj = this.PreviousResult as any;
+            if (Array.isArray(obj)) {
+                if (obj.length > 0) {
+                    const value = obj[0][colName]
+                    const type = typeof value;
+                    if (type === 'number') {
+                        return Number.isInteger(value) ? 'int' : 'float';
+                    } else {
+                        return type;
+                    }
+                }
+            }
+            return 'undefined';
+        },
+        convertFiltersToTypedFilters(filters: {[key: string]: string[]}): {[key: string]: any[]} {
+            return Object.fromEntries(Object.entries(filters)
+                .map(([col, vals]) => {
+                    const colType = this.inferDataTypeForColumn(col);
+                    let typedVals;
+
+                    if (colType === 'int') {
+                        typedVals = vals.map((v) => Number.parseInt(v, 10));
+                    } else if (colType === 'float') {
+                        typedVals = vals.map((v) => Number.parseFloat(v));
+                    } else if (colType === 'boolean') {
+                        typedVals = vals.map((v) => Boolean(v))
+                    } else {
+                        typedVals = vals;
+                    }
+                    return [col, typedVals];
+                }));
         },
     },
 });
