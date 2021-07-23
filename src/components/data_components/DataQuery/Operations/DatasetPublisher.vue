@@ -4,17 +4,20 @@
             <b-button
                 @click="downloadData()"
                 title="Download Result"
+                v-b-tooltip.hover
                 variant="link"
                 class="float-right download-button">
                 <b-icon icon="cloud-download" />
             </b-button>
-            <h6 class="mb-0">Publish Dataset</h6>
+            <h6 class="mb-0" title="Publish this dataset to the filter store, or download for processing elsewhere" v-b-tooltip.hover>
+                Publish Dataset
+            </h6>
         </template>
         <div class="operation-wrapper">
             <b-input-group prepend="Dataset Name">
                 <b-form-input type="text" v-model="publishName" :disabled="!publishDataset" :debounce="300" />
                 <b-input-group-append is-text>
-                    <b-form-checkbox switch v-model="publishDataset" title="Publish" />
+                    <b-form-checkbox switch v-model="publishDataset" title="Publish this dataset to the filter store" v-b-tooltip.hover />
                 </b-input-group-append>
             </b-input-group>
         </div>

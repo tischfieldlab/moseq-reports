@@ -3,14 +3,12 @@ export interface DataObject {
     columns: string[];
     data: any[];
 }
-export interface SortSpec {
-    column: string;
-    direction: SortDirection|'asc'|'desc';
-}
-export enum SortDirection {
-    Asc = 'asc',
-    Desc = 'desc',
-}
+export const SortDirection = {
+    Asc: 'asc',
+    Desc: 'desc',
+} as const;
+export type SortDirection = typeof SortDirection[keyof typeof SortDirection];
+
 
 
 export type Operation = KeysOperation|ValuesOperation|PluckOperation|SortOperation|FilterOperation|MapOperation|AggregateOperation;
@@ -28,7 +26,7 @@ export interface ValuesOperation {
 export interface SortOperation {
     type: 'sort';
     columns: string[];
-    direction: SortDirection|'asc'|'desc';
+    direction: SortDirection;
 }
 export interface FilterOperation {
     type: 'filter';

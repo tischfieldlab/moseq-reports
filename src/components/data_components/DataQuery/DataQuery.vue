@@ -4,7 +4,11 @@
             <template #header>
                 <b-dropdown text="Add Operation" class="float-right add-op-button" size="sm">
                     <template v-for="op in operationTypes">
-                        <b-dropdown-item @click="addOperation(op)" :key="op">{{op}}</b-dropdown-item>
+                        <b-dropdown-item
+                            @click="addOperation(op)"
+                            :key="op">
+                            {{op}}
+                        </b-dropdown-item>
                     </template>
                 </b-dropdown>
                 <h6 class="mb-0">Data Source</h6>
@@ -21,7 +25,7 @@
         <template v-for="(op, idx) in operations">
             <b-card :key="idx" :no-body="true">
                 <template #header>
-                    <b-button-close @click="removeOperation(idx)" />
+                    <b-button-close @click="removeOperation(idx)" title="Remove this operation" v-b-tooltip.hover />
                     <b-button
                         @click="operationVisibilities[idx] = !operationVisibilities[idx]"
                         :title="operationVisibilities[idx] ? 'Collapse' : 'Expand'"
@@ -31,7 +35,9 @@
                         <b-icon class="when-opened" title="Collapse" icon="chevron-up"></b-icon>
                         <b-icon class="when-closed" title="Expand" icon="chevron-down"></b-icon>
                     </b-button>
-                    <h6 class="mb-0" style="display:inline-block;">{{op.type}}</h6>
+                    <h6 class="mb-0" :title="helpStrings[op.type]" v-b-tooltip.hover>
+                        {{uppercaseFirst(op.type)}}
+                    </h6>
                 </template>
                 <b-collapse :visible="operationVisibilities[idx]" :id="$id(`op-collapse-${idx}`)">
                     <div class="operation-wrapper">
@@ -39,7 +45,6 @@
                         <div v-else class="no-operation-settings">No settings for this operation</div>
                     </div>
                 </b-collapse>
-                <!--Operation Type: <b-form-select  v-model="op.type" :options="operationTypes"></b-form-select> -->
             </b-card>
             <data-view :key="`dv-${idx+1}`" :Dataset="intermediateResults[idx+1]" :Collapsed="true" />
         </template>
@@ -92,7 +97,16 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             operationVisibilities: [] as boolean[],
             operations: [] as Operation[],
 
-            operationTypes: ['map', 'pluck', 'keys', 'values', 'sort', 'filter', 'aggregate']
+            operationTypes: ['map', 'filter', 'aggregate', 'sort', 'pluck', 'keys', 'values'],
+            helpStrings: {
+                'map': 'Returns an array of objects containing only the specified columns',
+                'filter': 'Returns a filtered array containing only objects passing the filter criteria',
+                'aggregate': 'Returns an array of objects containing the aggregate values after grouping',
+                'sort': 'Returns an array of objects sorted by a column',
+                'pluck': 'Returns an array of values from the specified column',
+                'keys': 'Returns an array of keys for an object',
+                'values': 'Returns an array of the values for an object',
+            },
         };
     },
     mounted() {
@@ -153,6 +167,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     methods: {
+        uppercaseFirst(str: string) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        },
         cardHasBody(opType) {
             if (['keys', 'values'].includes(opType)) {
                 return false;
@@ -318,6 +335,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     font-style: italic;
 }
 .wrapper >>> h6 {
+    display:inline-block;
     line-height: 26px;
 }
 .wrapper >>> .card-header {
