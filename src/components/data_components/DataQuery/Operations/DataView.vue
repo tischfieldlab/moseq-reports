@@ -3,15 +3,14 @@
     <b-button
         @click="is_expanded = !is_expanded"
         :title="is_expanded ? 'Collapse' : 'Expand'"
-        v-b-toggle="$id('filter-collapse')"
         variant="link"
         class="text-dark collapse-button text-decoration-none">
-        <b-icon class="when-opened" title="Collapse" icon="chevron-up"></b-icon>
-        <b-icon class="when-closed" title="Expand" icon="chevron-down"></b-icon>
+        <b-icon v-if="is_expanded" class="when-opened" title="Collapse" icon="chevron-up"></b-icon>
+        <b-icon v-else class="when-closed" title="Expand" icon="chevron-down"></b-icon>
     </b-button>
     Show results at this stage:
     <span class="datahint">{{datahint}}</span><br />
-    <b-collapse :visible="is_expanded" :id="$id('filter-collapse')">
+    <b-collapse v-model="is_expanded">
         <b-form-textarea :readonly="true" rows="5" v-model="formattedDataset" />
     </b-collapse>
 </div>
@@ -34,7 +33,7 @@ export default Vue.extend({
     },
     data() {
         return {
-            is_expanded: true,
+            is_expanded: !this.Collapsed,
         };
     },
     watch: {
@@ -61,10 +60,6 @@ export default Vue.extend({
 <style scoped>
 .collapse-button {
     padding: 0;
-}
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-    display: none;
 }
 textarea {
     font-family: 'Courier New', Courier, monospace;
