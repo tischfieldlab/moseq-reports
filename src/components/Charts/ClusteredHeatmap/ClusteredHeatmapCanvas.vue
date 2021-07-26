@@ -253,10 +253,10 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
         },
         handleHeatmapClick(event: MouseEvent) {
             for (const node of this.data as object[]) {
-                const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]);
-                const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]);
-                const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]) + this.scale.x.bandwidth();
-                const y2 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]) + this.scale.y.bandwidth();
+                const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey].toString());
+                const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey].toString());
+                const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey].toString()) + this.scale.x.bandwidth();
+                const y2 = this.dims.heatmap.y + this.scale.y(node[this.rowKey].toString()) + this.scale.y.bandwidth();
 
                 if (event.offsetX > x1 && event.offsetX <= x2
                  && event.offsetY > y1 && event.offsetY <= y2) {
@@ -272,10 +272,10 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
         },
         handleHeatmapHover(event: MouseEvent) {
             for (const node of this.data as object[]) {
-                const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]);
-                const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]);
-                const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]) + this.scale.x.bandwidth();
-                const y2 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]) + this.scale.y.bandwidth();
+                const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey].toString());
+                const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey].toString());
+                const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey].toString()) + this.scale.x.bandwidth();
+                const y2 = this.dims.heatmap.y + this.scale.y(node[this.rowKey].toString()) + this.scale.y.bandwidth();
 
                 if (event.offsetX > x1 && event.offsetX <= x2
                  && event.offsetY > y1 && event.offsetY <= y2) {
