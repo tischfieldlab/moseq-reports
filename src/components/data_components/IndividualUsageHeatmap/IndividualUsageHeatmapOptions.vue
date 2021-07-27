@@ -3,6 +3,16 @@
         <Colormap :id="this.id" />
         <RowOrdering :id="this.id" :column_options="availableUUIDs" />
         <ColumnOrdering :id="this.id" :row_options="column_order_row_value_options" />
+        <b-row>
+            <b-col>
+                <b-input-group prepend="Color Column Labels">
+                    <b-select v-model="color_columns_data" :options="color_columns_data_options" :disabled="!color_columns" />
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="color_columns" switch />
+                    </b-input-group-append>
+                </b-input-group>
+            </b-col>
+        </b-row>
     </b-container>
 </template>
 
@@ -37,7 +47,38 @@ export default mixins(WindowMixin).extend({
                 },
             ];
             return {source, filters};
-        }
+        },
+        color_columns_data_options() {
+            return [
+                { text: 'Group', value: 'group' },
+            ];
+        },
+        color_columns: {
+            get(): boolean {
+                return this.settings.color_columns;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        color_columns: value,
+                    },
+                });
+            },
+        },
+        color_columns_data: {
+            get(): string {
+                return this.settings.color_columns_data;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        color_columns_data: value,
+                    },
+                });
+            },
+        },
     },
     watch: {
         uuidSourceData: {

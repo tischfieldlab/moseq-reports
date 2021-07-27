@@ -12,6 +12,7 @@
         :columnClusterK="this.settings.column_cluster_k"
         :columnOrderValue="this.settings.column_order_row_value"
         :columnOrderDirection="this.settings.column_order_direction"
+        :columnLabelColor="columnLabelColors"
 
         :rowOrderType="this.settings.row_order_type"
         :rowClusterDistance="this.settings.row_cluster_distance"
@@ -65,6 +66,8 @@ RegisterDataComponent({
         ...get_colormap_options(),
         ...get_column_ordering_options(),
         ...get_row_ordering_options(),
+        color_columns: true,
+        color_columns_data: 'group',
     },
 });
 
@@ -89,6 +92,21 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 // tslint:disable-next-line:no-console
                 console.error('invalid render mode', this.$wstate.render_mode);
                 return 'ClusteredHeatmapSVG';
+            }
+        },
+        columnLabelColors(): object|undefined {
+            if (this.settings.color_columns) {
+                return Object.fromEntries(
+                    this.aggregateView
+                        .slice()
+                        .map((itm) => {
+                            return [
+                                itm.uuid,
+                                this.dataview.groupColors[this.dataview.selectedGroups.indexOf(itm.group)]
+                            ];
+                        }));
+            } else {
+                return undefined;
             }
         },
         selectedGroups(): string[] {
@@ -143,7 +161,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             handler(): any {
                 LoadData(this.dataset[0], this.dataset[1], false)
                     .then((data) => {
-                        data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop() });
+                        data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop(); });
                         return data;
                     })
                     .then((data) => this.aggregateView = data);
