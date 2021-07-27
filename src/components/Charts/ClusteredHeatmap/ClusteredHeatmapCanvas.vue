@@ -157,7 +157,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                         ctx.rotate(-Math.PI / 4);
                         ctx.textAlign = 'right';
                         ctx.textBaseline = 'top';
-                        ctx.fillStyle = 'black';
+                        ctx.fillStyle = this.scale.clc(d);
                         ctx.fillText(d, 0, 0);
                         ctx.restore();
                     }
@@ -165,7 +165,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             } else {
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = this.scale.clc(d);
 
                 this.scale.x.domain().forEach((d) => {
                     if (!this.shouldHideLabel(d)) {
@@ -202,7 +202,6 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                 ctx.lineWidth = 1;
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'middle';
-                ctx.fillStyle = 'black';
                 ctx.font = '8px Verdana,Arial,sans-serif';
                 if (!this.shouldHideLabel(d)) {
                     if (this.selectedRow.toString() === d.toString()) {
@@ -211,13 +210,17 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                         ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
                         ctx.lineTo(18, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
                         ctx.stroke();
+
                         ctx.font = 'bold 16px Verdana,Arial,sans-serif';
+                        ctx.fillStyle = this.scale.rlc(d);
                         ctx.fillText(d, 20, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
                     } else {
                         ctx.beginPath();
                         ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
                         ctx.lineTo(6, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
                         ctx.stroke();
+
+                        ctx.fillStyle = this.scale.rlc(d);
                         ctx.fillText(d, 9, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
                     }
                 }

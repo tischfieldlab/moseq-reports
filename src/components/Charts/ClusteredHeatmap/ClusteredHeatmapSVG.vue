@@ -162,14 +162,22 @@ export default mixins(ClusteredHeatmapBase).extend({
 
                 // if y-axis, attach "data-syllable" attribute
                 if (axis === 'y') {
-                    const ticks = d3.selectAll('.y-axis .tick');
-                    ticks.attr('data-row', (d: any, i: number) => d);
+                    d3.selectAll('.y-axis .tick')
+                        .attr('data-row', (d: any) => d);
+
+                    // apply row label colors
+                    d3.selectAll('.y-axis .tick text')
+                        .attr('fill', (d: any) => self.scale.rlc(d));
                 } else {
-                    const ticks = d3.selectAll('.x-axis .tick');
-                    ticks.attr('data-col', (d: any, i: number) => d);
+                    d3.selectAll('.x-axis .tick')
+                        .attr('data-col', (d: any) => d);
+
+                    // apply column label colors
+                    d3.selectAll('.x-axis .tick text')
+                        .attr('fill', (d: any) => self.scale.clc(d));
                 }
 
-                d3.selectAll('.tick').filter((datum) =>self && self.shouldHideLabel(datum)).attr('visibility', 'hidden')
+                d3.selectAll('.tick').filter((datum) => self && self.shouldHideLabel(datum)).attr('visibility', 'hidden')
 
                 // if x-axis, check rotation
                 if (axis === 'x') {

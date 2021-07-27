@@ -2,7 +2,7 @@
 import Vue, { PropType } from 'vue';
 import { OrderingType, SortOrderDirection, HClusterDistance, HClusterLinkage } from './ClusteredHeatmap.types';
 import { cluster, hierarchy, extent } from 'd3';
-import { scaleBand, scaleSequential } from 'd3-scale';
+import { scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV } from '@/components/Charts/D3Clustering';
 import { spawn, Worker, ModuleThread, Thread } from 'threads';
@@ -80,6 +80,10 @@ export default Vue.extend({
         columnOrderDataset: {
             type: Array,
         },
+        columnLabelColor: {
+            type: Object as PropType<{[column: string]: string} | undefined>,
+            default: undefined,
+        },
         rowOrderType: {
             type: String,
             default: OrderingType.HCluster,
@@ -106,9 +110,13 @@ export default Vue.extend({
         rowOrderDataset: {
             type: Array,
         },
+        rowLabelColor: {
+            type: Object as PropType<{[column: string]: string} | undefined>,
+            default: undefined,
+        },
         groupLabels: {
             required: true,
-            type: Array, /* Array<string> */
+            type: Array as PropType<string[]>,
             default: () => new Array<string>(),
         },
         xAxisTitle: {
@@ -376,7 +384,15 @@ export default Vue.extend({
             }
             const z = scaleSequential(this.colormap || ((t) => t))
                 .domain(ext as [number, number]);
-            return { x, y, z };
+            const clc = scaleOrdinal()
+                .unknown('#000000')
+                .domain(Object.keys(this.columnLabelColor || {}))
+                .range(Object.values(this.columnLabelColor || {}));
+            const rlc = scaleOrdinal()
+                .unknown('#000000')
+                .domain(Object.keys(this.rowLabelColor || {}))
+                .range(Object.values(this.rowLabelColor || {}));
+            return { x, y, z, clc, rlc };
         },
         columnLinks(): any[] {
             if (this.columnHierarchy === undefined) {
