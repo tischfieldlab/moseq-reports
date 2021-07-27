@@ -165,10 +165,10 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             } else {
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
-                ctx.fillStyle = this.scale.clc(d);
 
                 this.scale.x.domain().forEach((d) => {
                     if (!this.shouldHideLabel(d)) {
+                        ctx.fillStyle = this.scale.clc(d);
                         ctx.fillText(d,
                                     this.scale.x(d) + (this.scale.x.bandwidth() / 2),
                                     6);
