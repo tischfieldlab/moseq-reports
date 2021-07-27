@@ -248,21 +248,24 @@ export default mixins(LinePlotBase, CanvasMixin).extend({
             }
         },
         handleHover(event: MouseEvent) {
-            if (event && event.target !== null){
-                const target = event.target as HTMLElement;
-                // individual points have data-var set
-                if (target.dataset.var) {
+            for (const node of this.data as object[]) {
+                const x1 = this.margin.left + this.scale.x(node[this.varKey]) - this.pointSize;
+                const y1 = this.margin.top + this.scale.y(node[this.valueKey]) - this.pointSize;
+                const x2 = this.margin.left + this.scale.x(node[this.varKey]) + this.pointSize;
+                const y2 = this.margin.top + this.scale.y(node[this.valueKey]) + this.pointSize;
+
+                if (event.offsetX > x1 && event.offsetX <= x2
+                 && event.offsetY > y1 && event.offsetY <= y2) {
                     this.tooltipPosition = {
                         x: event.clientX,
                         y: event.clientY
                     };
-                    this.hoverItem = this.data.find((itm) => {
-                        return itm[this.varKey].toString() === target.dataset.var
-                            && itm[this.seriesKey].toString() === target.dataset.series;
-                    });
+                    this.hoverItem = node;
+                    (this.$el as HTMLElement).style.cursor = this.hoverCursor;
                     return;
                 }
             }
+            (this.$el as HTMLElement).style.cursor = 'inherit';
             this.tooltipPosition = undefined;
             this.hoverItem = undefined;
         },

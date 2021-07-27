@@ -126,9 +126,11 @@ export default mixins(LinePlotBase).extend({
                         return itm[this.varKey].toString() === target.dataset.var
                             && itm[this.seriesKey].toString() === target.dataset.series;
                     });
+                    (this.$el as HTMLElement).style.cursor = this.hoverCursor;
                     return;
                 }
             }
+            (this.$el as HTMLElement).style.cursor = 'inherit';
             this.tooltipPosition = undefined;
             this.hoverItem = undefined;
         },

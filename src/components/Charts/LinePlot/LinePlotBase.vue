@@ -94,6 +94,10 @@ export default mixins(LoadingMixin).extend({
             type: Function,
             default: default_tooltip_formatter,
         },
+        hoverCursor: {
+            type: String,
+            default: 'pointer',
+        },
     },
     data() {
         return {
