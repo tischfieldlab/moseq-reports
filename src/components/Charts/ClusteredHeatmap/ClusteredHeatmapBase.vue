@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { OrderingType, SortOrderDirection, HClusterDistance, HClusterLinkage } from './ClusteredHeatmap.types';
-import { cluster, hierarchy, extent } from 'd3';
+import { cluster, hierarchy, min, max } from 'd3';
 import { scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV } from '@/components/Charts/D3Clustering';
@@ -41,6 +41,14 @@ export default Vue.extend({
         colorscale: {
             type: String,
             default: 'interpolateViridis',
+        },
+        vmin: {
+            type: Number as PropType<number|undefined>,
+            default: undefined,
+        },
+        vmax: {
+            type: Number as PropType<number|undefined>,
+            default: undefined,
         },
         columnKey: {
             required: true,
@@ -378,12 +386,13 @@ export default Vue.extend({
                 .domain(this.rowOrder.map((s) => s.toString() || ''))
                 .range([this.dims.heatmap.h, 0])
                 .padding(0);
-            let ext = [0, 0];
-            if (this.data !== null) {
-                ext = extent(this.data.map((n) => n[this.valueKey])) as [number, number];
-            }
+            const vals = (this.data || []).map((n) => n[this.valueKey] as number);
+            const ext = [
+                this.vmin || min(vals) || 0,
+                this.vmax || max(vals) || 0,
+            ];
             const z = scaleSequential(this.colormap || ((t) => t))
-                .domain(ext as [number, number]);
+                .domain(ext);
             const clc = scaleOrdinal()
                 .unknown('#000000')
                 .domain(Object.keys(this.columnLabelColor || {}))
