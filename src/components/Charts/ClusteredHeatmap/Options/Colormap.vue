@@ -10,7 +10,7 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="vMin">
-                    <b-form-input type="number" v-model="vmin" :disabled="auto_vmin" />
+                    <b-form-input type="number" v-model.number="vmin" :disabled="auto_vmin" />
                     <b-input-group-append is-text>
                         <b-form-checkbox v-model="auto_vmin" switch />
                     </b-input-group-append>
@@ -18,7 +18,7 @@
             </b-col>
             <b-col>
                 <b-input-group prepend="vMax">
-                    <b-form-input type="number" v-model="vmax" :disabled="auto_vmax" />
+                    <b-form-input type="number" v-model.number="vmax" :disabled="auto_vmax" />
                     <b-input-group-append is-text>
                         <b-form-checkbox v-model="auto_vmax" switch />
                     </b-input-group-append>
