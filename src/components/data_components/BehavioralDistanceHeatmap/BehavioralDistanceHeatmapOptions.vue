@@ -1,5 +1,5 @@
 <template>
-    <b-container fluid>
+    <div>
         <b-row>
             <b-col>
                 <b-input-group prepend="Behavioral Distance Metric">
@@ -10,7 +10,7 @@
         <Colormap :id="this.id" />
         <RowOrdering :id="this.id" :column_options="value_options" />
         <ColumnOrdering :id="this.id" :row_options="value_options" />
-    </b-container>
+    </div>
 </template>
 
 <script scoped lang="ts">

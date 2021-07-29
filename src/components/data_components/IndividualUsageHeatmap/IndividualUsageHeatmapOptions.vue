@@ -1,5 +1,5 @@
 <template>
-    <b-container fluid>
+    <div>
         <Colormap :id="this.id" />
         <RowOrdering :id="this.id" :column_options="availableUUIDs" />
         <ColumnOrdering :id="this.id" :row_options="column_order_row_value_options" />
@@ -13,7 +13,7 @@
                 </b-input-group>
             </b-col>
         </b-row>
-    </b-container>
+    </div>
 </template>
 
 <script scoped lang="ts">

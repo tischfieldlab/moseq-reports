@@ -1,9 +1,9 @@
 <template>
-    <b-container fluid>
+    <div>
         <Colormap :id="this.id" />
         <RowOrdering :id="this.id" :column_options="row_order_column_value_options" />
         <ColumnOrdering :id="this.id" :row_options="column_order_row_value_options" />
-    </b-container>
+    </div>
 </template>
 
 <script scoped lang="ts">

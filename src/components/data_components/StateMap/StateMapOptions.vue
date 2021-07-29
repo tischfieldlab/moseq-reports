@@ -150,7 +150,7 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-input-group prepend="Colormap">
+                <b-input-group prepend="Colormap" style="flex-wrap:nowrap">
                     <ColorScalePicker v-model="colorscale" />
                 </b-input-group>
             </b-col>
