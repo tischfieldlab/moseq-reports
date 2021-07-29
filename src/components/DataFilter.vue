@@ -155,13 +155,13 @@ export default Vue.component('datafilter', {
             if (this.$store.getters['filters/default'] === this.datasource) {
                 this.$bvModal.msgBoxOk('You cannot remove the default filter.');
             } else {
-                this.$bvModal.msgBoxConfirm('Are you sure you want to remove this data filter?', {
-                    
-                }).then((value) => {
-                    if (value) {
-                        this.$store.dispatch('filters/removeFilter', this.datasource);
-                    }
-                });
+                this.$bvModal
+                    .msgBoxConfirm('Are you sure you want to remove this data filter?', {})
+                    .then((value) => {
+                        if (value) {
+                            this.$store.dispatch('filters/removeFilter', this.datasource);
+                        }
+                    });
             }
         },
         getContrast(hexcolor: string): string {
