@@ -9,9 +9,9 @@ export { default as RowOrdering } from './RowOrdering.vue';
 export function get_colormap_options() {
     return {
         colormap: 'interpolateViridis',
-        vmin: undefined,
+        vmin: 0,
         auto_vmin: true,
-        vmax: undefined,
+        vmax: 1,
         auto_vmax: true,
     };
 }
