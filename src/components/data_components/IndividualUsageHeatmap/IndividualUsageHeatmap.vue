@@ -5,6 +5,8 @@
         :data="this.aggregateView"
         :groupLabels="this.selectedGroups"
         :colorscale="this.settings.colormap"
+        :vmin="this.settings.auto_vmin ? undefined : this.settings.vmin"
+        :vmax="this.settings.auto_vmax ? undefined : this.settings.vmax"
 
         :columnOrderType="this.settings.column_order_type"
         :columnClusterDistance="this.settings.column_cluster_distance"

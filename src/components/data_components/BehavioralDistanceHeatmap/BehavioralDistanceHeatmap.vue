@@ -3,8 +3,10 @@
         :width="this.layout.width"
         :height="this.layout.height - 31"
         :data="this.aggregateView"
-        :groupLabels="this.selectedGroups"
+        :groupLabels="this.includeSyllables"
         :colorscale="this.settings.colormap"
+        :vmin="this.settings.auto_vmin ? undefined : this.settings.vmin"
+        :vmax="this.settings.auto_vmax ? undefined : this.settings.vmax"
 
         :columnOrderType="this.settings.column_order_type"
         :columnClusterDistance="this.settings.column_cluster_distance"
@@ -24,7 +26,7 @@
 
         :xAxisTitle="`Destination Module (${countMethod})`"
         :yAxisTitle="`Source Module (${countMethod})`"
-        :legendTitle="`Behavioral Distance`"
+        :legendTitle="`Behavioral Distance (${this.settings.distance_metric})`"
         columnKey="sink"
         rowKey="source"
         valueKey="value"
@@ -102,7 +104,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             }
             return [];
         },
-        selectedGroups(): any[] {
+        includeSyllables(): any[] {
             if (this.dataview.moduleIdFilter.length === 0) {
                 return this.$store.getters[`${this.datasource}/availableModuleIds`];
             } else {
@@ -150,8 +152,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 LoadData(this.dataset[0], this.dataset[1])
                 .then((data) => {
                     return data.filter((v) => {
-                        return this.selectedGroups.includes(v.source)
-                            && this.selectedGroups.includes(v.sink);
+                        return this.includeSyllables.includes(v.source)
+                            && this.includeSyllables.includes(v.sink);
                     });
                 })
                 .then((data) => this.aggregateView = Object.freeze(data));
