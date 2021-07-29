@@ -5,11 +5,16 @@
         :data="individualUseageData"
         :groupLabels="groupNames"
         :groupColors="groupColors"
-        :whisker_type="settings.boxplot_whiskers"
+        
         :show_boxplot="settings.show_boxplot"
+        :whisker_type="settings.boxplot_whiskers"
+
         :show_points="settings.show_points"
-        :show_violinplot="settings.show_violinplot"
         :point_size="settings.point_size"
+
+        :show_violinplot="settings.show_violinplot"
+        :kde_scale="settings.violin_kde_scale"
+        
         xAxisTitle="Group"
         :yAxisTitle="`Module #${selectedSyllable} Usage (${countMethod})`"
         :tooltipFormatter="format_tooltip"
@@ -43,6 +48,7 @@ RegisterDataComponent({
         point_size: 2,
         show_boxplot: true,
         show_violinplot: false,
+        violin_kde_scale: 0.01,
         boxplot_whiskers: WhiskerType.TUKEY,
         group_order_type: OrderingType.Natural,
     },
