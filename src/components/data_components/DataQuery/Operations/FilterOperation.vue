@@ -1,10 +1,11 @@
 <template>
     <div>
-        <b-dropdown text="Add Filter" class="add-filter-button" size="sm">
+        <b-dropdown text="Add Filter" class="float-right add-filter-button" size="sm">
             <template v-for="col in columnOptions">
                 <b-dropdown-item v-if="!columnAlreadyInFilter(col)" @click="addFilter(col)" :key="col">{{col}}</b-dropdown-item>
             </template>
         </b-dropdown>
+
         <template v-for="(value, key) in localFilters">
             <b-input-group :key="key" :prepend="`${key} (${inferDataTypeForColumn(key)})`">
                 <b-form-tags 
@@ -104,3 +105,10 @@ export default Vue.extend({
     },
 });
 </script>
+
+<style scoped>
+.add-filter-button {
+    margin-top:-3rem;
+    margin-right: 50px;
+}
+</style>

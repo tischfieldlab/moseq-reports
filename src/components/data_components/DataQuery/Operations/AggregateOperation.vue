@@ -4,11 +4,12 @@
             <column-selector label="" v-model="Operation.groupby" :options="columnOptions" />
         </b-input-group>
 
-        <b-dropdown text="Add Aggregation" class="add-agg-button" size="sm">
+        <b-dropdown text="Add Aggregation" class="add-agg-button mx-auto" size="sm">
             <template v-for="col in columnOptions">
                 <b-dropdown-item v-if="!columnAlreadyIncluded(col)" @click="addAggregate(col)" :key="col">{{col}}</b-dropdown-item>
             </template>
         </b-dropdown>
+
         <template v-for="(value, key) in localAggs">
             <b-input-group :key="key" :prepend="key">
                 <column-selector label="" icon="calculator" noun="Statistic" v-model="localAggs[key]" :options="statOptions" />
@@ -87,3 +88,9 @@ export default Vue.extend({
     },
 });
 </script>
+
+<style scoped>
+.add-agg-button {
+    margin: 0.25rem 0;
+}
+</style>
