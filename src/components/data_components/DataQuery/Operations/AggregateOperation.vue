@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-input-group prepend="Group By">
+        <b-input-group prepend="Group By" size="sm">
             <column-selector label="" v-model="Operation.groupby" :options="columnOptions" />
         </b-input-group>
 
@@ -11,7 +11,7 @@
         </b-dropdown>
 
         <template v-for="(value, key) in localAggs">
-            <b-input-group :key="key" :prepend="key">
+            <b-input-group :key="key" :prepend="key" size="sm">
                 <column-selector label="" icon="calculator" noun="Statistic" v-model="localAggs[key]" :options="statOptions" />
                 <b-input-group-append is-text>
                     <b-button-close @click="removeAggregate(key)" />

@@ -1,20 +1,27 @@
 <template>
     <div>
-        <column-selector v-model="Operation.columns" :options="columnOptions" />
-        <b-select v-model="Operation.direction" :options="directionOptions" />
+        <b-button class="float-right add-sorting-button" size="sm" @click="addSorting()">
+            Add Sorting
+        </b-button>
+
+        <template v-for="(column, idx) in Operation.columns">
+            <b-input-group :key="idx" prepend="Column" size="sm">
+                <b-select v-model="column[0]" :options="columnOptions" />
+                <b-select v-model="column[1]" :options="directionOptions" />
+                <b-input-group-append is-text>
+                    <b-button-close @click="removeSorting(idx)" title="Remove this sorting" v-b-tooltip.hover />
+                </b-input-group-append>
+            </b-input-group>
+        </template>
     </div>
 </template>
 
 <script lang="ts">
 import { SortDirection, SortOperation } from '@/components/Core/DataLoader/DataLoader.types';
 import Vue, { PropType } from 'vue';
-import ColumnSelector from './ColumnSelector.vue';
 
 
 export default Vue.extend({
-    components: {
-        ColumnSelector,
-    },
     props: {
         Operation: {
             type: Object as PropType<SortOperation>,
@@ -30,6 +37,7 @@ export default Vue.extend({
     },
     data() {
         return {
+            localSortings: this.Operation.columns || [],
             directionOptions: [
                 {text: 'Ascending', value: SortDirection.Asc},
                 {text: 'Descending', value: SortDirection.Desc},
@@ -55,5 +63,23 @@ export default Vue.extend({
             return objCols;
         },
     },
+    methods: {
+        addSorting() {
+            this.localSortings.push(['', 'asc']);
+        },
+        removeSorting(idx) {
+            this.localSortings.splice(idx, 1);
+        },
+    }
 });
 </script>
+
+<style scoped>
+.add-sorting-button {
+    margin-top:-3rem;
+    margin-right: 50px;
+}
+.custom-select {
+    height: calc(1.5em + 0.75rem + 2px) !important;
+}
+</style>

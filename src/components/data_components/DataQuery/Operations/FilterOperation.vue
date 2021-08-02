@@ -7,18 +7,30 @@
         </b-dropdown>
 
         <template v-for="(value, key) in localFilters">
-            <b-input-group :key="key" :prepend="`${key} (${inferDataTypeForColumn(key)})`">
-                <b-form-tags 
+            <b-input-group size="sm" :key="key">
+                <b-input-group-prepend is-text :title="`${inferDataTypeForColumn(key)} datatype`" v-b-tooltip.hover>
+                    {{key}}
+                </b-input-group-prepend>
+                <b-form-tags
                     v-model="localFilters[key]"
-                    placeholder="Add filter value..."
+                    placeholder="Add value..."
                     duplicate-tag-text="Duplicate value(s)"
                     invalid-tag-text="Invalid value(s)"
                     tag-remove-label="Remove value" />
                 <b-input-group-append is-text>
-                    <b-button-close @click="removeFilter(key)" />
+                    <b-button-close @click="removeFilter(key)" title="Remove this filter" v-b-tooltip.hover />
                 </b-input-group-append>
             </b-input-group>
         </template>
+
+        <div class="special-token-container">
+            Special Tokens:
+            <template v-for="(value, key) in SpecialTokens">
+                <b-tag :key="key" class="special-token" no-remove pill variant="info">
+                    <span :title="JSON.stringify(value)" v-b-tooltip.hover>{{key}}</span>
+                </b-tag>
+            </template>
+        </div>
     </div>
 </template>
 
@@ -44,6 +56,10 @@ export default Vue.extend({
             type: String,
             required: true,
         },
+        SpecialTokens: {
+            type: Object,
+            required: true,
+        }
     },
     data() {
         return {
@@ -110,5 +126,14 @@ export default Vue.extend({
 .add-filter-button {
     margin-top:-3rem;
     margin-right: 50px;
+}
+.data-type {
+    padding-left: 6px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+}
+.special-token-container {
+    margin-top: 0.5rem;
+    color: #666
 }
 </style>

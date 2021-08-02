@@ -4,7 +4,7 @@
             <template v-slot="{ tags, disabled, addTag, removeTag }">
                 <b-dropdown size="sm" variant="outline-secondary" block menu-class="w-100" :disabled="disabled">
                     <template #button-content>
-                        <b-icon :icon="icon"></b-icon> Choose {{noun}}s
+                        <b-icon :icon="icon" />
                     </template>
                     <b-dropdown-form @submit.stop.prevent="() => {}">
                         <b-input-group size="sm" class="mb-2" :disabled="disabled">
@@ -36,12 +36,12 @@
 
                 <ul v-if="tags.length > 0" class="list-inline d-inline-block mb-2" style="display: inline !important;">
                     <li v-for="tag in tags" :key="tag" class="list-inline-item">
-                    <b-form-tag
-                        @remove="removeTag(tag)"
-                        :title="tag"
-                        :disabled="disabled"
-                        variant="info"
-                    >{{ tag }}</b-form-tag>
+                        <b-form-tag
+                            @remove="removeTag(tag)"
+                            :title="tag"
+                            :disabled="disabled"
+                            variant="info"
+                        >{{ tag }}</b-form-tag>
                     </li>
                 </ul>
             </template>

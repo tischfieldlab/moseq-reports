@@ -1,5 +1,5 @@
 <template>
-    <b-input-group prepend="Column">
+    <b-input-group prepend="Column" size="sm">
         <b-select v-model="Operation.column" :options="columnOptions" />
     </b-input-group>
 </template>

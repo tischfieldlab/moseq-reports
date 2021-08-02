@@ -1,19 +1,27 @@
 <template>
-<div style="margin:0.75rem 1.75rem;">
-    <b-button
-        @click="is_expanded = !is_expanded"
-        :title="is_expanded ? 'Collapse' : 'Expand'"
-        variant="link"
-        class="text-dark collapse-button text-decoration-none">
-        <b-icon v-if="is_expanded" class="when-opened" title="Collapse" icon="chevron-up"></b-icon>
-        <b-icon v-else class="when-closed" title="Expand" icon="chevron-down"></b-icon>
-    </b-button>
-    Show results at this stage:
-    <span class="datahint">{{datahint}}</span><br />
-    <b-collapse v-model="is_expanded">
-        <b-form-textarea :readonly="true" rows="5" v-model="formattedDataset" />
-    </b-collapse>
-</div>
+    <div class="dataview-container">
+        <b-button
+            @click="is_expanded = !is_expanded"
+            :title="is_expanded ? 'Collapse' : 'Expand'"
+            variant="link"
+            class="text-dark collapse-button text-decoration-none">
+            <b-icon v-if="is_expanded" class="when-opened" title="Collapse" icon="chevron-up"></b-icon>
+            <b-icon v-else class="when-closed" title="Expand" icon="chevron-down"></b-icon>
+        </b-button>
+        Results at this stage:
+        <span class="datahint">{{datahint}}</span><br />
+        <b-collapse v-model="is_expanded">
+            <b-form-textarea
+                v-model="formattedDataset"
+                :readonly="true"
+                rows="5"
+                wrap="off"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false" />
+        </b-collapse>
+    </div>
 </template>
 
 
@@ -58,6 +66,9 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.dataview-container {
+    margin:0.75rem 1.0rem;
+}
 .collapse-button {
     padding: 0;
 }

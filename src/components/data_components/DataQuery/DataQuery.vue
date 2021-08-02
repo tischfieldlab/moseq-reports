@@ -41,7 +41,13 @@
                 </template>
                 <b-collapse :visible="operationVisibilities[idx]" :id="$id(`op-collapse-${idx}`)">
                     <div class="operation-wrapper">
-                        <component v-if="cardHasBody(op.type)" :is="operationToComponent(op.type)" :Operation="op" :PreviousResult="intermediateResults[idx]" :Owner="id" />
+                        <component 
+                            v-if="cardHasBody(op.type)"
+                            :is="operationToComponent(op.type)"
+                            :Operation="op"
+                            :PreviousResult="intermediateResults[idx]"
+                            :Owner="id"
+                            :SpecialTokens="specialTokens" />
                         <div v-else class="no-operation-settings">No settings for this operation</div>
                     </div>
                 </b-collapse>
@@ -215,7 +221,6 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                     return {
                         type: 'sort',
                         columns: [],
-                        direction: SortDirection.Asc,
                     };
                 case 'filter':
                     return {
@@ -312,7 +317,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 
 <style scoped>
 .card {
-    margin:0.75rem 1.75rem;
+    margin:0.75rem 1.0rem;
 }
 .add-op-button {
     margin-top: -0.125rem;

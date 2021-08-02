@@ -1,8 +1,8 @@
 <template>
-    <b-input-group prepend="Columns">
+    <b-input-group prepend="Columns" size="sm">
         <column-selector label="" v-model="localSelectedColumns" :options="columnOptions" :disabled="!isColumnsEnabled" />
-        <b-input-group-append is-text>
-            <b-form-checkbox switch v-model="isColumnsEnabled" title="Automatic" />
+        <b-input-group-append is-text title="Automatic mapping" v-b-tooltip.hover>
+            <b-form-checkbox switch v-model="isColumnsEnabled" />
         </b-input-group-append>
     </b-input-group>
 </template>
