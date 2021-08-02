@@ -128,8 +128,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 },
                 {
                     type: 'sort',
-                    columns: ['value'],
-                    direction: 'asc',
+                    columns: [['value', 'asc']],
                 }],
             ];
         },

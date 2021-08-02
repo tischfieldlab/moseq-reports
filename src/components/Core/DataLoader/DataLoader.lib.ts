@@ -55,31 +55,38 @@ export function mapColumns(obj: DataObject|object[], op: MapOperation): object[]
     });
 }
 
+function Compare(a: SchwartzianItem, b: SchwartzianItem, column: string, direction: SortDirection) {
+    if (direction === SortDirection.Asc) {
+        if (a.value[column] > b.value[column]) return 1;
+        if (a.value[column] < b.value[column]) return -1;
+        return 0;
+    } else if (direction === SortDirection.Desc) {
+        if (a.value[column] < b.value[column]) return 1;
+        if (a.value[column] > b.value[column]) return -1;
+        return 0;
+    } else {
+        throw new Error(`Unsupported direction '${direction}' in sort for column '${column}'`);
+    }
+}
+
+interface SchwartzianItem {
+    index: number;
+    value: object;
+}
+
 export function sortBy(data: object[], op: SortOperation): object[] {
     // Schwartzian Transform.
-    if (op.direction === SortDirection.Asc) {
-        return data.map((e, i) => ({index: i, value: e}))
+    return data.map((e, i) => ({index: i, value: e}))
             .sort((a, b) => {
                 for (const c of op.columns) {
-                    if (a.value[c] > b.value[c]) return 1;
-                    if (a.value[c] < b.value[c]) return -1;
+                    const result = Compare(a, b, c[0], c[1]);
+                    if (result !== 0) {
+                        return result;
+                    }
                 }
                 return 0;
             })
             .map((e) => data[e.index]);
-    } else if (op.direction === SortDirection.Desc) {
-        return data.map((e, i) => ({index: i, value: e}))
-            .sort((a, b) => {
-                for (const c of op.columns) {
-                    if (a.value[c] < b.value[c]) return 1;
-                    if (a.value[c] > b.value[c]) return -1;
-                }
-                return 0;
-            })
-            .map((e) => data[e.index]);
-    } else {
-        throw new Error(`Unsupported direction in sort '${op.direction}'`);
-    }
 }
 
 export function filterBy(data: object[], op: FilterOperation) {

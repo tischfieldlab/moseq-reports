@@ -25,8 +25,7 @@ export interface ValuesOperation {
 }
 export interface SortOperation {
     type: 'sort';
-    columns: string[];
-    direction: SortDirection;
+    columns: [string, SortDirection][];
 }
 export interface FilterOperation {
     type: 'filter';

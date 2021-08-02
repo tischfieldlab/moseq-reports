@@ -186,8 +186,10 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 },
                 {
                     type: 'sort',
-                    columns: ['row_id', 'col_id',],
-                    direction: 'asc',
+                    columns: [
+                        ['row_id', 'asc'],
+                        ['col_id', 'asc'],
+                    ],
                 }
             ];
             return {
