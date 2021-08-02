@@ -108,12 +108,19 @@ function attachApp() {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     app.whenReady()
-        .then(() => {
+        .then(async () => {
             if (isDevelopment && !process.env.IS_TEST) {
-                // Install Vue Devtools
-                installExtension(VUEJS_DEVTOOLS)
-                    .then((name) => console.log(`Added Extension:  ${name}`)) // tslint:disable-line:no-console
-                    .catch((err) => console.error('Vue Devtools failed to install:', err.toString())); // tslint:disable-line:no-console
+                
+                // Install extensions
+                const extensions = [VUEJS_DEVTOOLS];
+                await Promise.all(
+                    extensions.map((extension) => {
+                        installExtension(extension)
+                            .then((name) => console.log(`Added Extension: ${name}`)) // tslint:disable-line:no-console
+                            .catch((err) => console.error(`Failed to install extension '${extension}':`, err.toString())); // tslint:disable-line:no-console
+                        
+                    })
+                );
             }
         })
         .then(() => createWindow(process.argv));
