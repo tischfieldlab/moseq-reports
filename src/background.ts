@@ -110,7 +110,6 @@ function attachApp() {
     app.whenReady()
         .then(async () => {
             if (isDevelopment && !process.env.IS_TEST) {
-                
                 // Install extensions
                 const extensions = [VUEJS_DEVTOOLS];
                 await Promise.all(
@@ -118,7 +117,6 @@ function attachApp() {
                         installExtension(extension)
                             .then((name) => console.log(`Added Extension: ${name}`)) // tslint:disable-line:no-console
                             .catch((err) => console.error(`Failed to install extension '${extension}':`, err.toString())); // tslint:disable-line:no-console
-                        
                     })
                 );
             }
