@@ -195,6 +195,12 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         graph_layout(){
             this.debouncedLayout();
         },
+        layout: {
+            handler() {
+                this.debouncedLayout();
+            },
+            deep: true,
+        },
         scale() {
             const cy = (this as any).cy;
             cy.style(this.graph_styles);
