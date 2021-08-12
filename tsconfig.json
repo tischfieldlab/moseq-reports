@@ -21,9 +21,7 @@
             "chai"
         ],
         "paths": {
-            "@/*": [
-                "src/*"
-            ],
+            "@/*": ["src/*"],
         },
         "lib": [
             "esnext",
@@ -33,6 +31,7 @@
         ]
     },
     "include": [
+        "@types/**/*.ts",
         "src/**/*.ts",
         "src/**/*.tsx",
         "src/**/*.vue",

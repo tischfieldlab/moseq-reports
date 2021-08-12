@@ -23,7 +23,7 @@
         <b-row v-show="show_relative_diff">
             <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Colormap">
+                <b-input-group prepend="Colormap" style="flex-wrap:nowrap">
                     <ColorScalePicker v-model="colorscale" />
                 </b-input-group>
             </b-col>
@@ -60,6 +60,7 @@
 </template>
 
 <script scoped lang="ts">
+import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import ColorScalePicker from '@/components/Charts/Colors/ColorScalePicker.vue';
@@ -73,10 +74,10 @@ export default mixins(WindowMixin).extend({
     },
     methods: {},
     computed: {
-        available_groups(): Array<{text: string, value: string}> {
+        available_groups(): {text: string, value: string}[] {
             return this.dataview.selectedGroups.map((g) => ({text: g, value: g}));
         },
-        available_diff_groups(): Array<any> {
+        available_diff_groups(): any[] {
             return this.dataview.selectedGroups
                     .map((g) => ({text: g, value: g}))
                     .filter((el) => el.value !== this.plot_group);
@@ -193,7 +194,7 @@ export default mixins(WindowMixin).extend({
                 { text: NodeAlignment.Left, value: NodeAlignment.Left },
                 { text: NodeAlignment.Right, value: NodeAlignment.Right },
                 { text: NodeAlignment.Center, value: NodeAlignment.Center },
-            ],
+            ]
         };
     },
 });

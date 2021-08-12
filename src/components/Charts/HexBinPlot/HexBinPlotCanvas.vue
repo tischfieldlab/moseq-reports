@@ -18,6 +18,7 @@
 import Vue from 'vue';
 import { debounce } from '@/util/Events';
 import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendCanvas.vue';
+import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import HexBinPlotBase from './HexBinPlotBase.vue';
 import CanvasMixin from '@/components/Charts/Canvas';
@@ -49,8 +50,8 @@ export default mixins(HexBinPlotBase, CanvasMixin).extend({
         this.debouncedDraw();
     },
     methods: {
-        getLabelFontSize(cxt: CanvasRenderingContext2D, maxWidth: number, labels: Array<string>, fontFace: string) {
-            const maxLabel = (labels.map((l) => [l, cxt.measureText(l)]) as Array<[string, TextMetrics]>)
+        getLabelFontSize(cxt: CanvasRenderingContext2D, maxWidth: number, labels: string[], fontFace: string) {
+            const maxLabel = (labels.map((l) => [l, cxt.measureText(l)]) as [string, TextMetrics][])
                                    .reduce((prev, current) => prev[1].width > current[1].width ? prev : current)
                                    [0];
             cxt.save();

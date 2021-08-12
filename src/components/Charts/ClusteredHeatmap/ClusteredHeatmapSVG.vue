@@ -6,8 +6,8 @@
                 <template v-for="node in data">
                     <rect 
                         :key="`${node[columnKey]}-${node[rowKey]}`"
-                        :x="scale.x(node[columnKey])"
-                        :y="scale.y(node[rowKey])"
+                        :x="scale.x(node[columnKey].toString())"
+                        :y="scale.y(node[rowKey].toString())"
                         :width="scale.x.bandwidth()"
                         :height="scale.y.bandwidth()"
                         :fill="scale.z(node[valueKey])"
@@ -17,12 +17,12 @@
                         /><!-- v-b-tooltip.html :title="heatmap_node_tooltip(node)"-->
                 </template>
             </g>
-            <g class="rtree" v-show="isRowsClustered" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
+            <g class="rtree" v-show="isRowsHClustered" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
                 <template v-for="(link, index) in rowLinks">
                     <path class="rlink" :key="index" :d="elbowH(link)" />
                 </template>
             </g>
-            <g class="ctree" v-show="isColumnsClustered" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
+            <g class="ctree" v-show="isColumnsHClustered" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
                 <template v-for="(link, index) in columnLinks">
                     <path class="clink" :key="index" :d="elbowV(link)" />
                 </template>
@@ -51,8 +51,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/Core';
-import { HeatmapTile } from './ClusterHeatmap.types';
 import * as d3 from 'd3';
 import { sum, tree } from 'd3';
 import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';
@@ -78,8 +76,8 @@ export default mixins(ClusteredHeatmapBase).extend({
         this.debouncedHover = throttle(this.handleHeatmapHover, 10);
     },
     methods: {
-        compute_label_stats(labels: Array<string>) {
-            const widths = [] as Array<number>;
+        compute_label_stats(labels: string[]) {
+            const widths = [] as number[];
             const canvas = this.$refs.canvas as SVGSVGElement;
             if (!canvas) { return; }
             const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
@@ -104,14 +102,14 @@ export default mixins(ClusteredHeatmapBase).extend({
             });
         },
         handleHeatmapHover(event: MouseEvent) {
-            if (event && event.target !== null) {
+            if (event && event.target !== null){
                 const target = event.target as HTMLElement;
                 if (target.tagName === 'rect' && target.dataset.row && target.dataset.col) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY,
+                        y: event.clientY
                     };
-                    this.hoverItem = (this.data as Array<any>).find((itm) => {
+                    this.hoverItem = (this.data as any[]).find((itm) => {
                         return itm[this.columnKey].toString() === target.dataset.col
                             && itm[this.rowKey].toString() === target.dataset.row;
                     });
@@ -126,7 +124,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             if (!canvas) {
                 return;
             }
-            const labels = [...canvas.querySelectorAll('g.y-axis .tick')] as Array<SVGTextElement>;
+            const labels = [...canvas.querySelectorAll('g.y-axis .tick')] as SVGTextElement[];
             for (const l of labels) {
                 if (l.getAttribute('data-row') === id.toString()) {
                     l.classList.add('selected');
@@ -140,7 +138,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             if (!canvas) {
                 return;
             }
-            const labels = [...canvas.querySelectorAll('g.x-axis .tick')] as Array<SVGTextElement>;
+            const labels = [...canvas.querySelectorAll('g.x-axis .tick')] as SVGTextElement[];
             for (const l of labels) {
                 if (l.getAttribute('data-col') === id.toString()) {
                     l.classList.add('selected');
@@ -156,23 +154,34 @@ export default mixins(ClusteredHeatmapBase).extend({
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisRight' }[axis];
                 const methodArg = binding.value[axis];
-                const actualAxis = d3[axisMethod!](methodArg);
+                const actualAxis = d3[axisMethod as string](methodArg);
+                const self = vnode.context as any || undefined;
 
                 // build the axis
                 d3.select(el).call(actualAxis);
 
                 // if y-axis, attach "data-syllable" attribute
                 if (axis === 'y') {
-                    const ticks = d3.selectAll('.y-axis .tick');
-                    ticks.attr('data-row', (d: any, i: number) => d);
+                    d3.selectAll('.y-axis .tick')
+                        .attr('data-row', (d: any) => d);
+
+                    // apply row label colors
+                    d3.selectAll('.y-axis .tick text')
+                        .attr('fill', (d: any) => self.scale.rlc(d));
                 } else {
-                    const ticks = d3.selectAll('.x-axis .tick');
-                    ticks.attr('data-col', (d: any, i: number) => d);
+                    d3.selectAll('.x-axis .tick')
+                        .attr('data-col', (d: any) => d);
+
+                    // apply column label colors
+                    d3.selectAll('.x-axis .tick text')
+                        .attr('fill', (d: any) => self.scale.clc(d));
                 }
+
+                d3.selectAll('.tick').filter((datum) => self && self.shouldHideLabel(datum)).attr('visibility', 'hidden')
 
                 // if x-axis, check rotation
                 if (axis === 'x') {
-                    if (vnode && vnode.context && (vnode.context as any).rotate_labels) {
+                    if (self && self.rotate_labels) {
                         el.classList.add('rotate');
                     } else {
                         el.classList.remove('rotate');

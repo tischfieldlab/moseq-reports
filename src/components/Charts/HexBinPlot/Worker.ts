@@ -13,7 +13,7 @@ interface Observation {
 
 
 const exposedMethods = {
-    binData(data: Array<Observation>, groupLabels: Array<string>|null, width: number, resolution: number) {
+    binData(data: Observation[], groupLabels: string[]|null, width: number, resolution: number) {
         const x = scaleLinear()
             .domain(extent(data, (d: any) => d.x) as [number, number])
             .range([0, width]);
@@ -28,7 +28,7 @@ const exposedMethods = {
             .radius(resolution)
             .size([width, width]);
 
-        let groupedData: {[group: string]: Array<Observation>};
+        let groupedData: {[group: string]: Observation[]};
         if (groupLabels === null) {
             groupedData = groupby(data, (p: any) => 'Overall', ['Overall']);
         } else {

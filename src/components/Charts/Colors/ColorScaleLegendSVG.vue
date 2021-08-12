@@ -28,7 +28,9 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 import * as d3 from 'd3';
+import { scaleLinear, ScaleLinear } from 'd3-scale';
 import { axisBottom, axisRight } from 'd3-axis';
 import ColorScaleLegendBase, {Orientation} from './ColorScaleLegendBase';
 import mixins from 'vue-typed-mixins';

@@ -23,7 +23,7 @@ export default Vue.component('dataset-picker', {
         },
     },
     computed: {
-        options(): Array<{text: string, value: string}> {
+        options(): {text: string, value: string}[] {
             return (Object.entries(this.dataview.views).map(([key, dset]) => {
                 const parts = key.split('/');
                 const win = this.$store.state.datawindows[parts[1]];
@@ -37,7 +37,7 @@ export default Vue.component('dataset-picker', {
                     return undefined;
                 }
             })
-            .filter((item) => item !== undefined) as Array<{window: any, text: string, value: string}>)
+            .filter((item) => item !== undefined) as {window: any, text: string, value: string}[])
             .filter(this.filters as (item: any) => boolean);
         },
     },

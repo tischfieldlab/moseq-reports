@@ -72,27 +72,27 @@ ipcRenderer.on('updater-finish-update-check', (event: IpcRendererEvent, version:
         const body = [
             h('div', {}, [
                 h('p', {}, [
-                   'Would you like to download version ' + version + ' ?',
+                   'Would you like to download version ' + version + ' ?'
                 ]),
                 h('b-button', {
-                   on: {click: (e: any) => {
-                           createSpinnerToast('download-toast', 'Downloading update', 'info',
+                   on: {'click': (e: any) => {
+                           createSpinnerToast('download-toast', 'Downloading update','info',
                                'Hang tight... We\'re downloading updates.');
                            // NOTE: Send back a message to start the download process.
                            app.$bvToast.hide('New version ' + version + ' available.');
                            ipcRenderer.send('updater-start-update-download');
                        }},
                     style: {'margin-right': '1em'},
-                    props: { variant: 'primary'},
+                    props: { variant: 'primary'}
                 }, [
                     'Download',
                 ]),
                 h('b-button', {
-                    on: {click: (e: any) => { app.$bvToast.hide('New version ' + version + ' available.'); }},
-                    props: { variant: 'danger'},
+                    on: {'click': (e: any) => { app.$bvToast.hide('New version ' + version + ' available.')}},
+                    props: { variant: 'danger'}
                 }, [
                     'Not now',
-                ]),
+                ])
             ]),
         ];
 
@@ -117,31 +117,31 @@ ipcRenderer.on('updater-finish-update-download', (event: IpcRendererEvent, resul
         const body = [
             h('div', {}, [
                 h('p', {}, [
-                    'Would you like to install the update now, or on next launch?',
+                    'Would you like to install the update now, or on next launch?'
                 ]),
                 h('b-button', {
-                    on: {click: (e: any) => {
+                    on: {'click': (e: any) => {
                             // NOTE: Send message to main process to install the update and restart
                             app.$bvToast.hide('Ready to install update.');
                             ipcRenderer.send('updater-restart-and-install-now');
-                        },
+                        }
                     },
                     style: {'margin-right': '1em'},
-                    props: { variant: 'primary'},
+                    props: { variant: 'primary'}
                 }, [
                     'Now',
                 ]),
                 h('b-button', {
-                    on: {click: (e: any) => {
+                    on: {'click': (e: any) => {
                             app.$bvToast.hide('Ready to install update.');
                             // NOTE: Send message to install on next launch
                             ipcRenderer.send('updater-restart-and-install-later');
-                        },
+                        }
                     },
-                    props: { variant: 'secondary'},
+                    props: { variant: 'secondary'}
                 }, [
                     'Next Launch',
-                ]),
+                ])
             ]),
         ];
 

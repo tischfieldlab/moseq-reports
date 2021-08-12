@@ -52,6 +52,8 @@
 
 
 <script lang="ts">
+import Vue from 'vue';
+import RegisterDataComponent from '@/components/Core';
 import * as d3 from 'd3';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
@@ -118,11 +120,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                     .rangeRound([0, this.outsideWidth])
                     .paddingInner(this.sub_padding / this.outsideWidth);
             const x = scaleBand()
-                    .domain(range(100) as Array<any>)
+                    .domain(range(100) as any[])
                     .range([0, o.bandwidth()])
                     .padding(0);
             const y = scaleBand()
-                    .domain(range(100) as Array<any>)
+                    .domain(range(100) as any[])
                     .range([o.bandwidth(), 0])
                     .padding(0);
             const absz = scaleSequential(this.abs_colormap)
@@ -140,7 +142,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         rel_colormap(): any {
             return GetScale(this.settings.rel_colormap);
         },
-        selectedGroups(): Array<string> {
+        selectedGroups(): string[] {
             return this.dataview.selectedGroups;
         },
         rootGroup(): string {
@@ -226,9 +228,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             // console.log('axis directive called', el, binding);
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis] as string;
                 const methodArg = binding.value[axis];
-                const actualAxis = d3[axisMethod!](methodArg);
+                const actualAxis = d3[axisMethod](methodArg);
 
                 // if colorbar axis, only show 5 ticks
                 if (axis === 'c') {

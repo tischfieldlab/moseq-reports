@@ -16,45 +16,45 @@
             </b-col>
         </b-row>
         <b-row>
-            <b-form-checkbox v-model="show_points" switch>
-                Show Individual Data Points
-            </b-form-checkbox>
-        </b-row>
-        <b-row v-show="show_points">
-            <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Point Size">
-                    <b-form-input type="number" v-model="point_size" min="1" max="10" ></b-form-input>
+                    <b-form-input type="number" v-model="point_size" :disabled="!show_points" min="1" max="10" ></b-form-input>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_points" switch />
+                    </b-input-group-append>
                 </b-input-group>
             </b-col>
         </b-row>
         <b-row>
-            <b-form-checkbox v-model="show_boxplot" switch>
-                Show Boxplot
-            </b-form-checkbox>
-        </b-row>
-        <b-row v-show="show_boxplot">
-            <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Whiskers">
-                    <b-form-select v-model="boxplot_whiskers" :options="whisker_options"></b-form-select>
-                    <div class="figure-caption">{{ boxplot_whisker_description }}</div>
+                <b-input-group prepend="Boxplot Whiskers">
+                    <b-form-select v-model="boxplot_whiskers" :options="whisker_options" :disabled="!show_boxplot"></b-form-select>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_boxplot" switch />
+                    </b-input-group-append>
                 </b-input-group>
+                <div class="figure-caption" v-html="boxplot_whisker_description"></div>
             </b-col>
         </b-row>
         <b-row>
-            <b-form-checkbox v-model="show_violinplot" switch>
-                Show Violin Plot
-            </b-form-checkbox>
+            <b-col>
+                <b-input-group prepend="Violin Scale">
+                    <b-form-input type="number" v-model="violin_kde_scale" :disabled="!show_violinplot" min="0" max="1.0" step="0.001" ></b-form-input>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_violinplot" switch />
+                    </b-input-group-append>
+                </b-input-group>
+            </b-col>
         </b-row>
     </b-container>
 </template>
 
 <script scoped lang="ts">
+import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
-import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import {WhiskerType} from '@/components/Charts/BoxPlot';
+import {OrderingType} from '@/components/Charts/ClusteredHeatmap';
 import DatasetPicker from '@/components/DatasetPicker.vue';
 
 
@@ -103,14 +103,14 @@ export default mixins(WindowMixin).extend({
             },
         },
         point_size: {
-            get(): boolean {
+            get(): number {
                 return this.settings.point_size;
             },
-            set(value: boolean) {
+            set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        point_size: value,
+                        point_size: Number.parseInt(value, 10),
                     },
                 });
             },
@@ -159,6 +159,19 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        violin_kde_scale: {
+            get(): number {
+                return this.settings.violin_kde_scale;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        violin_kde_scale: Number.parseFloat(value),
+                    },
+                });
+            },
+        },
     },
     data() {
         return {
@@ -166,7 +179,7 @@ export default mixins(WindowMixin).extend({
                 {
                     value: WhiskerType.TUKEY,
                     text: 'Tukey',
-                    description: 'Whiskers extend up to 1.5 * IQR from 25th and 75th percentile',
+                    description: 'Whiskers extend up to 1.5 * IQR from 25<sup>th</sup> and 75<sup>th</sup> percentile',
                 }, {
                     value: WhiskerType.MIN_MAX,
                     text: 'Min/Max',

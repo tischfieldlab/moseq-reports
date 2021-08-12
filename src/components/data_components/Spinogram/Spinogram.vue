@@ -49,7 +49,7 @@
             </svg>
         </template>
         <div v-else class="no-data">
-            <b-card bg-variant="primary" text-variant="white" class="text-center">
+            <b-card bg-variant="primary" text-variant="white" class="text-center" style="width: 50%; margin-top: 20%;">
                 <b-card-text>
                     Sorry, there are no spinograms available for Syllable {{selectedSyllable}} ({{countMethod}})
                 </b-card-text>
@@ -60,6 +60,7 @@
 
 
 <script lang="ts">
+import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 
 import * as d3 from 'd3';
@@ -77,13 +78,13 @@ import { RenderMode } from '@/store/datawindow.types';
 
 
 interface Spinogram {
-    data: Array<SpinogramTimepoint>;
+    data: SpinogramTimepoint[];
 }
 
 interface SpinogramTimepoint {
-    x: Array<number>;
-    y: Array<number>;
-    xy: Array<Array<number>>;
+    x: number[];
+    y: number[];
+    xy: number[][];
     a: number;
     t: number;
 }
@@ -109,7 +110,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
-            items: [] as Array<Spinogram>,
+            items: [] as Spinogram[],
             example_num: 1,
             margin: {
                 top: 30,
@@ -120,7 +121,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         };
     },
     computed: {
-        spinogram_data(): Readonly<Array<SpinogramTimepoint>> {
+        spinogram_data(): Readonly<SpinogramTimepoint[]> {
             if (this.example_num - 1 < this.items.length) {
                 return this.items[this.example_num - 1].data;
             }
@@ -203,7 +204,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         has_data(): boolean {
             return this.items.length > 0;
         },
-        dataspec(): [string, Array<Operation>] {
+        dataspec(): [string, Operation[]] {
             return [
                 this.$store.getters[`datasets/resolve`]('spinograms'),
                 [
@@ -224,7 +225,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         dataspec: {
             handler() {
                 LoadData(this.dataspec[0], this.dataspec[1])
-                .then((data: Array<any>) => {
+                .then((data: any[]) => {
                     if (data && data.length > 0) {
                         for (const itm of data) {
                             const d = itm.data;
@@ -243,9 +244,9 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         axis(el, binding) {
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis] as string;
                 const methodArg = binding.value[axis];
-                d3.select(el).call(d3[axisMethod!](methodArg));
+                d3.select(el).call(d3[axisMethod](methodArg));
             }
         },
     },

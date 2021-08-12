@@ -1,25 +1,20 @@
 <template>
     <b-container fluid>
         <b-row>
-            <b-col cols="4" align-self="center">
-                <label class="font-weight-bold pt-0">Line Weight</label>
-            </b-col>
-            <b-col>
+            <b-input-group prepend="Line Weight">
                 <b-form-input v-model="line_weight" type="number" :number="true" min="1" max="10" />
-            </b-col>
+            </b-input-group>
         </b-row>
         <b-row>
-            <b-col cols="4" align-self="center">
-                <label class="font-weight-bold pt-0">Line Color</label>
-            </b-col>
-            <b-col>
+            <b-input-group prepend="Line Color">
                 <chrome-picker v-model="line_color" :disableAlpha="true" />
-            </b-col>
+            </b-input-group>
         </b-row>
     </b-container>
 </template>
 
 <script scoped lang="ts">
+import Vue from 'vue';
 import { Chrome } from 'vue-color';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';

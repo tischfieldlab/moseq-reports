@@ -1,47 +1,84 @@
-><template>
-  <div v-bind:id="this.$props.id"
+<template>
+  <VueDraggableResizable
+    v-bind:id="this.$props.id"
     class="msqWindow"
     :style="{
-      width: `${window_width}px`,
-      height: `${window_height}px`,
       left: `${window_xpos}px`,
       top: `${window_ypos}px`,
     }"
+    :w="window_width"
+    :h="window_height"
+    :active="true"
+    @resizing="this.onResizing"
   >
-    <div clas="msq-window-titlebar" :id="`titlebar-${this.$props.id}`">
-      <span class="dataview-swatch"
+    <div
+      class="msq-window-titlebar noselect"
+      :id="`titlebar-${this.$props.id}`"
+    >
+      <span
+        class="dataview-swatch"
         :id="$id('swatch')"
-        :style="{background: this.$props.titlebar_color}"
+        :style="{ background: this.$props.titlebar_color }"
         :title="this.$props.title"
       >
-        <b-icon icon="camera" class="snapshot-button" />
-        <b-icon icon="gear-wide" class="settings-button" />
-        <b-icon icon="caret-up-fill" class="min-max-button" />
-        <b-icon icon="x" class="close-button" />
+        <b-icon
+          @click="this.onSnapshotClicked"
+          icon="camera-fill"
+          class="snapshot-button"
+        />
+        <b-icon
+          @click="this.onSettingsClicked"
+          icon="gear-fill"
+          class="settings-button"
+        />
+        <b-icon
+          @click="this.onCollapsedClicked"
+          icon="caret-down-fill"
+          class="min-max-button"
+          v-if="!isCollapsed"
+        />
+        <b-icon
+          @click="this.onCollapsedClicked"
+          icon="caret-up-fill"
+          class="min-max-button"
+          v-else
+        />
+        <b-icon @click="this.onClose" icon="x" class="close-button" />
       </span>
       {{ this.$props.title }}
     </div>
-    <div :id="`window-content-${this.$props.id}`" :hidden="`${this.$props.collapsed}`">
+    <div :id="`window-content-${this.$props.id}`" :hidden="isCollapsed">
       <slot></slot>
     </div>
-  </div>
+  </VueDraggableResizable>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { Position } from "@/store/datawindow.types";
+import Vue from "vue";
+import VueDraggableResizable from "vue-draggable-resizable";
 
-export default Vue.component('BaseWindow', {
+export default Vue.component("BaseWindow", {
   props: {
-    id: {type: String, required: true},
-    titlebar_color: {type: String, required: true},
-    title: {type: String, required: true},
-    height: {type: [Number, String], required: true},
-    width: {type: [Number, String], required: true},
-    position: {type: Object, required: true},
-    collapsed: {type: Boolean, required: true },
+    id: { type: String, required: true },
+    titlebar_color: { type: String, required: true },
+    title: { type: String, required: true },
+    height: { type: [Number, String], required: true },
+    width: { type: [Number, String], required: true },
+    position: { type: Object, required: true },
+  },
+  components: {
+    VueDraggableResizable,
   },
   data() {
     return {
+      isCollapsed: false,
+      titleBarWidth: 35,
+      restoredHeight: this.$props.height,
+      id: this.$props.id,
+      position: this.$props.position,
+      height: this.$props.height,
+      width: this.$props.width,
     };
   },
   computed: {
@@ -52,10 +89,40 @@ export default Vue.component('BaseWindow', {
       return this.height;
     },
     window_xpos() {
-      return (this.position as any).x;
+      return (this.position as Position).x;
     },
     window_ypos() {
-      return (this.position as any).y;
+      return (this.position as Position).y;
+    },
+  },
+  methods: {
+    onResize: function (x, y, width, height) {
+      console.log("resize");
+    },
+    onDrag: function (x, y) {
+      console.log("drag");
+    },
+    onClose(event: any) {
+      this.$emit("onClosed", event);
+    },
+    onSettingsClicked(event: any) {
+      this.$emit("onSettingsClicked", event);
+    },
+    onSnapshotClicked(event: any) {
+      this.$emit("onSnapshotClicked", event);
+    },
+    onCollapsedClicked(event: any) {
+      this.$data.isCollapsed = !this.$data.isCollapsed;
+      this.$emit("onCollapsedClicked", event);
+
+      // If the widget is collapsed, we want to hide and shrink it.
+      if (this.$data.isCollapsed) {
+        // Save the restore height
+        this.$data.restoredHeight = this.$props.height;
+        this.$props.height = this.$data.titleBarWidth;
+      } else {
+        this.$props.height = this.$data.restoredHeight;
+      }
     },
   },
 });
@@ -63,19 +130,22 @@ export default Vue.component('BaseWindow', {
 
 <style>
 .msqWindow {
-  padding-left: 5px;
   background-color: white;
-  border: 1px solid black;
+  border: 1px solid darkgray;
   position: absolute;
   overflow: hidden;
+  border-radius: 2px;
+  resize: both;
 }
-
 .msq-window-titlebar {
-  padding-left: 5px;
-  border-bottom: 2px solid black;
-  background-color: #e6e6e6;
+  padding-top: 5px;
+  color: black;
+  padding-bottom: 5px;
+  margin-left: -5px;
+  padding-left: 12px;
+  border-bottom: 1px solid darkgray;
+  background-color: #e8e8e8;
 }
-
 .dataview-swatch {
   display: inline-block;
   vertical-align: text-top;
@@ -86,34 +156,46 @@ export default Vue.component('BaseWindow', {
   cursor: default;
 }
 
-.snapshot-button{
+.snapshot-button {
   width: 16px;
   height: 16px;
   margin-right: 7px;
   margin-left: 0px;
   position: absolute;
   right: 52px;
-  cursor:pointer;
+  cursor: pointer;
 }
 
-.settings-button{
+.snapshot-button:hover {
+  color: gray;
+}
+
+.settings-button {
   width: 16px;
   height: 16px;
   margin-right: 7px;
   margin-left: 0px;
   position: absolute;
   right: 31px;
-  cursor:pointer;
+  cursor: pointer;
 }
 
-.min-max-button{
+.settings-button:hover {
+  color: gray;
+}
+
+.min-max-button {
   width: 16px;
   height: 16px;
   margin-right: 0px;
   margin-left: 0px;
   position: absolute;
   right: 20px;
-  cursor:pointer;
+  cursor: pointer;
+}
+
+.min-max-button:hover {
+  color: gray;
 }
 
 .close-button {
@@ -125,5 +207,19 @@ export default Vue.component('BaseWindow', {
   right: 2px;
   margin-top: -2px;
   cursor: pointer;
+}
+
+.close-button:hover {
+  color: gray;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
 </style>

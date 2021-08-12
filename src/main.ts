@@ -42,14 +42,15 @@ Vue.use(BootstrapVueIcons);
 import VueResize from 'vue-resize';
 Vue.use(VueResize);
 
+import VueDraggableResizable from 'vue-draggable-resizable';
+import 'vue-draggable-resizable/dist/VueDraggableResizable.css';
+Vue.component('vue-draggable-resizable', VueDraggableResizable);
+
 import VueForceNextTick from 'vue-force-next-tick';
 Vue.use(VueForceNextTick);
 
 import UniqueId from 'vue-unique-id';
 Vue.use(UniqueId);
-
-import AsyncComputed from 'vue-async-computed';
-Vue.use(AsyncComputed);
 
 import VueTimeago from 'vue-timeago';
 Vue.use(VueTimeago, {
@@ -74,7 +75,7 @@ const vm = new Vue({
     },
     beforeDestroy() {
         ShutdownServer();
-    },
+    }
 });
 
 

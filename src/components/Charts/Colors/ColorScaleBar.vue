@@ -1,5 +1,5 @@
 <template>
-    <svg :height="`${height}px`" :width="`${width}px`">
+    <svg :height="height" :width="width">
         <defs>
             <linearGradient :id="$id('color-gradiant')" :x1="offsets.x1" :x2="offsets.x2" :y1="offsets.y1" :y2="offsets.y2">
                 <template v-for="d in scale">
@@ -29,19 +29,19 @@ import { range } from 'd3-array';
 export default Vue.extend({
     props: {
         width: {
-            type: Number,
-            default: 150,
+            type: String,
+            default: '100%',
         },
         height: {
-            type: Number,
-            default: 20,
+            type: String,
+            default: '20px',
         },
         orientation: {
             type: String,
             default: 'horizontal',
             validator: (value) => {
                 return ['horizontal', 'vertical'].indexOf(value) !== -1;
-            },
+            }
         },
         interpolator: {
             type: String,
@@ -56,7 +56,7 @@ export default Vue.extend({
                     x2: '100%',
                     y1: '0%',
                     y2: '0%',
-                };
+                }
             } else {
                 return {
                     x1: '0%',
@@ -71,6 +71,6 @@ export default Vue.extend({
                         .domain([0, 1]);
             return range(0, 1.1, 0.05).map((v) => ({ v: v * 100, z: z(v) }));
         },
-    },
+    }
 });
 </script>

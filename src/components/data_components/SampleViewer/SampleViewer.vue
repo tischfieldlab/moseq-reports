@@ -25,6 +25,7 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
@@ -46,10 +47,10 @@ RegisterDataComponent({
 export default mixins(WindowMixin).extend({
     data() {
         return {
-            items: [] as Array<any>,
+            items: [] as any[],
             filter_string: '',
             fields: [
-                { key: 'uuid', label: 'UUID', sortable: true },
+                { key: 'uuid', label: 'UUID', sortable: true, },
                 { key: 'default_group', label: 'Group', sortable: true },
                 { key: 'ApparatusName', label: 'Apparatus', sortable: true },
                 { key: 'SessionName', label: 'Session Name', sortable: true },
@@ -58,7 +59,7 @@ export default mixins(WindowMixin).extend({
                     key: 'StartTime',
                     label: 'Acquisition Time',
                     sortable: true,
-                    formatter: (value) => new Date(value).toLocaleString(),
+                    formatter: (value) => new Date(value).toLocaleString()
                 },
             ],
         };
@@ -71,14 +72,14 @@ export default mixins(WindowMixin).extend({
                 }
                 this.items = await LoadData(newValue.source, newValue.filters, false)
                     .then((data) => {
-                        data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop(); });
+                        data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop() });
                         return data;
                     });
             },
             immediate: true,
         },
     },
-    computed: {
+    computed:{
         sourceData(): any {
             const source = this.$store.getters[`datasets/resolve`]('samples');
             const filters = [
@@ -88,7 +89,7 @@ export default mixins(WindowMixin).extend({
                 },
             ];
             return {source, filters};
-        },
+        }
     },
 });
 </script>

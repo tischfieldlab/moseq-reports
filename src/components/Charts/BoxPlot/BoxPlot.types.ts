@@ -27,5 +27,5 @@ export interface GroupStats {
     q2: number;
     q3: number;
     iqr: number;
-    kde: Array<Array<number>>;
+    kde: number[][];
 }

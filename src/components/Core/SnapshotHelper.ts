@@ -7,6 +7,8 @@ import { remote, shell } from 'electron';
 import fs from 'fs';
 import mime from 'mime-types';
 import { DataWindowState } from '@/store/datawindow.types';
+import { SaveCancelledError } from './IO/types';
+import { showSaveErrorToast, showSaveSuccessToast } from './IO/Toasts';
 
 
 export interface SnapshotOptions {
@@ -54,7 +56,7 @@ export default async function Snapshot(target: Vue, basename: string, options: S
             }
             return {
                 finfo,
-                dest,
+                dest
             };
         })
         .then((data) => {
@@ -67,21 +69,12 @@ export default async function Snapshot(target: Vue, basename: string, options: S
                 });
             });
         })
-        .then((dest) => showSuccessToast(dest as string))
+        .then((dest) => showSaveSuccessToast(dest as string, 'snapshot'))
         .catch((err) => {
             if (err instanceof SaveCancelledError) {
                 return; // don't care the user cancelled of their own accord
             }
-            app.$bvToast.toast(err.toString(), {
-                title: 'Error Creating Snapshot!',
-                variant: 'danger',
-                toaster: 'b-toaster-bottom-right',
-            });
-            app.$store.commit('history/addEntry', {
-                message: err.toString(),
-                variant: 'danger',
-                details: err.stack,
-            });
+            showSaveErrorToast(err, 'snapshot');
         });
 }
 
@@ -95,11 +88,7 @@ export async function SnapshotWorkspace() {
     });
 
     if (toSnapshot.length <= 0) {
-        app.$bvToast.toast('There are not any items to snapshot!', {
-            title: 'Error Creating Workspace Snapshot!',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-        });
+        showSaveErrorToast('There are not any items to snapshot!', 'workspace snapshot');
         return;
     }
 
@@ -114,7 +103,7 @@ export async function SnapshotWorkspace() {
         } as SubImage;
     }))
     .then((images) => {
-        return composite_images(images, opts);
+        return composite_images(images, opts)
     })
     .then((composite) => {
         const finfo = dataUriToFile(composite);
@@ -128,7 +117,7 @@ export async function SnapshotWorkspace() {
         }
         return {
                 finfo,
-                dest,
+                dest
         };
     })
     .then((data) => {
@@ -141,16 +130,12 @@ export async function SnapshotWorkspace() {
             });
         });
     })
-    .then((dest) => showSuccessToast(dest as string))
+    .then((dest) => showSaveSuccessToast(dest as string, 'workspace snapshot'))
     .catch((err) => {
         if (err instanceof SaveCancelledError) {
             return; // don't care the user cancelled of their own accord
         }
-        app.$bvToast.toast(err.toString(), {
-            title: 'Error Creating Workspace Snapshot!',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-        });
+        showSaveErrorToast(err, 'workspace snapshot');
     });
 }
 
@@ -162,7 +147,7 @@ export interface SubImage {
     height: number;
 }
 
-export function composite_images(images: Array<SubImage>, opts: SnapshotOptions): Promise<string> {
+export function composite_images(images: SubImage[], opts: SnapshotOptions): Promise<string> {
     const dims = images.reduce((accum, item) => {
         accum.minX = Math.min(accum.minX, item.pos_x);
         accum.maxX = Math.max(accum.maxX, item.pos_x + item.width);
@@ -186,7 +171,7 @@ export function composite_images(images: Array<SubImage>, opts: SnapshotOptions)
 
     const drawers = images.map((item) => {
         return new Promise<void>((resolve, reject) => {
-            const subInfo = dataUriToFile(item.dataURI);
+            const subInfo = dataUriToFile(item.dataURI)
             if (subInfo.extension !== 'png') {
                 reject('non-image data');
                 return;
@@ -227,36 +212,8 @@ function getAllVues(root: Vue) {
     return items;
 }
 
-function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
-    const h = app.$createElement;
-
-    let clickHandler;
-    if (showOrOpen === 'show') {
-        clickHandler = () => shell.showItemInFolder(dest);
-    } else {
-        clickHandler = () => shell.openPath(dest);
-    }
-
-    const body = [
-        h('div', {}, [
-            'Your snapshot was saved successfully to ',
-            h('a', {
-                attrs: { href: 'javascript:void(0)', title: 'Click to open' },
-                on: { click: clickHandler },
-            }, dest),
-        ]),
-    ];
-
-    app.$bvToast.toast(body, {
-        title: 'Snapshot Success!',
-        variant: 'success',
-        toaster: 'b-toaster-bottom-right',
-    });
-    app.$store.commit('history/addEntry', {message: body, variant: 'success'});
-}
-
 function filtersForFinfo(finfo) {
-    const infos = [] as Array<any>;
+    const infos = [] as any[];
     if (finfo.extension === 'png') {
         infos.push({ name: 'Image Files', extensions: ['png']});
     }
@@ -270,11 +227,7 @@ function filtersForFinfo(finfo) {
     return infos;
 }
 
-export function resolveTarget(target: Vue):
-    {
-        type: 'video' | 'svg' | 'html' | 'callback',
-        target: HTMLElement | ((options: SnapshotOptions) => Promise<string>),
-    } {
+export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html'|'callback', target:HTMLElement|((options: SnapshotOptions) => Promise<string>)} {
     const eattr = 'data-snapshot-target';
 
     const explicit = (target.$el.hasAttribute(eattr)
@@ -298,12 +251,12 @@ export function resolveTarget(target: Vue):
             return {
                 type: 'video',
                 target: explicit,
-            };
+            }
         } else {
             return {
                 type: 'html',
                 target: explicit,
-            };
+            }
         }
     }
 
@@ -312,7 +265,7 @@ export function resolveTarget(target: Vue):
         return {
             type: 'svg',
             target: svg,
-        };
+        }
     }
 
     const video = findTag(target, 'video');
@@ -320,7 +273,7 @@ export function resolveTarget(target: Vue):
         return {
             type: 'video',
             target: video,
-        };
+        }
     }
 
     return {
@@ -354,7 +307,7 @@ function getSuggestedFilename(target: Vue) {
     const tgt = resolveTarget(target);
     if (tgt.type === 'video') {
         const src = decodeURIComponent((tgt.target as HTMLVideoElement).src);
-        return src.replace(/[\#\?].*$/, '').replace(/\.[^/.]+$/, '');
+        return src.replace(/[\#\?].*$/,'').replace(/\.[^/.]+$/, '');
     }
     return undefined;
 }
@@ -463,5 +416,3 @@ function encode(input: ArrayBuffer): string {
     }
     return output;
 }
-
-class SaveCancelledError extends Error {}

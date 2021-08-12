@@ -37,19 +37,19 @@ export default Vue.component('syllable-id-filter', {
             // Overall component validation state
             return false;
         },
-        tagsAsIds(): Array<number> {
-            let ids = parsePart(this.tags.join(',')) as Array<number>;
+        tagsAsIds(): number[] {
+            let ids = parsePart(this.tags.join(',')) as number[];
             ids = [...new Set(ids)].sort((a, b) => a - b);
             return ids;
         },
-        tagsAsRanges(): Array<string> {
+        tagsAsRanges(): string[] {
             return this.idsToRanges(this.tagsAsIds);
         },
         module_filter: {
-            get(): Array<number> {
+            get(): number[] {
                 return this.dataview.moduleIdFilter || [];
             },
-            set(event: Array<number>) {
+            set(event: number[]) {
                 this.$store.dispatch(`${this.datasource}/updateModuleIdFilters`, event);
             },
         },
@@ -68,7 +68,7 @@ export default Vue.component('syllable-id-filter', {
     methods: {
         tagValidator(tag) {
             // Individual tag validator function
-            const ids = parsePart(tag) as Array<number>;
+            const ids = parsePart(tag) as number[];
             if (ids.length <= 0) {
                 return false;
             }
@@ -79,8 +79,8 @@ export default Vue.component('syllable-id-filter', {
             }
             return true;
         },
-        idsToRanges(ids: Array<number>): Array<string> {
-            const ranges: Array<string> = [];
+        idsToRanges(ids: number[]): string[] {
+            const ranges: string[] = [];
             if (ids.length === 1) {
                 ranges.push(ids[0].toString());
             }

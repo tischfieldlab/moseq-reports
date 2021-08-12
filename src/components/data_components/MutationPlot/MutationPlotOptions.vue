@@ -1,6 +1,6 @@
 <template>
     <b-container fluid>
-        <b-row>
+        <!--<b-row>
             <b-col>
                 <b-input-group prepend="Group Ordering">
                     <b-form-select v-model="group_order_type" :options="group_order_options"></b-form-select>
@@ -14,47 +14,93 @@
                     <DatasetPicker v-model="group_order_dataset" :dataview="dataview" :owner="subid" />
                 </b-input-group>
             </b-col>
+        </b-row>-->
+        <b-row>
+            <b-col>
+                <b-input-group prepend="Module Ordering">
+                    <b-form-select v-model="syllable_order_type" :options="syllable_order_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="syllable_order_type === 'value'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Sort by">
+                    <b-form-select v-model="syllable_order_group_value" :options="group_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="syllable_order_type === 'value'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Direction">
+                    <b-form-select v-model="syllable_order_direction" :options="order_direction_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="syllable_order_type === 'computed'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Minuend Group">
+                    <b-form-select v-model="syllable_order_diff_minuend" :options="group_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="syllable_order_type === 'computed'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Subtrahend Group">
+                    <b-form-select v-model="syllable_order_diff_subtrahend" :options="group_options"></b-form-select>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <b-row v-show="syllable_order_type === 'dataset'">
+            <b-col cols="1"></b-col>
+            <b-col>
+                <b-input-group prepend="Dataset">
+                    <DatasetPicker v-model="syllable_order_dataset" :dataview="dataview" :owner="subid" />
+                </b-input-group>
+            </b-col>
         </b-row>
         <b-row>
-            <b-form-checkbox v-model="show_points" switch>
-                Show Individual Data Points
-            </b-form-checkbox>
-        </b-row>
-        <b-row v-show="show_points">
-            <b-col cols="1"></b-col>
             <b-col>
                 <b-input-group prepend="Point Size">
-                    <b-form-input type="number" v-model="point_size" min="1" max="10" ></b-form-input>
+                    <b-form-input type="number" v-model="point_size" :disabled="!show_points" min="1" max="10" ></b-form-input>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_points" switch />
+                    </b-input-group-append>
                 </b-input-group>
             </b-col>
         </b-row>
         <b-row>
-            <b-form-checkbox v-model="show_boxplot" switch>
-                Show Boxplot
-            </b-form-checkbox>
-        </b-row>
-        <b-row v-show="show_boxplot">
-            <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Whiskers">
-                    <b-form-select v-model="boxplot_whiskers" :options="whisker_options"></b-form-select>
-                    <div class="figure-caption">{{ boxplot_whisker_description }}</div>
+                <b-input-group prepend="Line Weight">
+                    <b-form-input type="number" v-model="line_weight" :disabled="!show_lines" min="1" max="10" ></b-form-input>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_lines" switch />
+                    </b-input-group-append>
                 </b-input-group>
             </b-col>
         </b-row>
         <b-row>
-            <b-form-checkbox v-model="show_violinplot" switch>
-                Show Violin Plot
-            </b-form-checkbox>
+            <b-col>
+                <b-input-group prepend="Error Bars">
+                    <!-- not used yet -->
+                    <b-form-select v-model="error_type" :options="error_type_options" :disabled="!show_errors"></b-form-select>
+                    <b-input-group-append is-text>
+                        <b-form-checkbox v-model="show_errors" switch />
+                    </b-input-group-append>
+                </b-input-group>
+            </b-col>
         </b-row>
     </b-container>
 </template>
 
 <script scoped lang="ts">
+import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
-import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import {OrderingType, SortOrderDirection} from '@/components/Charts/ClusteredHeatmap';
 import DatasetPicker from '@/components/DatasetPicker.vue';
 
 
@@ -62,7 +108,21 @@ export default mixins(WindowMixin).extend({
     components: {
         DatasetPicker,
     },
+    mounted() {
+        if (this.syllable_order_group_value === undefined) {
+            this.syllable_order_group_value = this.group_options[0].value;
+        }
+        if (this.syllable_order_diff_minuend === undefined) {
+            this.syllable_order_diff_minuend = this.group_options[0].value;
+        }
+        if (this.syllable_order_diff_subtrahend === undefined) {
+            this.syllable_order_diff_subtrahend = this.group_options[0].value;
+        }
+    },
     computed: {
+        group_options(): {text: string, value: string}[] {
+            return this.dataview.selectedGroups.map((g) => ({text: g, value: g}));
+        },
         group_order_type: {
             get(): string {
                 return this.settings.group_order_type;
@@ -89,6 +149,84 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        syllable_order_type: {
+            get(): string {
+                return this.settings.syllable_order_type;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        syllable_order_type: value,
+                    },
+                });
+            },
+        },
+        syllable_order_group_value: {
+            get(): string {
+                return this.settings.syllable_order_group_value;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        syllable_order_group_value: value.toString(),
+                    },
+                });
+            },
+        },
+        syllable_order_diff_minuend: {
+            get(): string {
+                return this.settings.syllable_order_diff_minuend;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        syllable_order_diff_minuend: value.toString(),
+                    },
+                });
+            },
+        },
+        syllable_order_diff_subtrahend: {
+            get(): string {
+                return this.settings.syllable_order_diff_subtrahend;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        syllable_order_diff_subtrahend: value.toString(),
+                    },
+                });
+            },
+        },
+        syllable_order_direction: {
+            get(): SortOrderDirection {
+                return this.settings.syllable_order_direction;
+            },
+            set(value: SortOrderDirection) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        syllable_order_direction: value,
+                    },
+                });
+            },
+        },
+        syllable_order_dataset: {
+            get(): string {
+                return this.settings.syllable_order_dataset;
+            },
+            set(value: string) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        syllable_order_dataset: value,
+                    },
+                });
+            },
+        },
         show_points: {
             get(): boolean {
                 return this.settings.show_points;
@@ -103,58 +241,66 @@ export default mixins(WindowMixin).extend({
             },
         },
         point_size: {
-            get(): boolean {
+            get(): number {
                 return this.settings.point_size;
             },
-            set(value: boolean) {
+            set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        point_size: value,
+                        point_size: Number.parseInt(value, 10),
                     },
                 });
             },
         },
-        show_boxplot: {
+        show_lines: {
             get(): boolean {
-                return this.settings.show_boxplot;
+                return this.settings.show_lines;
             },
             set(value: boolean) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        show_boxplot: value,
+                        show_lines: value,
                     },
                 });
             },
         },
-        boxplot_whiskers: {
-            get(): WhiskerType {
-                return this.settings.boxplot_whiskers;
+        line_weight: {
+            get(): number {
+                return this.settings.line_weight;
             },
-            set(value: WhiskerType) {
+            set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        boxplot_whiskers: value,
+                        line_weight: Number.parseInt(value, 10),
                     },
                 });
             },
         },
-        boxplot_whisker_description: {
+        show_errors: {
+            get(): boolean {
+                return this.settings.show_errors;
+            },
+            set(value: boolean) {
+                this.$store.commit(`${this.id}/updateComponentSettings`, {
+                    id: this.id,
+                    settings: {
+                        show_errors: value,
+                    },
+                });
+            },
+        },
+        error_type: {
             get(): string {
-                return this.whisker_options.find((wo) => wo.value === this.boxplot_whiskers)!.description;
+                return this.settings.error_type;
             },
-        },
-        show_violinplot: {
-            get(): boolean {
-                return this.settings.show_violinplot;
-            },
-            set(value: boolean) {
+            set(value: string) {
                 this.$store.commit(`${this.id}/updateComponentSettings`, {
                     id: this.id,
                     settings: {
-                        show_violinplot: value,
+                        error_type: value,
                     },
                 });
             },
@@ -162,20 +308,23 @@ export default mixins(WindowMixin).extend({
     },
     data() {
         return {
-            whisker_options: [
-                {
-                    value: WhiskerType.TUKEY,
-                    text: 'Tukey',
-                    description: 'Whiskers extend up to 1.5 * IQR from 25th and 75th percentile',
-                }, {
-                    value: WhiskerType.MIN_MAX,
-                    text: 'Min/Max',
-                    description: 'Whiskers extend to min and max data points',
-                },
-            ],
             group_order_options: [
                 { text: 'Filter Order', value: OrderingType.Natural },
                 { text: 'Dataset', value: OrderingType.Dataset },
+            ],
+            syllable_order_options: [
+                { text: 'ID', value: OrderingType.Natural },
+                { text: 'Value', value: OrderingType.Value },
+                { text: 'Value Difference', value: OrderingType.Computed },
+                { text: 'Dataset', value: OrderingType.Dataset },
+            ],
+            order_direction_options: [
+                { text: 'Ascending', value: SortOrderDirection.Asc },
+                { text: 'Descending', value: SortOrderDirection.Dec },
+            ],
+            error_type_options: [
+                { text: 'SEM', value: 'sem' },
+                { text: '95% CI', value: 'ci95' },
             ],
         };
     },

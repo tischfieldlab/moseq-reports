@@ -1,7 +1,7 @@
 
 
 export interface HistoryState {
-    items: Array<HistoryItem>;
+    items: HistoryItem[];
 }
 
 export interface HistoryItem {

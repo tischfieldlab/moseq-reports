@@ -1,11 +1,12 @@
 
 
 export interface DatasetsState {
+    isLoaded: boolean;
     bundle: string; // path to the bundle
     name: string; // basename of the bundle
     manifest: object;
-    groups: Array<string>;
-    label_map: Array<LabelMapRecord>;
+    groups: string[];
+    label_map: LabelMapRecord[];
 }
 
 export interface LabelMapRecord {

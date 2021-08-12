@@ -18,7 +18,7 @@
                 </small>
 
                 <b-collapse v-if="itm.details != null" :id="$id('details-'+idx)"  class="mt-2">
-                    {{ itm.details }}
+                    <b-textarea :readonly="true" rows="5" v-model="itm.details" class="details-text" />
                 </b-collapse>
             </b-toast>
         </template>
@@ -44,7 +44,7 @@ export default Vue.extend({
         RenderNode,
     },
     computed: {
-        items(): Array<HistoryItem> {
+        items(): HistoryItem[] {
             return this.$store.state.history.items.slice().reverse();
         },
     },
@@ -54,6 +54,8 @@ export default Vue.extend({
         },
     },
 });
+
+
 </script>
 
 <style scoped>
@@ -75,5 +77,10 @@ h3 {
 }
 a.details-link {
     margin-left: 10px;
+}
+.details-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    white-space: pre;
 }
 </style>

@@ -2,7 +2,8 @@
 
 
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
-import {interpolateRgb} from 'd3-interpolate';
+import {ScaleLinear, ScaleContinuousNumeric} from 'd3-scale';
+import {interpolateRgb, interpolateRgbBasis} from 'd3-interpolate';
 
 const ScaleCategories = {
     'Diverging': [
@@ -64,8 +65,8 @@ ScaleCategories['Sequential (Single Hue)'].push('interpolateYellows');
 
 function GetCategoryForScale(scaleName: string): string {
     const cats = Object.getOwnPropertyNames(ScaleCategories);
-    for (const cat in cats) {
-        if ((ScaleCategories[cat] as Array<string>).includes(scaleName)) {
+    for(const cat in cats) {
+        if((ScaleCategories[cat] as string[]).includes(scaleName)){
             return cat;
         }
     }
@@ -88,7 +89,7 @@ export function GetScale(name: string) {
         const parts = name.split(':');
         return interpolateRgb(parts[1], parts[2]);
     } else {
-        return d3ScaleChromatic[name] as ((t: number) => string) | Array<string>;
+        return d3ScaleChromatic[name] as ((t: number) => string) | string[];
     }
 }
 export function GetScaleWithOpacity(name: string, opacity: any) {
@@ -118,9 +119,9 @@ export function getContrastingColor(hexcolor: string): 'dark'|'light' {
             hexcolor = hexcolor.split('').map((hex) => hex + hex).join('');
         }
         // Convert to RGB value
-        const r = parseInt(hexcolor.substr(0, 2), 16);
-        const g = parseInt(hexcolor.substr(2, 2), 16);
-        const b = parseInt(hexcolor.substr(4, 2), 16);
+        const r = parseInt(hexcolor.substr(0,2),16);
+        const g = parseInt(hexcolor.substr(2,2),16);
+        const b = parseInt(hexcolor.substr(4,2),16);
         // Get YIQ ratio
         const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
         // Check contrast

@@ -1,6 +1,7 @@
 <script lang="ts">
+import Vue from 'vue';
 import { hexbin } from 'd3-hexbin';
-import { scaleLinear, scaleSequential } from 'd3-scale';
+import { scaleLinear, scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { spawn, Thread, Worker, ModuleThread } from 'threads';
 import { HexbinWorker } from './Worker';
@@ -172,8 +173,8 @@ export default mixins(LoadingMixin).extend({
             }
             this.emitStartLoading();
 
-            worker.binData(this.data as Array<any>,
-                        this.useGroups ? this.groupLabels as Array<string> : null,
+            worker.binData(this.data as any[],
+                        this.useGroups ? this.groupLabels as string[] : null,
                         this.scale.x.range()[1],
                         this.resolution)
                 .then((result) => {

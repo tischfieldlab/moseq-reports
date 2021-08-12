@@ -1,8 +1,10 @@
 
 <script lang="ts">
+import Vue, { PropType } from 'vue';
+import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
-import { WhiskerType, GroupStats, DataPoint, DataPointQueueNode } from './BoxPlot.types';
+import { WhiskerType, GroupStats, DataPoint } from './BoxPlot.types';
 import { spawn, Thread, Worker, ModuleThread } from 'threads';
 import { BoxPlotWorker } from './Worker';
 import LoadingMixin from '@/components/Core/LoadingMixin';
@@ -21,13 +23,13 @@ let worker: ModuleThread<BoxPlotWorker>;
 })();
 
 
-function default_tooltip_formatter(value: any, that) {
-    if (value !== undefined) {
+function default_tooltip_formatter(value: DataPoint|GroupStats, sender: Vue) {
+    if (value !== undefined){
         if (value.hasOwnProperty('id')) {
             const itm = value as DataPoint;
             return `ID: ${itm.id}<br />
                     Value: ${itm.value.toExponential(3)}`;
-        } else if (value.hasOwnProperty('count')) {
+        } else if(value.hasOwnProperty('count')) {
             const itm = value as GroupStats;
             return `Group: ${itm.group}<br />
                     Count: ${itm.count.toString()}<br />
@@ -70,18 +72,22 @@ export default mixins(LoadingMixin).extend({
             default: false,
             type: Boolean,
         },
+        kde_scale: {
+            default: 0.01,
+            type: Number,
+        },
         point_size: {
             default: 2,
             type: Number,
         },
         groupLabels: {
             required: true,
-            type: Array, /* Array<string> */
+            type: Array as PropType<string[]>,
             default: () => new Array<string>(),
         },
         groupColors: {
             required: true,
-            type: Array, /* Array<string> */
+            type: Array as PropType<string[]>,
             default: () => new Array<string>(),
         },
         xAxisTitle: {
@@ -93,7 +99,7 @@ export default mixins(LoadingMixin).extend({
             default: 'Value',
         },
         tooltipFormatter: {
-            type: Function,
+            type: Function as PropType<(item:DataPoint|GroupStats, sender:Vue) => string>,
             default: default_tooltip_formatter,
         },
         noDataMessage: {
@@ -117,7 +123,7 @@ export default mixins(LoadingMixin).extend({
             label_stats: {count: 0, total: 0, longest: 0},
             domainY: [0, 0],
             domainKde: [0, 0],
-            tooltipPosition: undefined as {x: number, y: number}|undefined,
+            tooltipPosition: undefined as {x: number, y:number}|undefined,
             hoverItem: undefined as object|undefined,
         };
     },
@@ -155,11 +161,15 @@ export default mixins(LoadingMixin).extend({
             return { x, y };
         },
         scale(): any {
-            if (this.points === undefined) {
+            if (this.groupedData === undefined) {
                 return { x: scaleBand(), y: scaleLinear() };
             }
+            const orderedLabels = this.groupedData
+                .map((gs) => gs.group)
+                .sort((a, b) => this.groupLabels.indexOf(a) - this.groupLabels.indexOf(b))
+
             const x = scaleBand()
-                .domain(this.groupLabels as Array<string>)
+                .domain(orderedLabels)
                 .range([0, this.innerWidth])
                 .padding(0.2);
 
@@ -172,8 +182,8 @@ export default mixins(LoadingMixin).extend({
                 .range([0, x.bandwidth()]);
 
             const c = scaleOrdinal()
-                .domain(this.groupLabels as Array<string>)
-                .range(this.groupColors as Array<string>);
+                .domain(this.groupLabels as string[])
+                .range(this.groupColors as string[]);
 
             return { x, y, w, c };
         },
@@ -222,7 +232,7 @@ export default mixins(LoadingMixin).extend({
             return this.show_points && !tooMany;
         },
         tooltip_text(): string {
-            if (this.hoverItem !== undefined) {
+            if (this.hoverItem !== undefined){
                 return (this.tooltipFormatter as (itm, that) => string)(this.hoverItem, this);
             }
             return '';
@@ -230,39 +240,46 @@ export default mixins(LoadingMixin).extend({
     },
     watch: {
         data: {
-            async handler(newData: Array<DataPoint>) {
-                if (newData === null) {
-                    return;
-                }
-                worker.prepareData(newData as Array<any>,
-                            this.innerHeight,
-                            this.point_size,
-                            this.groupLabels as Array<string>,
-                            this.show_points)
-                    .then((result) => {
-                        if (result !== undefined) {
-                            this.points = result.points;
-                            this.groupedData = result.groupedData,
-                            this.domainY = result.domainY;
-                            this.domainKde = result.domainKde,
-                            this.compute_label_stats(this.groupLabels as Array<string>);
-                        }
-                    });
+            handler(newData: DataPoint[]) {
+                this.prepareData(newData);
             },
             immediate: true,
         },
         width() {
-            this.compute_label_stats(this.groupLabels as Array<string>);
+            this.compute_label_stats(this.groupLabels as string[]);
         },
         async point_size(newValue) {
             const result = await worker.swarm_points(this.points,
-                                                     this.groupLabels  as Array<string>,
+                                                     this.groupLabels  as string[],
                                                      {domain: this.scale.y.domain(), range: this.scale.y.range()},
                                                      this.point_size);
             this.points = result;
         },
+        kde_scale() {
+            this.prepareData(this.data as DataPoint[]);
+        }
     },
     methods: {
+        prepareData(newData: DataPoint[]) {
+            if (newData === null) {
+                return;
+            }
+            worker.prepareData(newData,
+                        this.innerHeight,
+                        this.point_size,
+                        this.groupLabels,
+                        this.show_points,
+                        this.kde_scale)
+                .then((result) => {
+                    if (result !== undefined) {
+                        this.points = result.points;
+                        this.groupedData = result.groupedData,
+                        this.domainY = result.domainY;
+                        this.domainKde = result.domainKde,
+                        this.compute_label_stats(this.groupLabels);
+                    }
+                });
+        },
         is_outlier(node: DataPoint): boolean {
             const group = this.groupedData.find((v) => v.group === node.group);
             if (group) {
@@ -271,7 +288,7 @@ export default mixins(LoadingMixin).extend({
             }
             return false;
         },
-        compute_label_stats(labels: Array<string>) {
+        compute_label_stats(labels: string[]) {
             // abstract implementation
         },
     },

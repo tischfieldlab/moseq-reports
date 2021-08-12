@@ -31,7 +31,7 @@
                 muted="true" />
         </div>
         <div v-show="!video_loaded" class="no-syllable">
-            <b-card bg-variant="primary" text-variant="white" class="text-center">
+            <b-card bg-variant="primary" text-variant="white" class="text-center" style="width: 50%; margin-top: 20%;">
                 <b-card-text>
                     Sorry, there are no clips available for Syllable {{selected_syllable}} ({{count_method}}) 
                 </b-card-text>
@@ -41,6 +41,7 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
@@ -96,7 +97,7 @@ export default mixins(WindowMixin).extend({
         count_method(): CountMethod {
             return this.dataview.countMethod;
         },
-        items(): Array<any> {
+        items(): any[] {
             const ids = this.$store.getters[`${this.datasource}/selectedSyllableMap`];
             if (this.$store.state.datasets.manifest.hasOwnProperty('syllable_clips')) {
                 const items = this.$store.state.datasets.manifest.syllable_clips.manifest.filter((row) => {
@@ -232,7 +233,7 @@ export default mixins(WindowMixin).extend({
             this.example_num++;
         },
         timeToSeconds(time: string) {
-            return time.split(':').reduce((acc, t) => (60 * acc) + Number.parseFloat(t), 0);
+            return time.split(':').reduce((acc,t) => (60 * acc) + Number.parseFloat(t), 0);
         },
     },
 });

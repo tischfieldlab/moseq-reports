@@ -6,7 +6,6 @@ import portscanner from 'portscanner';
 
 const minSearchPort = 3000;
 const maxSearchPort = 4000;
-let serverPort;
 let server: http.Server|undefined;
 
 export function GetAddress() {
@@ -20,7 +19,6 @@ export async function CreateServer() {
     }
     return portscanner.findAPortNotInUse(minSearchPort, maxSearchPort).then((port) => {
         return new Promise<void>((resolve, reject) => {
-            serverPort = port;
             server = http.createServer((request, response) => {
                 // Set CORS headers
                 response.setHeader('Access-Control-Allow-Origin', '*');
@@ -63,7 +61,7 @@ export async function CreateServer() {
                         if (start >= size || end >= size) {
                             // Return the 416 Range Not Satisfiable.
                             response.writeHead(416, {
-                                'Content-Range': `bytes */${size}`,
+                                'Content-Range': `bytes */${size}`
                             });
                             return response.end();
                         }
@@ -72,9 +70,9 @@ export async function CreateServer() {
                             'Content-Range': `bytes ${start}-${end}/${size}`,
                             'Accept-Ranges': 'bytes',
                             'Content-Length': end - start + 1,
-                            'Content-Type': fileType?.mime,
+                            'Content-Type': fileType?.mime
                         });
-                        response.end(buffer.slice(start, end + 1));
+                        response.end(buffer.slice(start, end+1))
                     } else {
                         readFileContents(fpath)
                             .then((data) => {
@@ -85,9 +83,9 @@ export async function CreateServer() {
                             });
                     }
                 }).resume();
-            });
+            })
             server.on('listening', () => resolve());
-            server.on('error', (err) => reject(err));
+            server.on('error', (err) => reject(err))
             server.listen(port);
         });
     });

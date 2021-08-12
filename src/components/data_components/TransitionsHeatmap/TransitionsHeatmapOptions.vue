@@ -2,7 +2,7 @@
     <b-container fluid>
         <b-row>
             <b-col>
-                <b-input-group prepend="Colormap">
+                <b-input-group prepend="Colormap" style="flex-wrap:nowrap">
                     <ColorScalePicker v-model="abs_colorscale" />
                 </b-input-group>
             </b-col>
@@ -23,7 +23,7 @@
         <b-row v-show="show_relative_diff">
             <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Relative Colormap">
+                <b-input-group prepend="Relative Colormap" style="flex-wrap:nowrap">
                     <ColorScalePicker v-model="rel_colorscale" />
                 </b-input-group>
             </b-col>
@@ -32,6 +32,7 @@
 </template>
 
 <script scoped lang="ts">
+import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
@@ -49,7 +50,7 @@ export default mixins(WindowMixin).extend({
         },
     },
     computed: {
-        selectedGroups(): Array<string> {
+        selectedGroups(): string[] {
             return this.dataview.selectedGroups;
         },
         abs_colorscale: {

@@ -6,7 +6,7 @@ import DataviewModule from './dataview.store';
 
 interface FiltersState {
     basename: string;
-    items: Array<string>;
+    items: string[];
 }
 
 const FiltersModule: Module<FiltersState, RootState> = {
@@ -43,7 +43,7 @@ const FiltersModule: Module<FiltersState, RootState> = {
         },
         async loadFilters(context, filters: any) {
             const existing = [...context.state.items];
-            const imported: Array<string> = [];
+            const imported: string[] = [];
             const namespace = getModuleNamespace(store, context.state) as string;
             Object.entries(filters).forEach(async ([name, filter]) => {
                 const fullpath = `${namespace}/${name}`;

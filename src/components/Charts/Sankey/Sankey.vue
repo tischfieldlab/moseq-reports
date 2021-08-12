@@ -101,7 +101,7 @@ export default Vue.extend({
     props: {
         data: {
             required: true,
-            default: {nodes: [], links: []} as {nodes: Array<Node>, links: Array<Link>},
+            default: {nodes: [], links: []} as {nodes: Node[], links: Link[]},
         },
         width: {
             required: true,
@@ -166,7 +166,7 @@ export default Vue.extend({
                 bottom: 20,
                 left: 20,
             },
-            tooltipPosition: undefined as {x: number, y: number}|undefined,
+            tooltipPosition: undefined as {x: number, y:number}|undefined,
             hoverItem: undefined as object|undefined,
             debouncedHover: (event: MouseEvent) => {/**/},
         };
@@ -174,8 +174,8 @@ export default Vue.extend({
     watch: {
         linkColorMode: {
             handler(newValue) {
-                if (newValue === ColoringMode.Quantitative) {
-                    this.margin.bottom = 70;
+                if (newValue === ColoringMode.Quantitative){
+                    this.margin.bottom = 70
                 } else {
                     this.margin.bottom = 20;
                 }
@@ -187,14 +187,14 @@ export default Vue.extend({
         this.debouncedHover = throttle(this.handleHover, 10);
     },
     computed: {
-        graph(): {nodes: Array<Node>, links: Array<Link>} {
+        graph(): {nodes: Node[], links: Link[]} {
             if (this.data.nodes.length > 0) {
                 return this.sankeyGen(this.data);
             }
             return this.data;
         },
         tooltip_text(): string {
-            if (this.hoverItem !== undefined) {
+            if (this.hoverItem !== undefined){
                 return (this.tooltipFormatter as (itm, that) => string)(this.hoverItem, this);
             }
             return '';
@@ -236,7 +236,7 @@ export default Vue.extend({
             let n;
             if (this.nodeColorMode === ColoringMode.Categorical) {
                 n = scaleOrdinal<string, string>()
-                    .range(GetScale(this.categoricalColormap) as Array<string>);
+                    .range(GetScale(this.categoricalColormap) as string[]);
                 if (this.nodeIdSuperset !== undefined) {
                     n = n.domain(this.nodeIdSuperset);
                 } else {
@@ -250,19 +250,19 @@ export default Vue.extend({
                 const abstransMax = max(this.data.links, (d) => Math.abs(d[this.linkColorProperty])) || 1;
                 li = scaleDiverging(GetScale(this.quantitativeColormap) as (t: number) => string)
                         .domain([-abstransMax, 0, abstransMax]);
-                l = (link: Link) => color(li(link[this.linkColorProperty]) as string);
+                l = (link: Link) => color(li(link[this.linkColorProperty]) as string)
             } else {
                 li = scaleOrdinal()
-                    .range(GetScale(this.categoricalColormap) as Array<string>)
+                    .range(GetScale(this.categoricalColormap) as string[])
                     .domain(this.data.links.map((d) => d[this.linkColorProperty]));
-                l = (link: Link) => color(li(link[this.linkColorProperty]) as string)!.brighter(0.5);
+                l = (link: Link) => color(li(link[this.linkColorProperty]) as string)!.brighter(0.5)
             }
             return { n, l, li };
         },
     },
     methods: {
         color(value) {
-            return color(value);
+            return color(value)
         },
         onNodeClick(event, node) {
             this.$emit('node-click', {
@@ -279,12 +279,12 @@ export default Vue.extend({
             });
         },
         handleHover(event: MouseEvent) {
-            if (event && event.target !== null) {
+            if (event && event.target !== null){
                 const target = event.target as HTMLElement;
                 if (target.dataset.nodeid) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY,
+                        y: event.clientY
                     };
                     this.hoverItem = this.data.nodes.find((n) => n.id.toString() === target.dataset.nodeid);
                     return;
@@ -293,7 +293,7 @@ export default Vue.extend({
                 if (target.dataset.transitionid) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY,
+                        y: event.clientY
                     };
                     this.hoverItem = this.data.links.find((n) => n.id.toString() === target.dataset.transitionid);
                     return;

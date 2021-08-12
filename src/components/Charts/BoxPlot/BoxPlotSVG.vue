@@ -48,7 +48,7 @@
 
                     <g class="outliers">
                         <template v-for="(node) in points">
-                            <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
+                            <!-- Diamonds for each outlier node -->
                             <path v-if="is_outlier(node)"
                                 :data-identifier="node.id"
                                 :key="node.id"
@@ -69,7 +69,7 @@
         </g>
         <g v-if="actuallyShowPoints" class="node" :transform="`translate(${margin.left}, ${margin.top})`">
             <template v-for="(node) in points">
-                <!-- Circles for each node v-b-tooltip.html :title="point_tooltip(node)" -->
+                <!-- Circles for each node or diamonds for outliers -->
                 <path v-if="is_outlier(node)"
                     :key="node.id"
                     :data-identifier="node.id"
@@ -105,7 +105,9 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 import * as d3 from 'd3';
+import { axisBottom, axisLeft } from 'd3-axis';
 import BoxPlotBase from './BoxPlotBase.vue';
 import { sum } from 'd3-array';
 import mixins from 'vue-typed-mixins';
@@ -129,7 +131,7 @@ export default mixins(BoxPlotBase).extend({
         this.debouncedHover = throttle(this.handleHover, 10);
     },
     methods: {
-        compute_label_stats(labels: Array<string>) {
+        compute_label_stats(labels: string[]) {
             const canvas = this.$refs.canvas as SVGSVGElement;
             if (canvas === undefined) {
                 // if canvas is not available yet (i.e. before fully mounted)
@@ -151,13 +153,13 @@ export default mixins(BoxPlotBase).extend({
             };
         },
         handleHover(event: MouseEvent) {
-            if (event && event.target !== null) {
+            if (event && event.target !== null){
                 const target = event.target as HTMLElement;
                 // individual points have data-id set
                 if (target.dataset.identifier) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY,
+                        y: event.clientY
                     };
                     this.hoverItem = this.points.find((itm) => {
                         return itm.id.toString() === target.dataset.identifier;
@@ -168,7 +170,7 @@ export default mixins(BoxPlotBase).extend({
                 if (target.dataset.group) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY,
+                        y: event.clientY
                     };
                     this.hoverItem = this.groupedData.find((itm) => {
                         return itm.group.toString() === target.dataset.group;
@@ -184,9 +186,9 @@ export default mixins(BoxPlotBase).extend({
         axis(el, binding) {
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis] as string;
                 const methodArg = binding.value[axis];
-                d3.select(el).call(d3[axisMethod!](methodArg));
+                d3.select(el).call(d3[axisMethod](methodArg));
             }
         },
     },

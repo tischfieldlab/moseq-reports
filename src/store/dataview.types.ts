@@ -10,28 +10,33 @@ export interface DataviewState {
     color: string;
     loading: boolean;
     countMethod: CountMethod;
-    selectedGroups: Array<string>;
-    groupColors: Array<string>;
-    moduleIdFilter: Array<number>;
+    selectedGroups: string[];
+    groupColors: string[];
+    moduleIdFilter: number[];
     selectedSyllable: number;
     views: {};
 }
 
 export interface DataviewPayload {
     countMethod?: CountMethod;
-    selectedGroups?: Array<string>;
-    groupColors?: Array<string>;
-    moduleIdFilter?: Array<number>;
+    selectedGroups?: string[];
+    groupColors?: string[];
+    moduleIdFilter?: number[];
     view?: any;
 }
 
 export interface SelectedGroupsPayload {
-    groups?: Array<string>;
-    colors?: Array<string>;
+    groups?: string[];
+    colors?: string[];
 }
 
-export interface PublishedDataset {
+export interface PublishDatasetPayload {
     owner: string;
     name: string;
     data: any;
+}
+
+export interface UnpublishDatasetPayload {
+    owner: string;
+    name: string;
 }

@@ -16,6 +16,7 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
@@ -77,13 +78,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         useGroups(): boolean {
             return this.settings.mode === PositionPlotMode.Grouped;
         },
-        groupNames(): Array<string> {
+        groupNames(): string[] {
             return this.dataview.selectedGroups;
         },
-        groupColors(): Array<string> {
+        groupColors(): string[] {
             return this.dataview.groupColors;
         },
-        dataspec(): Array<string> {
+        dataspec(): string[] {
             const rID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Raw);
             return [
                 this.$store.getters[`datasets/resolve`](`scalars/${rID}`),

@@ -20,7 +20,7 @@
                 muted="true" />
         </div>
         <div v-show="!video_loaded" class="no-syllable">
-            <b-card bg-variant="primary" text-variant="white" class="text-center">
+            <b-card bg-variant="primary" text-variant="white" class="text-center" style="width: 50%; margin-top: 30%;">
                 <b-card-text>
                     Sorry, there is no crowd movie available for Syllable {{selected_syllable}} ({{count_method}}) 
                 </b-card-text>
@@ -30,6 +30,7 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';

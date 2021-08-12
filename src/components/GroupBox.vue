@@ -73,7 +73,7 @@ export default Vue.extend({
     },
     data() {
         return {
-            groups: [] as Array<SelectableGroupItem>,
+            groups: [] as SelectableGroupItem[],
             group_counts: {},
             colorChangeHandler: (option, event) => {/**/},
             watchers: Array<(() => void)>(),
@@ -109,8 +109,8 @@ export default Vue.extend({
                     return {};
                 }
                 return {
-                    c: unnest(state, this.datasource).groupColors || [] as Array<string>,
-                    s: unnest(state, this.datasource).selectedGroups || [] as Array<string>,
+                    c: unnest(state, this.datasource).groupColors || [] as string[],
+                    s: unnest(state, this.datasource).selectedGroups || [] as string[],
                 };
             },
             (newValue) => {
@@ -132,7 +132,7 @@ export default Vue.extend({
     },
     methods: {
         async buildGroups() {
-            const groups = [] as Array<SelectableGroupItem>; // Need to reset this so that we don't have duplicate options.
+            const groups = [] as SelectableGroupItem[]; // Need to reset this so that we don't have duplicate options.
             const availableGroups = this.$store.getters[`${this.datasource}/availableGroups`] || [];
             const selectedGroups = this.dataview !== undefined ? this.dataview.selectedGroups : [];
             const colorScale = this.dataview !== undefined ? this.dataview.groupColors : [];
@@ -162,7 +162,7 @@ export default Vue.extend({
         async updateGroupCounts() {
             try {
                 this.group_counts = await LoadData(this.$store.getters[`datasets/resolve`]('samples'), [{type: 'map'}])
-                    .then((data: Array<any>) => {
+                    .then((data: any[]) => {
                         return data.reduce((acc, curr) => {
                             if (acc[curr.default_group] === undefined) {
                                 acc[curr.default_group] = 1;

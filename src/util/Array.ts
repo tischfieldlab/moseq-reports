@@ -1,9 +1,9 @@
 
-export function transpose(data: Array<Array<number>>): Array<Array<number>> {
+export function transpose(data: number[][]): number[][] {
     return data[0].map((col, i) => data.map((row) => row[i]));
 }
 
-export function groupby<TItem>(data: Array<TItem>, fn: (item: TItem) => string, keys: Array<any> = []): {[key: string]: Array<TItem>} {
+export function groupby<TItem>(data: TItem[], fn: (item: TItem) => string, keys: any[] = []): {[key: string]: TItem[]} {
     return data.reduce((rv, item) => {
         (rv[fn(item)] = rv[fn(item)] || []).push(item);
         return rv;
@@ -13,7 +13,7 @@ export function groupby<TItem>(data: Array<TItem>, fn: (item: TItem) => string, 
     }, {}));
 }
 
-export function sample<TItem>(arr: Array<TItem>, size: number): Array<TItem> {
+export function sample<TItem>(arr: TItem[], size: number): TItem[] {
     const shuffled = arr.slice(0);
     let i = arr.length;
     const min = i - size;

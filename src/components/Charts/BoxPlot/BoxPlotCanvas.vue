@@ -16,6 +16,7 @@
 </template>
 
 <script lang='ts'>
+import Vue from 'vue';
 import BoxPlotBase from './BoxPlotBase.vue';
 import { GroupStats, DataPoint } from './BoxPlot.types';
 import { sum } from 'd3-array';
@@ -257,7 +258,7 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
             ctx.fillText(this.yAxisTitle, -this.innerHeight / 2, -50);
             ctx.restore();
         },
-        compute_label_stats(labels: Array<string>) {
+        compute_label_stats(labels: string[]) {
             const ctx = this.canvas.cxt;
             if (ctx !== null) {
                 const widths = labels.map((l) => {
@@ -277,13 +278,13 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
         },
         handleHover(event: MouseEvent) {
             // check points
-            for (const node of this.points as Array<DataPoint>) {
+            for (const node of this.points as DataPoint[]) {
                 const cx = this.scale.x(node.group) + node.jitter + this.halfBandwith + this.margin.left;
                 const cy = this.scale.y(node.value) + this.margin.top;
                 if (PointInsideCircle(cx, cy, this.point_size, event.offsetX, event.offsetY)) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY,
+                        y: event.clientY
                     };
                     this.hoverItem = node;
                     return;
@@ -291,7 +292,7 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
             }
 
             // check boxplot boxes
-            for (const node of this.groupedData as Array<GroupStats>) {
+            for (const node of this.groupedData as GroupStats[]) {
                 const x1 = this.margin.left + this.scale.x(node.group);
                 const y1 = this.margin.top + this.scale.y(node.q1);
                 const x2 = this.margin.left + this.scale.x(node.group) + this.scale.x.bandwidth();
@@ -301,7 +302,7 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
                  && event.offsetY > y1 && event.offsetY <= y2) {
                     this.tooltipPosition = {
                         x: event.clientX,
-                        y: event.clientY,
+                        y: event.clientY
                     };
                     this.hoverItem = node;
                     return;
@@ -314,7 +315,7 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
 });
 
 function PointInsideCircle(cx, cy, r, qx, qy) {
-    return Math.sqrt((cx - qx) ** 2 + (cy - qy) ** 2) < r;
+    return Math.sqrt((cx - qx)**2 + (cy - qy)**2) < r;
 }
 </script>
 

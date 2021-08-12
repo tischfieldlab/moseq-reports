@@ -1,20 +1,18 @@
-# moseq-reports [![Build Status](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml/badge.svg)](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml)
+# moseq-reports [![Build Status](https://travis-ci.com/tischfieldlab/moseq-reports.svg?token=es6YKetAnwLEmS78p5ss&branch=master)](https://travis-ci.com/tischfieldlab/moseq-reports)
 
 ## Project setup
 ```
-git clone https://github.com/tischfieldlab/moseq-reports.git
-cd moseq-reports
 npm install
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run electron:serve
+npm run serve
 ```
 
 ### Compiles and minifies for production
 ```
-npm run electron:build
+npm run build
 ```
 
 ### Run your unit tests

@@ -3,12 +3,15 @@
         :width="this.layout.width"
         :height="this.layout.height - 31"
         :data="this.aggregateView"
-        :groupLabels="this.selectedGroups"
+        :groupLabels="this.includeSyllables"
         :colorscale="this.settings.colormap"
+        :vmin="this.settings.auto_vmin ? undefined : this.settings.vmin"
+        :vmax="this.settings.auto_vmax ? undefined : this.settings.vmax"
 
         :columnOrderType="this.settings.column_order_type"
         :columnClusterDistance="this.settings.column_cluster_distance"
         :columnClusterLinkage="this.settings.column_cluster_linkage"
+        :columnClusterK="this.settings.column_cluster_k"
         :columnOrderValue="this.settings.column_order_row_value"
         :columnOrderDirection="this.settings.column_order_direction"
         :columnOrderDataset="rowOrderDataset"
@@ -16,13 +19,14 @@
         :rowOrderType="this.settings.row_order_type"
         :rowClusterDistance="this.settings.row_cluster_distance"
         :rowClusterLinkage="this.settings.row_cluster_linkage"
-        :rowOrderValue="this.settings.row_order_col_value"
+        :rowClusterK="this.settings.row_cluster_k"
+        :rowOrderValue="this.settings.row_order_column_value"
         :rowOrderDirection="this.settings.row_order_direction"
         :rowOrderDataset="rowOrderDataset"
 
         :xAxisTitle="`Destination Module (${countMethod})`"
         :yAxisTitle="`Source Module (${countMethod})`"
-        :legendTitle="`Behavioral Distance`"
+        :legendTitle="`Behavioral Distance (${this.settings.distance_metric})`"
         columnKey="sink"
         rowKey="source"
         valueKey="value"
@@ -37,17 +41,16 @@
 
 
 <script lang="ts">
+import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
-import ClusteredHeatmapSVG from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapSVG.vue';
-import ClusteredHeatmapCanvas from '@/components/Charts/ClusteredHeatmap/ClusteredHeatmapCanvas.vue';
-
-import { OrderingType, SortOrderDirection } from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import {ClusteredHeatmapSVG, ClusteredHeatmapCanvas } from '@/components/Charts/ClusteredHeatmap';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
 import { RenderMode } from '@/store/datawindow.types';
+import {get_column_ordering_options, get_colormap_options, get_row_ordering_options} from '@/components/Charts/ClusteredHeatmap/Options';
 
 
 RegisterDataComponent({
@@ -60,15 +63,9 @@ RegisterDataComponent({
     default_render_mode: RenderMode.CANVAS,
     default_settings: {
         distance_metric: 'ar[init]',
-        row_order_type: OrderingType.Cluster,
-        row_order_col_value: undefined,
-        row_order_direction: SortOrderDirection.Asc,
-        row_cluster_distance: 'euclidean',
-        row_cluster_linkage: 'avg',
-        column_order_type: OrderingType.Cluster,
-        column_cluster_distance: 'euclidean',
-        column_cluster_linkage: 'avg',
-        colormap: 'interpolateViridis',
+        ...get_colormap_options(),
+        ...get_column_ordering_options(),
+        ...get_row_ordering_options(),
     },
 });
 
@@ -80,7 +77,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
     },
     data() {
         return {
-            aggregateView: [] as Readonly<Array<any>>,
+            aggregateView: [] as Readonly<any[]>,
         };
     },
     computed: {
@@ -95,19 +92,19 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return 'ClusteredHeatmapSVG';
             }
         },
-        rowOrderDataset(): Array<any> {
+        rowOrderDataset(): any[] {
             if (this.settings.row_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.row_order_dataset].data;
             }
             return [];
         },
-        columnOrderDataset(): Array<any> {
+        columnOrderDataset(): any[] {
             if (this.settings.column_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.column_order_dataset].data;
             }
             return [];
         },
-        selectedGroups(): Array<any> {
+        includeSyllables(): any[] {
             if (this.dataview.moduleIdFilter.length === 0) {
                 return this.$store.getters[`${this.datasource}/availableModuleIds`];
             } else {
@@ -125,7 +122,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        dataset(): [string, Array<Operation>] {
+        dataset(): [string, Operation[]] {
             const ds = this.$store.getters[`datasets/resolve`]('behave_dist');
 
             let syllables;
@@ -155,8 +152,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 LoadData(this.dataset[0], this.dataset[1])
                 .then((data) => {
                     return data.filter((v) => {
-                        return this.selectedGroups.includes(v.source)
-                            && this.selectedGroups.includes(v.sink);
+                        return this.includeSyllables.includes(v.source)
+                            && this.includeSyllables.includes(v.sink);
                     });
                 })
                 .then((data) => this.aggregateView = Object.freeze(data));

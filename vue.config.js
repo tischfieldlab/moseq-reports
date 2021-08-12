@@ -14,6 +14,7 @@ module.exports = {
     },
     pluginOptions: {
         electronBuilder: {
+            nodeIntegration: true,
             externals: ['plotly.js-dist', 'hclusterjs', 'about-window'],
             chainWebpackRendererProcess(config) {
                 config.plugins.delete('workbox')

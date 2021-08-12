@@ -1,6 +1,6 @@
 import { expose } from 'threads/worker';
 import { Operation } from './DataLoader.types';
-import { readFileContents, mapColumns, filterBy, sortBy, aggregate, getParser, pluck, keys } from './DataLoader.lib';
+import { readFileContents, mapColumns, filterBy, sortBy, aggregate, getParser, pluck, keys, values } from './DataLoader.lib';
 
 import LRU from 'lru-cache';
 import sizeof from 'object-sizeof';
@@ -13,7 +13,7 @@ const cache = new LRU({
 });
 
 const exposedMethods = {
-    async LoadJson(path: string, operations: Array<Operation>, debug?: boolean) {
+    async LoadJson(path: string, operations: Operation[], debug?: boolean) {
         const cacheName = path;
         let hit = true;
         if (!cache.has(cacheName)) {
@@ -53,6 +53,10 @@ const exposedMethods = {
 
                 case 'keys':
                     pipe = pipe.then((obj) =>  keys(obj, operator));
+                    break;
+
+                case 'values':
+                    pipe = pipe.then((obj) =>  values(obj, operator));
                     break;
 
                 case 'map':

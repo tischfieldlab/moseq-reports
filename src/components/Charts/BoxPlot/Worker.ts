@@ -1,19 +1,18 @@
 import { expose } from 'threads/worker';
 import { groupby } from '@/util/Array';
 import { scaleLinear } from 'd3-scale';
-import { mean, quantile, extent } from 'd3-array';
+import { max, mean, quantile, extent } from 'd3-array';
 import { GroupStats, DataPoint, DataPointQueueNode } from './BoxPlot.types';
 
 
 interface LinearScale {
-    domain: [number, number] | Array<number>;
-    range: [number, number] | Array<number>;
+    domain: [number, number] | number[];
+    range: [number, number] | number[];
 }
 
 
 const exposedMethods = {
-    prepareData(points: Array<DataPoint>, height: number, pointSize: number,
-        groupLabels: Array<string>, swarmPoints: boolean) {
+    prepareData(points: DataPoint[], height: number, pointSize: number, groupLabels: string[], swarmPoints: boolean, kdeScale: number) {
         const yExtent = extent(points.map((i) => i.value));
         if (yExtent[0] as number > 0) {
             yExtent[0] = 0;
@@ -22,7 +21,7 @@ const exposedMethods = {
             yExtent[1] = 0;
         }
         const y = scaleLinear()
-            .domain(yExtent as Array<number>)
+            .domain(yExtent as number[])
             .range([height, 0]);
 
         if (swarmPoints) {
@@ -32,7 +31,7 @@ const exposedMethods = {
         const groupedData = Object.entries(groupby(points, (p) => p.group, groupLabels))
             .sort((a, b) => a[0].localeCompare(b[0]))
             .map(([key, values]) => {
-                return exposedMethods.computeGroupStats(values.map((dp) => dp.value), key, y);
+                return exposedMethods.computeGroupStats(values.map((dp) => dp.value), key, y, kdeScale);
         });
 
         const kdeMax = Math.max(...groupedData.map((g) => Math.max(...g.kde.map((k) => k[1]))));
@@ -44,9 +43,9 @@ const exposedMethods = {
             domainKde: [-kdeMax, kdeMax],
         };
     },
-    computeGroupStats(data: Array<number>, group: string, scaleY): GroupStats {
+    computeGroupStats(data: number[], group: string, scaleY, kdeScale: number): GroupStats {
         data = data.filter((v) => typeof v === 'number').sort((a, b) => b - a);
-        const kde = kernelDensityEstimator(epanechnikovKernel(.01), scaleY.ticks(100));
+        const kde = kernelDensityEstimator(epanechnikovKernel(kdeScale), scaleY.ticks(100));
         const gstats = {
             group,
             count: data.length,
@@ -59,7 +58,7 @@ const exposedMethods = {
         gstats.iqr = gstats.q1 - gstats.q3;
         return gstats as GroupStats;
     },
-    swarm_points(data: Array<DataPoint>, groupLabels: Array<string>, scaleDefY: LinearScale, pointSize: number) {
+    swarm_points(data: DataPoint[], groupLabels: string[], scaleDefY: LinearScale, pointSize: number) {
         const scaleY = scaleLinear()
             .domain(scaleDefY.domain)
             .range(scaleDefY.range);
@@ -69,7 +68,7 @@ const exposedMethods = {
             let head: DataPointQueueNode | null = null;
             let tail: DataPointQueueNode | null = null;
             const indv = data.filter((ui) => ui.group === g)
-                             .map((ui) => { ui.jitter = 0; return ui; }) as Array<DataPointQueueNode>;
+                             .map((ui) => { ui.jitter = 0; return ui; }) as DataPointQueueNode[];
 
             const intersects = (x, y) => {
                 const epsilon = 1e-5;
@@ -125,9 +124,9 @@ const exposedMethods = {
     },
 };
 
-function kernelDensityEstimator(kernel: (u: number) => number, x: Array<number>): (sample: Array<number>) => Array<Array<number>> {
-    return (sample: Array<number>) => {
-        return x.map((y) => [y, mean(sample, (v: number) => kernel(y - v))]) as Array<Array<number>>;
+function kernelDensityEstimator(kernel: (u: number) => number, x: number[]): (sample: number[]) => number[][] {
+    return (sample: number[]) => {
+        return x.map((y) => [y, mean(sample, (v: number) => kernel(y - v))]) as number[][];
     };
 }
 function epanechnikovKernel(scale: number): (u: number) => number {

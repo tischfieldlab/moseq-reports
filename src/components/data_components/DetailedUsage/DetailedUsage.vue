@@ -5,11 +5,16 @@
         :data="individualUseageData"
         :groupLabels="groupNames"
         :groupColors="groupColors"
-        :whisker_type="settings.boxplot_whiskers"
+        
         :show_boxplot="settings.show_boxplot"
+        :whisker_type="settings.boxplot_whiskers"
+
         :show_points="settings.show_points"
-        :show_violinplot="settings.show_violinplot"
         :point_size="settings.point_size"
+
+        :show_violinplot="settings.show_violinplot"
+        :kde_scale="settings.violin_kde_scale"
+        
         xAxisTitle="Group"
         :yAxisTitle="`Module #${selectedSyllable} Usage (${countMethod})`"
         :tooltipFormatter="format_tooltip"
@@ -17,16 +22,15 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/WindowMixin';
 
-import BoxPlotCanvas from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
-import BoxPlotSVG from '@/components/Charts/BoxPlot/BoxPlotSVG.vue';
-import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
+import {BoxPlotSVG, BoxPlotCanvas, WhiskerType} from '@/components/Charts/BoxPlot';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import {OrderingType} from '@/components/Charts/ClusteredHeatmap';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
 import { RenderMode } from '@/store/datawindow.types';
 
@@ -44,6 +48,7 @@ RegisterDataComponent({
         point_size: 2,
         show_boxplot: true,
         show_violinplot: false,
+        violin_kde_scale: 0.01,
         boxplot_whiskers: WhiskerType.TUKEY,
         group_order_type: OrderingType.Natural,
     },
@@ -86,7 +91,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        groupNames(): Array<string> {
+        groupNames(): string[] {
             if (this.settings.group_order_type === OrderingType.Natural) {
                 return this.dataview.selectedGroups;
             } else if (this.settings.group_order_type === OrderingType.Dataset) {
@@ -99,10 +104,10 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             }
             return [];
         },
-        groupColors(): Array<string> {
-            return this.dataview.groupColors;
+        groupColors(): string[] {
+            return this.groupNames.map((gn) => this.dataview.groupColors[this.dataview.selectedGroups.indexOf(gn)]);
         },
-        dataset(): [string, Array<Operation>] {
+        dataset(): [string, Operation[]] {
             return [
                 this.$store.getters[`datasets/resolve`]('usage'),
                 [{
@@ -123,8 +128,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 },
                 {
                     type: 'sort',
-                    columns: ['value'],
-                    direction: 'asc',
+                    columns: [['value', 'asc']],
                 }],
             ];
         },
@@ -134,7 +138,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             if (itm.hasOwnProperty('id')) {
                 return `ID: ${itm.id.split('-').pop()}<br />
                         Usage: ${itm.value.toExponential(3)}`;
-            } else if (itm.hasOwnProperty('count')) {
+            } else if(itm.hasOwnProperty('count')) {
                 return `Group: ${itm.group}<br />
                         Count: ${itm.count.toString()}<br />
                         Median: ${itm.q2.toExponential(3)}<br />`;

@@ -2,10 +2,14 @@
     <div class="picker-container">
         <b-dropdown variant="white" :class="{'custom': isCustom}" :no-flip="true">
             <template v-slot:button-content>
-                <div v-if="selected" class="selected-value">
-                    <color-scale-bar :interpolator="selected.value" />
-                    {{selected.text}}
-                </div>
+                <b-form-row v-if="selected" class="selected-value" >
+                    <b-col>
+                        <color-scale-bar :interpolator="selected.value" />
+                    </b-col>
+                    <b-col>
+                        {{selected.text}}
+                    </b-col>
+                </b-form-row>
                 <template v-else>
                     Please select a color map
                 </template>
@@ -18,19 +22,27 @@
                         :key="option.value"
                         :disabled="option.disabled"
                         @click="select(option)">
-                        <div>
-                            <color-scale-bar :interpolator="option.value" />
-                            {{option.text}}
-                        </div>
+                        <b-form-row>
+                            <b-col>
+                                <color-scale-bar :interpolator="option.value" />
+                            </b-col>
+                            <b-col>
+                                {{option.text}}
+                            </b-col>
+                        </b-form-row>
                     </b-dropdown-item>
                 </template>
             </template>
             <b-dropdown-header>Custom</b-dropdown-header>
             <b-dropdown-item @click="select(customOption)">
-                <div>
-                    <color-scale-bar :interpolator="customOption.value" />
-                    Custom
-                </div>
+                <b-form-row>
+                    <b-col>
+                        <color-scale-bar :interpolator="customOption.value" />
+                    </b-col>
+                    <b-col>
+                        Custom
+                    </b-col>
+                </b-form-row>
             </b-dropdown-item>
         </b-dropdown>
         <div v-show="isCustom" class="custom-container clearfix">
@@ -61,7 +73,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {GetInterpolatedScaleOptions, getContrastingColor} from '@/components/Charts/Colors/D3ColorProvider';
+import {GetInterpolatedScaleOptions, GetScale, getContrastingColor} from '@/components/Charts/Colors/D3ColorProvider';
 import { PropValidator } from 'vue/types/options';
 import { Chrome } from 'vue-color';
 import ColorScaleBar from './ColorScaleBar.vue';
@@ -80,7 +92,7 @@ export default Vue.extend({
         },
         categories: {
             type: Array,
-        } as PropValidator<Array<string>>,
+        } as PropValidator<string[]>,
     },
     data() {
         return {
@@ -113,7 +125,7 @@ export default Vue.extend({
         },
         customOption: {
             handler(newValue) {
-                this.select(this.customOption);
+                this.select(this.customOption)
             },
         },
     },
@@ -124,7 +136,7 @@ export default Vue.extend({
         customOption(): {text: string, value: string} {
             return {
                 text: 'Custom',
-                value: `custom:${this.custom1}:${this.custom2}`,
+                value: `custom:${this.custom1}:${this.custom2}`
             };
         },
     },
@@ -167,7 +179,8 @@ export default Vue.extend({
     border-bottom-right-radius: 4px;
 }
 .selected-value {
-    display: inline-block;
+    display: inline-flex;
+    width: 100%;
 }
 .picker-container >>> .dropdown-menu {
     max-height:400px;

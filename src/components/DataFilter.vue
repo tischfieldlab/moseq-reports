@@ -11,10 +11,8 @@
                     <b-icon class="when-opened" title="Collapse Filters" icon="chevron-up"></b-icon>
                     <b-icon class="when-closed" title="Expand Filters" icon="chevron-down"></b-icon>
                 </b-button>
-                <b-button variant="link" title="Remove this filter" @click="removeThis" class="remove-button text-decoration-none">
-                    <b-icon icon="x"></b-icon>
-                </b-button>
-                <EditableText class="editable-text" v-model="filter_name" />
+                <b-button-close @click="removeThis" title="Remove this filter" />
+                <EditableText class="editable-text" v-model="filter_name" size="sm" />
                 <b-button variant="link" :id="$id(datasource)" title="Click to select color" class="text-dark text-decoration-none color-button">
                     <b-icon icon="droplet-half" style="width:16px;margin-left:6px;"></b-icon>
                 </b-button>
@@ -135,7 +133,7 @@ export default Vue.component('datafilter', {
                 }
             },
         },
-        syllableIdOptions(): Array<{ value: number, text: string }> {
+        syllableIdOptions(): { value: number, text: string }[] {
             if (this.dataview === undefined) {
                 return [];
             }
@@ -150,7 +148,6 @@ export default Vue.component('datafilter', {
                     return { value: i, text: i.toString() };
                 });
             }
-            return [];
         },
     },
     methods: {
@@ -158,13 +155,13 @@ export default Vue.component('datafilter', {
             if (this.$store.getters['filters/default'] === this.datasource) {
                 this.$bvModal.msgBoxOk('You cannot remove the default filter.');
             } else {
-                this.$bvModal.msgBoxConfirm('Are you sure you want to remove this data filter?', {
-
-                }).then((value) => {
-                    if (value) {
-                        this.$store.dispatch('filters/removeFilter', this.datasource);
-                    }
-                });
+                this.$bvModal
+                    .msgBoxConfirm('Are you sure you want to remove this data filter?', {})
+                    .then((value) => {
+                        if (value) {
+                            this.$store.dispatch('filters/removeFilter', this.datasource);
+                        }
+                    });
             }
         },
         getContrast(hexcolor: string): string {
@@ -182,17 +179,10 @@ export default Vue.component('datafilter', {
 <style scoped>
 .collapse-button {
     padding: 0;
-    margin-left: -10px;
-    margin-right: 10px;
 }
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
     display: none;
-}
-.remove-button {
-    float: right;
-    padding: 0;
-    margin-right: -10px;
 }
 .card-body{
     padding: 0;
@@ -210,9 +200,10 @@ export default Vue.component('datafilter', {
 }
 div.editable-text {
     display: inline;
+    margin: 0 0.5em;
 }
 div.editable-text >>> input {
-    width: calc(100% - 60px);
+    width: calc(100% - 80px);
     display: inline-block;
 }
 .card-header {
@@ -220,7 +211,7 @@ div.editable-text >>> input {
 }
 .card-header > div {
     border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
-    padding: 0.25em 1.25rem;
+    padding: 0.25em 0.5rem;
 }
 .color-button {
     padding: 0;

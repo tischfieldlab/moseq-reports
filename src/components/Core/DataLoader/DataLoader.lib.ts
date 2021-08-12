@@ -7,17 +7,22 @@ import {
     AggregateOperation,
     PluckOperation,
     KeysOperation,
+    ValuesOperation,
 } from './DataLoader.types';
 import { groupby } from '@/util/Array';
-import { mean, median, sum, min, max } from 'd3-array';
+import { mean, median, /*mode,*/ sum, /*cumsum,*/ min, max, extent, variance, deviation } from 'd3-array';
 import { tsvParse, csvParse } from 'd3-dsv';
 import StreamZip from 'node-stream-zip';
 import fs from 'fs';
 
-export function mapColumns(obj: DataObject|Array<object>, op: MapOperation): Array<object> {
+export function mapColumns(obj: DataObject|object[], op: MapOperation): object[] {
     let objCols;
     if (Array.isArray(obj)) {
-        objCols = Object.getOwnPropertyNames(obj[0]);
+        if (obj.length > 0) {
+            objCols = Object.getOwnPropertyNames(obj[0]);
+        } else {
+            objCols = [];
+        }
     } else if (obj.columns !== undefined && obj.data !== undefined) {
         objCols = obj.columns;
     }
@@ -41,7 +46,7 @@ export function mapColumns(obj: DataObject|Array<object>, op: MapOperation): Arr
     });
 
     const mapData = Array.isArray(obj) ? obj : obj.data;
-    return (mapData as Array<Array<any>>).map((row) => {
+    return (mapData as any[][]).map((row) => {
         return Object.fromEntries(
             coldefs.map((cd) => {
                 return [cd.dest, Array.isArray(row) ? row[cd.idx] : row[cd.src]];
@@ -50,34 +55,41 @@ export function mapColumns(obj: DataObject|Array<object>, op: MapOperation): Arr
     });
 }
 
-export function sortBy(data: Array<object>, op: SortOperation): Array<object> {
-    // Schwartzian Transform.
-    if (op.direction === SortDirection.Asc) {
-        return data.map((e, i) => ({index: i, value: e}))
-            .sort((a, b) => {
-                for (const c of op.columns) {
-                    if (a.value[c] > b.value[c]) { return 1; }
-                    if (a.value[c] < b.value[c]) { return -1; }
-                }
-                return 0;
-            })
-            .map((e) => data[e.index]);
-    } else if (op.direction === SortDirection.Desc) {
-        return data.map((e, i) => ({index: i, value: e}))
-            .sort((a, b) => {
-                for (const c of op.columns) {
-                    if (a.value[c] < b.value[c]) { return 1; }
-                    if (a.value[c] > b.value[c]) { return -1; }
-                }
-                return 0;
-            })
-            .map((e) => data[e.index]);
+function Compare(a: SchwartzianItem, b: SchwartzianItem, column: string, direction: SortDirection) {
+    if (direction === SortDirection.Asc) {
+        if (a.value[column] > b.value[column]) return 1;
+        if (a.value[column] < b.value[column]) return -1;
+        return 0;
+    } else if (direction === SortDirection.Desc) {
+        if (a.value[column] < b.value[column]) return 1;
+        if (a.value[column] > b.value[column]) return -1;
+        return 0;
     } else {
-        throw new Error(`Unsupported direction in sort '${op.direction}'`);
+        throw new Error(`Unsupported direction '${direction}' in sort for column '${column}'`);
     }
 }
 
-export function filterBy(data: Array<object>, op: FilterOperation) {
+interface SchwartzianItem {
+    index: number;
+    value: object;
+}
+
+export function sortBy(data: object[], op: SortOperation): object[] {
+    // Schwartzian Transform.
+    return data.map((e, i) => ({index: i, value: e}))
+            .sort((a, b) => {
+                for (const c of op.columns) {
+                    const result = Compare(a, b, c[0], c[1]);
+                    if (result !== 0) {
+                        return result;
+                    }
+                }
+                return 0;
+            })
+            .map((e) => data[e.index]);
+}
+
+export function filterBy(data: object[], op: FilterOperation) {
     return data.filter((row) => Object.entries(op.filters)
                                .every(([col, criterum]) => criterum.includes(row[col])));
 }
@@ -85,12 +97,18 @@ export function filterBy(data: Array<object>, op: FilterOperation) {
 const statops = {
     mean,
     median,
+    // mode,
     sum,
+    // cumsum,
     min,
     max,
+    extent,
+    variance,
+    deviation,
+    'count': (items: any[]) => items.length,
 };
-export function aggregate(data: Array<object>, op: AggregateOperation) {
-    const grouper = (item) => (op.groupby as Array<string>).map((c) => item[c]).toString();
+export function aggregate(data: object[], op: AggregateOperation) {
+    const grouper = (item) => (op.groupby as string[]).map((c) => item[c]).toString();
     return Object.entries(groupby(data, grouper))
         .map(([group, vals]) => {
             return Object.fromEntries([
@@ -109,30 +127,19 @@ export function aggregate(data: Array<object>, op: AggregateOperation) {
         });
 }
 
-export function pluck(data: object|Array<object>, op: PluckOperation) {
+export function pluck(data: object|object[], op: PluckOperation) {
     if (Array.isArray(data)) {
-        if (Array.isArray(op.column)) {
-            return data.map((row) => {
-                return Object.fromEntries((op.column as Array<string>).map((c) => {
-                    return [c, row[c]];
-                }));
-            });
-        } else {
-            return data.map((row) => row[op.column as string]);
-        }
+        return data.map((row) => row[op.column as string]);
     } else {
-        if (Array.isArray(op.column)) {
-            return Object.fromEntries(op.column.map((c) => {
-                return [c, data[c]];
-            }));
-        } else {
-            return data[op.column];
-        }
+        return data[op.column];
     }
 }
 
 export function keys(data: object, op: KeysOperation) {
     return Object.keys(data);
+}
+export function values(data: object, op: ValuesOperation) {
+    return Object.values(data);
 }
 
 export function jsonParseZipEntryContainingNaN(data: string) {
@@ -178,7 +185,7 @@ export function readFileContents(path: string) {
 
 export function getParser(filename) {
     const ext = filename.split('.').pop();
-    switch (ext) {
+    switch(ext) {
         case 'json':
             return jsonParseZipEntryContainingNaN;
         case 'tsv':
@@ -193,7 +200,7 @@ export function getParser(filename) {
 
 /* This should be imported from d3-dsv, but isnt present in types! */
 function autoType(object) {
-    const pattern = /^([-+]\d{2})?\d{4}(-\d{2}(-\d{2})?)?(T\d{2}:\d{2}(:\d{2}(\.\d{3})?)?(Z|[-+]\d{2}:\d{2})?)?$/;
+    const pattern = /^([-+]\d{2})?\d{4}(-\d{2}(-\d{2})?)?(T\d{2}:\d{2}(:\d{2}(\.\d{3})?)?(Z|[-+]\d{2}:\d{2})?)?$/
     for (const key of Object.keys(object)) {
         let value = object[key].trim();
         let num;
@@ -209,7 +216,7 @@ function autoType(object) {
         } else if (!isNaN(num = +value)) {
             value = num;
         } else if (value.match(pattern)) {
-            m = value.match(pattern);
+            m = value.match(pattern)
             if (fixtz && !!m[4] && !m[7]) {
                 value = value.replace(/-/g, '/').replace(/T/, ' ');
             }
