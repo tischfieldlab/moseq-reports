@@ -1,5 +1,5 @@
 <template>
-  <VueDraggableResizable
+  <VueDragResize
     v-bind:id="this.$props.id"
     class="msqWindow"
     :style="{
@@ -8,10 +8,10 @@
     }"
     :w="window_width"
     :h="window_height"
-    :top="window_xpos"
-    :left="window_ypos"
-    :active="true"
-    @resizing="this.onResizing"
+    @resizing="onResizing"
+    @dragging="onDragging"
+    @dragstop="onDragStop"
+    :stickSize="12"
   >
     <div
       class="msq-window-titlebar noselect"
@@ -52,13 +52,15 @@
     <div :id="`window-content-${this.$props.id}`" :hidden="isCollapsed">
       <slot></slot>
     </div>
-  </VueDraggableResizable>
+  </VueDragResize>
 </template>
 
 <script lang="ts">
 import { Position } from "@/store/datawindow.types";
 import Vue from "vue";
-import VueDraggableResizable from "vue-draggable-resizable";
+import VueDragResize from "vue-drag-resize";
+import { throttle } from "lodash";
+import { debounce } from "@/util/Events";
 
 export default Vue.component("BaseWindow", {
   props: {
@@ -70,7 +72,7 @@ export default Vue.component("BaseWindow", {
     position: { type: Object, required: true },
   },
   components: {
-    VueDraggableResizable,
+    VueDragResize,
   },
   data() {
     return {
@@ -81,6 +83,10 @@ export default Vue.component("BaseWindow", {
       position: this.$props.position,
       height: this.$props.height,
       width: this.$props.width,
+      throttledResize: null,
+      throttledMove: null,
+      prevLeft: 0,
+      prevTop: 0,
     };
   },
   computed: {
@@ -98,12 +104,48 @@ export default Vue.component("BaseWindow", {
     },
   },
   methods: {
-    onResize: function (x, y, width, height) {
-      console.log("resize");
+    onResizing({ left, top, width, height }) {
+      this.$props.width = width;
+      this.$props.height = height;
+
+      const f = ({ width, height }) => {
+        this.$emit("onResized", { width: width, height: height });
+      };
+
+      if (this.$data.throttledResize === null) {
+        this.$data.throttledResize = throttle(f, 150);
+      }
+
+      this.$data.throttledResize({ width: width, height: height });
     },
-    onDrag: function (x, y) {
-      console.log("drag");
+    onDragging({ left, top }) {
+      const titleElement: HTMLElement|null = document.getElementById('titlebar-' + this.$data.id);
+      const titleRect: DOMRect = titleElement!.getBoundingClientRect();
+
+      // NOTE: this means we are in the title bar
+      if (left >= titleRect.x && left <= (titleRect.x + titleRect.width)
+        && top >= titleRect.y && top <= (titleRect.y + titleRect.height)) {
+          console.log("here");
+      }
+
+      if (this.$data.prevTop === 0) this.$data.prevTop = top;
+      if (this.$data.prevLeft === 0) this.$data.prevLeft = left;
+
+      const deltaY = this.$data.prevTop - top;
+      const deltaX = this.$data.prevLeft - left;
+
+      this.$props.position.x -= deltaX;
+      this.$props.position.y -= deltaY;
+
+      this.$data.prevTop = top;
+      this.$data.prevLeft = left;
+
+      this.$emit("onMoved", {
+        x: this.$props.position.x,
+        y: this.$props.position.y,
+      });
     },
+    onDragStop() {},
     onClose(event: any) {
       this.$emit("onClosed", event);
     },
@@ -137,7 +179,7 @@ export default Vue.component("BaseWindow", {
   position: absolute;
   overflow: hidden;
   border-radius: 2px;
-  resize: both;
+  /* resize: both; */
 }
 .msq-window-titlebar {
   padding-top: 5px;

@@ -42,9 +42,6 @@ Vue.use(BootstrapVueIcons);
 import VueResize from 'vue-resize';
 Vue.use(VueResize);
 
-import VueDraggableResizable from 'vue-draggable-resizable';
-// import 'vue-draggable-resizable/dist/VueDraggableResizable.css';
-
 import VueForceNextTick from 'vue-force-next-tick';
 Vue.use(VueForceNextTick);
 

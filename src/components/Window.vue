@@ -155,9 +155,11 @@ export default mixins(WindowMixin).extend({
     },
     onMoved(event: any) {
       const p: Position = {
-        x: (this.$refs.window as any).position.x + event.x,
-        y: (this.$refs.window as any).position.y + event.y,
+        x: (this.$refs.window as any).position.x,
+        y: (this.$refs.window as any).position.y,
       };
+
+      console.log(p);
 
       this.$store.commit(`${this.id}/updateComponentLayout`, {
         id: this.id,
