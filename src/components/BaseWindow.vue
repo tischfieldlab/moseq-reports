@@ -8,6 +8,8 @@
     }"
     :w="window_width"
     :h="window_height"
+    :top="window_xpos"
+    :left="window_ypos"
     :active="true"
     @resizing="this.onResizing"
   >
