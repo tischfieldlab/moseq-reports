@@ -10,6 +10,7 @@ export interface DataWindowState {
     datasource: string;
     render_mode: RenderMode;
     settings: object;
+    z_index: number;
 }
 
 export interface UpdateComponentLayoutPayload {
@@ -17,6 +18,10 @@ export interface UpdateComponentLayoutPayload {
     height?: number;
     position_x?: number;
     position_y?: number;
+}
+
+export interface UpdateComponentZIndexPayload {
+    z_index: number;
 }
 
 export interface UpdateComponentSettingsPayload {

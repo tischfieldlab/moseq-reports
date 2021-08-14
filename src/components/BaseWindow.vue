@@ -7,7 +7,11 @@
       top: `${window_ypos}px`,
       width: `${window_width}px`,
       height: `${window_height}px`,
+      zIndex: `${z_index}`
     }"
+
+    style="`z-index: ${this.zindex}`"
+    @click="this.onWindowFocus"
   >
     <div
       class="msq-window-titlebar noselect"
@@ -99,7 +103,7 @@ export default Vue.extend({
       windowWidth: this.width,
       windowHeight: this.height,
       windowPos: this.pos,
-      // used for window move
+      // Used for window move
       isDragging: false,
       prevDeltaX: 0,
       prevDeltaY: 0,
@@ -108,6 +112,7 @@ export default Vue.extend({
       resizeElement: null as EventTarget | null,
       minWidth: 260,
       minHeight: 155,
+      zIndex: 1000,
     };
   },
   computed: {
@@ -123,8 +128,14 @@ export default Vue.extend({
     window_ypos(): number {
       return (this.windowPos as Position).y;
     },
+    z_index(): number {
+      return this.zIndex;
+    }
   },
   methods: {
+    onWindowFocus() {
+      this.$store.dispatch(`${this.id}/`, this.zIndex);
+    },
     onDrag(event: MouseEvent) {
       if (this.isDragging) {
         // event.preventDefault();
