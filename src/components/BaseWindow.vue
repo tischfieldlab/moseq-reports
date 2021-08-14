@@ -201,7 +201,7 @@ export default Vue.extend({
 
           case ResizeType.Bottom:
             {
-              newWidth = this.windowHeight + deltaY;
+              newHeight = this.windowHeight + deltaY;
             }
             break;
 
