@@ -1,27 +1,23 @@
 <template>
-  <VueDragResize
-    v-bind:id="this.$props.id"
+  <div
+    v-bind:id="this.id"
     class="msqWindow"
     :style="{
       left: `${window_xpos}px`,
       top: `${window_ypos}px`,
+      width: `${window_width}px`,
+      height: `${window_height}px`,
     }"
-    :w="window_width"
-    :h="window_height"
-    @resizing="onResizing"
-    @dragging="onDragging"
-    @dragstop="onDragStop"
-    :stickSize="12"
   >
     <div
       class="msq-window-titlebar noselect"
-      :id="`titlebar-${this.$props.id}`"
+      :id="`titlebar-${this.id}`"
+      @mousedown="this.onDragStart"
     >
       <span
         class="dataview-swatch"
         :id="$id('swatch')"
-        :style="{ background: this.$props.titlebar_color }"
-        :title="this.$props.title"
+        :style="{ background: this.titlebar_color }"
       >
         <b-icon
           @click="this.onSnapshotClicked"
@@ -45,107 +41,273 @@
           class="min-max-button"
           v-else
         />
-        <b-icon @click="this.onClose" icon="x" class="close-button" />
+        <b-button-close @click="this.onClose" class="close-button" />
       </span>
-      {{ this.$props.title }}
+      {{ this.title }}
     </div>
-    <div :id="`window-content-${this.$props.id}`" :hidden="isCollapsed">
+    <div
+      :id="`window-content-${this.id}`"
+      class="window-content"
+      :hidden="isCollapsed"
+    >
       <slot></slot>
     </div>
-  </VueDragResize>
+    <div @mousedown="this.onResizeStart" class="noselect">
+      <div :id="`r-${this.id}`" class="resizer resizer-r"></div>
+      <div :id="`l-${this.id}`" class="resizer resizer-l"></div>
+      <div :id="`t-${this.id}`" class="resizer resizer-t"></div>
+      <div :id="`tr-${this.id}`" class="resizer resizer-tr"></div>
+      <div :id="`tl-${this.id}`" class="resizer resizer-tl"></div>
+      <div :id="`b-${this.id}`" class="resizer resizer-b"></div>
+      <div :id="`br-${this.id}`" class="resizer resizer-br"></div>
+      <div :id="`bl-${this.id}`" class="resizer resizer-bl"></div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { Position } from "@/store/datawindow.types";
 import Vue from "vue";
-import VueDragResize from "vue-drag-resize";
-import { throttle } from "lodash";
-import { debounce } from "@/util/Events";
 
-export default Vue.component("BaseWindow", {
+enum ResizeType {
+  Right = "RIGHT",
+  Left = "LEFT",
+  Top = "TOP",
+  Bottom = "BOTTOM",
+  TopRight = "TOPRIGHT",
+  TopLeft = "TOPLEFT",
+  BottomRight = "BOTTOMRIGHT",
+  BottomLeft = "BOTTOMLEFT",
+  Unkown = "UNKNOWN",
+}
+
+export default Vue.extend({
+  name: "BaseWindow",
   props: {
     id: { type: String, required: true },
     titlebar_color: { type: String, required: true },
     title: { type: String, required: true },
-    height: { type: [Number, String], required: true },
-    width: { type: [Number, String], required: true },
-    position: { type: Object, required: true },
-  },
-  components: {
-    VueDragResize,
+    height: { type: [Number], required: true },
+    width: { type: [Number], required: true },
+    pos: { type: Object, required: true },
   },
   data() {
     return {
       isCollapsed: false,
-      titleBarWidth: 35,
-      restoredHeight: this.$props.height,
-      id: this.$props.id,
-      position: this.$props.position,
-      height: this.$props.height,
-      width: this.$props.width,
-      throttledResize: null,
-      throttledMove: null,
-      prevLeft: 0,
-      prevTop: 0,
+      restoredHeight: this.height,
+      titlebarWidth: 36,
+      windowWidth: this.width,
+      windowHeight: this.height,
+      windowPos: this.pos,
+      // used for window move
+      isDragging: false,
+      prevDeltaX: 0,
+      prevDeltaY: 0,
+      // Used for resize
+      isResizing: false,
+      resizeElement: null as EventTarget | null,
+      minWidth: 260,
+      minHeight: 155,
     };
   },
   computed: {
-    window_width() {
-      return this.width;
+    window_width(): number {
+      return this.windowWidth as number;
     },
-    window_height() {
-      return this.height;
+    window_height(): number {
+      return this.windowHeight as number;
     },
-    window_xpos() {
-      return (this.position as Position).x;
+    window_xpos(): number {
+      return (this.windowPos as Position).x;
     },
-    window_ypos() {
-      return (this.position as Position).y;
+    window_ypos(): number {
+      return (this.windowPos as Position).y;
     },
   },
   methods: {
-    onResizing({ left, top, width, height }) {
-      this.$props.width = width;
-      this.$props.height = height;
+    onDrag(event: MouseEvent) {
+      if (this.isDragging) {
+        // event.preventDefault();
+        const deltaX = event.clientX - this.prevDeltaX;
+        const deltaY = event.clientY - this.prevDeltaY;
 
-      const f = ({ width, height }) => {
-        this.$emit("onResized", { width: width, height: height });
-      };
+        this.prevDeltaX = event.clientX;
+        this.prevDeltaY = event.clientY;
 
-      if (this.$data.throttledResize === null) {
-        this.$data.throttledResize = throttle(f, 150);
+        this.windowPos.x += deltaX;
+        this.windowPos.y += deltaY;
       }
-
-      this.$data.throttledResize({ width: width, height: height });
     },
-    onDragging({ left, top }) {
-      const titleElement: HTMLElement|null = document.getElementById('titlebar-' + this.$data.id);
-      const titleRect: DOMRect = titleElement!.getBoundingClientRect();
+    onDragEnd() {
+      this.prevDeltaX = 0;
+      this.prevDeltaY = 0;
+      this.isDragging = false;
 
-      // NOTE: this means we are in the title bar
-      if (left >= titleRect.x && left <= (titleRect.x + titleRect.width)
-        && top >= titleRect.y && top <= (titleRect.y + titleRect.height)) {
-          console.log("here");
+      this.$emit("onMoved", { x: this.windowPos.x, y: this.windowPos.y });
+
+      document.onmouseup = null;
+      document.onmousemove = null;
+    },
+    onDragStart(event: MouseEvent) {
+      this.prevDeltaX = event.clientX;
+      this.prevDeltaY = event.clientY;
+      this.isDragging = true;
+
+      document.onmouseup = this.onDragEnd;
+      document.onmousemove = this.onDrag;
+    },
+    onResizeStart(event: MouseEvent) {
+      this.resizeElement = event.target;
+      this.prevDeltaX = event.clientX;
+      this.prevDeltaY = event.clientY;
+      this.isResizing = true;
+
+      document.onmousemove = this.onResize;
+      document.onmouseup = this.onResizeEnd;
+    },
+    onResize(event: MouseEvent) {
+      if (this.isResizing) {
+        event.preventDefault();
+
+        let deltaX = event.clientX - this.prevDeltaX;
+        let deltaY = event.clientY - this.prevDeltaY;
+
+        let newHeight = this.windowHeight;
+        let newWidth = this.windowWidth;
+        let newX = this.windowPos.x;
+        let newY = this.windowPos.y;
+
+        // We have to determine which resize event we are in
+        // bottom vs top vs right vs left ... etc
+        const resizeType: ResizeType = this.determineResizeType();
+        switch (resizeType) {
+          case ResizeType.Top:
+            {
+              newHeight = this.windowHeight - deltaY;
+              newY = this.windowPos.y + deltaY;
+            }
+            break;
+
+          case ResizeType.Bottom:
+            {
+              newWidth = this.windowHeight + deltaY;
+            }
+            break;
+
+          case ResizeType.Left:
+            {
+              newWidth = this.windowWidth - deltaX;
+              newX = this.windowPos.x + deltaX;
+            }
+            break;
+
+          case ResizeType.Right:
+            {
+              newWidth = this.windowWidth + deltaX;
+            }
+            break;
+
+          case ResizeType.BottomRight:
+            {
+              newWidth = this.windowWidth + deltaX;
+              newHeight = this.windowHeight + deltaY;
+            }
+            break;
+
+          case ResizeType.BottomLeft:
+            {
+              newWidth = this.windowWidth - deltaX;
+              newHeight = this.windowHeight + deltaY;
+              newX = this.windowPos.x + deltaX;
+            }
+            break;
+
+          case ResizeType.TopLeft:
+            {
+              newHeight = this.windowHeight - deltaY;
+              newWidth = this.windowWidth - deltaX;
+              newY = this.windowPos.y + deltaY;
+              newX = this.windowPos.x + deltaX;
+            }
+            break;
+
+          case ResizeType.TopRight:
+            {
+              newHeight = this.windowHeight - deltaY;
+              newY = this.windowPos.y + deltaY;
+            }
+            break;
+        }
+
+        this.prevDeltaX = event.clientX;
+        this.prevDeltaY = event.clientY;
+
+        if (newHeight > this.minHeight) {
+          this.windowHeight = newHeight;
+          this.windowPos.y = newY;
+        }
+        if (newWidth > this.minWidth) {
+          this.windowWidth = newWidth;
+          this.windowPos.x = newX;
+        }
       }
+    },
+    onResizeEnd(event: MouseEvent) {
+      this.prevDeltaY = 0;
+      this.prevDeltaX = 0;
+      this.isResizing = false;
+      this.resizeElement = null;
 
-      if (this.$data.prevTop === 0) this.$data.prevTop = top;
-      if (this.$data.prevLeft === 0) this.$data.prevLeft = left;
-
-      const deltaY = this.$data.prevTop - top;
-      const deltaX = this.$data.prevLeft - left;
-
-      this.$props.position.x -= deltaX;
-      this.$props.position.y -= deltaY;
-
-      this.$data.prevTop = top;
-      this.$data.prevLeft = left;
+      this.$emit("onResized", {
+        width: this.windowWidth,
+        height: this.windowHeight,
+      });
 
       this.$emit("onMoved", {
-        x: this.$props.position.x,
-        y: this.$props.position.y,
+        x: this.windowPos.x,
+        y: this.windowPos.y,
       });
+
+      document.onmouseup = null;
+      document.onmousemove = null;
     },
-    onDragStop() {},
+    violatesMinSizeConstraint(
+      potentialSize: number,
+      constraint: number
+    ): boolean {
+      return potentialSize > constraint;
+    },
+    determineResizeType(): ResizeType {
+      const topEl = document.getElementById(`t-${this.id}`);
+      const botEl = document.getElementById(`b-${this.id}`);
+      const leftEl = document.getElementById(`l-${this.id}`);
+      const rightEl = document.getElementById(`r-${this.id}`);
+      const botRightEl = document.getElementById(`br-${this.id}`);
+      const botLeftEl = document.getElementById(`bl-${this.id}`);
+      const topRightEl = document.getElementById(`tr-${this.id}`);
+      const topLeftEl = document.getElementById(`tl-${this.id}`);
+
+      switch (this.resizeElement) {
+        case topEl:
+          return ResizeType.Top;
+        case botEl:
+          return ResizeType.Bottom;
+        case leftEl:
+          return ResizeType.Left;
+        case rightEl:
+          return ResizeType.Right;
+        case botRightEl:
+          return ResizeType.BottomRight;
+        case botLeftEl:
+          return ResizeType.BottomLeft;
+        case topRightEl:
+          return ResizeType.TopRight;
+        case topLeftEl:
+          return ResizeType.TopLeft;
+      }
+
+      return ResizeType.Unkown;
+    },
     onClose(event: any) {
       this.$emit("onClosed", event);
     },
@@ -156,31 +318,99 @@ export default Vue.component("BaseWindow", {
       this.$emit("onSnapshotClicked", event);
     },
     onCollapsedClicked(event: any) {
-      this.$data.isCollapsed = !this.$data.isCollapsed;
-      this.$emit("onCollapsedClicked", event);
+      this.isCollapsed = !this.isCollapsed;
 
-      // If the widget is collapsed, we want to hide and shrink it.
       if (this.$data.isCollapsed) {
-        // Save the restore height
-        this.$data.restoredHeight = this.$props.height;
-        this.$props.height = this.$data.titleBarWidth;
+        this.$data.restoredHeight = this.$data.windowHeight;
+        this.$data.windowHeight = this.$data.titlebarWidth;
       } else {
-        this.$props.height = this.$data.restoredHeight;
+        this.$data.windowHeight = this.$data.restoredHeight;
       }
     },
   },
 });
 </script>
 
-<style>
+<style scoped>
+.resizer {
+  position: absolute;
+}
+
+.resizer-r {
+  cursor: ew-resize;
+  height: 100%;
+  right: 0;
+  top: 0;
+  width: 5px;
+}
+
+.resizer-l {
+  cursor: ew-resize;
+  height: 100%;
+  left: 0;
+  top: 0;
+  width: 5px;
+}
+
+/* Placed at the bottom side */
+.resizer-b {
+  bottom: 0;
+  cursor: ns-resize;
+  height: 5px;
+  left: 0;
+  width: 100%;
+}
+
+.resizer-br {
+  bottom: 0;
+  cursor: nw-resize;
+  height: 5px;
+  right: 0;
+  width: 5px;
+}
+
+.resizer-bl {
+  bottom: 0;
+  cursor: ne-resize;
+  height: 5px;
+  left: 0;
+  width: 5px;
+}
+
+.resizer-t {
+  top: 0;
+  cursor: ns-resize;
+  height: 5px;
+  left: 0;
+  width: 100%;
+}
+
+.resizer-tl {
+  top: 0;
+  cursor: nw-resize;
+  height: 5px;
+  left: 0;
+  width: 5px;
+}
+
+.resizer-tr {
+  top: 0;
+  cursor: ne-resize;
+  height: 5px;
+  right: 0;
+  width: 5px;
+}
+
 .msqWindow {
   background-color: white;
   border: 1px solid darkgray;
   position: absolute;
   overflow: hidden;
-  border-radius: 2px;
+  border-radius: 4px;
+  box-shadow: 2px 5px 5px rgba(128, 128, 128, 0.816);
   /* resize: both; */
 }
+
 .msq-window-titlebar {
   padding-top: 5px;
   color: black;
@@ -190,10 +420,12 @@ export default Vue.component("BaseWindow", {
   border-bottom: 1px solid darkgray;
   background-color: #e8e8e8;
 }
+
 .dataview-swatch {
   display: inline-block;
   vertical-align: text-top;
   width: 16px;
+  margin-top: 1px;
   height: 16px;
   border-radius: 16px;
   border: 1px solid #c5c5c5;
@@ -206,12 +438,14 @@ export default Vue.component("BaseWindow", {
   margin-right: 7px;
   margin-left: 0px;
   position: absolute;
-  right: 52px;
+  right: 68px;
   cursor: pointer;
+  margin-top: -1px;
+  color: #747474;
 }
 
 .snapshot-button:hover {
-  color: gray;
+  color: #3a3a3a;
 }
 
 .settings-button {
@@ -220,12 +454,14 @@ export default Vue.component("BaseWindow", {
   margin-right: 7px;
   margin-left: 0px;
   position: absolute;
-  right: 31px;
+  right: 44px;
   cursor: pointer;
+  margin-top: -1px;
+  color: #747474;
 }
 
 .settings-button:hover {
-  color: gray;
+  color: #3a3a3a;
 }
 
 .min-max-button {
@@ -234,12 +470,15 @@ export default Vue.component("BaseWindow", {
   margin-right: 0px;
   margin-left: 0px;
   position: absolute;
-  right: 20px;
+  right: 30px;
+  margin-top: 0px;
   cursor: pointer;
+  margin-top: -1px;
+  color: #747474;
 }
 
 .min-max-button:hover {
-  color: gray;
+  color: #3a3a3a;
 }
 
 .close-button {
@@ -248,13 +487,9 @@ export default Vue.component("BaseWindow", {
   /* color: black; */
   display: inline-block;
   position: absolute;
-  right: 2px;
-  margin-top: -2px;
+  right: 8px;
+  margin-top: -4px;
   cursor: pointer;
-}
-
-.close-button:hover {
-  color: gray;
 }
 
 .noselect {

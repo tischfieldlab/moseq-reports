@@ -38,7 +38,7 @@
     "type": "SelectedSyllable",
     "title": "Selected Syllable",
     "layout": {
-        "width": 250,
+        "width": 260,
         "height": 155,
         "position": {
             "x": 900,

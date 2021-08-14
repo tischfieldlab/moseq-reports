@@ -6,7 +6,7 @@
     :title="title"
     :width="layout.width"
     :height="layout.height"
-    :position="layout.position"
+    :pos="layout.position"
     @onClosed="onClosed"
     @onSettingsClicked="onSettingsClicked"
     @onSnapshotClicked="onSnapshotClicked"
@@ -66,7 +66,7 @@ export default mixins(WindowMixin).extend({
   },
   mounted() {
     this.$nextTick().then(() => {
-      this.updateWindowLayout(this.layout);
+      // this.updateWindowLayout(this.layout);
       ensureDefaults(this.$refs.body as Vue, this.$store);
     });
     (this.$refs.body as Vue).$on("start-loading", () => {
@@ -108,7 +108,7 @@ export default mixins(WindowMixin).extend({
     layout: {
       deep: true,
       handler(newValue: Layout) {
-        this.updateWindowLayout(newValue);
+        // this.updateWindowLayout(newValue);
       },
     },
     title(newValue) {
@@ -128,14 +128,14 @@ export default mixins(WindowMixin).extend({
     },
   },
   methods: {
-    updateWindowLayout(layout: Layout) {
-      (this.$refs.window as any).width = layout.width;
-      (this.$refs.window as any).height = layout.height;
-      (this.$refs.window as any).position = {
-        x: layout.position.x,
-        y: layout.position.y,
-      } as Position;
-    },
+    // updateWindowLayout(layout: Layout) {
+    //   (this.$refs.window as any).width = layout.width;
+    //   (this.$refs.window as any).height = layout.height;
+    //   (this.$refs.window as any).position = {
+    //     x: layout.position.x,
+    //     y: layout.position.y,
+    //   } as Position;
+    // },
     onResized(event: any) {
       const s: Size = {
         width: event.width,
@@ -155,11 +155,9 @@ export default mixins(WindowMixin).extend({
     },
     onMoved(event: any) {
       const p: Position = {
-        x: (this.$refs.window as any).position.x,
-        y: (this.$refs.window as any).position.y,
+        x: event.x,
+        y: event.y,
       };
-
-      console.log(p);
 
       this.$store.commit(`${this.id}/updateComponentLayout`, {
         id: this.id,
