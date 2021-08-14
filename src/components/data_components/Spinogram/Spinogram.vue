@@ -270,6 +270,11 @@ svg >>> g.legend text.label {
     transform: translateY(-10px);
 }
 
+svg {
+    height: auto;
+    width: auto;
+}
+
 .b-pagination {
     margin-bottom:0;
 }

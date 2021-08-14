@@ -7,9 +7,8 @@
       top: `${window_ypos}px`,
       width: `${window_width}px`,
       height: `${window_height}px`,
-      zIndex: `${z_index}`
+      zIndex: `${z_index}`,
     }"
-
     style="`z-index: ${this.zindex}`"
     @click="this.onWindowFocus"
   >
@@ -130,12 +129,10 @@ export default Vue.extend({
     },
     z_index(): number {
       return this.zIndex;
-    }
+    },
   },
   methods: {
-    onWindowFocus() {
-      this.$store.dispatch(`${this.id}/`, this.zIndex);
-    },
+    onWindowFocus() {},
     onDrag(event: MouseEvent) {
       if (this.isDragging) {
         // event.preventDefault();
