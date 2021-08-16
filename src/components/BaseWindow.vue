@@ -16,6 +16,8 @@
       class="msq-window-titlebar noselect"
       :id="`titlebar-${this.id}`"
       @mousedown="this.onDragStart"
+      @mouseover="this.onTitlebarHover"
+      @mouseleave="this.onTitlebarLeave"
     >
       <span
         class="dataview-swatch"
@@ -132,10 +134,15 @@ export default Vue.extend({
     },
   },
   methods: {
+    onTitlebarHover() {
+      document.body.style.cursor = "grab";
+    },
+    onTitlebarLeave() {
+      if (!this.isDragging) document.body.style.cursor = "auto";
+    },
     onWindowFocus() {},
     onDrag(event: MouseEvent) {
       if (this.isDragging) {
-        // event.preventDefault();
         const deltaX = event.clientX - this.prevDeltaX;
         const deltaY = event.clientY - this.prevDeltaY;
 
@@ -153,6 +160,8 @@ export default Vue.extend({
 
       this.$emit("onMoved", { x: this.windowPos.x, y: this.windowPos.y });
 
+      document.body.style.cursor = "grab";
+
       document.onmouseup = null;
       document.onmousemove = null;
     },
@@ -160,6 +169,8 @@ export default Vue.extend({
       this.prevDeltaX = event.clientX;
       this.prevDeltaY = event.clientY;
       this.isDragging = true;
+
+      document.body.style.cursor = "grabbing";
 
       document.onmouseup = this.onDragEnd;
       document.onmousemove = this.onDrag;
