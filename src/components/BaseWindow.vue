@@ -371,7 +371,7 @@ export default Vue.extend({
 
 .resizer-br {
   bottom: 0;
-  cursor: nw-resize;
+  cursor: nwse-resize;
   height: 5px;
   right: 0;
   width: 5px;
@@ -379,7 +379,7 @@ export default Vue.extend({
 
 .resizer-bl {
   bottom: 0;
-  cursor: ne-resize;
+  cursor: nesw-resize;
   height: 5px;
   left: 0;
   width: 5px;
@@ -395,7 +395,7 @@ export default Vue.extend({
 
 .resizer-tl {
   top: 0;
-  cursor: nw-resize;
+  cursor: nwse-resize;
   height: 5px;
   left: 0;
   width: 5px;
@@ -403,7 +403,7 @@ export default Vue.extend({
 
 .resizer-tr {
   top: 0;
-  cursor: ne-resize;
+  cursor: nesw-resize;
   height: 5px;
   right: 0;
   width: 5px;
