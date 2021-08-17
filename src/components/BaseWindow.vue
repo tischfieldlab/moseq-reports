@@ -72,7 +72,9 @@
 
 <script lang="ts">
 import { Position } from "@/store/datawindow.types";
+import { remote } from "electron";
 import Vue from "vue";
+// import { remote } from 'electron';
 
 enum ResizeType {
   Right = "RIGHT",
@@ -148,6 +150,15 @@ export default Vue.extend({
 
         this.prevDeltaX = event.clientX;
         this.prevDeltaY = event.clientY;
+
+        const [winWidth, winHeight] = remote.getCurrentWindow().getSize();
+
+        // lock the windows to the current window to avoid being able to move them around
+        // outside of the main view.
+        if (this.windowPos.x + (deltaX  - 48) <= 0) return;
+        if (this.windowPos.x + this.windowWidth + deltaX >= winWidth) return;
+        if (this.windowPos.y + deltaY <= 0) return;
+        if (this.windowPos.y + this.windowHeight + deltaY >= winHeight) return;
 
         this.windowPos.x += deltaX;
         this.windowPos.y += deltaY;
