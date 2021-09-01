@@ -20,7 +20,7 @@
                 muted="true" />
         </div>
         <div v-show="!video_loaded" class="no-syllable">
-            <b-card bg-variant="primary" text-variant="white" class="text-center" style="width: 50%; margin-top: 30%;">
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
                 <b-card-text>
                     Sorry, there is no crowd movie available for Syllable {{selected_syllable}} ({{count_method}}) 
                 </b-card-text>
