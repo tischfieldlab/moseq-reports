@@ -66,9 +66,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
         updateComponentSettings(state, payload: UpdateComponentSettingsPayload) {
             stateMerge(state.settings, payload.settings);
         },
-        updateZIndex(state, payload: UpdateComponentZIndexPayload) {
-            
-        }
+        // updateZIndex(state, payload: UpdateComponentZIndexPayload) {}
     },
 };
 export default DataWindowModule;

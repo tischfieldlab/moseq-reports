@@ -24,9 +24,7 @@ const WindowsModule: Module<WindowsState, RootState> = {
             });
         },
         windowsMaxZIndex: (state, getters, rootState) => (zIndex: number) => {
-            state.items.forEach(item => {
-                console.log(item);
-            });
+            state.items.forEach(item => {});
         }
     },
     mutations: {
