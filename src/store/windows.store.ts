@@ -23,9 +23,9 @@ const WindowsModule: Module<WindowsState, RootState> = {
                 return unnest(rootState, wNamespace).datasource === dataView;
             });
         },
-        windowsMaxZIndex: (state, getters, rootState) => (zIndex: number) => {
-            state.items.forEach(item => {});
-        }
+        // windowsMaxZIndex: (state, getters, rootState) => (zIndex: number) => {
+            // state.items.forEach(item => {});
+        // }
     },
     mutations: {
         addWindow(state, namespace: string) {

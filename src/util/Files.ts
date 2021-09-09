@@ -2,8 +2,8 @@ import fs from 'fs';
 import pth from 'path';
 
 export function saveFile(name: string, type: string, data: string) {
-    if (data != null && navigator.msSaveBlob) {
-        return navigator.msSaveBlob(new Blob([data], { type }), name);
+    if (data != null && (navigator as any).msSaveBlob) {
+        return (navigator as any).msSaveBlob(new Blob([data], { type }), name);
     }
 
     const a = document.createElement('a');
