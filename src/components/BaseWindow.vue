@@ -1,439 +1,479 @@
 <template>
+  <div
+    :id="this.id"
+    class="msqWindow"
+    :style="{
+      left: `${window_xpos}px`,
+      top: `${window_ypos}px`,
+      width: `${window_width}px`,
+      height: `${window_height}px`,
+      zIndex: `${z_index}`,
+    }"
+    style="`z-index: ${this.zindex}`"
+  >
     <div
-        :id="this.id"
-        class="msqWindow"
-        :style="{
-            left: `${window_xpos}px`,
-            top: `${window_ypos}px`,
-            width: `${window_width}px`,
-            height: `${window_height}px`,
-            zIndex: `${z_index}`,
-        }"
-        style="`z-index: ${this.zindex}`"
+      class="msq-window-titlebar noselect"
+      @mousedown="this.onDragStart"
+      @mouseover="this.onTitlebarHover"
+      @mouseleave="this.onTitlebarLeave"
     >
-        <div
-            class="msq-window-titlebar noselect"
-            @mousedown="this.onDragStart"
-            @mouseover="this.onTitlebarHover"
-            @mouseleave="this.onTitlebarLeave"
-        >
-        <span
-            class="dataview-swatch"
-            :id="$id('swatch')"
-            :style="{ background: this.titlebar_color }"
-        >
+      <span
+        class="dataview-swatch"
+        :id="$id('swatch')"
+        :style="{ background: this.titlebar_color }"
+      >
         <div class="titlebar-button-container">
-            <slot name="titlebarButtons"></slot>
-            <div class="titlebar-close-hide-buttons">
-                <titlebar-button
-                    :clicked="onCollapsedClicked"
-                    icon="caret-down-fill"
-                    v-if="!isCollapsed && minimizeable"
-                    class="min-max-button"
-                />
-                <titlebar-button
-                    :clicked="onCollapsedClicked"
-                    icon="caret-up-fill"
-                    v-else-if="isCollapsed && minimizeable"
-                    class="min-max-button"
-                />
-                <b-button-close @click="this.onClose" class="close-button" />
-            </div>
+          <slot name="titlebarButtons"></slot>
+          <div class="titlebar-close-hide-buttons">
+            <titlebar-button
+              :clicked="onCollapsedClicked"
+              icon="caret-down-fill"
+              v-if="!isCollapsed && minimizeable"
+              class="min-max-button"
+            />
+            <titlebar-button
+              :clicked="onCollapsedClicked"
+              icon="caret-up-fill"
+              v-else-if="isCollapsed && minimizeable"
+              class="min-max-button"
+            />
+            <b-button-close @click="this.onClose" class="close-button" />
+          </div>
         </div>
-        </span>
-            {{ this.title }}
-        </div>
-        <div
-            :id="`window-content-${this.id}`"
-            class="window-content"
-            :style="{
-                width: `${window_width}px`,
-                height: `${window_height}px`
-            }"
-        >
-            <slot></slot>
-        </div>
-        <div @mousedown="this.onResizeStart" class="noselect">
-            <div data-direction="right" class="resizer resizer-r"></div>
-            <div data-direction="left" class="resizer resizer-l"></div>
-            <div data-direction="top" class="resizer resizer-t"></div>
-            <div data-direction="top-right" class="resizer resizer-tr"></div>
-            <div data-direction="top-left" class="resizer resizer-tl"></div>
-            <div data-direction="bottom" class="resizer resizer-b"></div>
-            <div data-direction="bottom-right" class="resizer resizer-br"></div>
-            <div data-direction="bottom-left" class="resizer resizer-bl"></div>
-      </div>
+      </span>
+      {{ this.title }}
     </div>
+    <div
+      :id="`window-content-${this.id}`"
+      class="window-content"
+      :style="{
+        width: `${window_width}px`,
+        height: `${window_height}px`,
+      }"
+    >
+      <slot></slot>
+    </div>
+    <div @mousedown="this.onResizeStart" class="noselect">
+      <div data-direction="right" class="resizer resizer-r"></div>
+      <div data-direction="left" class="resizer resizer-l"></div>
+      <div data-direction="top" class="resizer resizer-t"></div>
+      <div data-direction="top-right" class="resizer resizer-tr"></div>
+      <div data-direction="top-left" class="resizer resizer-tl"></div>
+      <div data-direction="bottom" class="resizer resizer-b"></div>
+      <div data-direction="bottom-right" class="resizer resizer-br"></div>
+      <div data-direction="bottom-left" class="resizer resizer-bl"></div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { Position } from '@/store/datawindow.types';
-import { remote } from 'electron';
-import Vue from 'vue';
-import TitlebarButton from '@/components/TitlebarButton.vue';
+import { Position } from "@/store/datawindow.types";
+import { remote } from "electron";
+import Vue from "vue";
+import TitlebarButton from "@/components/TitlebarButton.vue";
 
 enum ResizeType {
-    Right = 'right',
-    Left = 'left',
-    Top = 'top',
-    Bottom = 'bottom',
-    TopRight = 'top-right',
-    TopLeft = 'top-left',
-    BottomRight = 'bottom-right',
-    BottomLeft = 'bottom-left'
+  Right = "right",
+  Left = "left",
+  Top = "top",
+  Bottom = "bottom",
+  TopRight = "top-right",
+  TopLeft = "top-left",
+  BottomRight = "bottom-right",
+  BottomLeft = "bottom-left",
 }
 
 export default Vue.extend({
-    name: 'BaseWindow',
-    components: {
-        TitlebarButton
+  name: "BaseWindow",
+  components: {
+    TitlebarButton,
+  },
+  props: {
+    id: {
+      type: String,
+      required: true,
     },
-    props: {
-        id: { type: String, required: true },
-        titlebar_color: { type: String, required: true },
-        title: { type: String, required: true },
-        height: { type: [Number], required: true },
-        width: { type: [Number], required: true },
-        pos: { type: Object, required: true },
-        minimizeable: { type: Boolean, required: false, default: true },
-        resizeable: { type: Boolean, required: false, default: true },
-        minWidth: { type: Number, required: false, default: 260 },
-        minHeight: { type: Number, required: false, default: 155 },
+    titlebar_color: {
+      type: String,
+      required: true,
     },
-    data() {
-        return {
-            isCollapsed: false,
-            restoredHeight: this.height,
-            titlebarWidth: 36,
-            windowWidth: this.width,
-            windowHeight: this.height,
-            windowPos: this.pos,
-            // Used for window move
-            isDragging: false,
-            prevDeltaX: 0,
-            prevDeltaY: 0,
-            // Used for resize
-            isResizing: false,
-            resizeElement: null as HTMLElement | null,
-            zIndex: 1000,
-        };
+    title: {
+      type: String,
+      required: true,
     },
-    computed: {
-        window_width(): number {
-            return this.windowWidth as number;
-        },
-        window_height(): number {
-            return this.windowHeight as number;
-        },
-        window_xpos(): number {
-            return (this.windowPos as Position).x;
-        },
-        window_ypos(): number {
-            return (this.windowPos as Position).y;
-        },
-        z_index(): number {
-            return this.zIndex;
-        },
+    height: {
+      type: [Number],
+      required: true,
     },
-    methods: {
-        onTitlebarHover() {
-            if (!this.isDragging) document.body.style.cursor = 'grab';
-        },
-        onTitlebarLeave() {
-        if (!this.isDragging) document.body.style.cursor = 'auto';
-        },
-        onDrag(event: MouseEvent) {
-            if (this.isDragging) {
-                const deltaX = event.clientX - this.prevDeltaX;
-                const deltaY = event.clientY - this.prevDeltaY;
+    width: {
+      type: [Number],
+      required: true,
+    },
+    pos: {
+      type: Object,
+      required: true,
+    },
+    minimizeable: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    resizeable: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    minWidth: {
+      type: Number,
+      required: false,
+      default: 260,
+    },
+    minHeight: {
+      type: Number,
+      required: false,
+      default: 155,
+    },
+  },
+  data() {
+    return {
+      isCollapsed: false,
+      restoredHeight: this.height,
+      titlebarWidth: 36,
+      windowWidth: this.width,
+      windowHeight: this.height,
+      windowPos: this.pos,
+      // Used for window move
+      isDragging: false,
+      prevDeltaX: 0,
+      prevDeltaY: 0,
+      // Used for resize
+      isResizing: false,
+      resizeElement: null as HTMLElement | null,
+      zIndex: 1000,
+    };
+  },
+  computed: {
+    window_width(): number {
+      return this.windowWidth as number;
+    },
+    window_height(): number {
+      return this.windowHeight as number;
+    },
+    window_xpos(): number {
+      return (this.windowPos as Position).x;
+    },
+    window_ypos(): number {
+      return (this.windowPos as Position).y;
+    },
+    z_index(): number {
+      return this.zIndex;
+    },
+  },
+  methods: {
+    onTitlebarHover() {
+      if (!this.isDragging) document.body.style.cursor = "grab";
+    },
+    onTitlebarLeave() {
+      if (!this.isDragging) document.body.style.cursor = "auto";
+    },
+    onDrag(event: MouseEvent) {
+      if (this.isDragging) {
+        const deltaX = event.clientX - this.prevDeltaX;
+        const deltaY = event.clientY - this.prevDeltaY;
 
-                this.prevDeltaX = event.clientX;
-                this.prevDeltaY = event.clientY;
+        this.prevDeltaX = event.clientX;
+        this.prevDeltaY = event.clientY;
 
-                const [winWidth, winHeight] = remote.getCurrentWindow().getSize();
+        const [winWidth, winHeight] = remote.getCurrentWindow().getSize();
 
-                // lock the windows to the current window to avoid being able to move them around
-                // outside of the main view.
-                if (this.windowPos.x + (deltaX  - 48) <= 0) return;
-                if (this.windowPos.x + this.windowWidth + deltaX >= winWidth) return;
-                if (this.windowPos.y + deltaY <= 0) return;
-                if (this.windowPos.y + this.windowHeight + deltaY >= winHeight) return;
+        // lock the windows to the current window to avoid being able to move them around
+        // outside of the main view.
+        if (this.windowPos.x + (deltaX - 48) <= 0) return;
+        if (this.windowPos.x + this.windowWidth + deltaX >= winWidth) return;
+        if (this.windowPos.y + deltaY <= 0) return;
+        if (this.windowPos.y + this.windowHeight + deltaY >= winHeight) return;
 
-                this.windowPos.x += deltaX;
-                this.windowPos.y += deltaY;
-            }
-        },
-        onDragEnd() {
-            this.prevDeltaX = 0;
-            this.prevDeltaY = 0;
-            this.isDragging = false;
+        this.windowPos.x += deltaX;
+        this.windowPos.y += deltaY;
+      }
+    },
+    onDragEnd() {
+      this.prevDeltaX = 0;
+      this.prevDeltaY = 0;
+      this.isDragging = false;
 
-            this.$emit('onMoved', { x: this.windowPos.x, y: this.windowPos.y });
+      this.$emit("onMoved", { x: this.windowPos.x, y: this.windowPos.y });
 
-            document.body.style.cursor = 'grab';
+      document.body.style.cursor = "grab";
 
-            document.onmouseup = null;
-            document.onmousemove = null;
-        },
-        onDragStart(event: MouseEvent) {
-            this.prevDeltaX = event.clientX;
-            this.prevDeltaY = event.clientY;
-            this.isDragging = true;
+      document.onmouseup = null;
+      document.onmousemove = null;
+    },
+    onDragStart(event: MouseEvent) {
+      this.prevDeltaX = event.clientX;
+      this.prevDeltaY = event.clientY;
+      this.isDragging = true;
 
-            document.body.style.cursor = 'grabbing';
+      document.body.style.cursor = "grabbing";
 
-            document.onmouseup = this.onDragEnd;
-            document.onmousemove = this.onDrag;
-        },
-        onResizeStart(event: MouseEvent) {
-            if (!this.resizeable) return;
-            this.resizeElement = event.target as HTMLElement;
-            this.prevDeltaX = event.clientX;
-            this.prevDeltaY = event.clientY;
-            this.isResizing = true;
+      document.onmouseup = this.onDragEnd;
+      document.onmousemove = this.onDrag;
+    },
+    onResizeStart(event: MouseEvent) {
+      if (!this.resizeable) return;
+      this.resizeElement = event.target as HTMLElement;
+      this.prevDeltaX = event.clientX;
+      this.prevDeltaY = event.clientY;
+      this.isResizing = true;
 
-            document.onmousemove = this.onResize;
-            document.onmouseup = this.onResizeEnd;
-        },
-        onResize(event: MouseEvent) {
-            if (this.isResizing) {
-                event.preventDefault();
-                const deltaX = event.clientX - this.prevDeltaX;
-                const deltaY = event.clientY - this.prevDeltaY;
+      document.onmousemove = this.onResize;
+      document.onmouseup = this.onResizeEnd;
+    },
+    onResize(event: MouseEvent) {
+      if (this.isResizing) {
+        event.preventDefault();
+        const deltaX = event.clientX - this.prevDeltaX;
+        const deltaY = event.clientY - this.prevDeltaY;
 
-                let newHeight = this.windowHeight;
-                let newWidth = this.windowWidth;
-                let newX = this.windowPos.x;
-                let newY = this.windowPos.y;
+        let newHeight = this.windowHeight;
+        let newWidth = this.windowWidth;
+        let newX = this.windowPos.x;
+        let newY = this.windowPos.y;
 
-                const resizeType: ResizeType = this.resizeElement?.getAttribute('data-direction') as ResizeType;
+        const resizeType: ResizeType = this.resizeElement?.getAttribute(
+          "data-direction"
+        ) as ResizeType;
+        // this.resizeElement?.dataset.direction
 
-                // Do vertical resize
-                switch(resizeType) {
-                    case ResizeType.Top:
-                    case ResizeType.TopRight:
-                    case ResizeType.TopLeft:
-                        newHeight = this.windowHeight - deltaY;
-                        newY = this.windowPos.y + deltaY;
-                    break;
+        // Do vertical resize
+        switch (resizeType) {
+          case ResizeType.Top:
+          case ResizeType.TopRight:
+          case ResizeType.TopLeft:
+            newHeight = this.windowHeight - deltaY;
+            newY = this.windowPos.y + deltaY;
+            break;
 
-                    case ResizeType.Bottom:
-                    case ResizeType.BottomRight:
-                    case ResizeType.BottomLeft:
-                        newHeight = this.windowHeight + deltaY;
-                    break;
-                }
-
-                // Do horizontal resize
-                switch(resizeType) {
-                    case ResizeType.TopRight:
-                    case ResizeType.BottomRight:
-                    case ResizeType.Right:
-                        newWidth = this.windowWidth + deltaX;
-                    break;
-
-                    case ResizeType.BottomLeft:
-                    case ResizeType.TopLeft:
-                    case ResizeType.Left:
-                        newWidth = this.windowWidth - deltaX;
-                        newX = this.windowPos.x + deltaX;
-                    break;
-                }
-
-                this.prevDeltaX = event.clientX;
-                this.prevDeltaY = event.clientY;
-
-                if (newHeight > this.minHeight) {
-                    this.windowHeight = newHeight;
-                    this.windowPos.y = newY;
-                }
-
-                if (newWidth > this.minWidth) {
-                    this.windowWidth = newWidth;
-                    this.windowPos.x = newX;
-                }
+          case ResizeType.Bottom:
+          case ResizeType.BottomRight:
+          case ResizeType.BottomLeft:
+            newHeight = this.windowHeight + deltaY;
+            break;
         }
-        },
-        onResizeEnd(event: MouseEvent) {
-            this.prevDeltaY = 0;
-            this.prevDeltaX = 0;
-            this.isResizing = false;
-            this.resizeElement = null;
 
-            this.$emit('onResized', {
-                width: this.windowWidth,
-                height: this.windowHeight,
-            });
+        // Do horizontal resize
+        switch (resizeType) {
+          case ResizeType.TopRight:
+          case ResizeType.BottomRight:
+          case ResizeType.Right:
+            newWidth = this.windowWidth + deltaX;
+            break;
 
-            this.$emit('onMoved', {
-                x: this.windowPos.x,
-                y: this.windowPos.y,
-            });
+          case ResizeType.BottomLeft:
+          case ResizeType.TopLeft:
+          case ResizeType.Left:
+            newWidth = this.windowWidth - deltaX;
+            newX = this.windowPos.x + deltaX;
+            break;
+        }
 
-            document.onmouseup = null;
-            document.onmousemove = null;
-        },
-        violatesMinSizeConstraint(potentialSize: number, constraint: number): boolean {
-            return potentialSize > constraint;
-        },
-        onClose(event: any) {
-            this.$emit('onClosed', event);
-        },
-        onCollapsedClicked(event: any) {
-            this.isCollapsed = !this.isCollapsed;
+        this.prevDeltaX = event.clientX;
+        this.prevDeltaY = event.clientY;
 
-            if (this.$data.isCollapsed) {
-                this.$data.restoredHeight = this.$data.windowHeight;
-                this.$data.windowHeight = this.$data.titlebarWidth;
-            } else {
-                this.$data.windowHeight = this.$data.restoredHeight;
-            }
-        },
+        if (newHeight > this.minHeight) {
+          this.windowHeight = newHeight;
+          this.windowPos.y = newY;
+        }
+
+        if (newWidth > this.minWidth) {
+          this.windowWidth = newWidth;
+          this.windowPos.x = newX;
+        }
+      }
     },
+    onResizeEnd(event: MouseEvent) {
+      this.prevDeltaY = 0;
+      this.prevDeltaX = 0;
+      this.isResizing = false;
+      this.resizeElement = null;
+
+      this.$emit("onResized", {
+        width: this.windowWidth,
+        height: this.windowHeight,
+      });
+
+      this.$emit("onMoved", {
+        x: this.windowPos.x,
+        y: this.windowPos.y,
+      });
+
+      document.onmouseup = null;
+      document.onmousemove = null;
+    },
+    violatesMinSizeConstraint(
+      potentialSize: number,
+      constraint: number
+    ): boolean {
+      return potentialSize > constraint;
+    },
+    onClose(event: any) {
+      this.$emit("onClosed", event);
+    },
+    onCollapsedClicked(event: any) {
+      this.isCollapsed = !this.isCollapsed;
+
+      if (this.$data.isCollapsed) {
+        this.$data.restoredHeight = this.$data.windowHeight;
+        this.$data.windowHeight = this.$data.titlebarWidth;
+      } else {
+        this.$data.windowHeight = this.$data.restoredHeight;
+      }
+    },
+  },
 });
 </script>
 
 <style scoped>
 .resizer {
-    position: absolute;
+  position: absolute;
 }
 
 .resizer-r {
-    cursor: ew-resize;
-    height: 100%;
-    right: 0;
-    top: 0;
-    width: 5px;
+  cursor: ew-resize;
+  height: 100%;
+  right: 0;
+  top: 0;
+  width: 5px;
 }
 
 .resizer-l {
-    cursor: ew-resize;
-    height: 100%;
-    left: 0;
-    top: 0;
-    width: 5px;
+  cursor: ew-resize;
+  height: 100%;
+  left: 0;
+  top: 0;
+  width: 5px;
 }
 
 /* Placed at the bottom side */
 .resizer-b {
-    bottom: 0;
-    cursor: ns-resize;
-    height: 5px;
-    left: 0;
-    width: 100%;
+  bottom: 0;
+  cursor: ns-resize;
+  height: 5px;
+  left: 0;
+  width: 100%;
 }
 
 .resizer-br {
-    bottom: 0;
-    cursor: nwse-resize;
-    height: 5px;
-    right: 0;
-    width: 5px;
+  bottom: 0;
+  cursor: nwse-resize;
+  height: 5px;
+  right: 0;
+  width: 5px;
 }
 
 .resizer-bl {
-    bottom: 0;
-    cursor: nesw-resize;
-    height: 5px;
-    left: 0;
-    width: 5px;
+  bottom: 0;
+  cursor: nesw-resize;
+  height: 5px;
+  left: 0;
+  width: 5px;
 }
 
 .resizer-t {
-    top: 0;
-    cursor: ns-resize;
-    height: 5px;
-    left: 0;
-    width: 100%;
+  top: 0;
+  cursor: ns-resize;
+  height: 5px;
+  left: 0;
+  width: 100%;
 }
 
 .resizer-tl {
-    top: 0;
-    cursor: nwse-resize;
-    height: 5px;
-    left: 0;
-    width: 5px;
+  top: 0;
+  cursor: nwse-resize;
+  height: 5px;
+  left: 0;
+  width: 5px;
 }
 
 .resizer-tr {
-    top: 0;
-    cursor: nesw-resize;
-    height: 5px;
-    right: 0;
-    width: 5px;
+  top: 0;
+  cursor: nesw-resize;
+  height: 5px;
+  right: 0;
+  width: 5px;
 }
 
 .msqWindow {
-    background-color: white;
-    border: 1px solid darkgray;
-    position: absolute;
-    overflow: hidden;
-    border-radius: 4px;
+  background-color: white;
+  border: 1px solid darkgray;
+  position: absolute;
+  overflow: hidden;
+  border-radius: 4px;
 }
 
 .msq-window-titlebar {
-    padding-top: 5px;
-    color: black;
-    padding-bottom: 5px;
-    margin-left: -5px;
-    padding-left: 12px;
-    border-bottom: 1px solid darkgray;
-    background-color: #e8e8e8;
+  padding-top: 5px;
+  color: black;
+  padding-bottom: 5px;
+  margin-left: -5px;
+  padding-left: 12px;
+  border-bottom: 1px solid darkgray;
+  background-color: #e8e8e8;
 }
 
 .dataview-swatch {
-    display: inline-block;
-    vertical-align: text-top;
-    width: 16px;
-    margin-top: 1px;
-    height: 16px;
-    border-radius: 16px;
-    border: 1px solid #c5c5c5;
-    cursor: default;
+  display: inline-block;
+  vertical-align: text-top;
+  width: 16px;
+  margin-top: 1px;
+  height: 16px;
+  border-radius: 16px;
+  border: 1px solid #c5c5c5;
+  cursor: default;
 }
 
 .min-max-button {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    color: #747474;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  color: #747474;
 }
 
 .min-max-button:hover {
-    color: #3a3a3a;
+  color: #3a3a3a;
 }
 
 .window-content {
-    position: relative;
+  position: relative;
 }
 
 .close-button {
-    width: 20px;
-    height: 20px;
-    margin-left: 5px;
-    cursor: pointer;
+  width: 20px;
+  height: 20px;
+  margin-left: 5px;
+  cursor: pointer;
 }
 
 .titlebar-button-container {
-    position: absolute;
-    margin-top: -4px;
-    right: 6px;
+  position: absolute;
+  margin-top: -4px;
+  right: 6px;
 }
 
 .titlebar-button-container svg {
-    margin-left: 9px;
+  margin-left: 9px;
 }
 
 .titlebar-close-hide-buttons {
-    display: inline-block;
+  display: inline-block;
 }
 
 .noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-    -moz-user-select: none; /* Old versions of Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 </style>

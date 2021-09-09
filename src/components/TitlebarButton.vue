@@ -16,7 +16,6 @@ export default Vue.extend({
     },
     methods: {
         buttonClick() {
-            // this.$props.clicked();
             this.clicked();
         }
     }

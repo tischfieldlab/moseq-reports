@@ -1,71 +1,67 @@
 <template>
-    <base-layout>
-        <template>
-            <BaseWindow
-                ref="window"
-                :id="id"
-                :titlebar_color="titlebar_color"
-                :title="title"
-                :width="layout.width"
-                :height="layout.height"
-                :pos="layout.position"
-                @onClosed="onClosed"
-                @onMoved="onMoved"
-                @onResized="onResized"
-            >
-                <template v-slot:titlebarButtons>
-                    <titlebar-button
-                        :clicked="onSnapshotClicked"
-                        icon="camera-fill"
-                        class="snapshot-button"
-                    />
-                    <titlebar-button
-                        :clicked="onSettingsClicked"
-                        icon="gear-fill"
-                        class="settings-button"
-                    />
-                </template>
-                <div>
-                    <b-overlay :show="is_loading" no-fade>
-                        <component ref="body" :id="id" :is="spec.component_type" />
-                    </b-overlay>
-
-                    <b-modal
-                        :title="settings_title"
-                        v-model="show_settings_modal"
-                        header-bg-variant="dark"
-                        header-text-variant="light"
-                        body-bg-variant="light"
-                        body-text-variant="dark"
-                        hide-footer
-                    >
-                        <b-tabs>
-                            <b-tab title="Layout">
-                                <LayoutSettings :id="id" />
-                            </b-tab>
-                            <b-tab title="Data">
-                            <DataSettings :id="id" />
-                        </b-tab>
-                        <b-tab title="Component">
-                            <component
-                            v-if="spec.settings_type"
-                            ref="modal_component"
-                            :id="id"
-                            :is="spec.settings_type"
-                            />
-                            <p v-else class="no-settings text-muted">
-                            No settings available for this component
-                            </p>
-                        </b-tab>
-                        <b-tab title="Snapshots">
-                            <SnapshotSettings :id="id" />
-                        </b-tab>
-                        </b-tabs>
-                    </b-modal>
-                </div>
-            </BaseWindow>
+    <BaseWindow
+        ref="window"
+        :id="id"
+        :titlebar_color="titlebar_color"
+        :title="title"
+        :width="layout.width"
+        :height="layout.height"
+        :pos="layout.position"
+        @onClosed="onClosed"
+        @onMoved="onMoved"
+        @onResized="onResized"
+    >
+        <template v-slot:titlebarButtons>
+            <titlebar-button
+                :clicked="onSnapshotClicked"
+                icon="camera-fill"
+                class="snapshot-button"
+            />
+            <titlebar-button
+                :clicked="onSettingsClicked"
+                icon="gear-fill"
+                class="settings-button"
+            />
         </template>
-    </base-layout>
+        <div>
+            <b-overlay :show="is_loading" no-fade>
+                <component ref="body" :id="id" :is="spec.component_type" />
+            </b-overlay>
+
+            <b-modal
+                :title="settings_title"
+                v-model="show_settings_modal"
+                header-bg-variant="dark"
+                header-text-variant="light"
+                body-bg-variant="light"
+                body-text-variant="dark"
+                hide-footer
+            >
+                <b-tabs>
+                    <b-tab title="Layout">
+                        <LayoutSettings :id="id" />
+                    </b-tab>
+                    <b-tab title="Data">
+                    <DataSettings :id="id" />
+                </b-tab>
+                <b-tab title="Component">
+                    <component
+                    v-if="spec.settings_type"
+                    ref="modal_component"
+                    :id="id"
+                    :is="spec.settings_type"
+                    />
+                    <p v-else class="no-settings text-muted">
+                    No settings available for this component
+                    </p>
+                </b-tab>
+                <b-tab title="Snapshots">
+                    <SnapshotSettings :id="id" />
+                </b-tab>
+                </b-tabs>
+            </b-modal>
+        </div>
+    </BaseWindow>
 </template>
 
 
@@ -76,12 +72,10 @@ import WindowMixin from './Core/WindowMixin';
 import Snapshot, { ensureDefaults } from './Core/SnapshotHelper';
 import { Position, Size } from '@/store/datawindow.types';
 import TitlebarButton from '@/components/TitlebarButton.vue';
-import BaseLayout from '@/components/BaseLayout.vue';
 
 export default mixins(WindowMixin).extend({
     components: {
         BaseWindow,
-        BaseLayout,
         TitlebarButton,
     },
     mounted() {

@@ -68,7 +68,7 @@ export default Vue.extend({
                 this.instance.update();
             }
         },
-        generateGetBoundingClientRect(position: {x:number,y:number}): () => ClientRect {
+        generateGetBoundingClientRect(position: {x:number,y:number}): () => any {
             return () => ({
                 width: 0,
                 height: 0,
