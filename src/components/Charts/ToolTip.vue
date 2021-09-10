@@ -32,7 +32,7 @@ export default Vue.extend({
         return {
             instance: undefined as Instance|undefined,
             virtualElement: {
-                getBoundingClientRect: undefined as (() => ClientRect)|undefined,
+                getBoundingClientRect: undefined as (() => DOMRect)|undefined,
             } as VirtualElement
         };
     },
@@ -68,15 +68,8 @@ export default Vue.extend({
                 this.instance.update();
             }
         },
-        generateGetBoundingClientRect(position: {x:number,y:number}): () => any {
-            return () => ({
-                width: 0,
-                height: 0,
-                top: position.y,
-                right: position.x,
-                bottom: position.y,
-                left: position.x,
-            });
+        generateGetBoundingClientRect(position: {x:number,y:number}): () => DOMRect {
+            return () => new DOMRect(position.x, position.y, 0, 0);
         },
     },
 });
