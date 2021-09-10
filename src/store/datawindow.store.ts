@@ -8,6 +8,7 @@ import {
     RenderMode,
     UpdateComponentRenderModePayload,
     UpdateComponentZIndexPayload,
+    UpdateComponentAspectRatio,
 } from './datawindow.types';
 import { Module } from 'vuex';
 import stateMerge from 'vue-object-merge';
@@ -28,6 +29,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             render_mode: RenderMode.UNDEFINED,
             settings: {},
             z_index: 0,
+            aspect_ratio: undefined,
          };
     },
     getters: {
@@ -68,6 +70,13 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
         },
         updateZIndex(state, payload: UpdateComponentZIndexPayload) {
             state.z_index = payload.z_index;
+        },
+        updateAspectRatio(state, payload: UpdateComponentAspectRatio) {
+            if (payload.aspect_ratio) {
+                state.aspect_ratio = payload.aspect_ratio;
+            } else if (payload.height && payload.width) {
+                state.aspect_ratio = payload.height / payload.width;
+            }
         }
     },
 };

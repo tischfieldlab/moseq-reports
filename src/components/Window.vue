@@ -23,7 +23,6 @@
                 class="settings-button"
             />
         </template>
-        <!-- TODO: MAKE A STYLE -->
         <b-overlay :show="is_loading" no-fade class="overlay-container">
             <component ref="body" :id="id" :is="spec.component_type" />
         </b-overlay>
@@ -42,22 +41,22 @@
                     <LayoutSettings :id="id" />
                 </b-tab>
                 <b-tab title="Data">
-                <DataSettings :id="id" />
-            </b-tab>
-            <b-tab title="Component">
-                <component
-                v-if="spec.settings_type"
-                ref="modal_component"
-                :id="id"
-                :is="spec.settings_type"
-                />
-                <p v-else class="no-settings text-muted">
-                No settings available for this component
-                </p>
-            </b-tab>
-            <b-tab title="Snapshots">
-                <SnapshotSettings :id="id" />
-            </b-tab>
+                    <DataSettings :id="id" />
+                </b-tab>
+                <b-tab title="Component">
+                    <component
+                        v-if="spec.settings_type"
+                        ref="modal_component"
+                        :id="id"
+                        :is="spec.settings_type"
+                    />
+                    <p v-else class="no-settings text-muted">
+                        No settings available for this component
+                    </p>
+                </b-tab>
+                <b-tab title="Snapshots">
+                    <SnapshotSettings :id="id" />
+                </b-tab>
             </b-tabs>
         </b-modal>
     </BaseWindow>

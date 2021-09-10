@@ -136,6 +136,11 @@ export default Vue.extend({
             required: false,
             default: 155
         },
+        aspectRatio: {
+            type: Number,
+            required: false,
+            default: undefined,
+        }
     },
     data() {
         return {
@@ -260,6 +265,11 @@ export default Vue.extend({
                 if (this.resizeElement === null) return;
                 const resizeType: ResizeType = this.resizeElement.dataset.direction as ResizeType;
 
+                let appliedAspectRatio = {
+                    width: newWidth,
+                    height: newHeight
+                };
+
                 // Do vertical resize
                 switch(resizeType) {
                     case ResizeType.Top:
@@ -267,12 +277,14 @@ export default Vue.extend({
                     case ResizeType.TopLeft:
                         newHeight = this.windowHeight - deltaY;
                         newY = this.windowPos.y + deltaY;
+                        appliedAspectRatio = this.applyAspectRatioToHeight(newWidth, newHeight);
                     break;
 
                     case ResizeType.Bottom:
                     case ResizeType.BottomRight:
                     case ResizeType.BottomLeft:
                         newHeight = this.windowHeight + deltaY;
+                        appliedAspectRatio = this.applyAspectRatioToHeight(newWidth, newHeight);
                     break;
                 }
 
@@ -282,6 +294,7 @@ export default Vue.extend({
                     case ResizeType.BottomRight:
                     case ResizeType.Right:
                         newWidth = this.windowWidth + deltaX;
+                        appliedAspectRatio = this.applyAspectRatioToWidth(newWidth, newHeight);
                     break;
 
                     case ResizeType.BottomLeft:
@@ -289,12 +302,18 @@ export default Vue.extend({
                     case ResizeType.Left:
                         newWidth = this.windowWidth - deltaX;
                         newX = this.windowPos.x + deltaX;
+                        appliedAspectRatio = this.applyAspectRatioToWidth(newWidth, newHeight);
+
                     break;
                 }
+
+                newWidth = appliedAspectRatio.width;
+                newHeight = appliedAspectRatio.height;
 
                 this.prevDeltaX = event.clientX;
                 this.prevDeltaY = event.clientY;
 
+                // Respect the min height and width
                 if (newHeight > this.minHeight) {
                     this.windowHeight = newHeight;
                     this.windowPos.y = newY;
@@ -325,9 +344,6 @@ export default Vue.extend({
             document.onmouseup = null;
             document.onmousemove = null;
         },
-        violatesMinSizeConstraint(potentialSize: number, constraint: number): boolean {
-            return potentialSize > constraint;
-        },
         onClose(event: any) {
             this.$emit('onClosed', event);
         },
@@ -339,6 +355,48 @@ export default Vue.extend({
                 this.$data.windowHeight = this.$data.titlebarWidth;
             } else {
                 this.$data.windowHeight = this.$data.restoredHeight;
+            }
+        },
+        applyAspectRatioToWidth(newWidth: number, newHeight: number): {
+            width: number,
+            height: number
+        } {
+            if (this.aspectRatio !== undefined) {
+                newHeight = newWidth / this.aspectRatio;
+                newWidth = this.aspectRatio * newHeight;
+
+                return {
+                    width: newWidth,
+                    height: newHeight
+                };
+            }
+
+            // In the case where no aspect ratio is applied, just return the
+            // normal values without applying the raio
+            return {
+                width: newWidth,
+                height: newHeight
+            }
+        },
+        applyAspectRatioToHeight(newWidth: number, newHeight: number): {
+            width: number,
+            height: number
+        } {
+            if (this.aspectRatio !== undefined) {
+                newWidth = this.aspectRatio * newHeight;
+                newHeight = newWidth / this.aspectRatio;
+
+                return {
+                    width: newWidth,
+                    height: newHeight
+                };
+            }
+
+            // In the case where no aspect ratio is applied, just return the
+            // normal values without applying the raio
+            return {
+                width: newWidth,
+                height: newHeight
             }
         },
     },
