@@ -49,7 +49,7 @@
             </svg>
         </template>
         <div v-else class="no-data">
-            <b-card bg-variant="primary" text-variant="white" class="text-center" style="width: 50%; margin-top: 20%;">
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
                 <b-card-text>
                     Sorry, there are no spinograms available for Syllable {{selectedSyllable}} ({{countMethod}})
                 </b-card-text>

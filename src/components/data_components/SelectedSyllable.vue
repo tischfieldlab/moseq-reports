@@ -36,7 +36,12 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 
 <style scoped>
 .content {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
     text-align: center;
-    margin-top: 20px;
 }
 </style>

@@ -31,7 +31,7 @@
                 muted="true" />
         </div>
         <div v-show="!video_loaded" class="no-syllable">
-            <b-card bg-variant="primary" text-variant="white" class="text-center" style="width: 50%; margin-top: 20%;">
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
                 <b-card-text>
                     Sorry, there are no clips available for Syllable {{selected_syllable}} ({{count_method}}) 
                 </b-card-text>
