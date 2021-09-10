@@ -23,9 +23,17 @@ const WindowsModule: Module<WindowsState, RootState> = {
                 return unnest(rootState, wNamespace).datasource === dataView;
             });
         },
-        // windowsMaxZIndex: (state, getters, rootState) => (zIndex: number) => {
-            // state.items.forEach(item => {});
-        // }
+        windowsMaxZIndex: (state, getters, rootState) : number => {
+            let maxZIndex: number = -1;
+            state.items.forEach((item: string) => {
+                const winState: DataWindowState = state[item.split('/')[1]];
+                if (winState.z_index > maxZIndex) {
+                    maxZIndex = winState.z_index;
+                }
+            });
+
+            return maxZIndex;
+        }
     },
     mutations: {
         addWindow(state, namespace: string) {
@@ -103,6 +111,7 @@ function createDataWindow(component: ComponentRegistration): DataWindowState {
         height: component.init_height || 300,
         pos_x: 250,
         pos_y: 10,
+        z_index: 1000,
         datasource: store.getters['filters/default'],
         render_mode: component.default_render_mode,
         settings: clone(component.default_settings || {}), // deep clone

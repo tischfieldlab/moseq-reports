@@ -10,6 +10,7 @@
             zIndex: `${z_index}`,
         }"
         style="`z-index: ${this.zindex}`"
+        @mousedown="this.windowClicked"
     >
         <div
             class="msq-window-titlebar noselect"
@@ -18,32 +19,32 @@
             @mouseover="this.onTitlebarHover"
             @mouseleave="this.onTitlebarLeave"
         >
-        <span
-            data-draggable="dataview-swatch"
-            class="dataview-swatch"
-            :id="$id('swatch')"
-            :style="{ background: this.titlebar_color }"
-        >
-        <div class="titlebar-button-container">
-            <slot name="titlebarButtons"></slot>
-            <div class="titlebar-close-hide-buttons">
-                <titlebar-button
-                    :clicked="onCollapsedClicked"
-                    icon="caret-down-fill"
-                    v-if="!isCollapsed && minimizeable"
-                    class="min-max-button"
-                />
-                <titlebar-button
-                    :clicked="onCollapsedClicked"
-                    icon="caret-up-fill"
-                    v-else-if="isCollapsed && minimizeable"
-                    class="min-max-button"
-                />
-                <b-button-close @click="this.onClose" class="close-button" />
-            </div>
-        </div>
-        </span>
-            {{ this.title }}
+            <span
+                data-draggable="dataview-swatch"
+                class="dataview-swatch"
+                :id="$id('swatch')"
+                :style="{ background: this.titlebar_color }"
+            >
+                <div class="titlebar-button-container">
+                    <slot name="titlebarButtons"></slot>
+                    <div class="titlebar-close-hide-buttons">
+                        <titlebar-button
+                            :clicked="onCollapsedClicked"
+                            icon="caret-down-fill"
+                            v-if="!isCollapsed && minimizeable"
+                            class="min-max-button"
+                        />
+                        <titlebar-button
+                            :clicked="onCollapsedClicked"
+                            icon="caret-up-fill"
+                            v-else-if="isCollapsed && minimizeable"
+                            class="min-max-button"
+                        />
+                        <b-button-close @click="this.onClose" class="close-button" />
+                    </div>
+                </div>
+            </span>
+                {{ this.title }}
         </div>
         <div
             :id="`window-content-${this.id}`"
@@ -172,6 +173,16 @@ export default Vue.extend({
         },
     },
     methods: {
+        // Used to set the z-index to be the max one
+        windowClicked() {
+            // Get the current max z index and update both the component and the store
+            const maxZ: number = this.$store.getters['datawindows/windowsMaxZIndex'] + 1;
+            this.$store.commit(`${this.id}/updateZIndex`, {
+                z_index: maxZ,
+            });
+
+            this.zIndex = maxZ;
+        },
         onTitlebarHover() {
             if (!this.isDragging) document.body.style.cursor = 'grab';
         },
@@ -293,7 +304,7 @@ export default Vue.extend({
                     this.windowWidth = newWidth;
                     this.windowPos.x = newX;
                 }
-        }
+            }
         },
         onResizeEnd(event: MouseEvent) {
             this.prevDeltaY = 0;
