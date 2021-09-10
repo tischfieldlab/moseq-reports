@@ -13,11 +13,13 @@
     >
         <div
             class="msq-window-titlebar noselect"
+            data-draggable="msq-titlebar"
             @mousedown="this.onDragStart"
             @mouseover="this.onTitlebarHover"
             @mouseleave="this.onTitlebarLeave"
         >
         <span
+            data-draggable="dataview-swatch"
             class="dataview-swatch"
             :id="$id('swatch')"
             :style="{ background: this.titlebar_color }"
@@ -47,13 +49,13 @@
             :id="`window-content-${this.id}`"
             class="window-content"
             :style="{
-                width: `${window_width}px`,
-                height: `${window_height}px`
+                width: `${window_width - 2}px`,
+                height: `${window_height - 37}px`
             }"
         >
             <slot></slot>
         </div>
-        <div @mousedown="this.onResizeStart" class="noselect">
+        <div @mousedown="this.onResizeStart" class="noselect" v-if="!this.isCollapsed">
             <div data-direction="right" class="resizer resizer-r"></div>
             <div data-direction="left" class="resizer resizer-l"></div>
             <div data-direction="top" class="resizer resizer-t"></div>
@@ -138,7 +140,7 @@ export default Vue.extend({
         return {
             isCollapsed: false,
             restoredHeight: this.height,
-            titlebarWidth: 36,
+            titlebarWidth: 35,
             windowWidth: this.width,
             windowHeight: this.height,
             windowPos: this.pos,
@@ -210,6 +212,10 @@ export default Vue.extend({
             document.onmousemove = null;
         },
         onDragStart(event: MouseEvent) {
+            const target: HTMLElement | null = event.target as HTMLElement;
+            // If we are clicking the buttons on the page, we don't want to be
+            // able to drag the window
+            if (target.dataset.draggable === undefined) { document.body.style.cursor = 'auto'; return; }
             this.prevDeltaX = event.clientX;
             this.prevDeltaY = event.clientY;
             this.isDragging = true;
@@ -230,7 +236,7 @@ export default Vue.extend({
             document.onmouseup = this.onResizeEnd;
         },
         onResize(event: MouseEvent) {
-            if (this.isResizing) {
+            if (this.isResizing && !this.isCollapsed) {
                 event.preventDefault();
                 const deltaX = event.clientX - this.prevDeltaX;
                 const deltaY = event.clientY - this.prevDeltaY;
@@ -240,8 +246,8 @@ export default Vue.extend({
                 let newX = this.windowPos.x;
                 let newY = this.windowPos.y;
 
-                const resizeType: ResizeType = this.resizeElement?.getAttribute('data-direction') as ResizeType;
-                // this.resizeElement?.dataset.direction
+                if (this.resizeElement === null) return;
+                const resizeType: ResizeType = this.resizeElement.dataset.direction as ResizeType;
 
                 // Do vertical resize
                 switch(resizeType) {

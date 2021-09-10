@@ -23,44 +23,43 @@
                 class="settings-button"
             />
         </template>
-        <div>
-            <b-overlay :show="is_loading" no-fade>
-                <component ref="body" :id="id" :is="spec.component_type" />
-            </b-overlay>
+        <!-- TODO: MAKE A STYLE -->
+        <b-overlay :show="is_loading" no-fade class="overlay-container">
+            <component ref="body" :id="id" :is="spec.component_type" />
+        </b-overlay>
 
-            <b-modal
-                :title="settings_title"
-                v-model="show_settings_modal"
-                header-bg-variant="dark"
-                header-text-variant="light"
-                body-bg-variant="light"
-                body-text-variant="dark"
-                hide-footer
-            >
-                <b-tabs>
-                    <b-tab title="Layout">
-                        <LayoutSettings :id="id" />
-                    </b-tab>
-                    <b-tab title="Data">
-                    <DataSettings :id="id" />
+        <b-modal
+            :title="settings_title"
+            v-model="show_settings_modal"
+            header-bg-variant="dark"
+            header-text-variant="light"
+            body-bg-variant="light"
+            body-text-variant="dark"
+            hide-footer
+        >
+            <b-tabs>
+                <b-tab title="Layout">
+                    <LayoutSettings :id="id" />
                 </b-tab>
-                <b-tab title="Component">
-                    <component
-                    v-if="spec.settings_type"
-                    ref="modal_component"
-                    :id="id"
-                    :is="spec.settings_type"
-                    />
-                    <p v-else class="no-settings text-muted">
-                    No settings available for this component
-                    </p>
-                </b-tab>
-                <b-tab title="Snapshots">
-                    <SnapshotSettings :id="id" />
-                </b-tab>
-                </b-tabs>
-            </b-modal>
-        </div>
+                <b-tab title="Data">
+                <DataSettings :id="id" />
+            </b-tab>
+            <b-tab title="Component">
+                <component
+                v-if="spec.settings_type"
+                ref="modal_component"
+                :id="id"
+                :is="spec.settings_type"
+                />
+                <p v-else class="no-settings text-muted">
+                No settings available for this component
+                </p>
+            </b-tab>
+            <b-tab title="Snapshots">
+                <SnapshotSettings :id="id" />
+            </b-tab>
+            </b-tabs>
+        </b-modal>
     </BaseWindow>
 </template>
 
@@ -198,5 +197,10 @@ function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
 
 .settings-button:hover,.snapshot-button:hover {
   color: #3a3a3a;
+}
+
+.overlay-container {
+    width: inherit;
+    height: inherit;
 }
 </style>
