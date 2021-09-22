@@ -64,7 +64,7 @@
 <script lang="ts">
 import LoadingMixin from '@/components/Core/LoadingMixin'
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import RegisterDataComponent from '@/components/Core';
 import { RenderMode } from '@/store/datawindow.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';

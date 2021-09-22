@@ -10,7 +10,7 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import { RenderMode } from '@/store/datawindow.types';
 
 RegisterDataComponent({

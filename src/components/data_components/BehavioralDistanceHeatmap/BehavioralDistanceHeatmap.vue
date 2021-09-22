@@ -45,7 +45,7 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import {ClusteredHeatmapSVG, ClusteredHeatmapCanvas } from '@/components/Charts/ClusteredHeatmap';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';

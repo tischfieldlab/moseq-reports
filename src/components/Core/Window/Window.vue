@@ -68,10 +68,10 @@
 <script lang="ts">
 import BaseWindow from './BaseWindow.vue';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from './Core/WindowMixin';
-import Snapshot, { ensureDefaults } from './Core/SnapshotHelper';
+import WindowMixin from './WindowMixin';
+import Snapshot, { ensureDefaults } from '../SnapshotHelper';
 import { Position, Size } from '@/store/datawindow.types';
-import TitlebarButton from '@/components/TitlebarButton.vue';
+import TitlebarButton from '@/components/Core/Window/WindowTitlebarButton.vue';
 
 export default mixins(WindowMixin).extend({
     components: {

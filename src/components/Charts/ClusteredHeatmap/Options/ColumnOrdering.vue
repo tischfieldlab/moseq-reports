@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import WindowMixin from '@/components/Core/WindowMixin'
+import WindowMixin from '@/components/Core/Window/WindowMixin'
 import mixins from 'vue-typed-mixins';
 import DatasetPicker from '@/components/DatasetPicker.vue';
 

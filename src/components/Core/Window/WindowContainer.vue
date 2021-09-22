@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import UiCard from '@/components/Window.vue';
+import UiCard from '@/components/Core/Window/Window.vue';
 
 
 export default Vue.extend({

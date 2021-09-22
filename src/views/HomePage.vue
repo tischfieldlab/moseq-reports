@@ -10,7 +10,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Sidebar from '@/components/Sidebar.vue';
-import WindowContainer from '@/components/WindowContainer.vue';
+import WindowContainer from '@/components/Core/Window/WindowContainer.vue';
 import NoDataPresent from '@/components/NoDataPresent.vue';
 import FileDropAcceptor from '@/components/FileDropAcceptor.vue';
 import {UpdateTitle} from '@/WindowChrome';

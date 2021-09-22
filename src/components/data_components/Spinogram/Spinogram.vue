@@ -67,7 +67,7 @@ import * as d3 from 'd3';
 import { line } from 'd3-shape';
 import { scaleLinear, scaleSequential } from 'd3-scale';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import mixins from 'vue-typed-mixins';
 import {rgb} from 'd3-color';
 import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';

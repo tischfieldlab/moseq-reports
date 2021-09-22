@@ -34,7 +34,7 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import { GetAddress } from '@/components/Core/DataLoader/DataServer';
 import { RenderMode } from '@/store/datawindow.types';
 

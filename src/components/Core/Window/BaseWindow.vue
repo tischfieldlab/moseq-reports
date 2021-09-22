@@ -73,7 +73,7 @@
 import { Position } from '@/store/datawindow.types';
 import { remote } from 'electron';
 import Vue from 'vue';
-import TitlebarButton from '@/components/TitlebarButton.vue';
+import TitlebarButton from '@/components/Core/Window/WindowTitlebarButton.vue';
 
 enum ResizeType {
     Right = 'right',

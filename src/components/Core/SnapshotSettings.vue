@@ -50,7 +50,7 @@
 import Vue from 'vue';
 import Snapshot, {resolveTarget} from '@/components/Core/SnapshotHelper';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import { Chrome } from 'vue-color';
 import { RenderMode } from '@/store/datawindow.types';
 

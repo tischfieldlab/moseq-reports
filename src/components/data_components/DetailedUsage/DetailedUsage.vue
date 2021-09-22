@@ -26,7 +26,7 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 
 import {BoxPlotSVG, BoxPlotCanvas, WhiskerType} from '@/components/Charts/BoxPlot';
 import LoadData from '@/components/Core/DataLoader/DataLoader';

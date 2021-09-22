@@ -27,7 +27,7 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 
 import { LinePlotSVG, LinePlotCanvas} from '@/components/Charts/LinePlot';
 
