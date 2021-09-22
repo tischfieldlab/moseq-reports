@@ -9,6 +9,7 @@ import {
     UpdateComponentRenderModePayload,
     UpdateComponentZIndexPayload,
     UpdateComponentAspectRatio,
+    UpdateComponentAspectRatioByWidthAndHeight,
 } from './datawindow.types';
 import { Module } from 'vuex';
 import stateMerge from 'vue-object-merge';
@@ -74,10 +75,10 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
         updateZIndex(state, payload: UpdateComponentZIndexPayload) {
             state.z_index = payload.z_index;
         },
-        updateAspectRatio(state, payload: UpdateComponentAspectRatio) {
+        updateAspectRatio(state, payload: UpdateComponentAspectRatio & UpdateComponentAspectRatioByWidthAndHeight) {
             if (payload.aspect_ratio) {
                 state.aspect_ratio = payload.aspect_ratio;
-            } else if (payload.height && payload.width) {
+            } else {
                 state.aspect_ratio = payload.height / payload.width;
             }
         }

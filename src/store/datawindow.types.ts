@@ -22,15 +22,17 @@ export interface UpdateComponentLayoutPayload {
 }
 
 export interface UpdateComponentAspectRatio {
-    aspect_ratio?: number;
-    width?: number;
-    height?: number;
+    aspect_ratio: number;
+}
+
+export interface UpdateComponentAspectRatioByWidthAndHeight {
+    width: number;
+    height: number;
 }
 
 export interface UpdateComponentZIndexPayload {
     z_index: number;
 }
-
 export interface UpdateComponentSettingsPayload {
     settings: any;
 }
