@@ -10,6 +10,8 @@
         @onClosed="onClosed"
         @onMoved="onMoved"
         @onResized="onResized"
+        @onZIndexChanged="onZIndexChanged"
+        :zIndex="z_index"
     >
         <template v-slot:titlebarButtons>
             <titlebar-button
@@ -91,7 +93,7 @@ export default mixins(WindowMixin).extend({
         return {
             show_settings_modal: false,
             component_loading: 0,
-            watchers: Array<() => void>(),
+            watchers: Array<() => void>()
         };
     },
     computed: {
@@ -114,6 +116,9 @@ export default mixins(WindowMixin).extend({
             const s = this.dataview;
             return this.component_loading > 0 || (s && s.loading);
         },
+        z_index(): number {
+            return this.$store.getters[`${this.id}/zIndex`];
+        }
     },
     watch: {
         title(newValue) {
@@ -172,6 +177,10 @@ export default mixins(WindowMixin).extend({
                 this.settings.snapshot
             );
         },
+        onZIndexChanged() {
+            const maxZ: number = this.$store.getters['datawindows/windowsMaxZIndex'] + 1;
+            this.$store.commit(`${this.id}/updateZIndex`, { z_index: maxZ });
+        }
     },
 });
 

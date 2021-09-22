@@ -9,6 +9,7 @@
             "y": 5
         }
     },
+    "z_index": 1000,
     "settings": {}
 }, {
     "type": "DetailedUsage",
@@ -21,6 +22,7 @@
             "y": 5
         }
     },
+    "z_index": 1001,
     "settings": {}
 }, {
     "type": "Spinogram",
@@ -33,6 +35,7 @@
             "y": 165
         }
     },
+    "z_index": 1002,
     "settings": {}
 }, {
     "type": "SelectedSyllable",
@@ -45,6 +48,7 @@
             "y": 5
         }
     },
+    "z_index": 1003,
     "settings": {}
 }, {
     "title": "Crowd Movies",
@@ -57,5 +61,6 @@
             "y": 470
         }
     },
+    "z_index": 1004,
     "settings": {}
 }]

@@ -7,7 +7,7 @@
             top: `${window_ypos}px`,
             width: `${window_width}px`,
             height: `${window_height}px`,
-            zIndex: `${z_index}`,
+            zIndex: `${zIndex}`,
         }"
         style="`z-index: ${this.zindex}`"
         @mousedown="this.windowClicked"
@@ -140,6 +140,10 @@ export default Vue.extend({
             type: Number,
             required: false,
             default: undefined,
+        },
+        zIndex: {
+            type: Number,
+            required: false,
         }
     },
     data() {
@@ -157,7 +161,6 @@ export default Vue.extend({
             // Used for resize
             isResizing: false,
             resizeElement: null as HTMLElement | null,
-            zIndex: 1000,
         };
     },
     computed: {
@@ -172,27 +175,18 @@ export default Vue.extend({
         },
         window_ypos(): number {
             return (this.windowPos as Position).y;
-        },
-        z_index(): number {
-            return this.zIndex;
-        },
+        }
     },
     methods: {
         // Used to set the z-index to be the max one
         windowClicked() {
-            // Get the current max z index and update both the component and the store
-            const maxZ: number = this.$store.getters['datawindows/windowsMaxZIndex'] + 1;
-            this.$store.commit(`${this.id}/updateZIndex`, {
-                z_index: maxZ,
-            });
-
-            this.zIndex = maxZ;
+            this.$emit('onZIndexChanged');
         },
         onTitlebarHover() {
             if (!this.isDragging) document.body.style.cursor = 'grab';
         },
         onTitlebarLeave() {
-        if (!this.isDragging) document.body.style.cursor = 'auto';
+            if (!this.isDragging) document.body.style.cursor = 'auto';
         },
         onDrag(event: MouseEvent) {
             if (this.isDragging) {

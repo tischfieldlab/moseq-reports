@@ -28,7 +28,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             datasource: '',
             render_mode: RenderMode.UNDEFINED,
             settings: {},
-            z_index: 0,
+            z_index: 1000,
             aspect_ratio: undefined,
          };
     },
@@ -36,6 +36,9 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
         spec(state, getters, rootState, rootGetters) {
             return rootGetters.getSpecification(state.type);
         },
+        zIndex(state) {
+            return state.z_index;
+        }
     },
     mutations: {
         replaceState(state, payload: DataWindowState) {

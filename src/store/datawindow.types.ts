@@ -70,6 +70,7 @@ export interface DehydratedDataWindow {
     source?: string;
     render_mode?: RenderMode;
     settings: object | undefined;
+    z_index?: number;
 }
 
 

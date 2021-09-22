@@ -7,8 +7,6 @@ import DataWindowModule from './datawindow.store';
 import { clone } from '@/util/Object';
 import { WindowsState } from './windows.types';
 
-
-
 const WindowsModule: Module<WindowsState, RootState> = {
     namespaced: true,
     state() {
@@ -33,6 +31,9 @@ const WindowsModule: Module<WindowsState, RootState> = {
             });
 
             return maxZIndex;
+        },
+        numberOfWindows(state) {
+            return state.items.length;
         }
     },
     mutations: {
@@ -111,7 +112,7 @@ function createDataWindow(component: ComponentRegistration): DataWindowState {
         height: component.init_height || 300,
         pos_x: 250,
         pos_y: 10,
-        z_index: 1000,
+        z_index: 1000 + store.getters['datawindows/numberOfWindows'],
         datasource: store.getters['filters/default'],
         render_mode: component.default_render_mode,
         settings: clone(component.default_settings || {}), // deep clone
@@ -133,6 +134,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
         source: window.datasource,
         render_mode: window.render_mode,
         settings: window.settings,
+        z_index: window.z_index,
     };
     return dehydrated;
 }
@@ -140,6 +142,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
 function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     const spec = store.getters.getSpecification(data.type) as ComponentRegistration;
     const win = createDataWindow(spec);
+    const maxZ: number = store.getters['datawindows/windowsMaxZIndex'] + 1;
     win.title = clone(data.title || spec.friendly_name);
     win.width = data.layout.width || win.width;
     win.height = data.layout.height || win.height;
@@ -148,5 +151,6 @@ function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     win.datasource = data.source || win.datasource;
     win.render_mode = data.render_mode || win.render_mode;
     win.settings = { ...win.settings, ...clone(data.settings) };
+    win.z_index = data.z_index || maxZ;
     return win;
 }
