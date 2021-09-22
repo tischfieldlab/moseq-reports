@@ -10,7 +10,7 @@
         @onClosed="onClosed"
         @onMoved="onMoved"
         @onResized="onResized"
-        @onZIndexChanged="onZIndexChanged"
+        @onWindowFocused="onWindowFocused"
         :zIndex="z_index"
     >
         <template v-slot:titlebarButtons>
@@ -177,7 +177,7 @@ export default mixins(WindowMixin).extend({
                 this.settings.snapshot
             );
         },
-        onZIndexChanged() {
+        onWindowFocused() {
             const maxZ: number = this.$store.getters['datawindows/windowsMaxZIndex'] + 1;
             this.$store.commit(`${this.id}/updateZIndex`, { z_index: maxZ });
         }

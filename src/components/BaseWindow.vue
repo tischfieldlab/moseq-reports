@@ -180,7 +180,7 @@ export default Vue.extend({
     methods: {
         // Used to set the z-index to be the max one
         windowClicked() {
-            this.$emit('onZIndexChanged');
+            this.$emit('onWindowFocused');
         },
         onTitlebarHover() {
             if (!this.isDragging) document.body.style.cursor = 'grab';
