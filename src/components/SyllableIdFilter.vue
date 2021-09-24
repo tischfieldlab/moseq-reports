@@ -1,6 +1,9 @@
 <template>
     <b-card no-body >
-        <div class="input-group-text">Filter Module ID</div>
+        <div class="input-group-text">
+            Filter Module ID
+            <b-button-close v-show="hasTags" @click="clearAllTags" title="Clear all IDs" />
+        </div>
         <b-form-tags v-model="tags" class="mb-2"
             separator=" ,;"
             :tag-validator="tagValidator"
@@ -37,6 +40,9 @@ export default Vue.component('syllable-id-filter', {
             // Overall component validation state
             return false;
         },
+        hasTags(): boolean {
+            return this.tags.length > 0;
+        },
         tagsAsIds(): number[] {
             let ids = parsePart(this.tags.join(',')) as number[];
             ids = [...new Set(ids)].sort((a, b) => a - b);
@@ -66,6 +72,9 @@ export default Vue.component('syllable-id-filter', {
         this.tags = this.idsToRanges(this.module_filter);
     },
     methods: {
+        clearAllTags() {
+            this.tags.splice(0, this.tags.length);
+        },
         tagValidator(tag) {
             // Individual tag validator function
             const ids = parsePart(tag) as number[];
@@ -121,5 +130,8 @@ export default Vue.component('syllable-id-filter', {
     margin:0 !important;
     border: none;
     background: none;
+}
+button.close {
+    margin-left: auto;
 }
 </style>
