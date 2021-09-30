@@ -18,6 +18,7 @@
             :loopVideo="this.settings.loop"
             :onlySubClip="this.settings.only_subclip"
             :subClip="this.subclip"
+            @aspectRatioCalculated="this.aspectRatioCalculated"
         />
     </div>
 </template>
@@ -45,7 +46,6 @@ RegisterDataComponent({
         playback_rate: 1.0,
         only_subclip: true,
     },
-    aspect_ratio: 1.0,
 });
 
 export default mixins(WindowMixin).extend({
@@ -121,6 +121,9 @@ export default mixins(WindowMixin).extend({
         timeToSeconds(time: string) {
             return time.split(':').reduce((acc,t) => (60 * acc) + Number.parseFloat(t), 0);
         },
+        aspectRatioCalculated(payload: { aspectRatio: number }) {
+            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: payload.aspectRatio });
+        }
     },
 });
 </script>

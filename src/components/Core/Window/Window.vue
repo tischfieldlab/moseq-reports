@@ -120,7 +120,7 @@ export default mixins(WindowMixin).extend({
         z_index(): number {
             return this.$store.getters[`${this.id}/zIndex`];
         },
-        aspect_ratio(): number | undefined {
+        aspect_ratio(): number {
             return this.$store.getters[`${this.id}/aspectRatio`];
         }
     },

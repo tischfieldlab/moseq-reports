@@ -98,6 +98,7 @@ export default Vue.extend({
             this.duration = (this.$refs.video as HTMLVideoElement).duration;
             this.updateVideoPlaybackRate();
             this.updateVideoLooping();
+            this.calculateAspectRatio();
         },
         hide_video(ev: Event) {
             this.video_loaded = false;
@@ -129,6 +130,11 @@ export default Vue.extend({
                 video.play();
             }
         },
+        calculateAspectRatio() {
+            const video = (this.$refs.video as HTMLVideoElement);
+            const aspectRatio: number = video.clientHeight / video.clientWidth;
+            this.$emit('aspectRatioCalculated', { aspectRatio: aspectRatio });
+        }
     },
      watch: {
         'playbackRate': 'updateVideoPlaybackRate',

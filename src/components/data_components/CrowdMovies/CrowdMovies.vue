@@ -4,6 +4,7 @@
         :selectedSyllable="this.selected_syllable"
         :playbackRate="this.settings.playback_rate"
         :countMethod="this.count_method"
+        @aspectRatioCalculated="this.aspectRatioCalculated"
     />
 </template>
 
@@ -28,7 +29,6 @@ RegisterDataComponent({
         loop: true,
         playback_rate: 1.0,
     },
-    aspect_ratio: 1.0,
 });
 
 export default mixins(WindowMixin).extend({
@@ -49,6 +49,11 @@ export default mixins(WindowMixin).extend({
             return `http://${GetAddress()}/crowd_movies/${fname}`;
         },
     },
+    methods: {
+        aspectRatioCalculated(payload: { aspectRatio: number }) {
+            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: payload.aspectRatio });
+        }
+    }
 });
 </script>
 
