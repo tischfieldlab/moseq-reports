@@ -1,6 +1,6 @@
 <template>
 <div class="container">
-        <div v-show="video_loaded">
+        <div v-show="video_loaded" class="video-label-wrapper">
             <div class="info">
                 <span>
                     Module {{selectedSyllable}} ({{countMethod}})
@@ -13,7 +13,7 @@
                 </span>
             </div>
             <video ref="video"
-                :style="{width: `${this.video_width}px`, height: `${this.video_height}px`}"
+                
                 crossOrigin='anonymous'
                 :src="videoPath"
                 type="video/mp4"
@@ -61,11 +61,6 @@ export default Vue.extend({
             required: false,
             default: true
         },
-        layout: {
-            type: Object,
-            required: true,
-            default: undefined
-        },
         onlySubClip: {
             type: Boolean,
             required: false,
@@ -81,18 +76,6 @@ export default Vue.extend({
             video_loaded: true,
             duration: 0,
             current_time: 0,
-        }
-    },
-    computed: {
-        video_height(): number {
-            if (this.subClip) {
-                return this.layout.height - 64;
-            } else {
-                return this.layout.height - 34;
-            }
-        },
-        video_width(): number {
-            return this.layout.width;
         }
     },
     mounted() {
@@ -157,13 +140,16 @@ export default Vue.extend({
 <style scoped>
 .container {
     padding: 0;
-    background-color: #080A80;
+    background-color: black;
     max-width: none;
     overflow: hidden;
+    width: inherit;
+    height: inherit;
 }
 video {
     width: 100%;
     height: 100%;
+    object-fit: cover;
 }
 video:focus {
     outline: none;
@@ -184,5 +170,9 @@ video:focus {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+.video-label-wrapper {
+    width: 100%;
+    height: inherit;
 }
 </style>

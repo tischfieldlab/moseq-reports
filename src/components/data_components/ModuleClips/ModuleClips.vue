@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="video-container">
         <b-pagination
             v-if="num_examples > 0"
             v-model="example_num"
@@ -16,7 +16,6 @@
             :selectedSyllable="this.selected_syllable"
             :playbackRate="this.settings.playback_rate"
             :loopVideo="this.settings.loop"
-            :layout="this.layout"
             :onlySubClip="this.settings.only_subclip"
             :subClip="this.subclip"
         />
@@ -24,7 +23,6 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
@@ -128,40 +126,8 @@ export default mixins(WindowMixin).extend({
 </script>
 
 <style scoped>
-.container {
-    padding: 0;
-    background-color: #000000;
-    max-width: none;
-    overflow: hidden;
-}
-video {
-    margin:0;
-    padding:0;
-}
-video:focus {
-    outline: none;
-}
-.info {
-    position: absolute;
-    color: #ffffff;
-    right: 0;
-    padding: 6px 6px 0 0;
-    text-align: right;
-}
-.info span {
-    display: block;
-}
-.no-syllable .card {
-    width: 75%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-.example {
-    width: 20px;
-    height: 20px;
-    display: inline-block;
+.video-container {
+    height: calc(100% - 10px);
 }
 .b-pagination {
     margin-bottom:0;

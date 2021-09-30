@@ -1,10 +1,9 @@
 <template>
-    <video-clips 
+    <video-clips
         :videoPath="this.crowd_movie_path"
         :selectedSyllable="this.selected_syllable"
         :playbackRate="this.settings.playback_rate"
         :countMethod="this.count_method"
-        :layout="this.layout"
     />
 </template>
 
