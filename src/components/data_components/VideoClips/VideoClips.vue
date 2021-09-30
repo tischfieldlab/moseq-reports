@@ -133,7 +133,7 @@ export default Vue.extend({
         calculateAspectRatio() {
             const video = (this.$refs.video as HTMLVideoElement);
             const aspectRatio: number = video.clientHeight / video.clientWidth;
-            this.$emit('aspectRatioCalculated', { aspectRatio: aspectRatio });
+            this.$emit('aspectRatioCalculated', { aspectRatio });
         }
     },
      watch: {
