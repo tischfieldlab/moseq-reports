@@ -39,6 +39,9 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
         },
         zIndex(state) {
             return state.z_index;
+        },
+        aspectRatio(state) {
+            return state.aspect_ratio;
         }
     },
     mutations: {
@@ -52,6 +55,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             state.datasource = payload.datasource;
             state.render_mode = payload.render_mode;
             state.z_index = payload.z_index
+            state.aspect_ratio = payload.aspect_ratio;
             stateMerge(state.settings, payload.settings);
         },
         updateComponentLayout(state, payload: UpdateComponentLayoutPayload) {

@@ -12,6 +12,7 @@
         @onResized="onResized"
         @onWindowFocused="onWindowFocused"
         :zIndex="z_index"
+        :aspectRatio="aspect_ratio"
     >
         <template v-slot:titlebarButtons>
             <titlebar-button
@@ -118,6 +119,9 @@ export default mixins(WindowMixin).extend({
         },
         z_index(): number {
             return this.$store.getters[`${this.id}/zIndex`];
+        },
+        aspect_ratio(): number | undefined {
+            return this.$store.getters[`${this.id}/aspectRatio`];
         }
     },
     watch: {

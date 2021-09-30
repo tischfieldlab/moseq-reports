@@ -11,7 +11,7 @@ export interface DataWindowState {
     render_mode: RenderMode;
     settings: object;
     z_index: number;
-    aspect_ratio: number | undefined;
+    aspect_ratio?: number;
 }
 
 export interface UpdateComponentLayoutPayload {
