@@ -80,9 +80,10 @@ export default Vue.extend({
             if (this.subClip) {
                 video.currentTime = this.subClip![0];
             }
+
             this.updateVideoPlaybackRate();
             this.updateVideoLooping();
-            this.calculateAspectRatio();
+            this.sizeCalculated();
         },
         hide_video(ev: Event) {
             this.video_loaded = false;
@@ -125,9 +126,9 @@ export default Vue.extend({
                 video.play();
             }
         },
-        calculateAspectRatio() {
+        sizeCalculated() {
             const video = (this.$refs.video as HTMLVideoElement);
-            this.$emit('sizeCalculated', { width: video.clientWidth, height: video.clientHeight });
+            this.$emit('sizeCalculated', { width: video.videoWidth, height: video.videoHeight });
         }
     },
      watch: {
