@@ -112,7 +112,7 @@ function createDataWindow(component: ComponentRegistration): DataWindowState {
         height: component.init_height || 300,
         pos_x: 250,
         pos_y: 10,
-        z_index: store.getters['datawindows/numberOfWindows'],
+        z_index: store.getters['datawindows/windowsMaxZIndex'],
         datasource: store.getters['filters/default'],
         render_mode: component.default_render_mode,
         aspect_ratio: component.aspect_ratio,
