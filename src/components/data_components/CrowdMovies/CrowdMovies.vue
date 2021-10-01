@@ -1,11 +1,22 @@
 <template>
     <video-clips
         :videoPath="this.crowd_movie_path"
-        :selectedSyllable="this.selected_syllable"
         :playbackRate="this.settings.playback_rate"
-        :countMethod="this.count_method"
-        @aspectRatioCalculated="this.aspectRatioCalculated"
-    />
+        @sizeCalculated="this.sizeCalculated"
+    >
+        <template slot="prepend">
+            <span>
+                Module {{selected_syllable}} ({{count_method}})
+            </span>
+        </template>
+        <template slot="no-video">
+            <b-card bg-variant="primary" text-variant="white" class="text-center">
+                <b-card-text>
+                    Sorry, there is no crowd movie available for Syllable {{selected_syllable}} ({{count_method}})
+                </b-card-text>
+            </b-card>
+        </template>
+    </video-clips>
 </template>
 
 <script lang="ts">
@@ -15,7 +26,7 @@ import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/Window/WindowMixin';
 import { GetAddress } from '@/components/Core/DataLoader/DataServer';
 import { RenderMode } from '@/store/datawindow.types';
-import VideoClips from '../VideoClips/VideoClips.vue';
+import VideoClips from '../../Charts/VideoPlayer/VideoPlayer.vue';
 
 RegisterDataComponent({
     friendly_name: 'Crowd Movies',
@@ -50,8 +61,14 @@ export default mixins(WindowMixin).extend({
         },
     },
     methods: {
-        aspectRatioCalculated(payload: { aspectRatio: number }) {
-            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: payload.aspectRatio });
+        sizeCalculated(payload: { width: number, height: number }) {
+            const { width, height} = payload;
+            const aspectRatio: number = height/width;
+            const newWidth = aspectRatio * width;
+            const newHeight = newWidth / aspectRatio;
+
+            this.$store.commit(`${this.id}/updateComponentLayout`, { id: this.id, width: newWidth, height: newHeight });
+            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: aspectRatio });
         }
     }
 });

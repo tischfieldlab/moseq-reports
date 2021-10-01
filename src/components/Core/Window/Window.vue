@@ -4,8 +4,8 @@
         :id="id"
         :titlebar_color="titlebar_color"
         :title="title"
-        :width="layout.width"
-        :height="layout.height"
+        :width="this.window_width"
+        :height="this.window_height"
         :pos="layout.position"
         @onClosed="onClosed"
         @onMoved="onMoved"
@@ -122,6 +122,12 @@ export default mixins(WindowMixin).extend({
         },
         aspect_ratio(): number {
             return this.$store.getters[`${this.id}/aspectRatio`];
+        },
+        window_width(): number {
+            return this.layout.width;
+        },
+        window_height(): number {
+            return this.layout.height;
         }
     },
     watch: {

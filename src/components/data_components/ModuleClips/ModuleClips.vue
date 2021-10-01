@@ -1,5 +1,5 @@
 <template>
-    <div class="video-container">
+    <div class='video-container'>
         <b-pagination
             v-if="num_examples > 0"
             v-model="example_num"
@@ -9,17 +9,28 @@
             :aria-controls="$id('video')"
             align="fill"
             :hide-goto-end-buttons="true"
-            size="sm"></b-pagination>
+            size="sm"
+        />
         <video-clips
-            :countMethod="this.count_method"
             :videoPath="this.movie_path"
-            :selectedSyllable="this.selected_syllable"
             :playbackRate="this.settings.playback_rate"
             :loopVideo="this.settings.loop"
-            :onlySubClip="this.settings.only_subclip"
-            :subClip="this.subclip"
-            @aspectRatioCalculated="this.aspectRatioCalculated"
-        />
+            :subClip="this.settings.only_subclip ? this.subclip : undefined"
+            @sizeCalculated="this.sizeCalculated"
+        >
+            <template slot="prepend">
+                <span>
+                    Module {{selected_syllable}} ({{count_method}})
+                </span>
+            </template>
+            <template slot="no-video">
+                <b-card bg-variant="primary" text-variant="white" class="text-center">
+                    <b-card-text>
+                        Sorry, there is no crowd movie available for Syllable {{selected_syllable}} ({{count_method}})
+                    </b-card-text>
+                </b-card>
+            </template>
+        </video-clips>
     </div>
 </template>
 
@@ -30,7 +41,7 @@ import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/Window/WindowMixin';
 import { GetAddress } from '@/components/Core/DataLoader/DataServer';
 import { RenderMode } from '@/store/datawindow.types';
-import VideoClips from '../VideoClips/VideoClips.vue';
+import VideoClips from '../../Charts/VideoPlayer/VideoPlayer.vue';
 
 RegisterDataComponent({
     friendly_name: 'Module Clips',
@@ -121,8 +132,9 @@ export default mixins(WindowMixin).extend({
         timeToSeconds(time: string) {
             return time.split(':').reduce((acc,t) => (60 * acc) + Number.parseFloat(t), 0);
         },
-        aspectRatioCalculated(payload: { aspectRatio: number }) {
-            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: payload.aspectRatio });
+        sizeCalculated(payload: { width: number, height: number }) {
+            const { width, height} = payload;
+            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: height / width });
         }
     },
 });

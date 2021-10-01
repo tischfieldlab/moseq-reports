@@ -1,10 +1,8 @@
 <template>
-<div class="container">
+    <div class="container">
         <div v-show="video_loaded" class="video-label-wrapper">
             <div class="info">
-                <span>
-                    Module {{selectedSyllable}} ({{countMethod}})
-                </span>
+                <slot name="prepend"></slot>
                 <span>
                     {{current_time.toFixed(2)}} / {{duration.toFixed(2)}} s
                 </span>
@@ -13,7 +11,7 @@
                 </span>
             </div>
             <video ref="video"
-                
+                :id="$id('video')"
                 crossOrigin='anonymous'
                 :src="videoPath"
                 type="video/mp4"
@@ -21,13 +19,10 @@
                 autoplay="true"
                 muted="true"
             />
+            <slot name="append"></slot>
         </div>
         <div v-show="!video_loaded" class="no-syllable">
-            <b-card bg-variant="primary" text-variant="white" class="text-center">
-                <b-card-text>
-                    Sorry, there is no crowd movie available for Syllable {{selectedSyllable}} ({{countMethod}}) 
-                </b-card-text>
-            </b-card>
+            <slot name="no-video"></slot>
         </div>
     </div>
 </template>
@@ -41,18 +36,8 @@ export default Vue.extend({
             required: true,
             default: undefined
         },
-        selectedSyllable: {
-            type: Number,
-            required: true,
-            default: 0
-        },
         playbackRate: {
             type: Number,
-            required: true,
-            default: undefined
-        },
-        countMethod: {
-            type: String,
             required: true,
             default: undefined
         },
@@ -61,15 +46,10 @@ export default Vue.extend({
             required: false,
             default: true
         },
-        onlySubClip: {
-            type: Boolean,
-            required: false,
-            default: false
-        },
         subClip: {
             required: false,
             default: undefined
-        }
+        },
     },
     data() {
         return {
@@ -90,12 +70,16 @@ export default Vue.extend({
         video.removeEventListener('error', this.hide_video);
         video.removeEventListener('loadedmetadata', this.show_video);
         video.removeEventListener('timeupdate', this.updateCurrentTime);
-        video.addEventListener('ended', this.videoEnded);
+        video.removeEventListener('ended', this.videoEnded);
     },
     methods: {
         show_video(ev: Event) {
+            const video = this.$refs.video as HTMLVideoElement;
             this.video_loaded = true;
             this.duration = (this.$refs.video as HTMLVideoElement).duration;
+            if (this.subClip) {
+                video.currentTime = this.subClip![0];
+            }
             this.updateVideoPlaybackRate();
             this.updateVideoLooping();
             this.calculateAspectRatio();
@@ -113,12 +97,23 @@ export default Vue.extend({
         },
         updateCurrentTime() {
             const video = (this.$refs.video as HTMLVideoElement);
+            if (this.loopVideo) {
+                if (this.subClip) {
+                    if (video.currentTime > this.subClip![1]) {
+                        video.currentTime = this.subClip![0];
+                    }
+                } else {
+                    if (video.currentTime >= video.duration) {
+                        video.currentTime = 0;
+                    }
+                }
+            }
             this.current_time =  video.currentTime;
         },
         videoEnded() {
             const video = (this.$refs.video as HTMLVideoElement);
             if (this.loopVideo) {
-                if (this.subClip && this.subClip) {
+                if (this.subClip) {
                     if (video.currentTime > this.subClip![1]) {
                         video.currentTime = this.subClip![0];
                     }
@@ -132,8 +127,7 @@ export default Vue.extend({
         },
         calculateAspectRatio() {
             const video = (this.$refs.video as HTMLVideoElement);
-            const aspectRatio: number = video.clientHeight / video.clientWidth;
-            this.$emit('aspectRatioCalculated', { aspectRatio });
+            this.$emit('sizeCalculated', { width: video.clientWidth, height: video.clientHeight });
         }
     },
      watch: {
@@ -155,7 +149,7 @@ export default Vue.extend({
 video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* object-fit: cover; */
 }
 video:focus {
     outline: none;

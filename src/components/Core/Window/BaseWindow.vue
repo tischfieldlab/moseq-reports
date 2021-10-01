@@ -175,6 +175,22 @@ export default Vue.extend({
         },
         window_ypos(): number {
             return (this.windowPos as Position).y;
+        },
+        aspect_ratio(): number {
+            return this.aspectRatio;
+        }
+    },
+    watch: {
+        aspect_ratio: {
+            handler(newValue) {
+                const aspect = this.applyAspectRatioToHeight(this.windowWidth, this.windowHeight);
+                this.windowWidth = aspect.width;
+                this.windowHeight = aspect.height;
+                this.$emit('onResized', {
+                    width: this.windowWidth,
+                    height: this.windowHeight
+                });
+            }
         }
     },
     methods: {
@@ -351,10 +367,7 @@ export default Vue.extend({
                 this.$data.windowHeight = this.$data.restoredHeight;
             }
         },
-        applyAspectRatioToWidth(newWidth: number, newHeight: number): {
-            width: number,
-            height: number
-        } {
+        applyAspectRatioToWidth(newWidth: number, newHeight: number): { width: number, height: number } {
             if (this.aspectRatio !== undefined) {
                 newHeight = newWidth / this.aspectRatio;
                 newWidth = this.aspectRatio * newHeight;
@@ -372,10 +385,7 @@ export default Vue.extend({
                 height: newHeight
             }
         },
-        applyAspectRatioToHeight(newWidth: number, newHeight: number): {
-            width: number,
-            height: number
-        } {
+        applyAspectRatioToHeight(newWidth: number, newHeight: number): { width: number, height: number } {
             if (this.aspectRatio !== undefined) {
                 newWidth = this.aspectRatio * newHeight;
                 newHeight = newWidth / this.aspectRatio;
