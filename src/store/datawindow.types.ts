@@ -73,6 +73,7 @@ export interface DehydratedDataWindow {
     render_mode?: RenderMode;
     settings: object | undefined;
     z_index?: number;
+    aspect_ratio?: number;
 }
 
 

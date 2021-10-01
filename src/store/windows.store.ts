@@ -136,6 +136,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
         render_mode: window.render_mode,
         settings: window.settings,
         z_index: window.z_index,
+        aspect_ratio: window.aspect_ratio,
     };
     return dehydrated;
 }
@@ -153,5 +154,7 @@ function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     win.render_mode = data.render_mode || win.render_mode;
     win.settings = { ...win.settings, ...clone(data.settings) };
     win.z_index = data.z_index || maxZ;
+    win.aspect_ratio = data.aspect_ratio;
+
     return win;
 }
