@@ -10,6 +10,8 @@ export interface DataWindowState {
     datasource: string;
     render_mode: RenderMode;
     settings: object;
+    z_index: number;
+    aspect_ratio?: number;
 }
 
 export interface UpdateComponentLayoutPayload {
@@ -19,6 +21,18 @@ export interface UpdateComponentLayoutPayload {
     position_y?: number;
 }
 
+export interface UpdateComponentAspectRatio {
+    aspect_ratio: number;
+}
+
+export interface UpdateComponentAspectRatioByWidthAndHeight {
+    width: number;
+    height: number;
+}
+
+export interface UpdateComponentZIndexPayload {
+    z_index: number;
+}
 export interface UpdateComponentSettingsPayload {
     settings: any;
 }
@@ -58,6 +72,8 @@ export interface DehydratedDataWindow {
     source?: string;
     render_mode?: RenderMode;
     settings: object | undefined;
+    z_index?: number;
+    aspect_ratio?: number;
 }
 
 

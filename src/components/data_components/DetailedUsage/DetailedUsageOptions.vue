@@ -52,7 +52,7 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import {WhiskerType} from '@/components/Charts/BoxPlot';
 import {OrderingType} from '@/components/Charts/ClusteredHeatmap';
 import DatasetPicker from '@/components/DatasetPicker.vue';

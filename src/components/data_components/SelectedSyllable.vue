@@ -10,13 +10,13 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import { RenderMode } from '@/store/datawindow.types';
 
 RegisterDataComponent({
     friendly_name: 'Selected Syllable',
     component_type: 'SelectedSyllable',
-    init_width: 250,
+    init_width: 260,
     init_height: 155,
     available_render_modes: [RenderMode.HTML],
     default_render_mode: RenderMode.HTML,

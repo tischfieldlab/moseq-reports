@@ -18,7 +18,7 @@ import { debounce } from '@/util/Events';
 import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { scaleSequential, scaleLinear, scaleDiverging } from 'd3-scale';
 import { GetScale, GetScaleWithOpacity } from '@/components/Charts/Colors/D3ColorProvider';

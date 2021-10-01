@@ -17,7 +17,7 @@
 import Vue from 'vue';
 import { Chrome } from 'vue-color';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 
 export default mixins(WindowMixin).extend({
     components: {

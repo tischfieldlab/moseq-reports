@@ -7,6 +7,9 @@ import {
     UpdateComponentSettingsPayload,
     RenderMode,
     UpdateComponentRenderModePayload,
+    UpdateComponentZIndexPayload,
+    UpdateComponentAspectRatio,
+    UpdateComponentAspectRatioByWidthAndHeight,
 } from './datawindow.types';
 import { Module } from 'vuex';
 import stateMerge from 'vue-object-merge';
@@ -26,12 +29,20 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             datasource: '',
             render_mode: RenderMode.UNDEFINED,
             settings: {},
+            z_index: 1000,
+            aspect_ratio: undefined,
          };
     },
     getters: {
         spec(state, getters, rootState, rootGetters) {
             return rootGetters.getSpecification(state.type);
         },
+        zIndex(state) {
+            return state.z_index;
+        },
+        aspectRatio(state) {
+            return state.aspect_ratio;
+        }
     },
     mutations: {
         replaceState(state, payload: DataWindowState) {
@@ -43,6 +54,8 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             state.title = payload.title;
             state.datasource = payload.datasource;
             state.render_mode = payload.render_mode;
+            state.z_index = payload.z_index
+            state.aspect_ratio = payload.aspect_ratio;
             stateMerge(state.settings, payload.settings);
         },
         updateComponentLayout(state, payload: UpdateComponentLayoutPayload) {
@@ -63,6 +76,16 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
         updateComponentSettings(state, payload: UpdateComponentSettingsPayload) {
             stateMerge(state.settings, payload.settings);
         },
+        updateZIndex(state, payload: UpdateComponentZIndexPayload) {
+            state.z_index = payload.z_index;
+        },
+        updateAspectRatio(state, payload: UpdateComponentAspectRatio & UpdateComponentAspectRatioByWidthAndHeight) {
+            if (payload.aspect_ratio) {
+                state.aspect_ratio = payload.aspect_ratio;
+            } else {
+                state.aspect_ratio = payload.height / payload.width;
+            }
+        }
     },
 };
 export default DataWindowModule;

@@ -7,8 +7,6 @@ import DataWindowModule from './datawindow.store';
 import { clone } from '@/util/Object';
 import { WindowsState } from './windows.types';
 
-
-
 const WindowsModule: Module<WindowsState, RootState> = {
     namespaced: true,
     state() {
@@ -23,6 +21,20 @@ const WindowsModule: Module<WindowsState, RootState> = {
                 return unnest(rootState, wNamespace).datasource === dataView;
             });
         },
+        windowsMaxZIndex: (state, getters, rootState) : number => {
+            let maxZIndex: number = -1;
+            state.items.forEach((item: string) => {
+                const winState: DataWindowState = state[item.split('/')[1]];
+                if (winState.z_index > maxZIndex) {
+                    maxZIndex = winState.z_index;
+                }
+            });
+
+            return maxZIndex;
+        },
+        numberOfWindows(state) {
+            return state.items.length;
+        }
     },
     mutations: {
         addWindow(state, namespace: string) {
@@ -100,8 +112,10 @@ function createDataWindow(component: ComponentRegistration): DataWindowState {
         height: component.init_height || 300,
         pos_x: 250,
         pos_y: 10,
+        z_index: store.getters['datawindows/windowsMaxZIndex'],
         datasource: store.getters['filters/default'],
         render_mode: component.default_render_mode,
+        aspect_ratio: component.aspect_ratio,
         settings: clone(component.default_settings || {}), // deep clone
     } as DataWindowState;
 }
@@ -121,6 +135,8 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
         source: window.datasource,
         render_mode: window.render_mode,
         settings: window.settings,
+        z_index: window.z_index,
+        aspect_ratio: window.aspect_ratio,
     };
     return dehydrated;
 }
@@ -128,6 +144,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
 function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     const spec = store.getters.getSpecification(data.type) as ComponentRegistration;
     const win = createDataWindow(spec);
+    const maxZ: number = store.getters['datawindows/windowsMaxZIndex'] + 1;
     win.title = clone(data.title || spec.friendly_name);
     win.width = data.layout.width || win.width;
     win.height = data.layout.height || win.height;
@@ -136,5 +153,8 @@ function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     win.datasource = data.source || win.datasource;
     win.render_mode = data.render_mode || win.render_mode;
     win.settings = { ...win.settings, ...clone(data.settings) };
+    win.z_index = data.z_index || maxZ;
+    win.aspect_ratio = data.aspect_ratio;
+
     return win;
 }

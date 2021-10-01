@@ -14,6 +14,7 @@ export interface ComponentRegistration {
     init_height?: number;
     available_render_modes: RenderMode[];
     default_render_mode: RenderMode;
+    aspect_ratio?: number;
 }
 
 export enum SidebarPosition {

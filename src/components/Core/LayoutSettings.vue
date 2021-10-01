@@ -46,7 +46,7 @@
 import Vue from 'vue';
 import {UpdateComponentLayoutPayload, UpdateComponentTitlePayload} from '@/store/datawindow.types';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 
 export default mixins(WindowMixin).extend({
     computed: {
