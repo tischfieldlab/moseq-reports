@@ -63,13 +63,9 @@ export default mixins(WindowMixin).extend({
     methods: {
         sizeCalculated(payload: { width: number, height: number }) {
             const { width, height} = payload;
-            const aspectRatio: number = height / width;
+            const aspectRatio: number = width / height;
 
-            const newWidth = aspectRatio * this.layout.width;
-            const newHeight = newWidth / aspectRatio;
-
-            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: height / width });
-            this.$store.commit(`${this.id}/updateComponentLayout`, { id: this.id, width: newWidth, height: newHeight });
+            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: aspectRatio });
         }
     }
 });

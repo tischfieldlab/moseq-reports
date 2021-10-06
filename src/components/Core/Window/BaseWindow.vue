@@ -183,7 +183,6 @@ export default Vue.extend({
     watch: {
         aspect_ratio: {
             handler(newValue) {
-                console.log("apply");
                 const aspect = this.applyAspectRatio(this.windowWidth, this.windowHeight);
                 this.windowWidth = aspect.width;
                 this.windowHeight = aspect.height;

@@ -146,11 +146,6 @@ export default mixins(WindowMixin).extend({
                 if (swatch) swatch.title = newValue;
             },
         },
-        layout: {
-            handler(newValue) {
-                console.log(newValue);
-            }
-        }
     },
     methods: {
         onResized(event: any) {

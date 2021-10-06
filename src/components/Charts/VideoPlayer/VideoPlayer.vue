@@ -128,7 +128,7 @@ export default Vue.extend({
         },
         sizeCalculated() {
             const video = (this.$refs.video as HTMLVideoElement);
-            this.$emit('sizeCalculated', { width: video.clientWidth, height: video.clientHeight });
+            this.$emit('sizeCalculated', { width: video.videoWidth, height: video.videoHeight });
         }
     },
      watch: {
@@ -150,7 +150,7 @@ export default Vue.extend({
 video {
     width: 100%;
     height: 100%;
-    /* object-fit: cover; */
+    object-fit: cover;
 }
 video:focus {
     outline: none;

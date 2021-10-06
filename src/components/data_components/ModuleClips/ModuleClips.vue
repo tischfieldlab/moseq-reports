@@ -134,23 +134,9 @@ export default mixins(WindowMixin).extend({
         },
         sizeCalculated(payload: { width: number, height: number }) {
             const { width, height} = payload;
-
             const aspectRatio: number = width / height;
-            console.log(aspectRatio);
 
-            const newHeight = this.layout.width / aspectRatio;
-            const newWidth = this.layout.height * aspectRatio;
-
-            console.log(this.id);
-            this.$store.commit(`${this.id}/updateComponentLayout`, {
-                id: this.id,
-                width: newWidth,
-                height: newHeight
-            });
-
-            this.$store.commit(`${this.id}/updateAspectRatio`, {
-                aspect_ratio: height / width
-            });
+            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: aspectRatio });
         }
     },
 });
@@ -158,12 +144,9 @@ export default mixins(WindowMixin).extend({
 
 <style scoped>
 .video-container {
-    /* height: auto; */
     height: calc(100% - 10px);
-    width: inherit;
 }
 .b-pagination {
     margin-bottom:0;
-    width: inherit;
 }
 </style>
