@@ -183,7 +183,8 @@ export default Vue.extend({
     watch: {
         aspect_ratio: {
             handler(newValue) {
-                const aspect = this.applyAspectRatioToHeight(this.windowWidth, this.windowHeight);
+                console.log("apply");
+                const aspect = this.applyAspectRatio(this.windowWidth, this.windowHeight);
                 this.windowWidth = aspect.width;
                 this.windowHeight = aspect.height;
                 this.$emit('onResized', {
@@ -287,14 +288,14 @@ export default Vue.extend({
                     case ResizeType.TopLeft:
                         newHeight = this.windowHeight - deltaY;
                         newY = this.windowPos.y + deltaY;
-                        appliedAspectRatio = this.applyAspectRatioToHeight(newWidth, newHeight);
+                        appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
                     break;
 
                     case ResizeType.Bottom:
                     case ResizeType.BottomRight:
                     case ResizeType.BottomLeft:
                         newHeight = this.windowHeight + deltaY;
-                        appliedAspectRatio = this.applyAspectRatioToHeight(newWidth, newHeight);
+                        appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
                     break;
                 }
 
@@ -304,7 +305,7 @@ export default Vue.extend({
                     case ResizeType.BottomRight:
                     case ResizeType.Right:
                         newWidth = this.windowWidth + deltaX;
-                        appliedAspectRatio = this.applyAspectRatioToWidth(newWidth, newHeight);
+                        appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
                     break;
 
                     case ResizeType.BottomLeft:
@@ -312,7 +313,7 @@ export default Vue.extend({
                     case ResizeType.Left:
                         newWidth = this.windowWidth - deltaX;
                         newX = this.windowPos.x + deltaX;
-                        appliedAspectRatio = this.applyAspectRatioToWidth(newWidth, newHeight);
+                        appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
 
                     break;
                 }
@@ -367,28 +368,10 @@ export default Vue.extend({
                 this.$data.windowHeight = this.$data.restoredHeight;
             }
         },
-        applyAspectRatioToWidth(newWidth: number, newHeight: number): { width: number, height: number } {
+        applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {
             if (this.aspectRatio !== undefined) {
                 newHeight = newWidth / this.aspectRatio;
-                newWidth = this.aspectRatio * newHeight;
-
-                return {
-                    width: newWidth,
-                    height: newHeight
-                };
-            }
-
-            // In the case where no aspect ratio is applied, just return the
-            // normal values without applying the raio
-            return {
-                width: newWidth,
-                height: newHeight
-            }
-        },
-        applyAspectRatioToHeight(newWidth: number, newHeight: number): { width: number, height: number } {
-            if (this.aspectRatio !== undefined) {
-                newWidth = this.aspectRatio * newHeight;
-                newHeight = newWidth / this.aspectRatio;
+                newWidth = newHeight * this.aspectRatio;
 
                 return {
                     width: newWidth,

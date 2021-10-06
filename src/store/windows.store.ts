@@ -22,7 +22,7 @@ const WindowsModule: Module<WindowsState, RootState> = {
             });
         },
         windowsMaxZIndex: (state, getters, rootState) : number => {
-            let maxZIndex: number = -1;
+            let maxZIndex: number = 0;
             state.items.forEach((item: string) => {
                 const winState: DataWindowState = state[item.split('/')[1]];
                 if (winState.z_index > maxZIndex) {

@@ -83,7 +83,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             if (payload.aspect_ratio) {
                 state.aspect_ratio = payload.aspect_ratio;
             } else {
-                state.aspect_ratio = payload.height / payload.width;
+                state.aspect_ratio = payload.width / payload.height;
             }
         }
     },

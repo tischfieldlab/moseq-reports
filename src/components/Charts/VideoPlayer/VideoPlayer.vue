@@ -128,7 +128,7 @@ export default Vue.extend({
         },
         sizeCalculated() {
             const video = (this.$refs.video as HTMLVideoElement);
-            this.$emit('sizeCalculated', { width: video.videoWidth, height: video.videoHeight });
+            this.$emit('sizeCalculated', { width: video.clientWidth, height: video.clientHeight });
         }
     },
      watch: {
