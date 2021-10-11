@@ -80,7 +80,7 @@ jobs:
           INSTALLER_PFX: ${{ steps.mac_installer_pfx.outputs.filePath }}
           INSTALLER_PSWD: ${{ secrets.MACOS_DEVELOPER_ID_INSTALLER_PSWD}}
           DEVELOPMENT_PFX: ${{ steps.mac_development_pfx.outputs.filePath }}
-          DEVELOPMENT_PSWD: ${{ MACOS_MAC_DEVELOPMENT_PSWD }}
+          DEVELOPMENT_PSWD: ${{ secrets.MACOS_MAC_DEVELOPMENT_PSWD }}
           KEYCHAIN_PSWD: ${{ secrets.MACOS_KEYCHAIN_PSWD }}
         run: |
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
