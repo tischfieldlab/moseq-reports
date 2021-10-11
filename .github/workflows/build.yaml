@@ -10,7 +10,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest]
 
     runs-on: ${{ matrix.os }}
     env:
@@ -26,6 +27,7 @@ jobs:
         with:
           node-version: 14
 
+      # BEGIN WINDOWS CERT PREP
       - name: Decode and Prep Windows Cert
         if: ${{ runner.os == 'Windows' }}
         id: windows_pfx
@@ -43,17 +45,58 @@ jobs:
           echo CSC_LINK=${CERT_PATH} >> $GITHUB_ENV
           echo CSC_KEY_PASSWORD=${CERT_PASSWORD} >> $GITHUB_ENV
           certutil -p "${{secrets.WINDOWS_CERTIFICATE_PSWD}}" -importpfx "${{steps.windows_pfx.outputs.filePath}}"
+      # END WINDOWS CERT PREP
 
-      #   if: ${{ runner.os == 'macOS' }}
-      #   run: |
-      #     unset CSC_LINK
-      #     unset CSC_KEY_PASSWORD
+      # BEGIN MACOS CERT PREP
+      - name: macOS Decode and Prep Developer Application ID
+        if: ${{ runner.os == 'macOS' }}
+        id: mac_application_pfx
+        uses: timheuer/base64-to-file@v1
+        with:
+          filename: "application-certificate.pfx"
+          encodedString: ${{secrets.MACOS_DEVELOPER_ID_APPLICATION_P12}}
 
-      # - name: Prep Linux Cert
-      #   if: ${{ runner.os == 'Linux' }}
-      #   run: |
-      #     unset CSC_LINK
-      #     unset CSC_KEY_PASSWORD
+      - name: macOS Decode and Prep Developer Installer ID
+        if: ${{ runner.os == 'macOS' }}
+        id: mac_installer_pfx
+        uses: timheuer/base64-to-file@v1
+        with:
+          filename: "developer-certificate.pfx"
+          encodedString: ${{secrets.MACOS_DEVELOPER_ID_INSTALLER_P12}}
+
+      - name: macOS Decode and Prep Development ID
+        if: ${{ runner.os == 'macOS' }}
+        id: mac_development_pfx
+        uses: timheuer/base64-to-file@v1
+        with:
+          filename: "development-certificate.pfx"
+          encodedString: ${{secrets.MACOS_MAC_DEVELOPMENT_P12}}
+
+      - name: macOS Add Certificates to Keychain
+        if: ${{ runner.os == 'macOS' }}
+        env:
+          APPLICATION_PFX: ${{ steps.mac_application_pfx.outputs.filePath }}
+          APPLICATION_PSWD: ${{ secrets.MACOS_DEVELOPER_ID_APPLICATION_PSWD }}
+          INSTALLER_PFX: ${{ steps.mac_installer_pfx.outputs.filePath }}
+          INSTALLER_PSWD: ${{ secrets.MACOS_DEVELOPER_ID_INSTALLER_PSWD}}
+          DEVELOPMENT_PFX: ${{ steps.mac_development_pfx.outputs.filePath }}
+          DEVELOPMENT_PSWD: ${{ MACOS_MAC_DEVELOPMENT_PSWD }}
+          KEYCHAIN_PSWD: ${{ secrets.MACOS_KEYCHAIN_PSWD }}
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          echo CSC_IDENTITY_AUTO_DISCOVERY=true >> $GITHUB_ENV
+          echo CSC_NAME=${KEYCHAIN_PATH} >> $GITHUB_ENV
+
+          security create-keychain -p "$KEYCHAIN_PSWD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          security import $APPLICATION_PFX -P "$APPLICATION_PSWD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import $INSTALLER_PFX -P "$INSTALLER_PSWD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import $DEVELOPMENT_PFX -P "$DEVELOPMENT_PSWD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+
+          security list-keychain -d user -s $KEYCHAIN_PATH
+      # END MACOS CERT PREP
 
       - name: Install
         run: npm install
@@ -82,8 +125,8 @@ jobs:
       - name: Zip package
         run: 7z a ${{ env.ARTIFACT_DEST }} ./dist_electron/*
 
-      #- name: Upload build artifacts
-      #  uses: actions/upload-artifact@v2
-      #  with:
-      #    name: ${{ env.ARTIFACT_NAME }}
-      #    path: ${{ env.ARTIFACT_DEST }}
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_DEST }}
