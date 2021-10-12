@@ -86,8 +86,10 @@ jobs:
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
           echo CSC_IDENTITY_AUTO_DISCOVERY=true >> $GITHUB_ENV
           echo CSC_KEYCHAIN=${KEYCHAIN_PATH} >> $GITHUB_ENV
+          echo CSC_NAME=46F0E8821B28B86F43C04290AFCCF01D723BC18A >> $GITHUB_ENV
 
           security create-keychain -p "$KEYCHAIN_PSWD" $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH;
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
@@ -96,7 +98,7 @@ jobs:
           security import $DEVELOPMENT_PFX -P "$DEVELOPMENT_PSWD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
 
           security list-keychain -d user -s $KEYCHAIN_PATH
-          security find-identity -v
+          security find-identity -v -p codesigning
       # END MACOS CERT PREP
 
       - name: Install
