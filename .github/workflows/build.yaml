@@ -96,6 +96,7 @@ jobs:
           security import $DEVELOPMENT_PFX -P "$DEVELOPMENT_PSWD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
 
           security list-keychain -d user -s $KEYCHAIN_PATH
+          security find-identity -v
       # END MACOS CERT PREP
 
       - name: Install
