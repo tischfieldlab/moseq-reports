@@ -84,6 +84,7 @@ jobs:
           KEYCHAIN_PSWD: ${{ secrets.MACOS_KEYCHAIN_PSWD }}
         run: |
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          echo CSC_IDENTITY_AUTO_DISCOVERY=true >> $GITHUB_ENV
           echo CSC_KEYCHAIN=${KEYCHAIN_PATH} >> $GITHUB_ENV
 
           security create-keychain -p "$KEYCHAIN_PSWD" $KEYCHAIN_PATH
