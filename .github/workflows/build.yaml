@@ -97,7 +97,7 @@ jobs:
           security import $INSTALLER_PFX -P "$INSTALLER_PSWD" -A -f pkcs12 -k $KEYCHAIN_PATH
           security import $DEVELOPMENT_PFX -P "$DEVELOPMENT_PSWD" -A -f pkcs12 -k $KEYCHAIN_PATH
 
-          security list-keychain -d user -s $KEYCHAIN_PATH
+          security list-keychains -d user -s $KEYCHAIN_PATH
           security find-identity
           security find-identity -v -p codesigning
       # END MACOS CERT PREP
