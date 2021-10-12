@@ -86,7 +86,6 @@ jobs:
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
           echo CSC_IDENTITY_AUTO_DISCOVERY=true >> $GITHUB_ENV
           echo CSC_KEYCHAIN=${KEYCHAIN_PATH} >> $GITHUB_ENV
-          echo CSC_NAME=46F0E8821B28B86F43C04290AFCCF01D723BC18A >> $GITHUB_ENV
 
           security create-keychain -p "$KEYCHAIN_PSWD" $KEYCHAIN_PATH
           security default-keychain -s $KEYCHAIN_PATH
