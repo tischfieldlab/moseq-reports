@@ -92,8 +92,6 @@ jobs:
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
           security import $APPLICATION_PFX -P "$APPLICATION_PSWD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          # security import $INSTALLER_PFX -P "$INSTALLER_PSWD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security import $DEVELOPMENT_PFX -P "$DEVELOPMENT_PSWD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
 
           security list-keychain -d user -s $KEYCHAIN_PATH
       # END MACOS CERT PREP
