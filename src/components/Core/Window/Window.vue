@@ -105,7 +105,7 @@ export default mixins(WindowMixin).extend({
             return window.innerWidth;
         },
         max_height(): number {
-            return window.innerHeight - 30;
+            return window.innerHeight;
         },
         titlebar_color(): string {
             return this.dataview.color;

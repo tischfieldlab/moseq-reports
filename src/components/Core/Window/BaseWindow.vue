@@ -150,7 +150,7 @@ export default Vue.extend({
         return {
             isCollapsed: false,
             restoredHeight: this.height,
-            titlebarWidth: 35,
+            titlebarHeight: 35,
             windowWidth: this.width,
             windowHeight: this.height,
             windowPos: this.pos,
@@ -168,7 +168,7 @@ export default Vue.extend({
             return this.windowWidth as number;
         },
         window_height(): number {
-            return this.windowHeight as number;
+            return this.windowHeight as number + this.titlebarHeight;
         },
         window_xpos(): number {
             return (this.windowPos as Position).x;

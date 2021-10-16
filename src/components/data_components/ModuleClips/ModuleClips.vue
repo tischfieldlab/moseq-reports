@@ -134,7 +134,11 @@ export default mixins(WindowMixin).extend({
         },
         sizeCalculated(payload: { width: number, height: number }) {
             const { width, height} = payload;
-            const aspectRatio: number = width / height;
+
+            let aspectRatio: number = this.layout.width / this.layout.height;
+            const newHeight: number = height + 10 * aspectRatio;
+
+            aspectRatio = width / newHeight;
 
             this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: aspectRatio });
         }
