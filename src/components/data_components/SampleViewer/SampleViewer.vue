@@ -13,13 +13,13 @@
     </b-input-group>
     <b-table
         data-snapshot-target
-        style="width:100%;height:calc(100%-31px);"
+        style="width:100%;height:calc(100%-31);"
         :items="items"
         :fields="fields"
         :filter="filter_string"
         :striped="true"
         :hover="true"
-        :sticky-header="`${this.layout.height - 31 - 31}px`"
+        :sticky-header="`${this.layout.height - 31}px`"
         ></b-table>
 </div>
 </template>

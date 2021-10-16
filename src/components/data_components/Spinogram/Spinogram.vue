@@ -149,7 +149,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.layout.width;
         },
         outsideHeight(): number {
-            return this.layout.height - 31 - 31;
+            return this.layout.height - 31;
         },
         dims(): any {
             const targetW = 200;

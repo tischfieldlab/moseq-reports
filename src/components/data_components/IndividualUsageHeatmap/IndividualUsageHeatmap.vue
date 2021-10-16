@@ -1,7 +1,7 @@
 <template>
     <component :is="render_mode"
         :width="this.layout.width"
-        :height="this.layout.height - 31"
+        :height="this.layout.height"
         :data="this.aggregateView"
         :groupLabels="this.selectedGroups"
         :colorscale="this.settings.colormap"

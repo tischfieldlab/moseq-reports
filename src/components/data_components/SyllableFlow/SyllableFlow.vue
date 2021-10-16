@@ -1,7 +1,7 @@
 <template>
     <sankey 
         :width="layout.width"
-        :height="layout.height - 31"
+        :height="layout.height"
         :data="graph"
         :title="plotTitle"
         :colorLegendTitle="colorLegendTitle"
