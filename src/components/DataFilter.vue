@@ -27,12 +27,18 @@
                 <div class="container">
                     <GroupBox :datasource="datasource" />
 
-                    <b-input-group prepend="Count Method" class="filter-item">
+                    <b-input-group prepend="Count Method" class="filter-item count-method">
                         <b-form-select v-model="selectedCountMethod" :options="countMethods" />
                     </b-input-group>
 
-                    <b-input-group prepend="Selected Syllable" class="filter-item">
+                    <b-input-group prepend="Selected Syllable" class="filter-item selected-syllable">
+                        <b-button class="prev" size="sm" variant="outline-info" @click="previousSyllable" :disabled="!canPreviousSyllable">
+                            <b-icon icon="caret-left-fill" aria-hidden="true" />
+                        </b-button>
                         <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
+                        <b-button class="next" size="sm" variant="outline-info" @click="nextSyllable" :disabled="!canNextSyllable">
+                            <b-icon icon="caret-right-fill" aria-hidden="true" />
+                        </b-button>
                     </b-input-group>
 
                     <SyllableIdFilter :datasource="datasource" />
@@ -149,6 +155,12 @@ export default Vue.component('datafilter', {
                 });
             }
         },
+        canPreviousSyllable(): boolean {
+            return this.isSyllableAvailable(this.syllable - 1);
+        },
+        canNextSyllable(): boolean {
+            return this.isSyllableAvailable(this.syllable + 1);
+        }
     },
     methods: {
         removeThis() {
@@ -172,6 +184,21 @@ export default Vue.component('datafilter', {
                 return 'white';
             }
         },
+        previousSyllable() {
+            const prevSyllable = this.syllable - 1;
+            if (this.isSyllableAvailable(prevSyllable)) {
+                this.syllable = prevSyllable;
+            }
+        },
+        nextSyllable() {
+            const nextSyllable = this.syllable + 1;
+            if (this.isSyllableAvailable(nextSyllable)) {
+                this.syllable = nextSyllable;
+            }
+        },
+        isSyllableAvailable(syllableId: number) {
+            return this.syllableIdOptions.find((so) => so.value === syllableId) !== undefined;
+        }
     },
 });
 </script>
@@ -221,5 +248,20 @@ div.editable-text >>> input {
 }
 .datafilter.card {
     margin: 0px 6px 1rem 6px;
+}
+
+.selected-syllable .btn {
+    border-color: #ced4da;
+}
+.selected-syllable .btn.prev {
+    border-radius: 0;
+}
+.selected-syllable .btn.next {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.selected-syllable select {
+    border-left: none;
+    border-right: none;
 }
 </style>
