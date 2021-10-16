@@ -50,7 +50,8 @@ module.exports = {
                     hardenedRuntime: true,
                     entitlements: "buildfiles/entitlements.mac.plist",
                     entitlementsInherit: "buildfiles/entitlements.mac.plist",
-                    gatekeeperAssess: false
+                    gatekeeperAssess: false,
+                    afterSign: "buildfiles/notarize.js"
                 },
                 linux: {
                     target: [
@@ -82,9 +83,6 @@ module.exports = {
                     repo: "moseq-reports",
                     private: true,
                 },
-                build: {
-                    afterSign: "buildfiles/notarize.js"
-                }
             }
         }
     }
