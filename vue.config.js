@@ -22,7 +22,7 @@ module.exports = {
             },
             builderOptions: {
                 productName: "moseq-reports",
-                appId: "org.tischfieldlab.reports",
+                appId: "edu.rutgers.tischfieldlab.moseq-reports",
                 fileAssociations: [
                     {
                         ext: "msq",
@@ -43,7 +43,14 @@ module.exports = {
                             path: "/Applications"
                         }
                     ],
-                    publish: ["github"]
+                    publish: ["github"],
+                    sign: false
+                },
+                mac: {
+                    hardenedRuntime: true,
+                    entitlements: "buildfiles/entitlements.mac.plist",
+                    entitlementsInherit: "buildfiles/entitlements.mac.plist",
+                    gatekeeperAssess: false
                 },
                 linux: {
                     target: [
@@ -74,6 +81,9 @@ module.exports = {
                     owner: "tischfieldlab",
                     repo: "moseq-reports",
                     private: true,
+                },
+                build: {
+                    afterSign: "buildfiles/notarize.js"
                 }
             }
         }

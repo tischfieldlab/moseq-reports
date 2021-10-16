@@ -117,12 +117,17 @@ jobs:
       - name: Package (release)
         if: ${{ endsWith(github.ref, 'master') }}
         env:
-          GH_TOKEN: ${{secrets.SERVICE_ACCOUNT_TOKEN}}
+          GH_TOKEN: ${{ secrets.SERVICE_ACCOUNT_TOKEN }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PSWD_MOSEQ_REPORTS: ${{ secrets.APPLE_ID_PSWD_MOSEQ_REPORTS }}
         run: |
           npm run package-release
 
       - name: Package (dev)
         if: ${{ !endsWith(github.ref, 'master') }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PSWD_MOSEQ_REPORTS: ${{ secrets.APPLE_ID_PSWD_MOSEQ_REPORTS }}
         run: npm run package
 
       - name: Zip package
