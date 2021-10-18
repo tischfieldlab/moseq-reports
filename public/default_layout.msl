@@ -30,7 +30,7 @@
         "height": 300,
         "position": {
             "x": 900,
-            "y": 165
+            "y": 200
         }
     },
     "settings": {}
@@ -54,7 +54,7 @@
         "height": 360,
         "position": {
             "x": 900,
-            "y": 470
+            "y": 540
         }
     },
     "settings": {}
