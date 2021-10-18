@@ -229,10 +229,9 @@ function filtersForFinfo(finfo) {
 
 export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html'|'callback', target:HTMLElement|((options: SnapshotOptions) => Promise<string>)} {
     const eattr = 'data-snapshot-target';
-
     const explicit = (target.$el.hasAttribute(eattr)
         ? target.$el
-        : target.$el.querySelector('[data-snapshot-target]')) as HTMLElement;
+        : target.$el.querySelector(`[${eattr}]`)) as HTMLElement;
     if (explicit !== null) {
         const etag = explicit.tagName;
         const callback = explicit.getAttribute(eattr);
@@ -363,16 +362,18 @@ async function videoToDataUri(el: HTMLVideoElement, options: SnapshotOptions) {
             });
     } else {
         const canvas = document.createElement('canvas');
-        canvas.style.width = `${el.width}px`;
-        canvas.style.height = `${el.height}px`;
-        canvas.width = el.width;
-        canvas.height = el.height;
+        const width = el.clientWidth;
+        const height = el.clientHeight;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        canvas.width = width;
+        canvas.height = height;
         document.body.appendChild(canvas);
         const ctx = canvas.getContext('2d');
         if (ctx === null) {
             throw new Error('got null canvas context!');
         }
-        ctx.drawImage(el, 0, 0, el.width, el.height);
+        ctx.drawImage(el, 0, 0, width, height);
         const data = canvas.toDataURL('image/png');
         document.body.removeChild(canvas);
         return data;
