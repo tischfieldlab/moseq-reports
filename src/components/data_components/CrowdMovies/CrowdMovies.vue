@@ -2,6 +2,7 @@
     <video-clips
         :videoPath="this.crowd_movie_path"
         :playbackRate="this.settings.playback_rate"
+        :loopVideo="this.settings.loop"
         @sizeCalculated="this.sizeCalculated"
     >
         <template slot="prepend">
