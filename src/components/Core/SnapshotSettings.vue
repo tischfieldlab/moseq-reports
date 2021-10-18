@@ -166,7 +166,7 @@ export default mixins(WindowMixin).extend({
     },
     methods: {
         getComponent(): Vue {
-            return this.$parent.$parent.$parent.$parent.$parent.$children[0].$children[0];
+            return this.$parent.$parent.$parent.$parent.$parent.$parent.$refs.body as Vue;
         },
         updateQualityStr() {
             this.quality_str = `${(this.snapshot_settings.quality * 100).toFixed(0)}%`;
