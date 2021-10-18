@@ -131,7 +131,7 @@ export default Vue.extend({
             this.$emit('sizeCalculated', { width: video.videoWidth, height: video.videoHeight });
         }
     },
-     watch: {
+    watch: {
         'playbackRate': 'updateVideoPlaybackRate',
         'loopVideo': 'updateVideoLooping',
     },
@@ -161,6 +161,7 @@ video:focus {
     right: 0;
     padding: 6px 6px 0 0;
     text-align: right;
+    font-size: 14px;
 }
 .info span {
     display: block;
