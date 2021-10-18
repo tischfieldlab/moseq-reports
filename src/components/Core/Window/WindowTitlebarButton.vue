@@ -23,4 +23,14 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+svg {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    color: #747474;
+}
+
+svg:hover {
+    color: #3a3a3a;
+}
 </style>

@@ -15,16 +15,8 @@
         :aspectRatio="aspect_ratio"
     >
         <template v-slot:titlebarButtons>
-            <titlebar-button
-                :clicked="onSnapshotClicked"
-                icon="camera-fill"
-                class="snapshot-button"
-            />
-            <titlebar-button
-                :clicked="onSettingsClicked"
-                icon="gear-fill"
-                class="settings-button"
-            />
+            <titlebar-button :clicked="onSnapshotClicked" icon="camera-fill" />
+            <titlebar-button :clicked="onSettingsClicked" icon="gear-fill" />
         </template>
         <b-overlay :show="is_loading" no-fade class="overlay-container">
             <component ref="body" :id="id" :is="spec.component_type" />
@@ -206,17 +198,6 @@ function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
 </script>
 
 <style scoped>
-.settings-button,.snapshot-button {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  color: #747474;
-}
-
-.settings-button:hover,.snapshot-button:hover {
-  color: #3a3a3a;
-}
-
 .overlay-container {
     width: inherit;
     height: inherit;

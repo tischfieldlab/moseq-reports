@@ -27,21 +27,12 @@
             >
                 <div class="titlebar-button-container">
                     <slot name="titlebarButtons"></slot>
-                    <div class="titlebar-close-hide-buttons">
-                        <titlebar-button
-                            :clicked="onCollapsedClicked"
-                            icon="caret-down-fill"
-                            v-if="!isCollapsed && minimizeable"
-                            class="min-max-button"
-                        />
-                        <titlebar-button
-                            :clicked="onCollapsedClicked"
-                            icon="caret-up-fill"
-                            v-else-if="isCollapsed && minimizeable"
-                            class="min-max-button"
-                        />
-                        <b-button-close @click="this.onClose" class="close-button" />
-                    </div>
+                    <titlebar-button
+                        v-if="minimizeable"
+                        :clicked="onCollapsedClicked"
+                        :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
+                    />
+                    <b-button-close @click="this.onClose" class="close-button" />
                 </div>
             </span>
                 {{ this.title }}
@@ -488,26 +479,8 @@ export default Vue.extend({
     cursor: default;
 }
 
-.min-max-button {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    color: #747474;
-}
-
-.min-max-button:hover {
-    color: #3a3a3a;
-}
-
 .window-content {
     position: relative;
-}
-
-.close-button {
-    width: 20px;
-    height: 20px;
-    margin-left: 5px;
-    cursor: pointer;
 }
 
 .titlebar-button-container {
@@ -519,9 +492,9 @@ export default Vue.extend({
 .titlebar-button-container svg {
     margin-left: 9px;
 }
-
-.titlebar-close-hide-buttons {
-    display: inline-block;
+.close-button {
+    margin-left: 5px;
+    cursor: pointer;
 }
 
 .noselect {
