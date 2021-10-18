@@ -81,6 +81,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             const canvas = this.$refs.canvas as SVGSVGElement;
             if (!canvas) { return; }
             const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
+            tag.classList.add('tick-measurement');
             canvas.appendChild(tag);
             for (const label of labels) {
                 tag.textContent = label;
@@ -204,10 +205,6 @@ svg >>> g.ctree path.clink {
 svg  >>> g.heatmap rect {
     shape-rendering: crispEdges;
 }
-svg >>> g.x-axis.rotate g.tick text {
-    transform: translate(-10px,0px) rotate(-45deg);
-    text-anchor: end;
-}
 svg >>> g.legend path.domain {
     stroke:none;
 }
@@ -217,6 +214,15 @@ svg >>> g.y-axis text.label {
     font-size: 13px;
     text-anchor:middle;
     fill:#000;
+}
+svg >>> g.x-axis.rotate g.tick text {
+    transform: translate(-10px,0px) rotate(-45deg);
+    text-anchor: end;
+}
+svg >>> text.tick-measurement,
+svg >>> g.tick text {
+    font-size: 10px;
+    fill: #000000;
 }
 svg >>> g.y-axis g.tick text {
     font-size: 8px;

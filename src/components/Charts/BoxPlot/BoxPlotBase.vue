@@ -156,9 +156,10 @@ export default mixins(LoadingMixin).extend({
             return this.scale.x.bandwidth() / 4;
         },
         origin(): any {
-            const x = this.margin.left;
-            const y = this.innerHeight + this.margin.top;
-            return { x, y };
+            return {
+                x: this.scale.x.range()[0],
+                y: this.scale.y.range()[0]
+            }
         },
         scale(): any {
             if (this.groupedData === undefined) {
