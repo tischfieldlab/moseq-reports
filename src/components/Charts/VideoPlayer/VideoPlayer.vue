@@ -39,7 +39,7 @@ export default Vue.extend({
         playbackRate: {
             type: Number,
             required: true,
-            default: undefined
+            default: 1.0
         },
         loopVideo: {
             type: Boolean,
