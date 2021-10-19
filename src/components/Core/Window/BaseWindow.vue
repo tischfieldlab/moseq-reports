@@ -352,10 +352,10 @@ export default Vue.extend({
             this.isCollapsed = !this.isCollapsed;
 
             if (this.$data.isCollapsed) {
-                this.$data.restoredHeight = this.$data.windowHeight;
-                this.$data.windowHeight = this.$data.titlebarWidth;
+                this.restoredHeight = this.windowHeight;
+                this.windowHeight = 1;
             } else {
-                this.$data.windowHeight = this.$data.restoredHeight;
+                this.windowHeight = this.restoredHeight;
             }
         },
         applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {
