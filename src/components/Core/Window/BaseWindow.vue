@@ -182,6 +182,22 @@ export default Vue.extend({
                     height: this.windowHeight
                 });
             }
+        },
+        width: {
+            handler(newValue: number) {
+                this.windowWidth = newValue;
+            }
+        },
+        height: {
+            handler(newValue: number) {
+                this.windowHeight = newValue;
+            }
+        },
+        pos: {
+            handler(newValue: Position) {
+                this.windowPos = newValue;
+            },
+            deep: true
         }
     },
     methods: {
@@ -485,7 +501,7 @@ export default Vue.extend({
 
 .titlebar-button-container {
     position: absolute;
-    margin-top: -4px;
+    margin-top: -3px;
     right: 6px;
 }
 

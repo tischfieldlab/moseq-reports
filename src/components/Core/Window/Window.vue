@@ -6,7 +6,7 @@
         :title="title"
         :width="this.window_width"
         :height="this.window_height"
-        :pos="layout.position"
+        :pos="this.window_position"
         @onClosed="onClosed"
         @onMoved="onMoved"
         @onResized="onResized"
@@ -86,7 +86,7 @@ export default mixins(WindowMixin).extend({
         return {
             show_settings_modal: false,
             component_loading: 0,
-            watchers: Array<() => void>()
+            watchers: Array<() => void>(),
         };
     },
     computed: {
@@ -120,6 +120,9 @@ export default mixins(WindowMixin).extend({
         },
         window_height(): number {
             return this.layout.height;
+        },
+        window_position(): Position {
+            return this.layout.position;
         }
     },
     watch: {
