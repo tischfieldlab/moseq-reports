@@ -13,7 +13,7 @@ import {
 } from './datawindow.types';
 import { Module } from 'vuex';
 import stateMerge from 'vue-object-merge';
-
+import { applyAspectRatio, isValidHeight, isValidWidth, isValidX, isValidY } from '@/components/Core/Window/util';
 
 
 const DataWindowModule: Module<DataWindowState, RootState> = {
@@ -59,10 +59,24 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             stateMerge(state.settings, payload.settings);
         },
         updateComponentLayout(state, payload: UpdateComponentLayoutPayload) {
-            if (payload.width) { state.width = payload.width; }
-            if (payload.height) { state.height = payload.height; }
-            if (payload.position_x) { state.pos_x = payload.position_x; }
-            if (payload.position_y) { state.pos_y = payload.position_y; }
+            const deltaX: number = payload.width ? payload.width : state.width;
+            const deltaY: number = payload.height ? payload.height : state.height;
+
+            // In the event that this is a resize, we apply the aspect ratio constraints if there is an aspect ratio
+            const apsectRatioDims = applyAspectRatio(deltaX, deltaY, state.aspect_ratio);
+
+            if ((payload.width || payload.height) && (isValidWidth(apsectRatioDims.width) && isValidHeight(apsectRatioDims.height))) {
+                state.width = apsectRatioDims.width;
+                state.height = apsectRatioDims.height;
+            }
+
+            if (payload.position_x !== undefined && payload.position_x >= 0 && isValidX(payload.position_x + deltaX)) {
+                state.pos_x = payload.position_x;
+            }
+
+            if (payload.position_y !== undefined && payload.position_y >= 0 && isValidY(payload.position_y + deltaY)) {
+                state.pos_y = payload.position_y;
+            }
         },
         updateComponentTitle(state, payload: UpdateComponentTitlePayload) {
             state.title = payload.title;
