@@ -170,7 +170,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                 },
                 {
                     label: 'Sidebar Position...',
-                    type: 'normal',
+                    type: 'submenu',
                     submenu: [
                         {
                             label: 'Left',
