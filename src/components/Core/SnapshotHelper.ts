@@ -83,7 +83,7 @@ export async function SnapshotWorkspace() {
 
     const toSnapshot = getAllVues(app).filter((v) => {
         if (v.$parent && v.$parent.$parent) {
-            return (v.$parent.$parent.$options as any)._componentTag === 'JqxWindow';
+            return (v.$parent.$parent.$options as any)._componentTag === 'BaseWindow';
         }
     });
 
