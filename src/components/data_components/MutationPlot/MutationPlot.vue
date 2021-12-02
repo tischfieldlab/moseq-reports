@@ -43,8 +43,8 @@ RegisterDataComponent({
     friendly_name: 'Mutation Plot',
     component_type: 'MutationPlot',
     settings_type: 'MutationPlotOptions',
-    init_width: 400,
-    init_height: 500,
+    init_width: 950,
+    init_height: 250,
     available_render_modes: [RenderMode.SVG, RenderMode.CANVAS],
     default_render_mode: RenderMode.SVG,
     default_settings: {
