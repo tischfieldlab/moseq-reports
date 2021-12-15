@@ -1,4 +1,4 @@
-import { RootState } from './root.types';
+import { ComponentRegistration, RootState } from './root.types';
 import {
     DataWindowState,
     UpdateComponentLayoutPayload,
@@ -100,6 +100,15 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
                 state.aspect_ratio = payload.width / payload.height;
             }
         }
+    },
+    actions: {
+        resetSize(context) {
+            const spec = context.rootGetters.getSpecification(context.state.type) as ComponentRegistration;
+            context.commit('updateComponentLayout', {
+                width: spec.init_width,
+                height: spec.init_height,
+            });
+        },
     },
 };
 export default DataWindowModule;

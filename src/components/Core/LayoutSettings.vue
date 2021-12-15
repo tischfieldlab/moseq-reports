@@ -7,6 +7,9 @@
             <b-col>
                 <b-form-input type="text" v-model.trim="title" />
             </b-col>
+            <b-col cols="1" class="p-0">
+                &nbsp;
+            </b-col>
         </b-row>
         <b-row>
             <b-col cols="2" align-self="center">
@@ -22,6 +25,11 @@
                     <b-form-input type="number" debounce="500" v-model.number="height" />
                 </b-input-group>
             </b-col>
+            <b-col cols="1" class="p-0">
+                <b-button variant="link" @click="reset_size" title="Reset size to default">
+                    <b-icon icon="arrow-counterclockwise" />
+                </b-button>
+            </b-col>
         </b-row>
         <b-row>
             <b-col cols="2" align-self="center">
@@ -36,6 +44,9 @@
                 <b-input-group prepend="Y">
                     <b-form-input type="number" debounce="500" min="0" v-model.number="position_y" />
                 </b-input-group>
+            </b-col>
+            <b-col cols="1" class="p-0">
+                &nbsp;
             </b-col>
         </b-row>
     </b-container>
@@ -106,6 +117,11 @@ export default mixins(WindowMixin).extend({
             },
         },
     },
+    methods: {
+        reset_size() {
+            this.$store.dispatch(`${this.id}/resetSize`)
+        }
+    }
 });
 </script>
 
