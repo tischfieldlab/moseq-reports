@@ -360,10 +360,14 @@ export default Vue.extend({
 
             if (this.$data.isCollapsed) {
                 this.restoredHeight = this.windowHeight;
-                this.windowHeight = 1;
+                this.windowHeight = 0;
             } else {
                 this.windowHeight = this.restoredHeight;
             }
+
+            this.$emit('onMinMaxToggle', {
+                height: this.windowHeight
+            });
         },
         applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {
             return applyAspectRatio(newWidth, newHeight, this.aspect_ratio);

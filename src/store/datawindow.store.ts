@@ -10,11 +10,11 @@ import {
     UpdateComponentZIndexPayload,
     UpdateComponentAspectRatio,
     UpdateComponentAspectRatioByWidthAndHeight,
+    MinMaxPayload,
 } from './datawindow.types';
 import { Module } from 'vuex';
 import stateMerge from 'vue-object-merge';
-import { applyAspectRatio, isValidHeight, isValidWidth, isValidX, isValidY } from '@/components/Core/Window/util';
-import { remote } from 'electron';
+import { applyAspectRatio, isValidHeight, isValidWidth } from '@/components/Core/Window/util';
 
 
 const DataWindowModule: Module<DataWindowState, RootState> = {
@@ -59,10 +59,15 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             state.aspect_ratio = payload.aspect_ratio;
             stateMerge(state.settings, payload.settings);
         },
+        toggleWindowMinMax(state, payload: MinMaxPayload) {
+            state.height = payload.height;
+        },
         updateComponentLayout(state, payload: UpdateComponentLayoutPayload) {
             const deltaX: number = payload.width ? payload.width : state.width;
             const deltaY: number = payload.height ? payload.height : state.height;
-            const [maxX, maxY] = remote.getCurrentWindow().getSize();
+            const clientRect = document.getElementsByClassName('home')[0];
+            const maxX = clientRect.clientWidth;
+            const maxY = clientRect.clientHeight;
 
             // In the event that this is a resize, we apply the aspect ratio constraints if there is an aspect ratio
             const apsectRatioDims = applyAspectRatio(deltaX, deltaY, state.aspect_ratio);
@@ -80,8 +85,8 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             }
 
             if (payload.position_y !== undefined) {
-                if (payload.position_y + deltaY < 0) payload.position_y = 0;
-                if (payload.position_y + deltaY > maxY) payload.position_y = maxY - state.height;
+                if (payload.position_y < 0) payload.position_y = 0;
+                if (payload.position_y + deltaY > maxY) payload.position_y = maxY - state.height - 65;
 
                 state.pos_y = payload.position_y;
             }

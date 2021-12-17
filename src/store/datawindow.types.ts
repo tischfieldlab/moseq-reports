@@ -14,6 +14,10 @@ export interface DataWindowState {
     aspect_ratio?: number;
 }
 
+export interface MinMaxPayload {
+    height: number;
+};
+
 export interface UpdateComponentLayoutPayload {
     width?: number;
     height?: number;

@@ -11,6 +11,7 @@
         @onMoved="onMoved"
         @onResized="onResized"
         @onWindowFocused="onWindowFocused"
+        @onMinMaxToggle="onWindowMinMaxToggle"
         :zIndex="z_index"
         :aspectRatio="aspect_ratio"
     >
@@ -194,7 +195,13 @@ export default mixins(WindowMixin).extend({
         onWindowFocused() {
             const maxZ: number = this.$store.getters['datawindows/windowsMaxZIndex'] + 1;
             this.$store.commit(`${this.id}/updateZIndex`, { z_index: maxZ });
-        }
+        },
+        onWindowMinMaxToggle(event: any) {
+            this.$store.commit(`${this.id}/toggleWindowMinMax`, {
+                id: this.id,
+                height: event.height,
+            });
+        },
     },
 });
 
