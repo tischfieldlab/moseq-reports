@@ -14,6 +14,7 @@ import {
 import { Module } from 'vuex';
 import stateMerge from 'vue-object-merge';
 import { applyAspectRatio, isValidHeight, isValidWidth, isValidX, isValidY } from '@/components/Core/Window/util';
+import { remote } from 'electron';
 
 
 const DataWindowModule: Module<DataWindowState, RootState> = {
@@ -61,6 +62,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
         updateComponentLayout(state, payload: UpdateComponentLayoutPayload) {
             const deltaX: number = payload.width ? payload.width : state.width;
             const deltaY: number = payload.height ? payload.height : state.height;
+            const [maxX, maxY] = remote.getCurrentWindow().getSize();
 
             // In the event that this is a resize, we apply the aspect ratio constraints if there is an aspect ratio
             const apsectRatioDims = applyAspectRatio(deltaX, deltaY, state.aspect_ratio);
@@ -70,11 +72,17 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
                 state.height = apsectRatioDims.height;
             }
 
-            if (payload.position_x !== undefined && payload.position_x >= 0 && isValidX(payload.position_x + deltaX)) {
+            if (payload.position_x !== undefined) {
+                if (payload.position_x < 0) payload.position_x = 0;
+                if (payload.position_x + deltaX > maxX) payload.position_x = maxX - state.width;
+
                 state.pos_x = payload.position_x;
             }
 
-            if (payload.position_y !== undefined && payload.position_y >= 0 && isValidY(payload.position_y + deltaY)) {
+            if (payload.position_y !== undefined) {
+                if (payload.position_y + deltaY < 0) payload.position_y = 0;
+                if (payload.position_y + deltaY > maxY) payload.position_y = maxY - state.height;
+
                 state.pos_y = payload.position_y;
             }
         },
