@@ -99,15 +99,16 @@ export default Vue.component('syllable-id-filter', {
         },
         idsToRanges(ids: number[]): string[] {
             const ranges: string[] = [];
-            let sortedIds: number[] = [...ids];
+            const sortedIds: number[] = [...ids];
 
             // These are used to track where we are in the range, should one exist
-            let rstart: number, rend: number;
-            for (var i = 0; i < sortedIds.length; ++i) {
+            let rstart: number;
+            let rend: number;
+            for (let i = 0; i < sortedIds.length; ++i) {
                 rstart = sortedIds[i];
                 rend = rstart;
                 // Loop through if they are sequential
-                while (sortedIds[i + 1] - sortedIds[i] == 1) {
+                while (sortedIds[i + 1] - sortedIds[i] === 1) {
                     rend = sortedIds[i + 1]; // increment the index if the numbers sequential
                     i++;
                 }

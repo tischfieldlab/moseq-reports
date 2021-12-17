@@ -98,8 +98,9 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 state.groupColors = payload.groupColors;
             }
             if (payload.moduleIdFilter) {
-                state.moduleIdFilter.splice(0, state.moduleIdFilter.length); // clear the existing array
-                state.moduleIdFilter.push(...payload.moduleIdFilter); // add the new elements from payload
+                // state.moduleIdFilter.splice(0, state.moduleIdFilter.length); // clear the existing array
+                // state.moduleIdFilter.push(...payload.moduleIdFilter); // add the new elements from payload
+                state.moduleIdFilter = payload.moduleIdFilter;
             }
         },
         setSelectedSyllable(state, selectedSyllable: number) {
@@ -171,9 +172,11 @@ const DataviewModule: Module<DataviewState, RootState> = {
         async updateView(context, payload: DataviewPayload) {
             context.commit('setLoading', true);
             try {
-                payload.countMethod = payload.countMethod || context.state.countMethod;
+                // console.log(context.state.moduleIdFilter);
+                payload.countMethod = payload.countMethod|| context.state.countMethod;
                 payload.selectedGroups = payload.selectedGroups || context.state.selectedGroups;
                 payload.moduleIdFilter = payload.moduleIdFilter || context.state.moduleIdFilter;
+                // console.log(payload.moduleIdFilter);
                 context.commit('setView', payload);
             } catch (e) {
                 // tslint:disable-next-line:no-console
