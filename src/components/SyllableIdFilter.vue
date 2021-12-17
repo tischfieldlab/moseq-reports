@@ -113,7 +113,11 @@ export default Vue.component('syllable-id-filter', {
                     i++;
                 }
 
-                ranges.push(rstart === rend ? rstart+'' : rstart + '-' + rend);
+                if (rstart === rend) {
+                    ranges.push(`${rstart}`);
+                }else {
+                    ranges.push(`${rstart}-${rend}`);
+                }
             }
 
             return ranges;
