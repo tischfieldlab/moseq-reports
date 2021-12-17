@@ -9,6 +9,7 @@ import mime from 'mime-types';
 import { DataWindowState } from '@/store/datawindow.types';
 import { SaveCancelledError } from './IO/types';
 import { showSaveErrorToast, showSaveSuccessToast } from './IO/Toasts';
+import WindowManager from '@/components/Core/Window/WindowManager';
 
 
 export interface SnapshotOptions {
@@ -81,11 +82,7 @@ export default async function Snapshot(target: Vue, basename: string, options: S
 export async function SnapshotWorkspace() {
     const opts = defaultOptions(app);
 
-    const toSnapshot = getAllVues(app).filter((v) => {
-        if (v.$parent && v.$parent.$parent) {
-            return (v.$parent.$parent.$options as any)._componentTag === 'BaseWindow';
-        }
-    });
+    const toSnapshot = WindowManager.getWindows();
 
     if (toSnapshot.length <= 0) {
         showSaveErrorToast('There are not any items to snapshot!', 'workspace snapshot');

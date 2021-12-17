@@ -65,13 +65,22 @@ import WindowMixin from './WindowMixin';
 import Snapshot, { ensureDefaults } from '../SnapshotHelper';
 import { Position, Size } from '@/store/datawindow.types';
 import TitlebarButton from '@/components/Core/Window/WindowTitlebarButton.vue';
+import WindowManager from '@/components/Core/Window/WindowManager';
 
 export default mixins(WindowMixin).extend({
     components: {
         BaseWindow,
         TitlebarButton,
     },
+    destroyed() {
+        // Get rid of the window body from the manager when the component is destroyed.
+        WindowManager.removeWindow(this.id);
+    },
     mounted() {
+        // Once this component has mounted, we add it's component body to the window manager to be
+        // tracked and managed for use in snapshotting.
+        WindowManager.addWindow(this.id, this.$refs.body as Vue);
+
         this.$nextTick().then(() => {
             ensureDefaults(this.$refs.body as Vue, this.$store);
         });
