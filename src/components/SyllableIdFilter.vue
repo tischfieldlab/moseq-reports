@@ -64,9 +64,19 @@ export default Vue.component('syllable-id-filter', {
         },
     },
     watch: {
-        tags(newValue) {
-            this.module_filter = this.tagsAsIds;
+        tags(newValue, oldValue) {
+            console.log("watch tags", newValue, oldValue)
+            if (newValue !== oldValue) {
+                this.module_filter = this.tagsAsIds;
+            }
         },
+        module_filter(newValue, oldValue) {
+            const newTags = this.idsToRanges(newValue);
+            console.log("watch module_filter", newValue, newTags, this.tags)
+            if (JSON.stringify(newTags) !== JSON.stringify(this.tags)) {
+                this.tags = newTags;
+            }
+        }
     },
     mounted() {
         this.tags = this.idsToRanges(this.module_filter);

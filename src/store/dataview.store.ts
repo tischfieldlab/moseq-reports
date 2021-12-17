@@ -88,7 +88,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
             state.groupColors = groupColors;
         },
         setView(state, payload: DataviewPayload) {
-            // state.view = payload.view;
             if (payload.countMethod) {
                 state.countMethod = payload.countMethod;
             }
@@ -99,7 +98,8 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 state.groupColors = payload.groupColors;
             }
             if (payload.moduleIdFilter) {
-                state.moduleIdFilter = payload.moduleIdFilter;
+                state.moduleIdFilter.splice(0, state.moduleIdFilter.length); // clear the existing array
+                state.moduleIdFilter.push(...payload.moduleIdFilter); // add the new elements from payload
             }
         },
         setSelectedSyllable(state, selectedSyllable: number) {
@@ -129,11 +129,25 @@ const DataviewModule: Module<DataviewState, RootState> = {
             context.commit('setSelectedSyllable', payload.selectedSyllable);
         },
         switchCountMethod(context, payload: CountMethod) {
-            const newSyllable = context.getters.selectedSyllableAs(payload);
+            // translate the selected syllable to new count method
+            const newSelectedSyllable = context.getters.selectedSyllableAs(payload);
+
+            // translate the module id filters to new count method
+            const lm = ((context.rootState as any).datasets as DatasetsState).label_map;
+            const from = context.state.countMethod.toLowerCase();
+            const filterSyllables = context.state.moduleIdFilter.map((id) => {
+                const result = lm.find((row) => row[from] === id);
+                if (result !== undefined) {
+                    return result[payload.toLocaleLowerCase()];
+                }
+            });
+            console.log('switchCountMethod', filterSyllables)
+
             context.dispatch('updateView', {
                 countMethod: payload,
+                moduleIdFilter: filterSyllables,
             } as DataviewPayload);
-            context.commit('setSelectedSyllable', newSyllable);
+            context.commit('setSelectedSyllable', newSelectedSyllable);
         },
         async updateModuleIdFilters(context, payload: number[]) {
             await context.dispatch('updateView', {
