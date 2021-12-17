@@ -141,7 +141,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
                     return result[payload.toLocaleLowerCase()];
                 }
             });
-            console.log('switchCountMethod', filterSyllables)
 
             context.dispatch('updateView', {
                 countMethod: payload,
