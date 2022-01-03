@@ -138,17 +138,17 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                     // Draw Tick
                     ctx.save();
                     ctx.strokeStyle = '#000';
-                    let y_tck_offset: number;
+                    let yTickOffset: number;
                     if (isSelected) {
                         ctx.lineWidth = 2;
-                        y_tck_offset = 18;
+                        yTickOffset = 18;
                     } else {
                         ctx.lineWidth = 1;
-                        y_tck_offset = 6;
+                        yTickOffset = 6;
                     }
                     ctx.beginPath();
                     ctx.moveTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 0);
-                    ctx.lineTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), y_tck_offset);
+                    ctx.lineTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), yTickOffset);
                     ctx.stroke();
                     ctx.restore();
 
@@ -163,7 +163,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                     } else {
                         ctx.font = '8px Verdana,Arial,sans-serif';
                     }
-                    ctx.translate(this.scale.x(d) + (this.scale.x.bandwidth() / 2), y_tck_offset + 2);
+                    ctx.translate(this.scale.x(d) + (this.scale.x.bandwidth() / 2), yTickOffset + 2);
 
                     if (this.rotate_labels) {
                         ctx.textAlign = 'right';
@@ -200,17 +200,17 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                     // Draw tick
                     ctx.save();
                     ctx.strokeStyle = '#000';
-                    let x_tck_offset: number;
+                    let xTickOffset: number;
                     if (isSelected) {
                         ctx.lineWidth = 2;
-                        x_tck_offset = 18;
+                        xTickOffset = 18;
                     } else {
                         ctx.lineWidth = 1;
-                        x_tck_offset = 6;
+                        xTickOffset = 6;
                     }
                     ctx.beginPath();
                     ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                    ctx.lineTo(x_tck_offset, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    ctx.lineTo(xTickOffset, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
                     ctx.stroke();
                     ctx.restore();
 
@@ -225,7 +225,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
                     } else {
                         ctx.font = '8px Verdana,Arial,sans-serif';
                     }
-                    ctx.fillText(d, x_tck_offset + 2, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    ctx.fillText(d, xTickOffset + 2, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
                     ctx.restore();
                 }
             });
