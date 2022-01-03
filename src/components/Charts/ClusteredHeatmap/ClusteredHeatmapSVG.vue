@@ -222,7 +222,6 @@ svg >>> g.x-axis.rotate g.tick text {
 svg >>> text.tick-measurement,
 svg >>> g.tick text {
     font-size: 10px;
-    fill: #000000;
 }
 svg >>> g.y-axis g.tick text {
     font-size: 8px;
@@ -246,13 +245,24 @@ svg >>> g.y-axis g.tick {
 svg >>> g.y-axis g.tick.selected text,
 svg >>> g.x-axis g.tick.selected text {
     font-weight: bold;
-    transform: scale(2);
+    font-size: 16px;
     fill: #000;
     z-index: 1000;
 }
-svg >>> g.y-axis g.tick.selected line,
-svg >>> g.x-axis g.tick.selected line {
+svg >>> g.x-axis g.tick.selected text {
+    transform: translateY(12px);
+    text-anchor: middle;
+}
+svg >>> g.y-axis g.tick.selected text {
+    transform: translateX(18px);
+    text-anchor: middle;
+}
+svg >>> g.y-axis g.tick.selected line {
     stroke: #000;
     transform: scaleX(3) scaleY(1.5);
+}
+svg >>> g.x-axis g.tick.selected line {
+    stroke: #000;
+    transform: scaleX(2) scaleY(3);
 }
 </style>
