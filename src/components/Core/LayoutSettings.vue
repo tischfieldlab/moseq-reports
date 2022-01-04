@@ -49,6 +49,11 @@
                 &nbsp;
             </b-col>
         </b-row>
+        <b-row>
+            <b-button variant="link" @click="duplicate_component" title="Duplicate this component">
+                <b-icon icon="files" /> Duplicate this component
+            </b-button>
+        </b-row>
     </b-container>
 </template>
 
@@ -120,8 +125,11 @@ export default mixins(WindowMixin).extend({
     methods: {
         reset_size() {
             this.$store.dispatch(`${this.id}/resetSize`)
-        }
-    }
+        },
+        duplicate_component() {
+            this.$store.dispatch('datawindows/duplicateWindow', this.id);
+        },
+    },
 });
 </script>
 

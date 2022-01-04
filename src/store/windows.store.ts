@@ -76,6 +76,17 @@ const WindowsModule: Module<WindowsState, RootState> = {
             context.commit('removeWindow', namespace);
             store.unregisterModule(namespace.split('/'));
         },
+        duplicateWindow(context, namespace: string) {
+            // grab a copy of the window state
+            const winstate = dehydrateWindow(unnest(context.rootState, namespace));
+            // Prefix the window title to differentiate
+            winstate.title = 'Copy of ' + winstate.title;
+            // shift the window position a bit in x and y
+            winstate.layout.position.x += 30;
+            winstate.layout.position.y += 30;
+            // add the modified window back into the windows store
+            context.dispatch('hydrateWindow', winstate);
+        },
         clearLayout(context) {
             const namespaces = [...context.state.items];
             context.commit('clearWindows');
