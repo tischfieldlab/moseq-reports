@@ -94,9 +94,11 @@ export async function SnapshotWorkspace() {
         return {
             dataURI: await targetToDataURI(item, opts),
             pos_x: wstate.pos_x,
-            pos_y: wstate.pos_y,
+            pos_y: wstate.pos_y + 30, // add offset of 30 to account for window headers
             width: wstate.width,
             height: wstate.height,
+            title: wstate.title,
+            z_index: wstate.z_index,
         } as SubImage;
     }))
     .then((images) => {
@@ -138,10 +140,12 @@ export async function SnapshotWorkspace() {
 
 export interface SubImage {
     dataURI: string;
+    title: string;
     pos_x: number;
     pos_y: number;
     width: number;
     height: number;
+    z_index: number;
 }
 
 export function composite_images(images: SubImage[], opts: SnapshotOptions): Promise<string> {
@@ -166,7 +170,7 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
-    const drawers = images.map((item) => {
+    const drawers = images.sort((a, b) => a.z_index - b.z_index).map((item) => {
         return new Promise<void>((resolve, reject) => {
             const subInfo = dataUriToFile(item.dataURI)
             if (subInfo.extension !== 'png') {
@@ -188,6 +192,11 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
                         item.pos_x * opts.scale, item.pos_y * opts.scale,
                         img.width, img.height);
                 }
+                ctx.save();
+                ctx.font = `bold ${16 * opts.scale}px Verdana,Arial,sans-serif`;
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(item.title, item.pos_x * opts.scale, item.pos_y * opts.scale);
+                ctx.restore();
                 resolve();
             };
             img.src = item.dataURI as string;
