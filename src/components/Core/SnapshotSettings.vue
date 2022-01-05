@@ -38,7 +38,8 @@
         <b-row>
             <b-col>
                 <b-button ref="snapshot_button" @click="takeSnapshot()" class="float-right" :disabled="is_taking_snapshot">
-                    <b-spinner v-show="is_taking_snapshot" small type="grow"></b-spinner>
+                    <b-spinner v-show="is_taking_snapshot" small type="grow" />
+                    <b-icon v-show="!is_taking_snapshot" icon="camera-fill" />
                     Take Snapshot
                 </b-button>
             </b-col>
