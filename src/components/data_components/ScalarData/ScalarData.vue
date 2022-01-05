@@ -69,15 +69,15 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 },
                 velocity_2d_mm: {
                     title: 'Velocity 2D',
-                    units: 'mm/s',
+                    units: 'mm/frame',
                 },
                 velocity_3d_mm: {
                     title: 'Velocity 3D',
-                    units: 'mm/s',
+                    units: 'mm/frame',
                 },
                 velocity_theta: {
                     title: 'Velocity Theta',
-                    units: 'degrees',
+                    units: 'degrees/frame',
                 },
                 width_mm: {
                     title: 'Width',
