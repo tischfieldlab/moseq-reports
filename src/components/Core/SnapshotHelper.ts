@@ -81,6 +81,7 @@ export default async function Snapshot(target: Vue, basename: string, options: S
 
 export async function SnapshotWorkspace() {
     const opts = defaultOptions(app);
+    opts.backgroundColor = '#FFFFFFFF' // opaque white background
 
     const toSnapshot = WindowManager.getWindows();
 
