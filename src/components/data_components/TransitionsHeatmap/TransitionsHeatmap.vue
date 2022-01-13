@@ -249,8 +249,8 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 <style scoped>
 svg >>> g.heatmap text.label,
 svg >>> g.legend text.label {
-    font-family: Verdana,Arial,sans-serif;
-    font-size: 13px;
+    font-family: var(--plot-label-font-family);
+    font-size: var(--plot-label-font-size);
     text-anchor:middle;
     fill:#000;
 }

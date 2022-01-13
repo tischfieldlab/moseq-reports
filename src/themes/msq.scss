@@ -1,0 +1,34 @@
+// Your variable overrides
+$theme-colors: (
+  "primary": #0074d9,
+  "danger": #ff4136
+);
+
+:root {
+    --font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    --webkit-font-smoothing: antialiased;
+    --moz-osx-font-smoothing: grayscale;
+    --color: #2c3e50;
+    --plot-label-font-family: Verdana,Arial,sans-serif;
+    --plot-label-font-size: 13px;
+    --code-monospace-font-family: 'Courier New', Courier, monospace;
+    --code-monospace-font-size: 11px;
+    --code-monospace-white-space: pre;
+    // This is used to style all the "code" elements
+    .code-monospace {
+        font-family: var(--code-monospace-font-family);
+        white-space: var(--code-monospace-white-space);
+        font-size: var(--code-monospace-font-size);
+    }
+    .plot-labels {
+        font-family: var(--plot-label-font-family);
+        font-size: var(--plot-label-font-size);
+    }
+}
+
+
+
+// Bootstrap and its default variables
+@import '../../node_modules/bootstrap/scss/bootstrap';
+// BootstrapVue and its default variables
+@import '../../node_modules/bootstrap-vue/src/index.scss';

@@ -18,7 +18,7 @@
                 </small>
 
                 <b-collapse v-if="itm.details != null" :id="$id('details-'+idx)"  class="mt-2">
-                    <b-textarea :readonly="true" rows="5" v-model="itm.details" class="details-text" />
+                    <b-textarea :readonly="true" rows="5" v-model="itm.details" class="code-monospace" />
                 </b-collapse>
             </b-toast>
         </template>
@@ -58,7 +58,7 @@ export default Vue.extend({
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .message {
     font-size: 14px;
 }
@@ -77,10 +77,5 @@ h3 {
 }
 a.details-link {
     margin-left: 10px;
-}
-.details-text {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
-    white-space: pre;
 }
 </style>

@@ -154,7 +154,7 @@ svg >>> g.x-axis text.label,
 svg >>> g.y-axis text.label {
     text-anchor:middle;
     fill:#000;
-    font-family: Verdana,Arial,sans-serif;
+    font-family: var(--plot-label-font-family);
     font-size: 12px;
 }
 svg >>> g.x-axis.rotate g.tick text {

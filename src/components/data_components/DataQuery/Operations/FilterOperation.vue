@@ -8,7 +8,7 @@
 
         <template v-for="(value, key) in localFilters">
             <b-input-group size="sm" :key="key">
-                <b-input-group-prepend is-text :title="`${inferDataTypeForColumn(key)} datatype`" v-b-tooltip.hover>
+                <b-input-group-prepend is-text :title="`${inferDataTypeForColumn(key)} datatype code-monospace`" v-b-tooltip.hover>
                     {{key}}
                 </b-input-group-prepend>
                 <b-form-tags
@@ -129,8 +129,6 @@ export default Vue.extend({
 }
 .data-type {
     padding-left: 6px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
 }
 .special-token-container {
     margin-top: 0.5rem;

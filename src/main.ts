@@ -34,8 +34,9 @@ import {CreateTitleBar} from './WindowChrome';
 
 // Bootstrap Stuff
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import './themes/msq.scss';
+// import 'bootstrap/dist/css/bootstrap.css';
+// import 'bootstrap-vue/dist/bootstrap-vue.css';
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
@@ -54,7 +55,6 @@ Vue.use(VueTimeago, {
     locale: 'en',
     autoUpdate: 60,
 });
-
 
 
 const vm = new Vue({

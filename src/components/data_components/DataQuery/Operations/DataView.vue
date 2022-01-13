@@ -9,9 +9,10 @@
             <b-icon v-else class="when-closed" title="Expand" icon="chevron-down"></b-icon>
         </b-button>
         Results at this stage:
-        <span class="datahint">{{datahint}}</span><br />
+        <span class="code-monospace">{{datahint}}</span><br />
         <b-collapse v-model="is_expanded">
             <b-form-textarea
+                class="code-monospace"
                 v-model="formattedDataset"
                 :readonly="true"
                 rows="5"
@@ -72,12 +73,7 @@ export default Vue.extend({
 .collapse-button {
     padding: 0;
 }
-textarea {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 10px;
-}
-.datahint {
-    font-family: 'Courier New', Courier, monospace;
-    color: #444;
+.code-monospace {
+    font-size: 16px !important;
 }
 </style>

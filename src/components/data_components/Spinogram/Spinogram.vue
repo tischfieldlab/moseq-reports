@@ -262,8 +262,8 @@ svg >>> g.y-axis text.label,
 svg >>> text.title {
     text-anchor:middle;
     fill:#000;
-    font-family: Verdana,Arial,sans-serif;
-    font-size: 13px;
+    font-family: var(--plot-label-font-family);
+    font-size: var(--plot-label-font-size);
 }
 svg >>> g.legend text.label {
     font-size: 10px;

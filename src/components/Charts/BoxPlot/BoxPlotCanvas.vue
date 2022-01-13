@@ -4,6 +4,7 @@
             v-dpiadapt="{width: width, height: height}"
             v-show="has_data"
             ref='canvas'
+            class="canvas-axis-labels"
             @mousemove="debouncedHover"
             @mouseleave="hoverItem = undefined"></canvas>
 
@@ -170,7 +171,7 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
             ctx.lineWidth = 0;
             ctx.fillStyle = this.scale.c(node.group);
             const p = new Path2D(this.violinArea(node.kde));
-            // ctx.stroke(p);
+            ctx.stroke(p);
             ctx.fill(p);
             ctx.restore();
         },
@@ -216,15 +217,20 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
                 });
             }
 
+            const element = document.getElementsByClassName("canvas-widget")[0];
+            const style = window.getComputedStyle(element);
+
             ctx.save();
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = 'black';
-            ctx.font = '13px Verdana';
+            ctx.font = style.font;
             ctx.fillText(this.xAxisTitle, this.innerWidth / 2, this.innerHeight + this.xAxisLabelYPos);
             ctx.restore();
         },
         drawAxisY(ctx: CanvasRenderingContext2D) {
+            const element = document.getElementsByClassName("canvas-widget")[0];
+            const style = window.getComputedStyle(element);
             ctx.beginPath();
 
             ctx.moveTo(this.scale.x.range()[0], this.scale.y.range()[0]);
@@ -255,7 +261,8 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
             ctx.rotate(-Math.PI / 2);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.font = '13px Verdana';
+            ctx.font = style.font;
+
             ctx.fillText(this.yAxisTitle, -this.innerHeight / 2, -50);
             ctx.restore();
         },

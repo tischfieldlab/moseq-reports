@@ -210,8 +210,8 @@ svg >>> g.legend path.domain {
 }
 svg >>> g.x-axis text.label,
 svg >>> g.y-axis text.label {
-    font-family: Verdana,Arial,sans-serif;
-    font-size: 13px;
+    font-family: var(--plot-label-font-family);
+    font-size: var(--plot-label-font-size);
     text-anchor:middle;
     fill:#000;
 }
