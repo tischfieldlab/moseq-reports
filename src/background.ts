@@ -12,11 +12,13 @@ import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 
 // open the database
-console.log(__dirname);
-let userDB = new sqlite3.Database(path.join(__dirname, "user1.db"), 
-sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, 
-(err) => { 
-    // do your thing 
+let userDB = new sqlite3.Database(path.join(__dirname, "user1.db"), sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
+userDB.run("CREATE TABLE IF NOT EXISTS user(id INTEGER PRIMARY KEY, first_name TEXT NOT NULL, last_name TEXT NOT NULL, email TEXT NOT NULL)");
+// userDB.run("INSERT INTO user (first_name, last_name, email) VALUES(?, ?, ?)",['jared', 'chester', 'email.com'], (err) => {
+//     console.log(err)
+// });
+userDB.all(`SELECT * FROM user`, [], (err, rows) => {
+    console.log(rows);
 });
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
