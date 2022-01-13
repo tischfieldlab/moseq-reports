@@ -7,6 +7,17 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import { autoUpdater, UpdateCheckResult } from 'electron-updater';
 import logger from 'electron-log';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import sqlite3 from 'sqlite3';
+
+sqlite3.verbose();
+
+// open the database
+console.log(__dirname);
+let userDB = new sqlite3.Database(path.join(__dirname, "user1.db"), 
+sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, 
+(err) => { 
+    // do your thing 
+});
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
