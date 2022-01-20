@@ -87,6 +87,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             if (payload.position_y !== undefined) {
                 if (payload.position_y < 0) payload.position_y = 0;
                 if (payload.position_y + deltaY > maxY) payload.position_y = maxY - state.height - 65;
+                if (state.height === 0 && payload.position_y > (maxY - 65)) payload.position_y = maxY - 65;
 
                 state.pos_y = payload.position_y;
             }
