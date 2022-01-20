@@ -67,7 +67,7 @@ import * as d3 from 'd3';
 import { line } from 'd3-shape';
 import { scaleLinear, scaleSequential } from 'd3-scale';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import mixins from 'vue-typed-mixins';
 import {rgb} from 'd3-color';
 import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';
@@ -149,7 +149,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return this.layout.width;
         },
         outsideHeight(): number {
-            return this.layout.height - 31 - 31;
+            return this.layout.height - 31;
         },
         dims(): any {
             const targetW = 200;
@@ -244,7 +244,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         axis(el, binding) {
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisLeft' }[axis] as string;
                 const methodArg = binding.value[axis];
                 d3.select(el).call(d3[axisMethod](methodArg));
             }
@@ -268,6 +268,11 @@ svg >>> text.title {
 svg >>> g.legend text.label {
     font-size: 10px;
     transform: translateY(-10px);
+}
+
+svg {
+    height: auto;
+    width: auto;
 }
 
 .b-pagination {

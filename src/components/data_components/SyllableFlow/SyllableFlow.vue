@@ -1,7 +1,7 @@
 <template>
     <sankey 
         :width="layout.width"
-        :height="layout.height - 31"
+        :height="layout.height"
         :data="graph"
         :title="plotTitle"
         :colorLegendTitle="colorLegendTitle"
@@ -26,7 +26,7 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 
 import Sankey from '@/components/Charts/Sankey/Sankey.vue';
@@ -186,8 +186,10 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 },
                 {
                     type: 'sort',
-                    columns: ['row_id', 'col_id',],
-                    direction: 'asc',
+                    columns: [
+                        ['row_id', 'asc'],
+                        ['col_id', 'asc'],
+                    ],
                 }
             ];
             return {

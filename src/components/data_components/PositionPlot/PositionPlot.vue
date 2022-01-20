@@ -1,7 +1,7 @@
 <template>
     <component :is="render_mode"
         :width="this.layout.width"
-        :height="this.layout.height - 31"
+        :height="this.layout.height"
         :data="individualUseageData"
         :useGroups="useGroups"
         :groupLabels="groupNames"
@@ -20,7 +20,7 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import HexBinPlotCanvas from '@/components/Charts/HexBinPlot/HexBinPlotCanvas.vue';
 import HexBinPlotSVG from '@/components/Charts/HexBinPlot/HexBinPlotSVG.vue';
 import { CountMethod } from '@/store/dataview.types';

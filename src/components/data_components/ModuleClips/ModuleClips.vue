@@ -1,58 +1,52 @@
 <template>
-    <div class="container">
-        <div v-show="video_loaded">
-            <b-pagination
-                v-if="num_examples > 0"
-                v-model="example_num"
-                :total-rows="num_examples"
-                :per-page="1"
-                :limit="num_examples"
-                :aria-controls="$id('video')"
-                align="fill"
-                :hide-goto-end-buttons="true"
-                size="sm"></b-pagination>
-            <div class="info">
+    <div class='video-container'>
+        <b-pagination
+            v-if="num_examples > 0"
+            v-model="example_num"
+            :total-rows="num_examples"
+            :per-page="1"
+            :limit="num_examples"
+            :aria-controls="$id('video')"
+            align="fill"
+            :hide-goto-end-buttons="true"
+            size="sm"
+        />
+        <video-clips
+            :videoPath="this.movie_path"
+            :playbackRate="this.settings.playback_rate"
+            :loopVideo="this.settings.loop"
+            :subClip="this.settings.only_subclip ? this.subclip : undefined"
+            @sizeCalculated="this.sizeCalculated"
+        >
+            <template slot="prepend">
                 <span>
                     Module {{selected_syllable}} ({{count_method}})
                 </span>
-                <span>
-                    {{current_time.toFixed(2)}} / {{duration.toFixed(2)}} s
-                </span>
-                <span v-show="settings.playback_rate !== 1.0">
-                    {{settings.playback_rate}}x
-                </span>
-            </div>
-            <video ref="video" :id="$id('video')"
-                crossOrigin='anonymous'
-                :src="movie_path"
-                type="video/mp4"
-                controls="true"
-                autoplay="true"
-                muted="true" />
-        </div>
-        <div v-show="!video_loaded" class="no-syllable">
-            <b-card bg-variant="primary" text-variant="white" class="text-center">
-                <b-card-text>
-                    Sorry, there are no clips available for Syllable {{selected_syllable}} ({{count_method}}) 
-                </b-card-text>
-            </b-card>
-        </div>
+            </template>
+            <template slot="no-video">
+                <b-card bg-variant="primary" text-variant="white" class="text-center">
+                    <b-card-text>
+                        Sorry, there is no crowd movie available for Syllable {{selected_syllable}} ({{count_method}})
+                    </b-card-text>
+                </b-card>
+            </template>
+        </video-clips>
     </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import { CountMethod } from '@/store/dataview.types';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import { GetAddress } from '@/components/Core/DataLoader/DataServer';
 import { RenderMode } from '@/store/datawindow.types';
+import VideoClips from '../../Charts/VideoPlayer/VideoPlayer.vue';
 
 RegisterDataComponent({
     friendly_name: 'Module Clips',
     component_type: 'ModuleClips',
-    init_width: 330,
+    init_width: 360,
     init_height: 360,
     settings_type: 'ModuleClipsOptions',
     available_render_modes: [RenderMode.VIDEO],
@@ -66,29 +60,13 @@ RegisterDataComponent({
 });
 
 export default mixins(WindowMixin).extend({
+    components: {
+        VideoClips
+    },
     data() {
         return {
-            video_loaded: true,
-            size_detected: false,
-            current_time: 0,
-            duration: 0,
             example_num: 1,
-            ex_selection_height: 31,
         };
-    },
-    mounted() {
-        const video = (this.$refs.video as HTMLMediaElement);
-        video.addEventListener('error', this.hide_video);
-        video.addEventListener('loadedmetadata', this.show_video);
-        video.addEventListener('timeupdate', this.updateCurrentTime);
-        video.addEventListener('ended', this.videoEnded);
-    },
-    beforeDestroy() {
-        const video = (this.$refs.video as HTMLMediaElement);
-        video.removeEventListener('error', this.hide_video);
-        video.removeEventListener('loadedmetadata', this.show_video);
-        video.removeEventListener('timeupdate', this.updateCurrentTime);
-        video.removeEventListener('ended', this.videoEnded);
     },
     computed: {
         selected_syllable(): number {
@@ -133,88 +111,7 @@ export default mixins(WindowMixin).extend({
             return '';
         },
     },
-    watch: {
-        'layout': {
-            handler(val, oldVal) {
-                this.updateVideoSize();
-            },
-            deep: true,
-        },
-        'settings.playback_rate': 'updateVideoPlaybackRate',
-    },
     methods: {
-        show_video(ev: Event) {
-            const video = this.$refs.video as HTMLVideoElement;
-            this.video_loaded = true;
-            this.duration = video.duration;
-            if (this.settings.only_subclip) {
-                video.currentTime = this.subclip[0];
-            }
-            this.updateVideoPlaybackRate();
-            if (!this.size_detected) {
-                this.updateVideoSize();
-            }
-        },
-        hide_video(ev: Event) {
-            this.video_loaded = false;
-        },
-        updateVideoSize() {
-            const video = (this.$refs.video as HTMLVideoElement);
-            const videoRatio = video.videoHeight / video.videoWidth;
-            const windowRatio = (this.layout.height - this.ex_selection_height - 32) / this.layout.width;
-
-            if (Number.isNaN(videoRatio)) {
-                video.width = this.layout.width;
-                return;
-            }
-            this.size_detected = true;
-
-            if (windowRatio < videoRatio) {
-                if (this.layout.height > 50) { /* smallest video height */
-                    video.height = this.layout.height - 32 - this.ex_selection_height;
-                } else {
-                    video.height = 50;
-                }
-                video.width = video.height / videoRatio;
-            } else {
-                video.width = this.layout.width;
-                video.height = video.width * videoRatio;
-            }
-        },
-        updateVideoPlaybackRate() {
-            const video = (this.$refs.video as HTMLVideoElement);
-            video.playbackRate = this.settings.playback_rate;
-        },
-        updateCurrentTime() {
-            const video = (this.$refs.video as HTMLVideoElement);
-            if (this.settings.loop) {
-                if (this.settings.only_subclip) {
-                    if (video.currentTime > this.subclip[1]) {
-                        video.currentTime = this.subclip[0];
-                    }
-                } else {
-                    if (video.currentTime >= video.duration) {
-                        video.currentTime = 0;
-                    }
-                }
-            }
-            this.current_time =  video.currentTime;
-        },
-        videoEnded() {
-            const video = (this.$refs.video as HTMLVideoElement);
-            if (this.settings.loop) {
-                if (this.settings.only_subclip) {
-                    if (video.currentTime > this.subclip[1]) {
-                        video.currentTime = this.subclip[0];
-                    }
-                } else {
-                    if (video.currentTime >= video.duration) {
-                        video.currentTime = 0;
-                    }
-                }
-                video.play();
-            }
-        },
         onExampleClick(event) {
             this.example_num = event;
         },
@@ -235,45 +132,23 @@ export default mixins(WindowMixin).extend({
         timeToSeconds(time: string) {
             return time.split(':').reduce((acc,t) => (60 * acc) + Number.parseFloat(t), 0);
         },
+        sizeCalculated(payload: { width: number, height: number }) {
+            const { width, height} = payload;
+
+            let aspectRatio: number = this.layout.width / this.layout.height;
+            const newHeight: number = height + 10 * aspectRatio;
+
+            aspectRatio = width / newHeight;
+
+            this.$store.commit(`${this.id}/updateAspectRatio`, { aspect_ratio: aspectRatio });
+        }
     },
 });
 </script>
 
 <style scoped>
-.container {
-    padding: 0;
-    background-color: #000000;
-    max-width: none;
-    overflow: hidden;
-}
-video {
-    margin:0;
-    padding:0;
-}
-video:focus {
-    outline: none;
-}
-.info {
-    position: absolute;
-    color: #ffffff;
-    right: 0;
-    padding: 6px 6px 0 0;
-    text-align: right;
-}
-.info span {
-    display: block;
-}
-.no-syllable .card {
-    width: 75%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-.example {
-    width: 20px;
-    height: 20px;
-    display: inline-block;
+.video-container {
+    height: calc(100% - 10px);
 }
 .b-pagination {
     margin-bottom:0;

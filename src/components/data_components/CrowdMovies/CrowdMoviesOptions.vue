@@ -1,7 +1,11 @@
 <template>
     <b-container fluid>
         <b-row>
-            <b-form-checkbox v-model="loop" switch>Loop playback</b-form-checkbox>
+            <b-input-group prepend="Loop playback">
+                <b-input-group-append is-text>
+                    <b-form-checkbox v-model="loop" switch />
+                </b-input-group-append>
+            </b-input-group>
         </b-row>
         <b-row>
             <b-input-group prepend="Playback rate">
@@ -17,7 +21,7 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 
 export default mixins(WindowMixin).extend({
      computed: {

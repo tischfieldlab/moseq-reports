@@ -12,7 +12,7 @@ interface LinearScale {
 
 
 const exposedMethods = {
-    prepareData(points: DataPoint[], height: number, pointSize: number, groupLabels: string[], swarmPoints: boolean) {
+    prepareData(points: DataPoint[], height: number, pointSize: number, groupLabels: string[], swarmPoints: boolean, kdeScale: number) {
         const yExtent = extent(points.map((i) => i.value));
         if (yExtent[0] as number > 0) {
             yExtent[0] = 0;
@@ -31,7 +31,7 @@ const exposedMethods = {
         const groupedData = Object.entries(groupby(points, (p) => p.group, groupLabels))
             .sort((a, b) => a[0].localeCompare(b[0]))
             .map(([key, values]) => {
-                return exposedMethods.computeGroupStats(values.map((dp) => dp.value), key, y);
+                return exposedMethods.computeGroupStats(values.map((dp) => dp.value), key, y, kdeScale);
         });
 
         const kdeMax = Math.max(...groupedData.map((g) => Math.max(...g.kde.map((k) => k[1]))));
@@ -43,9 +43,9 @@ const exposedMethods = {
             domainKde: [-kdeMax, kdeMax],
         };
     },
-    computeGroupStats(data: number[], group: string, scaleY): GroupStats {
+    computeGroupStats(data: number[], group: string, scaleY, kdeScale: number): GroupStats {
         data = data.filter((v) => typeof v === 'number').sort((a, b) => b - a);
-        const kde = kernelDensityEstimator(epanechnikovKernel(.01), scaleY.ticks(100));
+        const kde = kernelDensityEstimator(epanechnikovKernel(kdeScale), scaleY.ticks(100));
         const gstats = {
             group,
             count: data.length,

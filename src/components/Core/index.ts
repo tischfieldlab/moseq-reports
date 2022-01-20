@@ -36,7 +36,7 @@ function GlobalRegisterVueComponents(requireComponent: __WebpackModuleApi.Requir
         // Get the PascalCase version of the component name
         const componentName = fileName
             .replace(/^\.\//, '')       // Remove the "./" from the beginning
-            .replace(/[\w-]+\//, '')    // remove sub-directory names
+            .replace(/[\w-]+\//g, '')    // remove sub-directory names
             .replace(/\.\w+$/, '')      // Remove the file extension from the end
             .split('-')                 // Split up kebabs
             .map((kebab) => kebab.charAt(0).toUpperCase() + kebab.slice(1)) // Upper case

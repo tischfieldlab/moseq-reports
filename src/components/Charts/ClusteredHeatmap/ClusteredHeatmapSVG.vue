@@ -6,8 +6,8 @@
                 <template v-for="node in data">
                     <rect 
                         :key="`${node[columnKey]}-${node[rowKey]}`"
-                        :x="scale.x(node[columnKey])"
-                        :y="scale.y(node[rowKey])"
+                        :x="scale.x(node[columnKey].toString())"
+                        :y="scale.y(node[rowKey].toString())"
                         :width="scale.x.bandwidth()"
                         :height="scale.y.bandwidth()"
                         :fill="scale.z(node[valueKey])"
@@ -17,12 +17,12 @@
                         /><!-- v-b-tooltip.html :title="heatmap_node_tooltip(node)"-->
                 </template>
             </g>
-            <g class="rtree" v-show="isRowsClustered" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
+            <g class="rtree" v-show="isRowsHClustered" :transform="`translate(${dims.rtree.x},${dims.rtree.y})`">
                 <template v-for="(link, index) in rowLinks">
                     <path class="rlink" :key="index" :d="elbowH(link)" />
                 </template>
             </g>
-            <g class="ctree" v-show="isColumnsClustered" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
+            <g class="ctree" v-show="isColumnsHClustered" text-anchor="middle" :transform="`translate(${dims.ctree.x},${dims.ctree.y})`">
                 <template v-for="(link, index) in columnLinks">
                     <path class="clink" :key="index" :d="elbowV(link)" />
                 </template>
@@ -51,8 +51,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/Core';
-import { HeatmapTile } from './ClusterHeatmap.types';
 import * as d3 from 'd3';
 import { sum, tree } from 'd3';
 import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';
@@ -83,6 +81,7 @@ export default mixins(ClusteredHeatmapBase).extend({
             const canvas = this.$refs.canvas as SVGSVGElement;
             if (!canvas) { return; }
             const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
+            tag.classList.add('tick-measurement');
             canvas.appendChild(tag);
             for (const label of labels) {
                 tag.textContent = label;
@@ -156,23 +155,34 @@ export default mixins(ClusteredHeatmapBase).extend({
             if (axis !== undefined) {
                 const axisMethod = { x: 'axisBottom', y: 'axisRight' }[axis];
                 const methodArg = binding.value[axis];
-                const actualAxis = d3[axisMethod](methodArg);
+                const actualAxis = d3[axisMethod as string](methodArg);
+                const self = vnode.context as any || undefined;
 
                 // build the axis
                 d3.select(el).call(actualAxis);
 
                 // if y-axis, attach "data-syllable" attribute
                 if (axis === 'y') {
-                    const ticks = d3.selectAll('.y-axis .tick');
-                    ticks.attr('data-row', (d: any, i: number) => d);
+                    d3.selectAll('.y-axis .tick')
+                        .attr('data-row', (d: any) => d);
+
+                    // apply row label colors
+                    d3.selectAll('.y-axis .tick text')
+                        .attr('fill', (d: any) => self.scale.rlc(d));
                 } else {
-                    const ticks = d3.selectAll('.x-axis .tick');
-                    ticks.attr('data-col', (d: any, i: number) => d);
+                    d3.selectAll('.x-axis .tick')
+                        .attr('data-col', (d: any) => d);
+
+                    // apply column label colors
+                    d3.selectAll('.x-axis .tick text')
+                        .attr('fill', (d: any) => self.scale.clc(d));
                 }
+
+                d3.selectAll('.tick').filter((datum) => self && self.shouldHideLabel(datum)).attr('visibility', 'hidden')
 
                 // if x-axis, check rotation
                 if (axis === 'x') {
-                    if (vnode && vnode.context && (vnode.context as any).rotate_labels) {
+                    if (self && self.rotate_labels) {
                         el.classList.add('rotate');
                     } else {
                         el.classList.remove('rotate');
@@ -195,10 +205,6 @@ svg >>> g.ctree path.clink {
 svg  >>> g.heatmap rect {
     shape-rendering: crispEdges;
 }
-svg >>> g.x-axis.rotate g.tick text {
-    transform: translate(-10px,0px) rotate(-45deg);
-    text-anchor: end;
-}
 svg >>> g.legend path.domain {
     stroke:none;
 }
@@ -208,6 +214,14 @@ svg >>> g.y-axis text.label {
     font-size: 13px;
     text-anchor:middle;
     fill:#000;
+}
+svg >>> g.x-axis.rotate g.tick text {
+    transform: translate(-10px,0px) rotate(-45deg);
+    text-anchor: end;
+}
+svg >>> text.tick-measurement,
+svg >>> g.tick text {
+    font-size: 10px;
 }
 svg >>> g.y-axis g.tick text {
     font-size: 8px;
@@ -231,13 +245,24 @@ svg >>> g.y-axis g.tick {
 svg >>> g.y-axis g.tick.selected text,
 svg >>> g.x-axis g.tick.selected text {
     font-weight: bold;
-    transform: scale(2);
+    font-size: 16px;
     fill: #000;
     z-index: 1000;
 }
-svg >>> g.y-axis g.tick.selected line,
-svg >>> g.x-axis g.tick.selected line {
+svg >>> g.x-axis g.tick.selected text {
+    transform: translateY(12px);
+    text-anchor: middle;
+}
+svg >>> g.y-axis g.tick.selected text {
+    transform: translateX(18px);
+    text-anchor: middle;
+}
+svg >>> g.y-axis g.tick.selected line {
     stroke: #000;
     transform: scaleX(3) scaleY(1.5);
+}
+svg >>> g.x-axis g.tick.selected line {
+    stroke: #000;
+    transform: scaleX(2) scaleY(3);
 }
 </style>

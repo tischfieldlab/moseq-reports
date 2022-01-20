@@ -23,7 +23,7 @@
         <b-row v-show="show_relative_diff">
             <b-col cols="1"></b-col>
             <b-col>
-                <b-input-group prepend="Colormap">
+                <b-input-group prepend="Colormap" style="flex-wrap:nowrap">
                     <ColorScalePicker v-model="colorscale" />
                 </b-input-group>
             </b-col>
@@ -62,7 +62,7 @@
 <script scoped lang="ts">
 import Vue from 'vue';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import ColorScalePicker from '@/components/Charts/Colors/ColorScalePicker.vue';
 import {NodeAlignment} from '@/components/Charts/Sankey/Sankey.types';
 

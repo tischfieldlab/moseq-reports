@@ -1,10 +1,10 @@
 
-export function clone(obj: any) {
+export function clone<T>(obj: T): T {
     return JSON.parse(JSON.stringify(obj));
 }
 
 
-export function isObject(item) {
+export function isObject(item: any): boolean {
     return (item && typeof item === 'object' && !Array.isArray(item));
 }
 

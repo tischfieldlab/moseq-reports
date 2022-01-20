@@ -1,10 +1,8 @@
 <script lang="ts">
-import Vue from 'vue';
-import RegisterDataComponent from '@/components/Core';
-import { OrderingType, SortOrderDirection, HeatmapTile, ClusterDistance, ClusterLinkage } from './ClusterHeatmap.types';
-import * as d3 from 'd3';
-import { cluster, hierarchy, extent } from 'd3';
-import { scaleBand, scaleSequential } from 'd3-scale';
+import Vue, { PropType } from 'vue';
+import { OrderingType, SortOrderDirection, HClusterDistance, HClusterLinkage } from './ClusteredHeatmap.types';
+import { cluster, hierarchy, min, max } from 'd3';
+import { scaleBand, scaleOrdinal, scaleSequential } from 'd3-scale';
 import { GetScale } from '@/components/Charts/Colors/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV } from '@/components/Charts/D3Clustering';
 import { spawn, Worker, ModuleThread, Thread } from 'threads';
@@ -30,7 +28,7 @@ export default Vue.extend({
     props: {
         data: {
             required: true,
-            type: Array,
+            type: Array as PropType<object[]>,
         },
         width: {
             required: true,
@@ -43,6 +41,14 @@ export default Vue.extend({
         colorscale: {
             type: String,
             default: 'interpolateViridis',
+        },
+        vmin: {
+            type: Number as PropType<number|undefined>,
+            default: undefined,
+        },
+        vmax: {
+            type: Number as PropType<number|undefined>,
+            default: undefined,
         },
         columnKey: {
             required: true,
@@ -58,15 +64,19 @@ export default Vue.extend({
         },
         columnOrderType: {
             type: String,
-            default: OrderingType.Cluster,
+            default: OrderingType.HCluster,
         },
         columnClusterDistance: {
             type: String,
-            default: ClusterDistance.Euclidean,
+            default: HClusterDistance.Euclidean,
         },
         columnClusterLinkage: {
             type: String,
-            default: ClusterLinkage.Avg,
+            default: HClusterLinkage.Avg,
+        },
+        columnClusterK: {
+            type: Number,
+            default: 2,
         },
         columnOrderValue: {
             type: String,
@@ -78,17 +88,25 @@ export default Vue.extend({
         columnOrderDataset: {
             type: Array,
         },
+        columnLabelColor: {
+            type: Object as PropType<{[column: string]: string} | undefined>,
+            default: undefined,
+        },
         rowOrderType: {
             type: String,
-            default: OrderingType.Cluster,
+            default: OrderingType.HCluster,
         },
         rowClusterDistance: {
             type: String,
-            default: ClusterDistance.Euclidean,
+            default: HClusterDistance.Euclidean,
         },
         rowClusterLinkage: {
             type: String,
-            default: ClusterLinkage.Avg,
+            default: HClusterLinkage.Avg,
+        },
+        rowClusterK: {
+            type: Number,
+            default: 2,
         },
         rowOrderValue: {
             type: String,
@@ -100,9 +118,13 @@ export default Vue.extend({
         rowOrderDataset: {
             type: Array,
         },
+        rowLabelColor: {
+            type: Object as PropType<{[column: string]: string} | undefined>,
+            default: undefined,
+        },
         groupLabels: {
             required: true,
-            type: Array, /* Array<string> */
+            type: Array as PropType<string[]>,
             default: () => new Array<string>(),
         },
         xAxisTitle: {
@@ -122,7 +144,7 @@ export default Vue.extend({
             default: null,
         },
         selectedCol: {
-            type: String,
+            type: [String, Number],
             default: null,
         },
         tooltipFormatter: {
@@ -165,6 +187,26 @@ export default Vue.extend({
             },
             immediate: true,
         },
+        columnOrderType: {
+            handler(newValue) {
+                this.clusterColumns();
+            },
+        },
+        rowOrderType: {
+            handler(newValue) {
+                this.clusterRows();
+            },
+        },
+        columnClusterK: {
+            handler(newValue) {
+                this.clusterColumns();
+            },
+        },
+        rowClusterK: {
+            handler() {
+                this.clusterRows();
+            }
+        }
     },
     data() {
         return {
@@ -203,8 +245,8 @@ export default Vue.extend({
             return this.height - this.margin.top - this.margin.bottom;
         },
         dims(): any {
-            const rtreeWidth =  this.isRowsClustered ? Math.min(this.innerWidth * .10, 50) : 0;
-            const ctreeHeight = this.isColumnsClustered ? Math.min(this.innerHeight * .10, 50) : 0;
+            const rtreeWidth =  this.isRowsHClustered ? Math.min(this.innerWidth * .10, 50) : 0;
+            const ctreeHeight = this.isColumnsHClustered ? Math.min(this.innerHeight * .10, 50) : 0;
             const yaxisWidth = 45;
             let xaxisHeight = 45;
             let xaxisLabelYOffset = 40;
@@ -215,7 +257,7 @@ export default Vue.extend({
             this.rotate_labels = this.label_stats.longest > heatWidth / this.label_stats.count;
             if (this.rotate_labels) {
                 const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * this.label_stats.longest;
-                xaxisHeight = xaxisLabelYOffset = rotatedHeight + 20;
+                xaxisHeight = xaxisLabelYOffset = rotatedHeight + 45;
             }
 
             const heatHeight = this.innerHeight - ctreeHeight - xaxisHeight - legendHeight;
@@ -264,22 +306,40 @@ export default Vue.extend({
                 legend,
             };
         },
+        isColumnsClustered(): boolean {
+            return [OrderingType.HCluster, OrderingType.KCluster].includes(this.columnOrderType as OrderingType);
+        },
+        isRowsClustered(): boolean {
+            return [OrderingType.HCluster, OrderingType.KCluster].includes(this.rowOrderType as OrderingType);
+        },
+        isColumnsHClustered(): boolean {
+            return this.columnOrderType === OrderingType.HCluster;
+        },
+        isRowsHClustered(): boolean {
+            return this.rowOrderType === OrderingType.HCluster;
+        },
+        isColumnsKClustered(): boolean {
+            return this.columnOrderType === OrderingType.KCluster;
+        },
+        isRowsKClustered(): boolean {
+            return this.rowOrderType === OrderingType.KCluster;
+        },
         columnOrder(): string[] {
             switch (this.columnOrderType) {
-                case OrderingType.Cluster:
+                case OrderingType.HCluster:
+                case OrderingType.KCluster:
                     return this.clusteredColumnOrder;
 
                 case OrderingType.Value:
-                    return (this.data as HeatmapTile[])
-                               .filter((u) => u[this.rowKey] === this.rowOrderValue)
-                               .sort((a, b) => {
-                                   if (this.columnOrderDirection === SortOrderDirection.Asc) {
-                                       return b[this.valueKey] - a[this.valueKey];
-                                   } else {
-                                       return a[this.valueKey] - b[this.valueKey];
-                                   }
-                               })
-                               .map((u) => u[this.columnKey]);
+                    return this.data.filter((u) => u[this.rowKey].toString() === this.columnOrderValue.toString())
+                                    .sort((a, b) => {
+                                        if (this.columnOrderDirection === SortOrderDirection.Asc) {
+                                            return b[this.valueKey] - a[this.valueKey];
+                                        } else {
+                                            return a[this.valueKey] - b[this.valueKey];
+                                        }
+                                    })
+                                    .map((u) => u[this.columnKey]);
 
                 case OrderingType.Dataset:
                     return this.columnOrderDataset as string[] || [];
@@ -289,35 +349,29 @@ export default Vue.extend({
                     return this.groupLabels as string[];
             }
         },
-        isColumnsClustered(): boolean {
-            return this.columnOrderType === OrderingType.Cluster;
-        },
-        isRowsClustered(): boolean {
-            return this.rowOrderType === OrderingType.Cluster;
-        },
         rowOrder(): number[] {
             switch (this.rowOrderType) {
-                case OrderingType.Cluster:
+                case OrderingType.HCluster:
+                case OrderingType.KCluster:
                     return this.clusteredRowOrder;
 
                 case OrderingType.Value:
-                    return (this.data as HeatmapTile[])
-                               .filter((u) => u[this.columnKey] === this.rowOrderValue)
-                               .sort((a, b) => {
-                                   if (this.rowOrderDirection === SortOrderDirection.Asc) {
-                                       return b[this.valueKey] - a[this.valueKey];
-                                   } else {
-                                       return a[this.valueKey] - b[this.valueKey];
-                                   }
-                               })
-                               .map((u) => u[this.rowKey]);
+                    return this.data.filter((u) => u[this.columnKey].toString() === this.rowOrderValue.toString())
+                                    .sort((a, b) => {
+                                        if (this.rowOrderDirection === SortOrderDirection.Asc) {
+                                            return b[this.valueKey] - a[this.valueKey];
+                                        } else {
+                                            return a[this.valueKey] - b[this.valueKey];
+                                        }
+                                    })
+                                    .map((u) => u[this.rowKey]);
 
                 case OrderingType.Dataset:
                     return this.rowOrderDataset as number[] || [];
 
                 case OrderingType.Natural:
                 default:
-                    return [...new Set((this.data as HeatmapTile[]).map((u) => u[this.rowKey]))].sort((a, b) => a - b);
+                    return [...new Set(this.data.map((u) => u[this.rowKey]))].sort((a, b) => a - b);
             }
         },
         colormap(): any {
@@ -325,20 +379,29 @@ export default Vue.extend({
         },
         scale(): any {
             const x = scaleBand()
-                .domain(this.columnOrder)
+                .domain(this.columnOrder.map((s) => s.toString() || ''))
                 .range([0, this.dims.heatmap.w])
                 .padding(0);
             const y = scaleBand()
-                .domain(this.rowOrder.map((s) => s.toString()))
+                .domain(this.rowOrder.map((s) => s.toString() || ''))
                 .range([this.dims.heatmap.h, 0])
                 .padding(0);
-            let ext = [0, 0];
-            if (this.data !== null) {
-                ext = extent((this.data as HeatmapTile[]).map((n) => n[this.valueKey])) as [number, number];
-            }
+            const vals = (this.data || []).map((n) => n[this.valueKey] as number);
+            const ext = [
+                this.vmin || min(vals) || 0,
+                this.vmax || max(vals) || 0,
+            ];
             const z = scaleSequential(this.colormap || ((t) => t))
-                .domain(ext as [number, number]);
-            return { x, y, z };
+                .domain(ext);
+            const clc = scaleOrdinal()
+                .unknown('#000000')
+                .domain(Object.keys(this.columnLabelColor || {}))
+                .range(Object.values(this.columnLabelColor || {}));
+            const rlc = scaleOrdinal()
+                .unknown('#000000')
+                .domain(Object.keys(this.rowLabelColor || {}))
+                .range(Object.values(this.rowLabelColor || {}));
+            return { x, y, z, clc, rlc };
         },
         columnLinks(): any[] {
             if (this.columnHierarchy === undefined) {
@@ -370,21 +433,49 @@ export default Vue.extend({
         elbowH, elbowV,
         async clusterColumns() {
             if (this.data !== null && this.data.length > 0) {
-                const tree = await worker.clusterColumns(this.data, this.columnKey, this.valueKey,
-                    this.columnClusterDistance as ClusterDistance,
-                    this.columnClusterLinkage as ClusterLinkage);
-                this.clusteredColumnOrder = getDendrogramOrder(tree);
-                this.columnHierarchy = hierarchy(tree);
+                if (this.columnOrderType === OrderingType.HCluster) {
+                    const tree = await worker.clusterColumns(this.data, this.columnKey, this.valueKey, {
+                        type: OrderingType.HCluster,
+                        distance: this.columnClusterDistance as HClusterDistance,
+                        linkage: this.columnClusterLinkage as HClusterLinkage
+                    });
+                    this.clusteredColumnOrder = getDendrogramOrder(tree);
+                    this.columnHierarchy = hierarchy(tree);
+                } else if (this.columnOrderType === OrderingType.KCluster) {
+                    const data = await worker.clusterColumns(this.data, this.columnKey, this.valueKey, {
+                        type: OrderingType.KCluster,
+                        k: this.columnClusterK
+                    });
+                    const cco = data.reduce((acc, c, idx) => acc.concat(c.clusterInd, [-1*(idx+1)]), [])
+                        .map((idx: number) => this.groupLabels[idx] || idx.toString());
+                    cco.pop();
+                    this.clusteredColumnOrder = cco;
+                }
             }
         },
         async clusterRows() {
             if (this.data !== null && this.data.length > 0) {
-                const tree = await worker.clusterRows(this.data, this.rowKey, this.valueKey,
-                    this.rowClusterDistance as ClusterDistance,
-                    this.rowClusterLinkage as ClusterLinkage);
-                this.clusteredRowOrder = getDendrogramOrder(tree);
-                this.rowHierarchy = hierarchy(tree);
+                if (this.rowOrderType === OrderingType.HCluster) {
+                    const tree = await worker.clusterRows(this.data, this.rowKey, this.valueKey, {
+                        type: OrderingType.HCluster,
+                        distance: this.rowClusterDistance as HClusterDistance,
+                        linkage: this.rowClusterLinkage as HClusterLinkage
+                    });
+                    this.clusteredRowOrder = getDendrogramOrder(tree);
+                    this.rowHierarchy = hierarchy(tree);
+                } else if (this.rowOrderType === OrderingType.KCluster) {
+                    const data = await worker.clusterColumns(this.data, this.rowKey, this.valueKey, {
+                        type: OrderingType.KCluster,
+                        k: this.rowClusterK
+                    });
+                    const cro = data.reduce((acc: number[], c, idx) => acc.concat(c.clusterInd, [-1*(idx+1)]), []);
+                    cro.pop();
+                    this.clusteredRowOrder = cro
+                }
             }
+        },
+        shouldHideLabel(label) {
+            return Number.parseInt(label, 10) < 0;
         },
         handleHeatmapClick(event: Event) {
             this.$emit('heatmapClick', {

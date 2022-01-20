@@ -1,15 +1,20 @@
 <template>
     <component :is="render_mode"
         :width="this.layout.width"
-        :height="this.layout.height - 31"
+        :height="this.layout.height"
         :data="individualUseageData"
         :groupLabels="groupNames"
         :groupColors="groupColors"
-        :whisker_type="settings.boxplot_whiskers"
+        
         :show_boxplot="settings.show_boxplot"
+        :whisker_type="settings.boxplot_whiskers"
+
         :show_points="settings.show_points"
-        :show_violinplot="settings.show_violinplot"
         :point_size="settings.point_size"
+
+        :show_violinplot="settings.show_violinplot"
+        :kde_scale="settings.violin_kde_scale"
+        
         xAxisTitle="Group"
         :yAxisTitle="`Module #${selectedSyllable} Usage (${countMethod})`"
         :tooltipFormatter="format_tooltip"
@@ -21,13 +26,11 @@ import Vue from 'vue';
 import RegisterDataComponent from '@/components/Core';
 import LoadingMixin from '@/components/Core/LoadingMixin';
 import mixins from 'vue-typed-mixins';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 
-import BoxPlotCanvas from '@/components/Charts/BoxPlot/BoxPlotCanvas.vue';
-import BoxPlotSVG from '@/components/Charts/BoxPlot/BoxPlotSVG.vue';
-import {WhiskerType} from '@/components/Charts/BoxPlot/BoxPlot.types';
+import {BoxPlotSVG, BoxPlotCanvas, WhiskerType} from '@/components/Charts/BoxPlot';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
-import {OrderingType} from '@/components/Charts/ClusteredHeatmap/ClusterHeatmap.types';
+import {OrderingType} from '@/components/Charts/ClusteredHeatmap';
 import { Operation } from '../../Core/DataLoader/DataLoader.types';
 import { RenderMode } from '@/store/datawindow.types';
 
@@ -45,6 +48,7 @@ RegisterDataComponent({
         point_size: 2,
         show_boxplot: true,
         show_violinplot: false,
+        violin_kde_scale: 0.01,
         boxplot_whiskers: WhiskerType.TUKEY,
         group_order_type: OrderingType.Natural,
     },
@@ -101,7 +105,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             return [];
         },
         groupColors(): string[] {
-            return this.dataview.groupColors;
+            return this.groupNames.map((gn) => this.dataview.groupColors[this.dataview.selectedGroups.indexOf(gn)]);
         },
         dataset(): [string, Operation[]] {
             return [
@@ -124,8 +128,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 },
                 {
                     type: 'sort',
-                    columns: ['value'],
-                    direction: 'asc',
+                    columns: [['value', 'asc']],
                 }],
             ];
         },

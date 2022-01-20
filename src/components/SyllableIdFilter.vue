@@ -1,6 +1,9 @@
 <template>
     <b-card no-body >
-        <div class="input-group-text">Filter Module ID</div>
+        <div class="input-group-text">
+            Filter Module ID
+            <b-button-close v-show="hasTags" @click="clearAllTags" title="Clear all IDs" />
+        </div>
         <b-form-tags v-model="tags" class="mb-2"
             separator=" ,;"
             :tag-validator="tagValidator"
@@ -14,6 +17,7 @@ import Vue from 'vue';
 import { DataviewState } from '@/store/dataview.types';
 import { unnest } from '@/util/Vuex';
 import parsePart from 'parse-numeric-range';
+import { join } from 'custom-electron-titlebar/lib/common/dom';
 
 
 export default Vue.component('syllable-id-filter', {
@@ -37,6 +41,9 @@ export default Vue.component('syllable-id-filter', {
             // Overall component validation state
             return false;
         },
+        hasTags(): boolean {
+            return this.tags.length > 0;
+        },
         tagsAsIds(): number[] {
             let ids = parsePart(this.tags.join(',')) as number[];
             ids = [...new Set(ids)].sort((a, b) => a - b);
@@ -58,14 +65,25 @@ export default Vue.component('syllable-id-filter', {
         },
     },
     watch: {
-        tags(newValue) {
-            this.module_filter = this.tagsAsIds;
+        tags(newValue, oldValue) {
+            if (newValue !== oldValue) {
+                this.module_filter = this.tagsAsIds;
+            }
         },
+        module_filter(newValue, oldValue) {
+            const newTags = this.idsToRanges(newValue);
+            if (JSON.stringify(newTags) !== JSON.stringify(this.tags)) {
+                this.tags = newTags;
+            }
+        }
     },
     mounted() {
         this.tags = this.idsToRanges(this.module_filter);
     },
     methods: {
+        clearAllTags() {
+            this.tags.splice(0, this.tags.length);
+        },
         tagValidator(tag) {
             // Individual tag validator function
             const ids = parsePart(tag) as number[];
@@ -81,30 +99,27 @@ export default Vue.component('syllable-id-filter', {
         },
         idsToRanges(ids: number[]): string[] {
             const ranges: string[] = [];
-            if (ids.length === 1) {
-                ranges.push(ids[0].toString());
-            }
-            if (ids.length <= 1) {
-                return ranges;
-            }
-            ids = [...new Set(ids)].sort((a, b) => a - b);
-            let start = ids[0];
-            let stop = ids[0];
-            for (let i = 1; i < ids.length; i++) {
-                if (ids[i - 1] === (ids[i] - 1)) {
-                    stop = ids[i];
-                    if (i < ids.length - 1) {
-                        continue;
-                    }
+            const sortedIds: number[] = [...ids];
+
+            // These are used to track where we are in the range, should one exist
+            let rstart: number;
+            let rend: number;
+            for (let i = 0; i < sortedIds.length; ++i) {
+                rstart = sortedIds[i];
+                rend = rstart;
+                // Loop through if they are sequential
+                while (sortedIds[i + 1] - sortedIds[i] === 1) {
+                    rend = sortedIds[i + 1]; // increment the index if the numbers sequential
+                    i++;
                 }
 
-                if (start === stop) {
-                    ranges.push(`${start}`);
-                } else {
-                    ranges.push(`${start}-${stop}`);
+                if (rstart === rend) {
+                    ranges.push(`${rstart}`);
+                }else {
+                    ranges.push(`${rstart}-${rend}`);
                 }
-                start = stop = ids[i];
             }
+
             return ranges;
         },
     },
@@ -121,5 +136,8 @@ export default Vue.component('syllable-id-filter', {
     margin:0 !important;
     border: none;
     background: none;
+}
+button.close {
+    margin-left: auto;
 }
 </style>

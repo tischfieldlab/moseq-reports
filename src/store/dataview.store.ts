@@ -4,7 +4,7 @@ import { schemeDark2, schemePastel1  } from 'd3-scale-chromatic';
 import { scaleOrdinal } from 'd3-scale';
 import store from './root.store';
 import { getModuleNamespace } from '@/util/Vuex';
-import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, PublishedDataset } from '@/store/dataview.types';
+import { DataviewState, CountMethod, DataviewPayload, SelectedGroupsPayload, PublishDatasetPayload, UnpublishDatasetPayload } from '@/store/dataview.types';
 import Vue from 'vue';
 import { DatasetsState } from './datasets.types';
 
@@ -53,6 +53,15 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 return undefined;
             }
         },
+        selectedSyllables: (state, getters) => {
+            let syllables;
+            if (state.moduleIdFilter.length === 0) {
+                syllables = getters.availableModuleIds;
+            } else {
+                syllables = state.moduleIdFilter;
+            }
+            return syllables;
+        },
         availableModuleIds: (state, getters, rootState, rootGetters) => {
             if (state.countMethod === CountMethod.Usage) {
                 return rootGetters['datasets/availableUsageModuleIds'];
@@ -79,7 +88,6 @@ const DataviewModule: Module<DataviewState, RootState> = {
             state.groupColors = groupColors;
         },
         setView(state, payload: DataviewPayload) {
-            // state.view = payload.view;
             if (payload.countMethod) {
                 state.countMethod = payload.countMethod;
             }
@@ -90,14 +98,19 @@ const DataviewModule: Module<DataviewState, RootState> = {
                 state.groupColors = payload.groupColors;
             }
             if (payload.moduleIdFilter) {
+                // state.moduleIdFilter.splice(0, state.moduleIdFilter.length); // clear the existing array
+                // state.moduleIdFilter.push(...payload.moduleIdFilter); // add the new elements from payload
                 state.moduleIdFilter = payload.moduleIdFilter;
             }
         },
         setSelectedSyllable(state, selectedSyllable: number) {
             state.selectedSyllable = selectedSyllable;
         },
-        publishDataset(state, payload: PublishedDataset) {
+        publishDataset(state, payload: PublishDatasetPayload) {
             Vue.set(state.views, `${payload.owner}/${payload.name}`, payload);
+        },
+        unpublishDataset(state, payload: UnpublishDatasetPayload) {
+            Vue.delete(state.views, `${payload.owner}/${payload.name}`);
         },
     },
     actions: {
@@ -117,11 +130,24 @@ const DataviewModule: Module<DataviewState, RootState> = {
             context.commit('setSelectedSyllable', payload.selectedSyllable);
         },
         switchCountMethod(context, payload: CountMethod) {
-            const newSyllable = context.getters.selectedSyllableAs(payload);
+            // translate the selected syllable to new count method
+            const newSelectedSyllable = context.getters.selectedSyllableAs(payload);
+
+            // translate the module id filters to new count method
+            const lm = ((context.rootState as any).datasets as DatasetsState).label_map;
+            const from = context.state.countMethod.toLowerCase();
+            const filterSyllables = context.state.moduleIdFilter.map((id) => {
+                const result = lm.find((row) => row[from] === id);
+                if (result !== undefined) {
+                    return result[payload.toLocaleLowerCase()];
+                }
+            });
+
             context.dispatch('updateView', {
                 countMethod: payload,
+                moduleIdFilter: filterSyllables,
             } as DataviewPayload);
-            context.commit('setSelectedSyllable', newSyllable);
+            context.commit('setSelectedSyllable', newSelectedSyllable);
         },
         async updateModuleIdFilters(context, payload: number[]) {
             await context.dispatch('updateView', {
@@ -146,9 +172,11 @@ const DataviewModule: Module<DataviewState, RootState> = {
         async updateView(context, payload: DataviewPayload) {
             context.commit('setLoading', true);
             try {
-                payload.countMethod = payload.countMethod || context.state.countMethod;
+                // console.log(context.state.moduleIdFilter);
+                payload.countMethod = payload.countMethod|| context.state.countMethod;
                 payload.selectedGroups = payload.selectedGroups || context.state.selectedGroups;
                 payload.moduleIdFilter = payload.moduleIdFilter || context.state.moduleIdFilter;
+                // console.log(payload.moduleIdFilter);
                 context.commit('setView', payload);
             } catch (e) {
                 // tslint:disable-next-line:no-console

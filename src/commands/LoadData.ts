@@ -37,12 +37,16 @@ export default function() {
     LoadDataFile(filenames[0]);
 }
 
+export function IsDataLoaded() {
+    return (store.state as any).datasets.isLoaded;
+}
+
 export function LoadDataFile(filename: string) {
     // Once the toast that we are loading data is actually shown,
     // then actualy go ahead and load the data. Otherwise the toast
     // animation and loading will race and frequently the loading
     // notification will fail to show until after data is loaded.
-    app.$root.$once('bv::toast:shown', () => beginLoadingProcess(filename));
+    app.$root.$once('bv::toast::shown', () => beginLoadingProcess(filename));
     showStartLoadingToast();
 }
 
@@ -117,7 +121,7 @@ function showStartLoadingToast() {
 }
 
 function readDataBundle(filename: string) {
-    return new Promise<DatasetsState>((resolve, reject) => {
+    return new Promise<Partial<DatasetsState>>((resolve, reject) => {
         let zip;
         try {
             zip = new StreamZip({
@@ -130,7 +134,7 @@ function readDataBundle(filename: string) {
             });
             zip.on('ready', async () => {
                 try {
-                    const dataset: DatasetsState = {
+                    const dataset: Partial<DatasetsState> = {
                         bundle: filename,
                         name: path.basename(filename, `.${DataFileExt}`),
                         ...await LoadMetadataData(zip),

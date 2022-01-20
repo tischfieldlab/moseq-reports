@@ -61,7 +61,7 @@ import { range } from 'd3-array';
 import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendSVG.vue';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import { CountMethod } from '../../../store/dataview.types';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 
@@ -228,7 +228,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             // console.log('axis directive called', el, binding);
             const axis = binding.arg;
             if (axis !== undefined) {
-                const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis];
+                const axisMethod = { x: 'axisBottom', y: 'axisRight', c: 'axisBottom' }[axis] as string;
                 const methodArg = binding.value[axis];
                 const actualAxis = d3[axisMethod](methodArg);
 

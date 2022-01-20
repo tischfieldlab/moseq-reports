@@ -30,8 +30,13 @@ export interface SelectedGroupsPayload {
     colors?: string[];
 }
 
-export interface PublishedDataset {
+export interface PublishDatasetPayload {
     owner: string;
     name: string;
     data: any;
+}
+
+export interface UnpublishDatasetPayload {
+    owner: string;
+    name: string;
 }

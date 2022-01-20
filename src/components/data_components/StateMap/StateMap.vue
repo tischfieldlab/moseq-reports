@@ -18,7 +18,7 @@ import { debounce } from '@/util/Events';
 import RegisterDataComponent from '@/components/Core';
 import mixins from 'vue-typed-mixins';
 import LoadingMixin from '@/components/Core/LoadingMixin';
-import WindowMixin from '@/components/Core/WindowMixin';
+import WindowMixin from '@/components/Core/Window/WindowMixin';
 import LoadData from '@/components/Core/DataLoader/DataLoader';
 import { scaleSequential, scaleLinear, scaleDiverging } from 'd3-scale';
 import { GetScale, GetScaleWithOpacity } from '@/components/Charts/Colors/D3ColorProvider';
@@ -194,6 +194,12 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         },
         graph_layout(){
             this.debouncedLayout();
+        },
+        layout: {
+            handler() {
+                this.debouncedLayout();
+            },
+            deep: true,
         },
         scale() {
             const cy = (this as any).cy;
@@ -482,8 +488,10 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 },
                 {
                     type: 'sort',
-                    columns: ['row_id', 'col_id',],
-                    direction: 'asc',
+                    columns: [
+                        ['row_id', 'asc'],
+                        ['col_id', 'asc'],
+                    ],
                 }
             ];
             return {

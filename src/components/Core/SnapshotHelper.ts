@@ -7,6 +7,9 @@ import { remote, shell } from 'electron';
 import fs from 'fs';
 import mime from 'mime-types';
 import { DataWindowState } from '@/store/datawindow.types';
+import { SaveCancelledError } from './IO/types';
+import { showSaveErrorToast, showSaveSuccessToast } from './IO/Toasts';
+import WindowManager from '@/components/Core/Window/WindowManager';
 
 
 export interface SnapshotOptions {
@@ -67,39 +70,23 @@ export default async function Snapshot(target: Vue, basename: string, options: S
                 });
             });
         })
-        .then((dest) => showSuccessToast(dest as string))
+        .then((dest) => showSaveSuccessToast(dest as string, 'snapshot'))
         .catch((err) => {
             if (err instanceof SaveCancelledError) {
                 return; // don't care the user cancelled of their own accord
             }
-            app.$bvToast.toast(err.toString(), {
-                title: 'Error Creating Snapshot!',
-                variant: 'danger',
-                toaster: 'b-toaster-bottom-right',
-            });
-            app.$store.commit('history/addEntry', {
-                message: err.toString(),
-                variant: 'danger',
-                details: err.stack
-            });
+            showSaveErrorToast(err, 'snapshot');
         });
 }
 
 export async function SnapshotWorkspace() {
     const opts = defaultOptions(app);
+    opts.backgroundColor = '#FFFFFFFF' // opaque white background
 
-    const toSnapshot = getAllVues(app).filter((v) => {
-        if (v.$parent && v.$parent.$parent) {
-            return (v.$parent.$parent.$options as any)._componentTag === 'JqxWindow';
-        }
-    });
+    const toSnapshot = WindowManager.getWindows();
 
     if (toSnapshot.length <= 0) {
-        app.$bvToast.toast('There are not any items to snapshot!', {
-            title: 'Error Creating Workspace Snapshot!',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-        });
+        showSaveErrorToast('There are not any items to snapshot!', 'workspace snapshot');
         return;
     }
 
@@ -108,9 +95,11 @@ export async function SnapshotWorkspace() {
         return {
             dataURI: await targetToDataURI(item, opts),
             pos_x: wstate.pos_x,
-            pos_y: wstate.pos_y,
+            pos_y: wstate.pos_y + 30, // add offset of 30 to account for window headers
             width: wstate.width,
             height: wstate.height,
+            title: wstate.title,
+            z_index: wstate.z_index,
         } as SubImage;
     }))
     .then((images) => {
@@ -141,25 +130,23 @@ export async function SnapshotWorkspace() {
             });
         });
     })
-    .then((dest) => showSuccessToast(dest as string))
+    .then((dest) => showSaveSuccessToast(dest as string, 'workspace snapshot'))
     .catch((err) => {
         if (err instanceof SaveCancelledError) {
             return; // don't care the user cancelled of their own accord
         }
-        app.$bvToast.toast(err.toString(), {
-            title: 'Error Creating Workspace Snapshot!',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-        });
+        showSaveErrorToast(err, 'workspace snapshot');
     });
 }
 
 export interface SubImage {
     dataURI: string;
+    title: string;
     pos_x: number;
     pos_y: number;
     width: number;
     height: number;
+    z_index: number;
 }
 
 export function composite_images(images: SubImage[], opts: SnapshotOptions): Promise<string> {
@@ -184,7 +171,7 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
-    const drawers = images.map((item) => {
+    const drawers = images.sort((a, b) => a.z_index - b.z_index).map((item) => {
         return new Promise<void>((resolve, reject) => {
             const subInfo = dataUriToFile(item.dataURI)
             if (subInfo.extension !== 'png') {
@@ -206,6 +193,11 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
                         item.pos_x * opts.scale, item.pos_y * opts.scale,
                         img.width, img.height);
                 }
+                ctx.save();
+                ctx.font = `bold ${16 * opts.scale}px Verdana,Arial,sans-serif`;
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(item.title, item.pos_x * opts.scale, item.pos_y * opts.scale);
+                ctx.restore();
                 resolve();
             };
             img.src = item.dataURI as string;
@@ -227,34 +219,6 @@ function getAllVues(root: Vue) {
     return items;
 }
 
-function showSuccessToast(dest: string, showOrOpen: 'open'|'show' = 'open') {
-    const h = app.$createElement;
-
-    let clickHandler;
-    if (showOrOpen === 'show') {
-        clickHandler = () => shell.showItemInFolder(dest);
-    } else {
-        clickHandler = () => shell.openPath(dest);
-    }
-
-    const body = [
-        h('div', {}, [
-            'Your snapshot was saved successfully to ',
-            h('a', {
-                attrs: { href: 'javascript:void(0)', title: 'Click to open' },
-                on: { click: clickHandler, },
-            }, dest)
-        ]),
-    ];
-
-    app.$bvToast.toast(body, {
-        title: 'Snapshot Success!',
-        variant: 'success',
-        toaster: 'b-toaster-bottom-right',
-    });
-    app.$store.commit('history/addEntry', {message: body, variant: 'success'});
-}
-
 function filtersForFinfo(finfo) {
     const infos = [] as any[];
     if (finfo.extension === 'png') {
@@ -272,10 +236,9 @@ function filtersForFinfo(finfo) {
 
 export function resolveTarget(target: Vue): {type: 'video'|'svg'|'html'|'callback', target:HTMLElement|((options: SnapshotOptions) => Promise<string>)} {
     const eattr = 'data-snapshot-target';
-
     const explicit = (target.$el.hasAttribute(eattr)
         ? target.$el
-        : target.$el.querySelector('[data-snapshot-target]')) as HTMLElement;
+        : target.$el.querySelector(`[${eattr}]`)) as HTMLElement;
     if (explicit !== null) {
         const etag = explicit.tagName;
         const callback = explicit.getAttribute(eattr);
@@ -406,16 +369,18 @@ async function videoToDataUri(el: HTMLVideoElement, options: SnapshotOptions) {
             });
     } else {
         const canvas = document.createElement('canvas');
-        canvas.style.width = `${el.width}px`;
-        canvas.style.height = `${el.height}px`;
-        canvas.width = el.width;
-        canvas.height = el.height;
+        const width = el.clientWidth;
+        const height = el.clientHeight;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        canvas.width = width;
+        canvas.height = height;
         document.body.appendChild(canvas);
         const ctx = canvas.getContext('2d');
         if (ctx === null) {
             throw new Error('got null canvas context!');
         }
-        ctx.drawImage(el, 0, 0, el.width, el.height);
+        ctx.drawImage(el, 0, 0, width, height);
         const data = canvas.toDataURL('image/png');
         document.body.removeChild(canvas);
         return data;
@@ -459,5 +424,3 @@ function encode(input: ArrayBuffer): string {
     }
     return output;
 }
-
-class SaveCancelledError extends Error {}

@@ -3,12 +3,10 @@ declare const __static: any;
 
 import {ipcMain, app, protocol, BrowserWindow, IpcMainEvent} from 'electron';
 import path from 'path';
-import {
-    createProtocol,
-    installVueDevtools,
-} from 'vue-cli-plugin-electron-builder/lib';
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import { autoUpdater, UpdateCheckResult } from 'electron-updater';
 import logger from 'electron-log';
+import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -39,9 +37,10 @@ function createWindow(argv: string[]) {
         titleBarStyle: 'hidden',
         backgroundColor: '#FFFFFF',
         webPreferences: {
-            nodeIntegration: true,
+            nodeIntegration: !!process.env.ELECTRON_NODE_INTEGRATION,
             nodeIntegrationInWorker: true,
             sandbox: false,
+            enableRemoteModule: true,
         },
     }) as BrowserWindow;
 
@@ -108,23 +107,22 @@ function attachApp() {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
-    app.on('ready', async () => {
-        if (isDevelopment && !process.env.IS_TEST) {
-            // Install Vue Devtools
-            // Devtools extensions are broken in Electron 6.0.0 and greater
-            // See https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/378 for more info
-            // Electron will not launch with Devtools extensions installed on Windows 10 with dark mode
-            // If you are not using Windows 10 dark mode, you may uncomment these lines
-            // In addition, if the linked issue is closed, you can upgrade electron and uncomment these lines
-            try {
-                await installVueDevtools();
-            } catch (e) {
-                // tslint:disable-next-line:no-console
-                console.error('Vue Devtools failed to install:', e.toString());
+    app.whenReady()
+        .then(async () => {
+            if (isDevelopment && !process.env.IS_TEST) {
+                // Install extensions
+                const extensions = [VUEJS_DEVTOOLS];
+                await Promise.all(
+                    extensions.map((extension) => {
+                        installExtension(extension)
+                            .then((name) => console.log(`Added Extension: ${name}`)) // tslint:disable-line:no-console
+                            .catch((err) => console.error(`Failed to install extension '${extension}':`, err.toString())); // tslint:disable-line:no-console
+                    })
+                );
             }
-        }
-        createWindow(process.argv);
-    });
+        })
+        .then(() => createWindow(process.argv));
+
 
     // Exit cleanly on request from parent process in development mode.
     if (isDevelopment) {

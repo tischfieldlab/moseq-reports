@@ -11,10 +11,8 @@
                     <b-icon class="when-opened" title="Collapse Filters" icon="chevron-up"></b-icon>
                     <b-icon class="when-closed" title="Expand Filters" icon="chevron-down"></b-icon>
                 </b-button>
-                <b-button variant="link" title="Remove this filter" @click="removeThis" class="remove-button text-decoration-none">
-                    <b-icon icon="x"></b-icon>
-                </b-button>
-                <EditableText class="editable-text" v-model="filter_name" />
+                <b-button-close @click="removeThis" title="Remove this filter" />
+                <EditableText class="editable-text" v-model="filter_name" size="sm" />
                 <b-button variant="link" :id="$id(datasource)" title="Click to select color" class="text-dark text-decoration-none color-button">
                     <b-icon icon="droplet-half" style="width:16px;margin-left:6px;"></b-icon>
                 </b-button>
@@ -29,12 +27,18 @@
                 <div class="container">
                     <GroupBox :datasource="datasource" />
 
-                    <b-input-group prepend="Count Method" class="filter-item">
+                    <b-input-group prepend="Count Method" class="filter-item count-method">
                         <b-form-select v-model="selectedCountMethod" :options="countMethods" />
                     </b-input-group>
 
-                    <b-input-group prepend="Selected Syllable" class="filter-item">
+                    <b-input-group prepend="Selected Syllable" class="filter-item selected-syllable">
+                        <b-button class="prev" size="sm" variant="outline-info" @click="previousSyllable" :disabled="!canPreviousSyllable">
+                            <b-icon icon="caret-left-fill" aria-hidden="true" />
+                        </b-button>
                         <b-form-select debounce="1000" v-model="syllable" :options="syllableIdOptions" />
+                        <b-button class="next" size="sm" variant="outline-info" @click="nextSyllable" :disabled="!canNextSyllable">
+                            <b-icon icon="caret-right-fill" aria-hidden="true" />
+                        </b-button>
                     </b-input-group>
 
                     <SyllableIdFilter :datasource="datasource" />
@@ -150,21 +154,26 @@ export default Vue.component('datafilter', {
                     return { value: i, text: i.toString() };
                 });
             }
-            return [];
         },
+        canPreviousSyllable(): boolean {
+            return this.isSyllableAvailable(this.syllable - 1);
+        },
+        canNextSyllable(): boolean {
+            return this.isSyllableAvailable(this.syllable + 1);
+        }
     },
     methods: {
         removeThis() {
             if (this.$store.getters['filters/default'] === this.datasource) {
                 this.$bvModal.msgBoxOk('You cannot remove the default filter.');
             } else {
-                this.$bvModal.msgBoxConfirm('Are you sure you want to remove this data filter?', {
-
-                }).then((value) => {
-                    if (value) {
-                        this.$store.dispatch('filters/removeFilter', this.datasource);
-                    }
-                });
+                this.$bvModal
+                    .msgBoxConfirm('Are you sure you want to remove this data filter?', {})
+                    .then((value) => {
+                        if (value) {
+                            this.$store.dispatch('filters/removeFilter', this.datasource);
+                        }
+                    });
             }
         },
         getContrast(hexcolor: string): string {
@@ -175,6 +184,21 @@ export default Vue.component('datafilter', {
                 return 'white';
             }
         },
+        previousSyllable() {
+            const prevSyllable = this.syllable - 1;
+            if (this.isSyllableAvailable(prevSyllable)) {
+                this.syllable = prevSyllable;
+            }
+        },
+        nextSyllable() {
+            const nextSyllable = this.syllable + 1;
+            if (this.isSyllableAvailable(nextSyllable)) {
+                this.syllable = nextSyllable;
+            }
+        },
+        isSyllableAvailable(syllableId: number) {
+            return this.syllableIdOptions.find((so) => so.value === syllableId) !== undefined;
+        }
     },
 });
 </script>
@@ -182,17 +206,10 @@ export default Vue.component('datafilter', {
 <style scoped>
 .collapse-button {
     padding: 0;
-    margin-left: -10px;
-    margin-right: 10px;
 }
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
     display: none;
-}
-.remove-button {
-    float: right;
-    padding: 0;
-    margin-right: -10px;
 }
 .card-body{
     padding: 0;
@@ -210,9 +227,10 @@ export default Vue.component('datafilter', {
 }
 div.editable-text {
     display: inline;
+    margin: 0 0.5em;
 }
 div.editable-text >>> input {
-    width: calc(100% - 60px);
+    width: calc(100% - 80px);
     display: inline-block;
 }
 .card-header {
@@ -220,7 +238,7 @@ div.editable-text >>> input {
 }
 .card-header > div {
     border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
-    padding: 0.25em 1.25rem;
+    padding: 0.25em 0.5rem;
 }
 .color-button {
     padding: 0;
@@ -230,5 +248,20 @@ div.editable-text >>> input {
 }
 .datafilter.card {
     margin: 0px 6px 1rem 6px;
+}
+
+.selected-syllable .btn {
+    border-color: #ced4da;
+}
+.selected-syllable .btn.prev {
+    border-radius: 0;
+}
+.selected-syllable .btn.next {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.selected-syllable select {
+    border-left: none;
+    border-right: none;
 }
 </style>

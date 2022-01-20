@@ -3,6 +3,7 @@
         <template v-if="edit">
             <b-input
                 :value="local_value"
+                :size="size"
                 @blur.native="onBlur"
                 @keyup.enter.native="onBlur"
                 v-focus="" />
@@ -21,13 +22,17 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 
 
 export default Vue.component('dataset-picker', {
     props: {
         value: {
             type: String,
+        },
+        size: {
+            type: String as PropType<'sm'|'md'|'lg'>,
+            default: 'md',
         },
     },
     data() {

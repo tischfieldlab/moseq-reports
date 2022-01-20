@@ -7,10 +7,10 @@ import {
     AggregateOperation,
     PluckOperation,
     KeysOperation,
+    ValuesOperation,
 } from './DataLoader.types';
 import { groupby } from '@/util/Array';
-import { unnest } from '@/util/Vuex';
-import { mean, median, sum, min, max } from 'd3-array';
+import { mean, median, /*mode,*/ sum, /*cumsum,*/ min, max, extent, variance, deviation } from 'd3-array';
 import { tsvParse, csvParse } from 'd3-dsv';
 import StreamZip from 'node-stream-zip';
 import fs from 'fs';
@@ -18,7 +18,11 @@ import fs from 'fs';
 export function mapColumns(obj: DataObject|object[], op: MapOperation): object[] {
     let objCols;
     if (Array.isArray(obj)) {
-        objCols = Object.getOwnPropertyNames(obj[0]);
+        if (obj.length > 0) {
+            objCols = Object.getOwnPropertyNames(obj[0]);
+        } else {
+            objCols = [];
+        }
     } else if (obj.columns !== undefined && obj.data !== undefined) {
         objCols = obj.columns;
     }
@@ -51,31 +55,38 @@ export function mapColumns(obj: DataObject|object[], op: MapOperation): object[]
     });
 }
 
+function Compare(a: SchwartzianItem, b: SchwartzianItem, column: string, direction: SortDirection) {
+    if (direction === SortDirection.Asc) {
+        if (a.value[column] > b.value[column]) return 1;
+        if (a.value[column] < b.value[column]) return -1;
+        return 0;
+    } else if (direction === SortDirection.Desc) {
+        if (a.value[column] < b.value[column]) return 1;
+        if (a.value[column] > b.value[column]) return -1;
+        return 0;
+    } else {
+        throw new Error(`Unsupported direction '${direction}' in sort for column '${column}'`);
+    }
+}
+
+interface SchwartzianItem {
+    index: number;
+    value: object;
+}
+
 export function sortBy(data: object[], op: SortOperation): object[] {
     // Schwartzian Transform.
-    if (op.direction === SortDirection.Asc) {
-        return data.map((e, i) => ({index: i, value: e}))
+    return data.map((e, i) => ({index: i, value: e}))
             .sort((a, b) => {
                 for (const c of op.columns) {
-                    if (a.value[c] > b.value[c]) return 1;
-                    if (a.value[c] < b.value[c]) return -1;
+                    const result = Compare(a, b, c[0], c[1]);
+                    if (result !== 0) {
+                        return result;
+                    }
                 }
                 return 0;
             })
             .map((e) => data[e.index]);
-    } else if (op.direction === SortDirection.Desc) {
-        return data.map((e, i) => ({index: i, value: e}))
-            .sort((a, b) => {
-                for (const c of op.columns) {
-                    if (a.value[c] < b.value[c]) return 1;
-                    if (a.value[c] > b.value[c]) return -1;
-                }
-                return 0;
-            })
-            .map((e) => data[e.index]);
-    } else {
-        throw new Error(`Unsupported direction in sort '${op.direction}'`);
-    }
 }
 
 export function filterBy(data: object[], op: FilterOperation) {
@@ -86,9 +97,15 @@ export function filterBy(data: object[], op: FilterOperation) {
 const statops = {
     mean,
     median,
+    // mode,
     sum,
+    // cumsum,
     min,
     max,
+    extent,
+    variance,
+    deviation,
+    'count': (items: any[]) => items.length,
 };
 export function aggregate(data: object[], op: AggregateOperation) {
     const grouper = (item) => (op.groupby as string[]).map((c) => item[c]).toString();
@@ -112,28 +129,17 @@ export function aggregate(data: object[], op: AggregateOperation) {
 
 export function pluck(data: object|object[], op: PluckOperation) {
     if (Array.isArray(data)) {
-        if (Array.isArray(op.column)) {
-            return data.map((row) => {
-                return Object.fromEntries((op.column as string[]).map((c) => {
-                    return [c, row[c]];
-                }));
-            });
-        } else {
-            return data.map((row) => row[op.column as string]);
-        }
+        return data.map((row) => row[op.column as string]);
     } else {
-        if (Array.isArray(op.column)) {
-            return Object.fromEntries(op.column.map((c) => {
-                return [c, data[c]];
-            }));
-        } else {
-            return data[op.column];
-        }
+        return data[op.column];
     }
 }
 
 export function keys(data: object, op: KeysOperation) {
     return Object.keys(data);
+}
+export function values(data: object, op: ValuesOperation) {
+    return Object.values(data);
 }
 
 export function jsonParseZipEntryContainingNaN(data: string) {

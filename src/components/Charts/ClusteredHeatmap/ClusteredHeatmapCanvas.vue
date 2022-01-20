@@ -23,8 +23,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import RegisterDataComponent from '@/components/Core';
-import { HeatmapTile } from './ClusterHeatmap.types';
 import * as d3 from 'd3';
 import { sum } from 'd3';
 import ColorScaleLegend from '@/components/Charts/Colors/ColorScaleLegendCanvas.vue';
@@ -87,8 +85,8 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             cxt.translate(this.dims.heatmap.x, this.dims.heatmap.y);
             for (const node of this.data as object[]) {
                 cxt.beginPath();
-                cxt.rect(this.scale.x(node[this.columnKey]),
-                        this.scale.y(node[this.rowKey]),
+                cxt.rect(this.scale.x(node[this.columnKey].toString()),
+                        this.scale.y(node[this.rowKey].toString()),
                         this.scale.x.bandwidth(),
                         this.scale.y.bandwidth());
                 cxt.fillStyle = this.scale.z(node[this.valueKey]);
@@ -99,7 +97,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             cxt.restore();
         },
         drawRowDendrogram(cxt: CanvasRenderingContext2D) {
-            if (!this.isRowsClustered) {
+            if (!this.isRowsHClustered) {
                 return;
             }
             cxt.save();
@@ -114,7 +112,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             cxt.restore();
         },
         drawColumnDendrogram(cxt: CanvasRenderingContext2D) {
-            if (!this.isColumnsClustered) {
+            if (!this.isColumnsHClustered) {
                 return;
             }
             cxt.save();
@@ -130,47 +128,55 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
         },
         drawAxisX(ctx: CanvasRenderingContext2D) {
             ctx.save();
-            ctx.beginPath();
             ctx.translate(this.dims.xaxis.x, this.dims.xaxis.y);
 
-            // main domain line
-            // ctx.moveTo(this.scale.x.range()[0], 0);
-            // ctx.lineTo(this.scale.x.range()[1], 0);
-
-            // iterate over our x domain values
+            // Draw x-axis labels and ticks
             this.scale.x.domain().forEach((d) => {
-                // tell canvas to draw lines at the bottom of our bars
-                ctx.moveTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 0);
-                ctx.lineTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 6);
-            });
+                if (!this.shouldHideLabel(d)) {
+                    const isSelected = (this.selectedCol !== null && this.selectedCol.toString() === d.toString())
 
-            // set our stroke style to black & draw it
-            ctx.strokeStyle = '#000';
-            ctx.stroke();
-
-            // apply x-axis labels
-            if  (this.rotate_labels) {
-                this.scale.x.domain().forEach((d, i) => {
+                    // Draw Tick
                     ctx.save();
-                    ctx.translate(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 6);
-                    ctx.rotate(-Math.PI / 4);
-                    ctx.textAlign = 'right';
+                    ctx.strokeStyle = '#000';
+                    let yTickOffset: number;
+                    if (isSelected) {
+                        ctx.lineWidth = 2;
+                        yTickOffset = 18;
+                    } else {
+                        ctx.lineWidth = 1;
+                        yTickOffset = 6;
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 0);
+                    ctx.lineTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), yTickOffset);
+                    ctx.stroke();
+                    ctx.restore();
+
+
+                    // Draw Label
+                    ctx.save();
                     ctx.textBaseline = 'top';
-                    ctx.fillStyle = 'black';
+                    ctx.fillStyle = this.scale.clc(d);
+
+                    if (isSelected) {
+                        ctx.font = 'bold 16px Verdana,Arial,sans-serif';
+                    } else {
+                        ctx.font = '8px Verdana,Arial,sans-serif';
+                    }
+                    ctx.translate(this.scale.x(d) + (this.scale.x.bandwidth() / 2), yTickOffset + 2);
+
+                    if (this.rotate_labels) {
+                        ctx.textAlign = 'right';
+                        ctx.rotate(-Math.PI / 4);
+                    } else {
+                        ctx.textAlign = 'center';
+                    }
+
                     ctx.fillText(d, 0, 0);
                     ctx.restore();
-                });
-            } else {
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                ctx.fillStyle = 'black';
+                }
+            });
 
-                this.scale.x.domain().forEach((d, i) => {
-                    ctx.fillText(d,
-                                this.scale.x(d) + (this.scale.x.bandwidth() / 2),
-                                6);
-                });
-            }
 
             ctx.save();
             ctx.textAlign = 'center';
@@ -186,34 +192,41 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             ctx.save();
             ctx.translate(this.dims.yaxis.x, this.dims.yaxis.y);
 
-            /*ctx.strokeStyle = '#000';
-            ctx.beginPath();
-            ctx.moveTo(0, this.scale.y.range()[0]);
-            ctx.lineTo(0, this.scale.y.range()[1]);
-            ctx.stroke();*/
-
-            // apply y-axis labels and ticks
+            // Draw y-axis labels and ticks
             this.scale.y.domain().forEach((d) => {
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 1;
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = 'black';
-                ctx.font = '8px Verdana,Arial,sans-serif';
-                if (this.selectedRow.toString() === d.toString()) {
+                if (!this.shouldHideLabel(d)) {
+                    const isSelected = (this.selectedRow !== null && this.selectedRow.toString() === d.toString())
+
+                    // Draw tick
+                    ctx.save();
+                    ctx.strokeStyle = '#000';
+                    let xTickOffset: number;
+                    if (isSelected) {
+                        ctx.lineWidth = 2;
+                        xTickOffset = 18;
+                    } else {
+                        ctx.lineWidth = 1;
+                        xTickOffset = 6;
+                    }
                     ctx.beginPath();
-                    ctx.lineWidth = 2;
                     ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                    ctx.lineTo(18, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    ctx.lineTo(xTickOffset, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
                     ctx.stroke();
-                    ctx.font = 'bold 16px Verdana,Arial,sans-serif';
-                    ctx.fillText(d, 20, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                } else {
-                    ctx.beginPath();
-                    ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                    ctx.lineTo(6, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                    ctx.stroke();
-                    ctx.fillText(d, 9, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    ctx.restore();
+
+
+                    // Draw Label
+                    ctx.save();
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = this.scale.rlc(d);
+                    if (isSelected) {
+                        ctx.font = 'bold 16px Verdana,Arial,sans-serif';
+                    } else {
+                        ctx.font = '8px Verdana,Arial,sans-serif';
+                    }
+                    ctx.fillText(d, xTickOffset + 2, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    ctx.restore();
                 }
             });
 
@@ -247,10 +260,10 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
         },
         handleHeatmapClick(event: MouseEvent) {
             for (const node of this.data as object[]) {
-                const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]);
-                const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]);
-                const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]) + this.scale.x.bandwidth();
-                const y2 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]) + this.scale.y.bandwidth();
+                const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey].toString());
+                const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey].toString());
+                const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey].toString()) + this.scale.x.bandwidth();
+                const y2 = this.dims.heatmap.y + this.scale.y(node[this.rowKey].toString()) + this.scale.y.bandwidth();
 
                 if (event.offsetX > x1 && event.offsetX <= x2
                  && event.offsetY > y1 && event.offsetY <= y2) {
@@ -266,10 +279,10 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
         },
         handleHeatmapHover(event: MouseEvent) {
             for (const node of this.data as object[]) {
-                const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]);
-                const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]);
-                const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey]) + this.scale.x.bandwidth();
-                const y2 = this.dims.heatmap.y + this.scale.y(node[this.rowKey]) + this.scale.y.bandwidth();
+                const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey].toString());
+                const y1 = this.dims.heatmap.y + this.scale.y(node[this.rowKey].toString());
+                const x2 = this.dims.heatmap.x + this.scale.x(node[this.columnKey].toString()) + this.scale.x.bandwidth();
+                const y2 = this.dims.heatmap.y + this.scale.y(node[this.rowKey].toString()) + this.scale.y.bandwidth();
 
                 if (event.offsetX > x1 && event.offsetX <= x2
                  && event.offsetY > y1 && event.offsetY <= y2) {
@@ -286,7 +299,7 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             this.tooltipPosition = undefined;
             this.hoverItem = undefined;
         },
-        heatmap_node_tooltip(item: HeatmapTile) {
+        heatmap_node_tooltip(item: object) {
             return `<div style="text-align:left;">
                         Group: ${item[this.columnKey]}<br />
                         Module: ${item[this.rowKey]}<br />
