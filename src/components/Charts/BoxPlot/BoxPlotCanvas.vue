@@ -217,7 +217,7 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
                 });
             }
 
-            const element = document.getElementsByClassName("plot-labels")[0];
+            const element = document.getElementsByClassName('plot-labels')[0];
             const style = window.getComputedStyle(element);
 
             ctx.save();
@@ -229,7 +229,7 @@ export default mixins(BoxPlotBase, CanvasMixin).extend({
             ctx.restore();
         },
         drawAxisY(ctx: CanvasRenderingContext2D) {
-            const element = document.getElementsByClassName("plot-labels")[0];
+            const element = document.getElementsByClassName('plot-labels')[0];
             const style = window.getComputedStyle(element);
             ctx.beginPath();
 

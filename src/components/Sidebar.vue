@@ -11,6 +11,9 @@
                     :icon="current === itm ? itm.icon[0] : itm.icon[1]"
                     v-on:click="() => toggleItem(itm)"></b-icon>
             </div>
+
+            <!-- Settings Button -->
+            <SettingsViewer class='mt-auto' />
         </div>
         
         <b-sidebar id="sidebar-1"
@@ -35,6 +38,7 @@ import Vue from 'vue';
 
 import DataFilterContainer from '@/components/DataFilterContainer.vue';
 import HistoryViewer from '@/components/HistoryViewer.vue';
+import SettingsViewer from '@/components/Core/Settings/SettingsViewer.vue';
 import { Portal } from '@linusborg/vue-simple-portal';
 
 interface SidebarItem {
@@ -51,6 +55,7 @@ export default Vue.extend({
         Portal,
         DataFilterContainer,
         HistoryViewer,
+        SettingsViewer,
     },
     props: {
         right: {
@@ -62,6 +67,7 @@ export default Vue.extend({
         return {
             is_open: false,
             current: undefined as SidebarItem|undefined,
+            showSettings: false,
             items: [
                 {
                     name: 'Data Filters',
