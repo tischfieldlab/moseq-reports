@@ -27,7 +27,9 @@
     "preinstall": "npx npm-force-resolutions",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'"
+    "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'",
+    "docs:dev": "npx vuese gen && vuepress dev docs",
+    "docs:build": "npx vuese gen && vuepress build docs"
   },
   "resolutions": {
     "minimist": "1.2.3"
@@ -81,6 +83,9 @@
     "vue-typed-mixins": "^0.2.0",
     "vue-unique-id": "^3.2.1",
     "vuedraggable": "^2.24.3",
+    "vuepress": "^1.8.2",
+    "vuepress-plugin-global-variables": "^0.2.0",
+    "vuepress-theme-craftdocs": "^2.0.9",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
@@ -96,6 +101,7 @@
     "@vue/cli-plugin-unit-mocha": "^4.5.13",
     "@vue/cli-service": "^4.5.1",
     "@vue/test-utils": "^1.2.1",
+    "@vuese/cli": "^2.14.3",
     "bootstrap-vue": "^2.21.2",
     "chai": "^4.3.4",
     "chromedriver": "^91.0.1",
@@ -114,7 +120,10 @@
     "typescript": "^4.3.5",
     "vue-cli-plugin-electron-builder": "^2.1.1",
     "vue-devtools": "^5.1.4",
-    "vue-template-compiler": "^2.6.14"
+    "vue-template-compiler": "^2.6.14",
+    "vuepress": "^1.8.2",
+    "vuepress-plugin-global-variables": "^0.2.0",
+    "vuepress-theme-craftdocs": "^2.0.9"
   },
   "postcss": {
     "plugins": {

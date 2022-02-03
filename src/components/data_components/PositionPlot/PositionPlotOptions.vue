@@ -42,6 +42,7 @@ export default mixins(WindowMixin).extend({
         ColorScalePicker,
     },
     computed: {
+        //returns current mode of position plot. If changed, value will be updated in component through `updateComponentSettings` mutation in store.
         mode: {
             get(): string {
                 return this.settings.mode;
@@ -55,6 +56,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        //returns resolution of Position Plot. If changed, value will be updated in component through `updateComponentSettings` mutation in store.
         resolution: {
             get(): number {
                 return this.settings.resolution;
@@ -68,6 +70,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        //returns color scheme of current Position plot. If changed, value will be updated in component through #UpdateComponentSettings.
         colorscale: {
             get(): string {
                 return this.settings.colormap;

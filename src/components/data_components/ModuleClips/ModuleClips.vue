@@ -75,6 +75,7 @@ export default mixins(WindowMixin).extend({
         count_method(): CountMethod {
             return this.dataview.countMethod;
         },
+        //returns moduleclips if changes occur to the dataset.
         items(): any[] {
             const ids = this.$store.getters[`${this.datasource}/selectedSyllableMap`];
             if (this.$store.state.datasets.manifest.hasOwnProperty('syllable_clips')) {
@@ -94,6 +95,7 @@ export default mixins(WindowMixin).extend({
         num_examples(): number {
             return this.items.length;
         },
+        //returns particular subclip in Module clips if `this.current_item` is changed.
         subclip(): [number, number] {
             const item = this.current_item;
             const cStart = this.timeToSeconds(item.start_time);
@@ -102,6 +104,7 @@ export default mixins(WindowMixin).extend({
             const sStop = this.timeToSeconds(item.offset_time);
             return [sStart - cStart, sStop - cStart];
         },
+        //returns address of current moduleclips if change occurs to the selected item.
         movie_path(): string {
             const item = this.current_item;
             if (item) {
@@ -112,9 +115,11 @@ export default mixins(WindowMixin).extend({
         },
     },
     methods: {
+        //Updates current value of `example_num` through onclick in layout event.
         onExampleClick(event) {
             this.example_num = event;
         },
+        //Decreases value of `example_num` to change video.
         onPrevExampleClick() {
             if (this.example_num === 0) {
                 this.example_num = this.num_examples - 1;
@@ -122,6 +127,7 @@ export default mixins(WindowMixin).extend({
             }
             this.example_num--;
         },
+        //Increases value of `example_num` to change video.
         onNextExampleClick() {
             if (this.example_num === this.num_examples - 1) {
                 this.example_num = 0;
