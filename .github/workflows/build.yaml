@@ -15,13 +15,20 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
-      - name: Generate static vuepress files
+      - name: Downloading version 14 of Node
         uses: actions/setup-node@v1
         with:
           node-version: 14
 
       - name: Install Repo
         run: npm install
+
+      - name: Print Repo Contents
+        run: |
+          pwd
+          cd ./docs/Components/userDocs/Images
+          ls
+          pwd
 
       - name: Build docs
         run: npm run docs:build
