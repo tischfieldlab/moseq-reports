@@ -12,6 +12,9 @@ jobs:
     #needs: build
     if: ${{ endsWith(github.ref, 'kmeans2') }}
     steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
       - name: Generate static vuepress files
         uses: actions/setup-node@v1
         with:
