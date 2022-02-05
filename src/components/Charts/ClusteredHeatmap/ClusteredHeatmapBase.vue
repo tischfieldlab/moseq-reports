@@ -144,7 +144,7 @@ export default Vue.extend({
             default: null,
         },
         selectedCol: {
-            type: String,
+            type: [String, Number],
             default: null,
         },
         tooltipFormatter: {
@@ -257,7 +257,7 @@ export default Vue.extend({
             this.rotate_labels = this.label_stats.longest > heatWidth / this.label_stats.count;
             if (this.rotate_labels) {
                 const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * this.label_stats.longest;
-                xaxisHeight = xaxisLabelYOffset = rotatedHeight + 20;
+                xaxisHeight = xaxisLabelYOffset = rotatedHeight + 45;
             }
 
             const heatHeight = this.innerHeight - ctreeHeight - xaxisHeight - legendHeight;

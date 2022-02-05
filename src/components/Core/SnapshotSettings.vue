@@ -38,7 +38,8 @@
         <b-row>
             <b-col>
                 <b-button ref="snapshot_button" @click="takeSnapshot()" class="float-right" :disabled="is_taking_snapshot">
-                    <b-spinner v-show="is_taking_snapshot" small type="grow"></b-spinner>
+                    <b-spinner v-show="is_taking_snapshot" small type="grow" />
+                    <b-icon v-show="!is_taking_snapshot" icon="camera-fill" />
                     Take Snapshot
                 </b-button>
             </b-col>
@@ -53,6 +54,7 @@ import mixins from 'vue-typed-mixins';
 import WindowMixin from '@/components/Core/Window/WindowMixin';
 import { Chrome } from 'vue-color';
 import { RenderMode } from '@/store/datawindow.types';
+import WindowManager from '@/components/Core/Window/WindowManager';
 
 
 export default mixins(WindowMixin).extend({
@@ -166,7 +168,7 @@ export default mixins(WindowMixin).extend({
     },
     methods: {
         getComponent(): Vue {
-            return this.$parent.$parent.$parent.$parent.$parent.$parent.$refs.body as Vue;
+            return WindowManager.getWindowByID(this.id)!;
         },
         updateQualityStr() {
             this.quality_str = `${(this.snapshot_settings.quality * 100).toFixed(0)}%`;

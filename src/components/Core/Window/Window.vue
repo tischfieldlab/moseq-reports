@@ -6,11 +6,12 @@
         :title="title"
         :width="this.window_width"
         :height="this.window_height"
-        :pos="layout.position"
+        :pos="this.window_position"
         @onClosed="onClosed"
         @onMoved="onMoved"
         @onResized="onResized"
         @onWindowFocused="onWindowFocused"
+        @onMinMaxToggle="onWindowMinMaxToggle"
         :zIndex="z_index"
         :aspectRatio="aspect_ratio"
     >
@@ -65,13 +66,22 @@ import WindowMixin from './WindowMixin';
 import Snapshot, { ensureDefaults } from '../SnapshotHelper';
 import { Position, Size } from '@/store/datawindow.types';
 import TitlebarButton from '@/components/Core/Window/WindowTitlebarButton.vue';
+import WindowManager from '@/components/Core/Window/WindowManager';
 
 export default mixins(WindowMixin).extend({
     components: {
         BaseWindow,
         TitlebarButton,
     },
+    destroyed() {
+        // Get rid of the window body from the manager when the component is destroyed.
+        WindowManager.removeWindow(this.id);
+    },
     mounted() {
+        // Once this component has mounted, we add it's component body to the window manager to be
+        // tracked and managed for use in snapshotting.
+        WindowManager.addWindow(this.id, this.$refs.body as Vue);
+
         this.$nextTick().then(() => {
             ensureDefaults(this.$refs.body as Vue, this.$store);
         });
@@ -86,7 +96,7 @@ export default mixins(WindowMixin).extend({
         return {
             show_settings_modal: false,
             component_loading: 0,
-            watchers: Array<() => void>()
+            watchers: Array<() => void>(),
         };
     },
     computed: {
@@ -120,6 +130,9 @@ export default mixins(WindowMixin).extend({
         },
         window_height(): number {
             return this.layout.height;
+        },
+        window_position(): Position {
+            return this.layout.position;
         }
     },
     watch: {
@@ -182,7 +195,13 @@ export default mixins(WindowMixin).extend({
         onWindowFocused() {
             const maxZ: number = this.$store.getters['datawindows/windowsMaxZIndex'] + 1;
             this.$store.commit(`${this.id}/updateZIndex`, { z_index: maxZ });
-        }
+        },
+        onWindowMinMaxToggle(event: any) {
+            this.$store.commit(`${this.id}/toggleWindowMinMax`, {
+                id: this.id,
+                height: event.height,
+            });
+        },
     },
 });
 

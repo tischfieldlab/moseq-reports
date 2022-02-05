@@ -31,7 +31,7 @@
         rowKey="source"
         valueKey="value"
         :selectedRow="selectedSyllable"
-        
+        :selectedCol="selectedSyllable"
         @heatmap-click="onHeatmapClick"
         @row-order-changed="rowOrderChanged"
         @col-order-changed="colOrderChanged"

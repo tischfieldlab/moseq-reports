@@ -128,53 +128,55 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
         },
         drawAxisX(ctx: CanvasRenderingContext2D) {
             ctx.save();
-            ctx.beginPath();
             ctx.translate(this.dims.xaxis.x, this.dims.xaxis.y);
 
-            // main domain line
-            // ctx.moveTo(this.scale.x.range()[0], 0);
-            // ctx.lineTo(this.scale.x.range()[1], 0);
-
-            // iterate over our x domain values
+            // Draw x-axis labels and ticks
             this.scale.x.domain().forEach((d) => {
                 if (!this.shouldHideLabel(d)) {
-                    // tell canvas to draw lines at the bottom of our bars
+                    const isSelected = (this.selectedCol !== null && this.selectedCol.toString() === d.toString())
+
+                    // Draw Tick
+                    ctx.save();
+                    ctx.strokeStyle = '#000';
+                    let yTickOffset: number;
+                    if (isSelected) {
+                        ctx.lineWidth = 2;
+                        yTickOffset = 18;
+                    } else {
+                        ctx.lineWidth = 1;
+                        yTickOffset = 6;
+                    }
+                    ctx.beginPath();
                     ctx.moveTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 0);
-                    ctx.lineTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 6);
+                    ctx.lineTo(this.scale.x(d) + (this.scale.x.bandwidth() / 2), yTickOffset);
+                    ctx.stroke();
+                    ctx.restore();
+
+
+                    // Draw Label
+                    ctx.save();
+                    ctx.textBaseline = 'top';
+                    ctx.fillStyle = this.scale.clc(d);
+
+                    if (isSelected) {
+                        ctx.font = 'bold 16px Verdana,Arial,sans-serif';
+                    } else {
+                        ctx.font = '8px Verdana,Arial,sans-serif';
+                    }
+                    ctx.translate(this.scale.x(d) + (this.scale.x.bandwidth() / 2), yTickOffset + 2);
+
+                    if (this.rotate_labels) {
+                        ctx.textAlign = 'right';
+                        ctx.rotate(-Math.PI / 4);
+                    } else {
+                        ctx.textAlign = 'center';
+                    }
+
+                    ctx.fillText(d, 0, 0);
+                    ctx.restore();
                 }
             });
 
-            // set our stroke style to black & draw it
-            ctx.strokeStyle = '#000';
-            ctx.stroke();
-
-            // apply x-axis labels
-            if  (this.rotate_labels) {
-                this.scale.x.domain().forEach((d) => {
-                    if (!this.shouldHideLabel(d)) {
-                        ctx.save();
-                        ctx.translate(this.scale.x(d) + (this.scale.x.bandwidth() / 2), 6);
-                        ctx.rotate(-Math.PI / 4);
-                        ctx.textAlign = 'right';
-                        ctx.textBaseline = 'top';
-                        ctx.fillStyle = this.scale.clc(d);
-                        ctx.fillText(d, 0, 0);
-                        ctx.restore();
-                    }
-                });
-            } else {
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-
-                this.scale.x.domain().forEach((d) => {
-                    if (!this.shouldHideLabel(d)) {
-                        ctx.fillStyle = this.scale.clc(d);
-                        ctx.fillText(d,
-                                    this.scale.x(d) + (this.scale.x.bandwidth() / 2),
-                                    6);
-                    }
-                });
-            }
 
             ctx.save();
             ctx.textAlign = 'center';
@@ -190,39 +192,41 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             ctx.save();
             ctx.translate(this.dims.yaxis.x, this.dims.yaxis.y);
 
-            /*ctx.strokeStyle = '#000';
-            ctx.beginPath();
-            ctx.moveTo(0, this.scale.y.range()[0]);
-            ctx.lineTo(0, this.scale.y.range()[1]);
-            ctx.stroke();*/
-
-            // apply y-axis labels and ticks
+            // Draw y-axis labels and ticks
             this.scale.y.domain().forEach((d) => {
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 1;
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'middle';
-                ctx.font = '8px Verdana,Arial,sans-serif';
                 if (!this.shouldHideLabel(d)) {
-                    if (this.selectedRow.toString() === d.toString()) {
-                        ctx.beginPath();
+                    const isSelected = (this.selectedRow !== null && this.selectedRow.toString() === d.toString())
+
+                    // Draw tick
+                    ctx.save();
+                    ctx.strokeStyle = '#000';
+                    let xTickOffset: number;
+                    if (isSelected) {
                         ctx.lineWidth = 2;
-                        ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                        ctx.lineTo(18, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                        ctx.stroke();
-
-                        ctx.font = 'bold 16px Verdana,Arial,sans-serif';
-                        ctx.fillStyle = this.scale.rlc(d);
-                        ctx.fillText(d, 20, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                        xTickOffset = 18;
                     } else {
-                        ctx.beginPath();
-                        ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                        ctx.lineTo(6, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
-                        ctx.stroke();
-
-                        ctx.fillStyle = this.scale.rlc(d);
-                        ctx.fillText(d, 9, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                        ctx.lineWidth = 1;
+                        xTickOffset = 6;
                     }
+                    ctx.beginPath();
+                    ctx.moveTo(0, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    ctx.lineTo(xTickOffset, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    ctx.stroke();
+                    ctx.restore();
+
+
+                    // Draw Label
+                    ctx.save();
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = this.scale.rlc(d);
+                    if (isSelected) {
+                        ctx.font = 'bold 16px Verdana,Arial,sans-serif';
+                    } else {
+                        ctx.font = '8px Verdana,Arial,sans-serif';
+                    }
+                    ctx.fillText(d, xTickOffset + 2, this.scale.y(d) + (this.scale.y.bandwidth() / 2));
+                    ctx.restore();
                 }
             });
 
