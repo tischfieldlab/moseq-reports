@@ -1,11 +1,10 @@
 # About Moseq Reports
 Interactive interrogation of Moseq models
 ## Purpose
-The purpose of this application is to democratizing moseq data to bring complex data as a result of modeling from coputational biologits into the hands of the wetlab researchers. Allows these researchers to easily understand this data without having to reference outside sources. This program reports data in a form which can be quickly understood by researchers who can use this data while providing a set of robust tools to format that data in their own way.
+In short, moseq reports exists to democratize moseq data. Computational biologists often produce data which is difficult to parse without the proper context making it difficult for others to simply pick up and use. Moseq reports allows wetlab researchers to easily understand moseq models without having to reference outside sources. This program reports data in a form which can be quickly understood by researchers while also providing a set of robust tools to reformat that data in such a way that would be most beneficial to their research.
 ## Concepts
-### What is Moseq
-Motion sequencing
-Record depth video of mice freely behaving in an arena
-Break down depth video and label what the mice are doing (syllables)
+### What is moseq
+Moseq is short for motion sequencing. Using a depth camera, mice are recorded freely behaving in an arena. These videos are analyzed and labeled for specific syllables using machine learning.
 
-### What are groups
+### What is a syllable
+A syllable is a way in which a mouse poses its body in order to communicate something. Along with syllables, there is a grammar which dictates the way in which these syllables are put together.
