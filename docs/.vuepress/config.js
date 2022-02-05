@@ -7,12 +7,8 @@ module.exports = {
   title: 'Moseq Reports',
   theme: "craftdocs",
   plugins: [['vuepress-plugin-global-variables', { variables: { appVersion: version } }]],
-  chainWebpack: {
-    resolve: {
-      alias: {
-        '@img': path.resolve(__dirname,"../img")
-      }
-    }
+  chainWebpack: config => {
+    config.resolve.alias.set('@img', path.resolve(__dirname, "../Components/userDocs/Images"))
   },
   /*
   versions: [

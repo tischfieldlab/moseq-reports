@@ -1,18 +1,20 @@
 # Using Moseq Reports
-![Full Window](./Images/FullWindow.png)
+![Full Window](~@img/FullWindow.png)
 
 ## Menu Options
 ### File
-![File](./Images/Files.png)
+![File](~@img/Files.png)
+
 Once the application is open, load your .msq file by going to the upper left of the window and clicking File>Open Data or using the shortcut Ctrl+O.
 ### Edit
-![Edit](./Images/Edit.png)
+![Edit](~@img/Edit.png)
 ### Tools
-![Tools](./Images/Tools.png)
+![Tools](~@img/Tools.png)
+
 The tools are where the majority of the data will be viewed and are described in greater detail [here](Tools.md).
 
 ### View
-![View](./Images/View.png)
+![View](~@img/View.png)
 #### Snapshot Workplace
 Takes a screenshot of all modules in your workspace.
 #### Sidebar Position
@@ -26,8 +28,10 @@ Should a module become stuck, reloading the window will restart the application 
 
 ## Sidebar
 ### Data Filters
-![Data Filters](./Images/Filters.png)
+![Data Filters](~@img/Filters.png)
+
 Allows the user to set filters which can exclude certain groups, alter the method by which data is counted, the syllable shown, or filter for a specific ID.
 ### Notification History
-![Notification History](./Images/History.png)
+![Notification History](~@img/History.png)
+
 A clock shaped icon that when clicked shows all notification popups that have appeared since the application was started.
