@@ -5,6 +5,7 @@ const {version} = require('../../package.json');
 
 module.exports = {
   title: 'Moseq Reports',
+  base: '/moseq-reports/',
   theme: "craftdocs",
   plugins: [['vuepress-plugin-global-variables', { variables: { appVersion: version } }]],
   chainWebpack: config => {
