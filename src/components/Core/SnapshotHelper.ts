@@ -178,7 +178,7 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
                 reject('non-image data');
                 return;
             }
-            const img = new Image();
+            const img = new Image(item.width, item.height);
             img.onload = () => {
                 if (ctx === null) {
                     return reject('no context!');
