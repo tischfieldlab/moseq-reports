@@ -1,8 +1,9 @@
 <template>
-    <b-icon
-        @click="buttonClick"
-        :icon="this.icon"
-    />
+    <b-button class="title-button" size="sm" variant="link" @click="this.buttonClick">
+        <b-icon
+            :icon="this.icon"
+        />
+    </b-button>
 </template>
 
 <script lang="ts">
@@ -23,14 +24,22 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-svg {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
+
+.title-button {
+    width: 24px;
+    height: 24px;
     color: #747474;
+    padding: 5px;
+    margin-right: 1px;
 }
 
-svg:hover {
-    color: #3a3a3a;
+.title-button:hover {
+    color:#3a3a3a;
 }
+
+.title-button:focus, title-button:active {
+    outline: none !important;
+    box-shadow: none;
+}
+
 </style>

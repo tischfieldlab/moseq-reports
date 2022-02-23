@@ -481,15 +481,17 @@ export default Vue.extend({
 
 .titlebar-button-container {
     position: absolute;
-    margin-top: -3px;
+    margin-top: -8px;
     right: 6px;
 }
 
 .titlebar-button-container svg {
     margin-left: 9px;
 }
+
 .close-button {
     margin-left: 5px;
+    margin-top: 4px;
     cursor: pointer;
 }
 
