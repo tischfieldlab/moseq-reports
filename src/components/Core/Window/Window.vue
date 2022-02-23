@@ -7,6 +7,7 @@
         :width="this.window_width"
         :height="this.window_height"
         :pos="this.window_position"
+        :isMinimized="is_minimized"
         @onClosed="onClosed"
         @onMoved="onMoved"
         @onResized="onResized"
@@ -16,7 +17,7 @@
         :aspectRatio="aspect_ratio"
     >
         <template v-slot:titlebarButtons>
-            <titlebar-button :clicked="onSnapshotClicked" icon="camera-fill" />
+            <titlebar-button :disabled="is_minimized" :clicked="onSnapshotClicked" icon="camera-fill" />
             <titlebar-button :clicked="onSettingsClicked" icon="gear-fill" />
         </template>
         <b-overlay :show="is_loading" no-fade class="overlay-container">
@@ -50,7 +51,7 @@
                         No settings available for this component
                     </p>
                 </b-tab>
-                <b-tab title="Snapshots">
+                <b-tab title="Snapshots" :disabled="is_minimized">
                     <SnapshotSettings :id="id" />
                 </b-tab>
             </b-tabs>
@@ -133,6 +134,9 @@ export default mixins(WindowMixin).extend({
         },
         window_position(): Position {
             return this.layout.position;
+        },
+        is_minimized(): boolean {
+            return this.$store.getters[`${this.id}/isMinimized`];
         }
     },
     watch: {
@@ -199,7 +203,7 @@ export default mixins(WindowMixin).extend({
         onWindowMinMaxToggle(event: any) {
             this.$store.commit(`${this.id}/toggleWindowMinMax`, {
                 id: this.id,
-                height: event.height,
+                isMinimized: event.isMinimized,
             });
         },
     },

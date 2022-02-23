@@ -28,7 +28,6 @@
                 <div class="titlebar-button-container">
                     <slot name="titlebarButtons"></slot>
                     <titlebar-button
-                        v-if="minimizeable"
                         :clicked="onCollapsedClicked"
                         :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
                     />
@@ -79,6 +78,9 @@ enum ResizeType {
 
 export default Vue.extend({
     name: 'BaseWindow',
+    mounted() {
+        this.collapseWindow();
+    },
     components: {
         TitlebarButton
     },
@@ -107,10 +109,10 @@ export default Vue.extend({
             type: Object,
             required: true
         },
-        minimizeable: {
+        isMinimized: {
             type: Boolean,
             required: false,
-            default: true
+            default: false
         },
         resizeable: {
             type: Boolean,
@@ -139,7 +141,7 @@ export default Vue.extend({
     },
     data() {
         return {
-            isCollapsed: false,
+            isCollapsed: this.isMinimized,
             restoredHeight: this.height,
             titlebarHeight: 35,
             windowWidth: this.width,
@@ -357,7 +359,9 @@ export default Vue.extend({
         },
         onCollapsedClicked(event: any) {
             this.isCollapsed = !this.isCollapsed;
-
+            this.collapseWindow();
+        },
+        collapseWindow() {
             if (this.$data.isCollapsed) {
                 this.restoredHeight = this.windowHeight;
                 this.windowHeight = 0;
@@ -366,7 +370,7 @@ export default Vue.extend({
             }
 
             this.$emit('onMinMaxToggle', {
-                height: this.windowHeight
+                isMinimized: this.isCollapsed,
             });
         },
         applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {

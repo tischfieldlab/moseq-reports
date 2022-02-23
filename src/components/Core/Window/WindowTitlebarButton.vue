@@ -1,7 +1,7 @@
 <template>
     <b-button class="title-button" size="sm" variant="link" @click="this.buttonClick">
         <b-icon
-            :icon="this.icon"
+            :icon="this.icon" 
         />
     </b-button>
 </template>
