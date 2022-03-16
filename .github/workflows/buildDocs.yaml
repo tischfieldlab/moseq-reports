@@ -1,7 +1,9 @@
-name: Build Moseq-Reports
+name: Build Moseq-Docs
 
 on:
   push:
+    tags:
+      - 'docs-*'
   pull_request:
     branches: [master]
   workflow_dispatch:
