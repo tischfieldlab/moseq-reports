@@ -30,6 +30,7 @@
 |onWindowFocused|-|-|
 |onMoved|-|-|
 |onClosed|-|-|
+|onMinMaxToggle|-|-|
 
 <!-- @vuese:BaseWindow:events:end -->
 

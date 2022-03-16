@@ -35,7 +35,7 @@
 |yAxisTitle|-|`String`|`false`|Value|
 |legendTitle|-|`String`|`false`|Value|
 |selectedRow|-|`String` /  `Number`|`false`|null|
-|selectedCol|-|`String`|`false`|null|
+|selectedCol|-|`String` /  `Number`|`false`|null|
 |tooltipFormatter|-|`Function`|`false`|-|
 |noDataMessage|-|`String`|`false`|Sorry, no data available!|
 
