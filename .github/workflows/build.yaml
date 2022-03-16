@@ -25,9 +25,9 @@ jobs:
         
       - name: Build docs
         run: npm run docs:build
-        env: 
-        APP_COMMMIT_HASH: ${{ github.sha }}
-        APP_COMMIT_REF: ${{ github.ref }}
+        env:
+          APP_COMMIT_HASH: ${{ github.sha }}
+          APP_COMMIT_REF: ${{ github.ref }}
 
       - name: Init new repo in dist folder and commit generated files
         run: |
