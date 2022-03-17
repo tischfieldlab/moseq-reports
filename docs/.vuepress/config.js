@@ -6,7 +6,7 @@ const {version} = require('../../package.json');
 const commitRefSplit = process.env.APP_COMMIT_REF && process.env.APP_COMMIT_REF.split("/");
 let COMMIT_REF = '';
 if (commitRefSplit){
-  COMMIT_REF = "Commit Reference - Branch : " + commitRefSplit[commitRefSplit.length - 1];
+  COMMIT_REF = "Commit Reference - Branch/Tag : " + commitRefSplit[commitRefSplit.length - 1];
 }
 
 let COMMIT_HASH = '';
