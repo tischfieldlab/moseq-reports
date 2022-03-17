@@ -10,7 +10,6 @@ jobs:
   buildDocsOnly:
     runs-on: ubuntu-latest
     needs: build
-    if: ${{ endsWith(github.ref, 'master') }}
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
