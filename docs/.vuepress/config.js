@@ -3,13 +3,13 @@ const path = require("path");
 const fs = require("fs");
 const {version} = require('../../package.json');
 
-const commitRefSplit = process.env.APP_COMMMIT_REF && process.env.REACT_APP_COMMIT_REF.split("/");
+const commitRefSplit = process.env.APP_COMMIT_REF && process.env.APP_COMMIT_REF.split("/");
 let COMMIT_REF = '';
 if (commitRefSplit){
   COMMIT_REF = "Commit Reference - Branch : " + commitRefSplit[commitRefSplit.length - 1];
 }
 
-let COMMIT_HASH = "Commit Hash - " + process.env.APP_COMMMIT_HASH;
+let COMMIT_HASH = "Commit Hash - " + process.env.APP_COMMIT_HASH;
 
 module.exports = {
   title: 'Moseq Reports',
