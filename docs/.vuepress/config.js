@@ -9,7 +9,10 @@ if (commitRefSplit){
   COMMIT_REF = "Commit Reference - Branch : " + commitRefSplit[commitRefSplit.length - 1];
 }
 
-let COMMIT_HASH = "Commit Hash - " + process.env.APP_COMMIT_HASH;
+let COMMIT_HASH = '';
+if(process.env.APP_COMMIT_HASH){
+  COMMIT_HASH= "Commit Hash - " + process.env.APP_COMMIT_HASH;
+}
 
 module.exports = {
   title: 'Moseq Reports',

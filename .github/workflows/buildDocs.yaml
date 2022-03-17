@@ -2,12 +2,14 @@ name: Build Moseq-Docs
 
 on:
   push:
+    tags:
+      - 'docs-*'
   pull_request:
     branches: [master]
   workflow_dispatch:
 
 jobs:
-  buildDocsOnly:
+  buildDocs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
