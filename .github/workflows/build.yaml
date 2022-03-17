@@ -6,7 +6,6 @@ on:
       - 'buildAll-*'
   pull_request:
     branches: [master]
-  workflow_dispatch:
 
 jobs:
   buildDocs:
