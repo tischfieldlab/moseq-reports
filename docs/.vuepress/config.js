@@ -3,11 +3,22 @@ const path = require("path");
 const fs = require("fs");
 const {version} = require('../../package.json');
 
+const commitRefSplit = process.env.APP_COMMIT_REF && process.env.APP_COMMIT_REF.split("/");
+let COMMIT_REF = '';
+if (commitRefSplit){
+  COMMIT_REF = "Commit Reference - Branch/Tag : " + commitRefSplit[commitRefSplit.length - 1];
+}
+
+let COMMIT_HASH = '';
+if(process.env.APP_COMMIT_HASH){
+  COMMIT_HASH= "Commit Hash - " + process.env.APP_COMMIT_HASH;
+}
+
 module.exports = {
   title: 'Moseq Reports',
   base: '/moseq-reports/',
   theme: "craftdocs",
-  plugins: [['vuepress-plugin-global-variables', { variables: { appVersion: version } }]],
+  plugins: [['vuepress-plugin-global-variables', { variables: { appVersion: version, commitRef: COMMIT_REF, commitHash: COMMIT_HASH} }]],
   chainWebpack: config => {
     config.resolve.alias.set('@img', path.resolve(__dirname, "../user_guide/Images"))
   },
