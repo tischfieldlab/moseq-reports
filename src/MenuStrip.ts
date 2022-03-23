@@ -1,4 +1,4 @@
-import { remote, Menu, MenuItem } from 'electron';
+import { remote, Menu, MenuItem, shell } from 'electron';
 import loadDataCommand, {IsDataLoaded} from '@/commands/LoadData';
 import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/commands/LoadLayout';
 import {AvailableComponents, CreateComponent} from '@/commands/Windows';
@@ -255,6 +255,13 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: 'About',
                     type: 'normal',
                     click: (): void => { showAboutWindow(); },
+                },
+                {
+                    label: 'User Guide',
+                    type: 'normal',
+                    click: (): void => { 
+                        shell.openExternal("https://tischfieldlab.github.io/moseq-reports");
+                    },
                 },
             ],
         },
