@@ -17,8 +17,8 @@
         :aspectRatio="aspect_ratio"
     >
         <template v-slot:titlebarButtons>
-            <titlebar-button :disabled="is_minimized" :clicked="onSnapshotClicked" icon="camera-fill" />
-            <titlebar-button :clicked="onSettingsClicked" icon="gear-fill" />
+            <titlebar-button :disabled="is_minimized" :clicked="onSnapshotClicked" v-b-tooltip.hover title="Take snapshot" icon="camera-fill" />
+            <titlebar-button :clicked="onSettingsClicked" v-b-tooltip.hover title="Adjust settings" icon="gear-fill" />
         </template>
         <b-overlay :show="is_loading" no-fade class="overlay-container">
             <component ref="body" :id="id" :is="spec.component_type" />

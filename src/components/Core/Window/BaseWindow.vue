@@ -28,10 +28,11 @@
                 <div class="titlebar-button-container">
                     <slot name="titlebarButtons"></slot>
                     <titlebar-button
+                        v-b-tooltip.hover :title="isCollapsed ? 'Show contents' : 'Hide contents'"
                         :clicked="onCollapsedClicked"
                         :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
                     />
-                    <b-button-close @click="this.onClose" class="close-button" />
+                    <b-button-close @click="this.onClose" class="close-button" v-b-tooltip.hover title="Close window" />
                 </div>
             </span>
                 {{ this.title }}
