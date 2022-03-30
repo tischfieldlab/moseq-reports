@@ -17,7 +17,8 @@
         :aspectRatio="aspect_ratio"
     >
         <template v-slot:titlebarButtons>
-            <titlebar-button :disabled="is_minimized" :clicked="onSnapshotClicked" v-b-tooltip.hover title="Take snapshot" icon="camera-fill" />
+            <titlebar-button v-if="!is_minimized" :clicked="onSnapshotClicked" v-b-tooltip.hover title="Take snapshot" icon="camera-fill" />
+            <titlebar-button v-if="is_minimized" class="disabled-icon-button" v-b-tooltip.hover title="Show contents to take snapshot" icon="camera-fill" />
             <titlebar-button :clicked="onSettingsClicked" v-b-tooltip.hover title="Adjust settings" icon="gear-fill" />
         </template>
         <b-overlay :show="is_loading" no-fade class="overlay-container">
@@ -224,5 +225,12 @@ function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
 .overlay-container {
     width: inherit;
     height: inherit;
+}
+.disabled-icon-button:hover {
+    cursor: not-allowed !important;
+    color: #989ea3;
+}
+.disabled-icon-button {
+    color: #989ea3;
 }
 </style>
