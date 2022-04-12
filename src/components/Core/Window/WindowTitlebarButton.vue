@@ -17,7 +17,7 @@ export default Vue.extend({
         clicked: { type: Function, required: false, default: () => {} },
         icon: { type: String, required: true },
         title: { type: String, required: false },
-        disabled: { type: Boolean, required: false, default: false },
+        disabled: { type: Boolean, required: false, default: false }
     },
 });
 </script>
