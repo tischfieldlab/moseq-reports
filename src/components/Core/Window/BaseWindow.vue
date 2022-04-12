@@ -110,7 +110,7 @@ export default Vue.extend({
             type: Object,
             required: true
         },
-        isMinimized: {
+        isHidden: {
             type: Boolean,
             required: false,
             default: false
@@ -138,11 +138,11 @@ export default Vue.extend({
         zIndex: {
             type: Number,
             required: false,
-        }
+        },
     },
     data() {
         return {
-            isCollapsed: this.isMinimized,
+            isCollapsed: this.isHidden,
             restoredHeight: this.height,
             titlebarHeight: 35,
             contentWidth: this.width,
@@ -370,8 +370,8 @@ export default Vue.extend({
                 this.contentHeight = this.restoredHeight;
             }
 
-            this.$emit('onMinMaxToggle', {
-                isMinimized: this.isCollapsed,
+            this.$emit('onShowHideToggle', {
+                isHidden: this.isCollapsed,
             });
         },
         applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {

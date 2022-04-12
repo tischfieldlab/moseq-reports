@@ -7,18 +7,18 @@
         :width="this.window_width"
         :height="this.window_height"
         :pos="this.window_position"
-        :isMinimized="is_minimized"
+        :isHidden="is_hidden"
         @onClosed="onClosed"
         @onMoved="onMoved"
         @onResized="onResized"
         @onWindowFocused="onWindowFocused"
-        @onMinMaxToggle="onWindowMinMaxToggle"
+        @onShowHideToggle="onShowHideToggle"
         :zIndex="z_index"
         :aspectRatio="aspect_ratio"
     >
         <template v-slot:titlebarButtons>
-            <titlebar-button v-if="!is_minimized" :clicked="onSnapshotClicked" v-b-tooltip.hover title="Take snapshot" icon="camera-fill" />
-            <titlebar-button v-if="is_minimized" class="disabled-icon-button" v-b-tooltip.hover title="Show contents to take snapshot" icon="camera-fill" />
+            <titlebar-button v-if="!is_hidden" :clicked="onSnapshotClicked" v-b-tooltip.hover title="Take snapshot" icon="camera-fill" />
+            <titlebar-button v-if="is_hidden" class="disabled-icon-button" v-b-tooltip.hover title="Show contents to take snapshot" icon="camera-fill" />
             <titlebar-button :clicked="onSettingsClicked" v-b-tooltip.hover title="Adjust settings" icon="gear-fill" />
         </template>
         <b-overlay :show="is_loading" no-fade class="overlay-container">
@@ -52,7 +52,7 @@
                         No settings available for this component
                     </p>
                 </b-tab>
-                <b-tab title="Snapshots" :disabled="is_minimized">
+                <b-tab title="Snapshots" :disabled="is_hidden">
                     <SnapshotSettings :id="id" />
                 </b-tab>
             </b-tabs>
@@ -136,8 +136,8 @@ export default mixins(WindowMixin).extend({
         window_position(): Position {
             return this.layout.position;
         },
-        is_minimized(): boolean {
-            return this.$store.getters[`${this.id}/isMinimized`];
+        is_hidden(): boolean {
+            return this.$store.getters[`${this.id}/isHidden`];
         }
     },
     watch: {
@@ -201,10 +201,10 @@ export default mixins(WindowMixin).extend({
             const maxZ: number = this.$store.getters['datawindows/windowsMaxZIndex'] + 1;
             this.$store.commit(`${this.id}/updateZIndex`, { z_index: maxZ });
         },
-        onWindowMinMaxToggle(event: any) {
-            this.$store.commit(`${this.id}/toggleWindowMinMax`, {
+        onShowHideToggle(event: any) {
+            this.$store.commit(`${this.id}/toggleWindowShowHide`, {
                 id: this.id,
-                isMinimized: event.isMinimized,
+                isHidden: event.isHidden,
             });
         },
     },

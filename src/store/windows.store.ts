@@ -128,7 +128,7 @@ function createDataWindow(component: ComponentRegistration): DataWindowState {
         render_mode: component.default_render_mode,
         aspect_ratio: component.aspect_ratio,
         settings: clone(component.default_settings || {}), // deep clone
-        is_minimized: component.is_minimized || false
+        is_hidden: component.is_hidden || false
     } as DataWindowState;
 }
 
@@ -149,7 +149,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
         settings: window.settings,
         z_index: window.z_index,
         aspect_ratio: window.aspect_ratio,
-        is_minimized: window.is_minimized,
+        is_hidden: window.is_hidden,
     };
     return dehydrated;
 }
@@ -168,7 +168,7 @@ function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     win.settings = { ...win.settings, ...clone(data.settings) };
     win.z_index = data.z_index || maxZ;
     win.aspect_ratio = data.aspect_ratio;
-    win.is_minimized = data.is_minimized || false;
+    win.is_hidden = data.is_hidden || false;
 
     return win;
 }
