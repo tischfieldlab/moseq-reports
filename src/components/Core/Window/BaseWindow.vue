@@ -24,6 +24,8 @@
                 class="dataview-swatch"
                 :id="$id('swatch')"
                 :style="{ background: this.titlebar_color }"
+                v-b-tooltip.hover
+                :title="swatchTitle"
             >
                 <div class="titlebar-button-container">
                     <slot name="titlebarButtons"></slot>
@@ -142,6 +144,10 @@ export default Vue.extend({
         zIndex: {
             type: Number,
             required: false,
+        },
+        swatchTitle: {
+            type: String,
+            required: false
         },
     },
     data() {

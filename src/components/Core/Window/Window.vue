@@ -7,6 +7,7 @@
         :width="this.window_width"
         :height="this.window_height"
         :pos="this.window_position"
+        :swatchTitle="this.swatch_title"
         :isHidden="is_hidden"
         @onClosed="onClosed"
         @onMoved="onMoved"
@@ -110,6 +111,9 @@ export default mixins(WindowMixin).extend({
         is_loading(): boolean {
             const s = this.dataview;
             return this.component_loading > 0 || (s && s.loading);
+        },
+        swatch_title(): string {
+            return `Using ${this.dataview.name}`;
         },
         z_index(): number {
             return this.$store.getters[`${this.id}/zIndex`];
