@@ -83,12 +83,7 @@ export async function SnapshotWorkspace() {
     const opts = defaultOptions(app);
     opts.backgroundColor = '#FFFFFFFF' // opaque white background
 
-    let toSnapshot = WindowManager.getWindows();
-
-    // Filter out the windows that are minimized from being snapshot
-    toSnapshot = toSnapshot.filter(window => {
-        return !window.$store.getters[`${(window as any).id}/isMinimized`]
-    });
+    const toSnapshot = WindowManager.getWindows(window => !window.$store.getters[`${(window as any).id}/isHidden`]);
 
     if (toSnapshot.length <= 0) {
         showSaveErrorToast('There are not any items to snapshot!', 'workspace snapshot');
