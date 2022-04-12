@@ -2,7 +2,7 @@
     <BaseWindow
         ref="window"
         :id="id"
-        :titlebar_color="titlebar_color"
+        :swatch_color="swatch_color"
         :title="title"
         :width="this.window_width"
         :height="this.window_height"
@@ -105,7 +105,7 @@ export default mixins(WindowMixin).extend({
         settings_title(): string {
             return this.title + ' Settings';
         },
-        titlebar_color(): string {
+        swatch_color(): string {
             return this.dataview.color;
         },
         is_loading(): boolean {

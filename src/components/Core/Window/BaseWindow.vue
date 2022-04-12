@@ -23,7 +23,7 @@
                 data-draggable="dataview-swatch"
                 class="dataview-swatch"
                 :id="$id('swatch')"
-                :style="{ background: this.titlebar_color }"
+                :style="{ background: this.swatch_color }"
                 v-b-tooltip.hover
                 :title="swatchTitle"
             >
@@ -96,7 +96,7 @@ export default Vue.extend({
             type: String,
             required: true
         },
-        titlebar_color: {
+        swatch_color: {
             type: String,
             required: true
         },
