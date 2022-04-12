@@ -98,24 +98,14 @@ export default mixins(WindowMixin).extend({
         return {
             show_settings_modal: false,
             component_loading: 0,
-            watchers: Array<() => void>(),
         };
     },
     computed: {
         settings_title(): string {
             return this.title + ' Settings';
         },
-        max_width(): number {
-            return window.innerWidth;
-        },
-        max_height(): number {
-            return window.innerHeight;
-        },
         titlebar_color(): string {
             return this.dataview.color;
-        },
-        swatch_title(): string {
-            return `Using ${this.dataview.name}`;
         },
         is_loading(): boolean {
             const s = this.dataview;
@@ -139,23 +129,6 @@ export default mixins(WindowMixin).extend({
         is_hidden(): boolean {
             return this.$store.getters[`${this.id}/isHidden`];
         }
-    },
-    watch: {
-        title(newValue) {
-            (this.$refs.window as any).title = newValue;
-        },
-        titlebar_color: {
-            handler(newValue) {
-                const swatch = document.getElementById(this.$id('swatch'));
-                if (swatch) swatch.style.backgroundColor = newValue;
-            },
-        },
-        swatch_title: {
-            handler(newValue) {
-                const swatch = document.getElementById(this.$id('swatch'));
-                if (swatch) swatch.title = newValue;
-            },
-        },
     },
     methods: {
         onResized(event: any) {
