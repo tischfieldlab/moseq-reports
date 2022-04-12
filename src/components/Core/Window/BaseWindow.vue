@@ -28,11 +28,15 @@
                 <div class="titlebar-button-container">
                     <slot name="titlebarButtons"></slot>
                     <titlebar-button
-                        v-b-tooltip.hover :title="isCollapsed ? 'Show contents' : 'Hide contents'"
+                        :title="isCollapsed ? 'Show contents' : 'Hide contents'"
                         :clicked="onCollapsedClicked"
                         :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
                     />
-                    <b-button-close @click="this.onClose" class="close-button" v-b-tooltip.hover title="Close window" />
+                    <titlebar-button
+                        :title="'Close window'"
+                        :clicked="this.onClose"
+                        :icon="'x'"
+                    />
                 </div>
             </span>
                 {{ this.title }}
@@ -489,16 +493,6 @@ export default Vue.extend({
     position: absolute;
     margin-top: -8px;
     right: 6px;
-}
-
-.titlebar-button-container svg {
-    margin-left: 9px;
-}
-
-.close-button {
-    margin-left: 5px;
-    margin-top: 4px;
-    cursor: pointer;
 }
 
 .noselect {
