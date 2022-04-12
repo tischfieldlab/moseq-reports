@@ -3,12 +3,12 @@ import { svgAsDataUri, svgAsPngUri } from 'save-svg-as-png';
 import { Store } from 'vuex';
 import { unnest } from '@/util/Vuex';
 import app from '@/main';
-import { remote, shell } from 'electron';
+import { remote } from 'electron';
 import fs from 'fs';
 import mime from 'mime-types';
 import { DataWindowState } from '@/store/datawindow.types';
-import { SaveCancelledError } from './IO/types';
-import { showSaveErrorToast, showSaveSuccessToast } from './IO/Toasts';
+import { SaveCancelledError } from '@/components/Core/IO/types';
+import { showSaveErrorToast, showSaveSuccessToast } from '@/components/Core/IO/Toasts';
 import WindowManager from '@/components/Core/Window/WindowManager';
 
 
@@ -146,7 +146,7 @@ export async function SnapshotWorkspace() {
 
 export interface SubImage {
     dataURI: string;
-    title: string;
+    title?: string;
     pos_x: number;
     pos_y: number;
     width: number;
@@ -183,7 +183,7 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
                 reject('non-image data');
                 return;
             }
-            const img = new Image();
+            const img = new Image(item.width, item.height);
             img.onload = () => {
                 if (ctx === null) {
                     return reject('no context!');
@@ -198,11 +198,13 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
                         item.pos_x * opts.scale, item.pos_y * opts.scale,
                         img.width, img.height);
                 }
-                ctx.save();
-                ctx.font = `bold ${16 * opts.scale}px Verdana,Arial,sans-serif`;
-                ctx.textBaseline = 'bottom';
-                ctx.fillText(item.title, item.pos_x * opts.scale, item.pos_y * opts.scale);
-                ctx.restore();
+                if (item.title !== undefined) {
+                    ctx.save();
+                    ctx.font = `bold ${16 * opts.scale}px Verdana,Arial,sans-serif`;
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText(item.title, item.pos_x * opts.scale, item.pos_y * opts.scale);
+                    ctx.restore();
+                }
                 resolve();
             };
             img.src = item.dataURI as string;
@@ -216,13 +218,6 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
         });
 }
 
-
-
-function getAllVues(root: Vue) {
-    const items = [root];
-    items.push(...root.$children.flatMap((child) => getAllVues(child)));
-    return items;
-}
 
 function filtersForFinfo(finfo) {
     const infos = [] as any[];
