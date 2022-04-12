@@ -372,6 +372,7 @@ export default Vue.extend({
 
             this.$emit('onShowHideToggle', {
                 isHidden: this.isCollapsed,
+                height: this.contentHeight
             });
         },
         applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {

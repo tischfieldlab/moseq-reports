@@ -1,5 +1,5 @@
 <template>
-    <b-button class="title-button" size="sm" variant="link" @click="this.buttonClick">
+    <b-button v-b-tooltip.hover :title="title" class="title-button" size="sm" variant="link" @click="clicked">
         <b-icon
             :icon="this.icon" 
         />
@@ -12,14 +12,11 @@ import Vue from 'vue';
 export default Vue.extend({
     name: 'TitlebarButton',
     props: {
-        clicked: { type: Function },
+        /* tslint:disable-next-line */
+        clicked: { type: Function, required: false, default: () => {} },
         icon: { type: String, required: true },
+        title: { type: String, required: false }
     },
-    methods: {
-        buttonClick() {
-            this.clicked();
-        }
-    }
 });
 </script>
 

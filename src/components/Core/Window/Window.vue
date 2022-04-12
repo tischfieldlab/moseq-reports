@@ -17,9 +17,9 @@
         :aspectRatio="aspect_ratio"
     >
         <template v-slot:titlebarButtons>
-            <titlebar-button v-if="!is_hidden" :clicked="onSnapshotClicked" v-b-tooltip.hover title="Take snapshot" icon="camera-fill" />
-            <titlebar-button v-if="is_hidden" class="disabled-icon-button" v-b-tooltip.hover title="Show contents to take snapshot" icon="camera-fill" />
-            <titlebar-button :clicked="onSettingsClicked" v-b-tooltip.hover title="Adjust settings" icon="gear-fill" />
+            <titlebar-button v-if="!is_hidden" :clicked="onSnapshotClicked" :title="'Take snapshot'" :icon="'camera-fill'" />
+            <titlebar-button v-if="is_hidden" class="disabled-icon-button" :title="'Show contents to take snapshot'" :icon="'camera-fill'" />
+            <titlebar-button :clicked="onSettingsClicked" :title="'Adjust settings'" :icon="'gear-fill'" />
         </template>
         <b-overlay :show="is_loading" no-fade class="overlay-container">
             <component ref="body" :id="id" :is="spec.component_type" />
