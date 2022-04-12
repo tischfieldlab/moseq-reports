@@ -1,5 +1,6 @@
 <template>
-    <b-button v-b-tooltip.hover :title="title" class="title-button" size="sm" variant="link" @click="clicked">
+    <b-button v-b-tooltip.hover :title="title" class="title-button" size="sm"
+        variant="link" @click="clicked" :class="{ 'disabled-icon-button': disabled }">
         <b-icon
             :icon="this.icon" 
         />
@@ -15,7 +16,8 @@ export default Vue.extend({
         /* tslint:disable-next-line */
         clicked: { type: Function, required: false, default: () => {} },
         icon: { type: String, required: true },
-        title: { type: String, required: false }
+        title: { type: String, required: false },
+        disabled: { type: Boolean, required: false, default: false },
     },
 });
 </script>
@@ -37,6 +39,14 @@ export default Vue.extend({
 .title-button:focus, title-button:active {
     outline: none !important;
     box-shadow: none;
+}
+
+.disabled-icon-button:hover {
+    cursor: not-allowed !important;
+    color: #989ea3;
+}
+.disabled-icon-button {
+    color: #989ea3;
 }
 
 </style>
