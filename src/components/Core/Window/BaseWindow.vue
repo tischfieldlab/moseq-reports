@@ -27,21 +27,21 @@
                 v-b-tooltip.hover
                 :title="swatchTitle"
             >
-                <div class="titlebar-button-container">
-                    <slot name="titlebarButtons"></slot>
-                    <titlebar-button
-                        :title="isCollapsed ? 'Show contents' : 'Hide contents'"
-                        :clicked="onCollapsedClicked"
-                        :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
-                    />
-                    <titlebar-button
-                        :title="'Close window'"
-                        :clicked="this.onClose"
-                        :icon="'x'"
-                    />
-                </div>
             </span>
-                {{ this.title }}
+            <div class="titlebar-button-container">
+                <slot name="titlebarButtons"></slot>
+                <titlebar-button
+                    :title="isCollapsed ? 'Show contents' : 'Hide contents'"
+                    :clicked="onCollapsedClicked"
+                    :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
+                />
+                <titlebar-button
+                    :title="'Close window'"
+                    :clicked="this.onClose"
+                    :icon="'x'"
+                />
+            </div>
+            {{ this.title }}
         </div>
         <div
             :id="`window-content-${this.id}`"
@@ -373,7 +373,7 @@ export default Vue.extend({
             this.collapseWindow();
         },
         collapseWindow() {
-            if (this.$data.isCollapsed) {
+            if (this.isCollapsed) {
                 this.restoredHeight = this.contentHeight;
                 this.contentHeight = 0;
             } else {
@@ -497,7 +497,7 @@ export default Vue.extend({
 
 .titlebar-button-container {
     position: absolute;
-    margin-top: -8px;
+    margin-top: -28px;
     right: 6px;
 }
 
