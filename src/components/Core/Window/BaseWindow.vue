@@ -35,7 +35,7 @@
                     :clicked="onCollapsedClicked"
                     :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
                 />
-                <b-button-close @click="this.onClose" :title="'Close window'" class="close-button" />
+                <close-button :clicked="this.onClose" :title="'Close window'"/>
             </div>
             {{ this.title }}
         </div>
@@ -65,7 +65,8 @@
 <script lang="ts">
 import { Position } from '@/store/datawindow.types';
 import Vue from 'vue';
-import TitlebarButton from '@/components/Core/Window/WindowTitlebarButton.vue';
+import TitlebarButton from '@/components/Core/Window/Titlebar/TitlebarButton.vue';
+import CloseButton from '@/components/Core/Window/Titlebar/CloseButton.vue';
 import { applyAspectRatio, isValidHeight, isValidWidth } from './util';
 
 enum ResizeType {
@@ -85,7 +86,8 @@ export default Vue.extend({
         this.collapseWindow();
     },
     components: {
-        TitlebarButton
+        TitlebarButton,
+        CloseButton,
     },
     props: {
         id: {
@@ -493,7 +495,7 @@ export default Vue.extend({
 
 .titlebar-button-container {
     position: absolute;
-    margin-top: -28px;
+    margin-top: -30px;
     right: 6px;
 }
 

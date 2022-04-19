@@ -68,7 +68,7 @@ import mixins from 'vue-typed-mixins';
 import WindowMixin from './WindowMixin';
 import Snapshot, { ensureDefaults } from '../SnapshotHelper';
 import { Position, Size } from '@/store/datawindow.types';
-import TitlebarButton from '@/components/Core/Window/WindowTitlebarButton.vue';
+import TitlebarButton from '@/components/Core/Window/Titlebar/TitlebarButton.vue';
 import WindowManager from '@/components/Core/Window/WindowManager';
 
 export default mixins(WindowMixin).extend({
