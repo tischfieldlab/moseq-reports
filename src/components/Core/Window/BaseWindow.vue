@@ -41,6 +41,7 @@
         </div>
         <div
             :id="`window-content-${this.id}`"
+            :hidden="this.isCollapsed"
             class="window-content"
             :style="{
                 width: `${contentWidth}px`,
@@ -380,7 +381,6 @@ export default Vue.extend({
 
             this.$emit('onShowHideToggle', {
                 isHidden: this.isCollapsed,
-                height: this.contentHeight
             });
         },
         applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {
