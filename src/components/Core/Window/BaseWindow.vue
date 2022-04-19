@@ -35,11 +35,7 @@
                     :clicked="onCollapsedClicked"
                     :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
                 />
-                <titlebar-button
-                    :title="'Close window'"
-                    :clicked="this.onClose"
-                    :icon="'x'"
-                />
+                <b-button-close @click="this.onClose" :title="'Close window'" class="close-button" />
             </div>
             {{ this.title }}
         </div>
