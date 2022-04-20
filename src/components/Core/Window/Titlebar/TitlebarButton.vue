@@ -29,7 +29,7 @@ export default Vue.extend({
     height: 24px;
     color: #747474;
     padding: 5px;
-    margin-right: 1px;
+    margin-right: 2px;
 }
 
 .title-button:hover {

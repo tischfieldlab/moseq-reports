@@ -18,6 +18,6 @@ export default Vue.extend({
 .close-button {
     margin-left: 5px;
     cursor: pointer;
-    margin-top: 6px;
+    margin-top: 4px;
 }
 </style>

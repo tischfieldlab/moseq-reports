@@ -495,8 +495,8 @@ export default Vue.extend({
 
 .titlebar-button-container {
     position: absolute;
-    margin-top: -30px;
-    right: 6px;
+    margin-top: -27px;
+    right: 8px;
 }
 
 .noselect {
