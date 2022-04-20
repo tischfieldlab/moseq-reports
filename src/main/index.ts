@@ -33,9 +33,6 @@ async function createWindow() {
         height: 720,
     });
 
-    require("@electron/remote/main").initialize();
-    require("@electron/remote/main").enable(win.webContents);
-
     if (app.isPackaged) {
         win.loadFile(join(__dirname, "../renderer/index.html"));
     } else {
@@ -44,6 +41,9 @@ async function createWindow() {
 
         win.loadURL(url);
         win.webContents.openDevTools();
+
+        require("@electron/remote/main").initialize();
+        require("@electron/remote/main").enable(win.webContents);
     }
 
     // Test active push message to Renderer-process
