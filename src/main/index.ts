@@ -2,7 +2,6 @@
 import { app, BrowserWindow, shell } from "electron";
 import { release } from "os";
 import { join } from "path";
-declare const __static: any;
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -21,7 +20,7 @@ let win: BrowserWindow | null = null;
 async function createWindow() {
     win = new BrowserWindow({
         title: "MoSeq Reports",
-        icon: join(__static, "img", "mouse.png"),
+        icon: join("img", "mouse.png"),
         webPreferences: {
             preload: join(__dirname, "../preload/index.cjs"),
             nodeIntegration: true,

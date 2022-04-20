@@ -1,14 +1,15 @@
 <template>
     <div id="app">
-        <HelloWorld msg="Hello Vue 2 + Vite" />
+        <HomePage />
     </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import HomePage from "./views/HomePage.vue";
+
 export default {
     components: {
-        HelloWorld,
+        HomePage,
     },
 };
 </script>
