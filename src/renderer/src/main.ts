@@ -10,6 +10,13 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
+import VueResize from "vue-resize";
+import "vue-resize/dist/vue-resize.css";
+Vue.use(VueResize as any);
+
+import VueForceNextTick from "vue-force-next-tick";
+Vue.use(VueForceNextTick as any);
+
 const vm = new Vue({
     render: (h) => h(App),
 })
