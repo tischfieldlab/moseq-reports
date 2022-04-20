@@ -1,28 +1,28 @@
 <template>
     <div class="home">
         <Sidebar :right="isSidebarRight" />
-        <!-- <NoDataPresent /> -->
-        <!-- <WindowContainer /> -->
-        <!-- <FileDropAcceptor /> -->
+        <NoDataPresent />
+        <WindowContainer />
+        <FileDropAcceptor />
     </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Sidebar from "../components/Sidebar.vue";
-// import WindowContainer from "../components/Core/Window/WindowContainer.vue";
-// import NoDataPresent from "../components/NoDataPresent.vue";
-// import FileDropAcceptor from "../components/FileDropAcceptor.vue";
+import WindowContainer from "../components/Core/Window/WindowContainer.vue";
+import NoDataPresent from "../components/NoDataPresent.vue";
+import FileDropAcceptor from "../components/FileDropAcceptor.vue";
 import { UpdateTitle } from "../WindowChrome";
 import { SidebarPosition } from "../store/root.types";
 
 export default Vue.component("homepage", {
     name: "homepage",
     components: {
-        // WindowContainer,
+        WindowContainer,
         Sidebar,
-        // NoDataPresent,
-        // FileDropAcceptor,
+        NoDataPresent,
+        FileDropAcceptor,
     },
     computed: {
         title() {
