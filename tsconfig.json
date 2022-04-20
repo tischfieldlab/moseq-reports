@@ -1,44 +1,17 @@
 {
     "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
-        "strict": true,
-        "noImplicitThis": true,
-        "noImplicitAny": false,
-        "jsx": "preserve",
-        "importHelpers": true,
+        "target": "ESNext",
+        "module": "ESNext",
         "moduleResolution": "node",
-        "experimentalDecorators": true,
-        "resolveJsonModule": true,
+        "importHelpers": true,
+        "jsx": "preserve",
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "allowJs": true,
+        "resolveJsonModule": true,
         "sourceMap": true,
-        "baseUrl": ".",
-        "types": [
-            "webpack-env",
-            "mocha",
-            "chai"
-        ],
-        "paths": {
-            "@/*": ["src/*"],
-        },
-        "lib": [
-            "esnext",
-            "dom",
-            "dom.iterable",
-            "scripthost"
-        ]
-    },
-    "include": [
-        "@types/**/*.ts",
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "src/**/*.vue",
-        "src/**/*.json",
-        "tests/**/*.ts",
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+        "baseUrl": "./",
+        "strict": true,
+        "paths": {},
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true
+    }
 }
