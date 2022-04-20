@@ -17,6 +17,16 @@ Vue.use(VueResize as any);
 import VueForceNextTick from "vue-force-next-tick";
 Vue.use(VueForceNextTick as any);
 
+import UniqueId from "vue-unique-id";
+Vue.use(UniqueId);
+
+import VueTimeago from "vue-timeago";
+Vue.use(VueTimeago as any, {
+    name: "Timeago",
+    locale: "en",
+    autoUpdate: 60,
+});
+
 const vm = new Vue({
     render: (h) => h(App),
 })

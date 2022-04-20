@@ -41,6 +41,8 @@
         "vue": "2",
         "vue-force-next-tick": "^1.1.0",
         "vue-resize": "^1.0.1",
+        "vue-timeago": "^5.1.3",
+        "vue-unique-id": "^3.2.1",
         "vuex": "3"
     }
 }
