@@ -1,7 +1,6 @@
 import { app, BrowserWindow, shell } from "electron";
 import { release } from "os";
 import { join } from "path";
-require("@electron/remote/main").initialize();
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -28,6 +27,9 @@ async function createWindow() {
         width: 1280,
         height: 720,
     });
+
+    require("@electron/remote/main").initialize();
+    require("@electron/remote/main").enable(win.webContents);
 
     if (app.isPackaged) {
         win.loadFile(join(__dirname, "../renderer/index.html"));

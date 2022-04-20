@@ -27,8 +27,15 @@ Vue.use(VueTimeago as any, {
     autoUpdate: 60,
 });
 
+import store from "./store/root.store";
+import { CreateTitleBar } from "./WindowChrome";
+
 const vm = new Vue({
+    store: store,
     render: (h) => h(App),
+    beforeMount() {
+        CreateTitleBar();
+    },
 })
     .$mount("#app")
     .$nextTick(window.removeLoading);

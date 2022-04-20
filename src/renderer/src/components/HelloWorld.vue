@@ -12,7 +12,7 @@
             >
         </p>
 
-        <button @click="count++">count is: {{ count }}</button>
+        <b-button @click="count++">count is: {{ count }}</b-button>
         <p>
             Edit
             <code>components/HelloWorld.vue</code> to test hot module
