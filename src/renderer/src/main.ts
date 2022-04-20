@@ -30,7 +30,7 @@ Vue.use(VueTimeago as any, {
 import store from "./store/root.store";
 import { CreateTitleBar } from "./WindowChrome";
 
-const vm = new Vue({
+const vm: any = new Vue({
     store: store,
     render: (h) => h(App),
     beforeMount() {
