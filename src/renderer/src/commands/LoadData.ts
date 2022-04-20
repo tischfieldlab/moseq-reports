@@ -1,7 +1,7 @@
 import app from "../main";
 import store from "../store/root.store";
 import { ipcRenderer, IpcRendererEvent } from "electron";
-import remote from "@electron/remote";
+import { dialog } from "@electron/remote";
 import path from "path";
 import { DatasetsState } from "../store/datasets.types";
 import { LoadDefaultLayout } from "./LoadLayout";
@@ -26,7 +26,7 @@ export const DataFileExt = "msq";
  * loads that file.
  */
 export default function () {
-    const filenames = remote.dialog.showOpenDialogSync({
+    const filenames = dialog.showOpenDialogSync({
         properties: ["openFile"],
         // defaultPath: process.cwd(),
         filters: [
