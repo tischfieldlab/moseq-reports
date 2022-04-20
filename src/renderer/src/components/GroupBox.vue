@@ -210,19 +210,19 @@ export default Vue.extend({
         },
         async updateGroupCounts() {
             try {
-                this.group_counts = await LoadData(
-                    this.$store.getters[`datasets/resolve`]("samples"),
-                    [{ type: "map" }]
-                ).then((data: any[]) => {
-                    return data.reduce((acc, curr) => {
-                        if (acc[curr.default_group] === undefined) {
-                            acc[curr.default_group] = 1;
-                        } else {
-                            acc[curr.default_group] += 1;
-                        }
-                        return acc;
-                    }, {});
-                });
+                // this.group_counts = await LoadData(
+                //     this.$store.getters[`datasets/resolve`]("samples"),
+                //     [{ type: "map" }]
+                // ).then((data: any[]) => {
+                //     return data.reduce((acc, curr) => {
+                //         if (acc[curr.default_group] === undefined) {
+                //             acc[curr.default_group] = 1;
+                //         } else {
+                //             acc[curr.default_group] += 1;
+                //         }
+                //         return acc;
+                //     }, {});
+                // });
             } catch {
                 return;
             }

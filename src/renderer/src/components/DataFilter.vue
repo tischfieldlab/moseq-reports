@@ -109,8 +109,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { CountMethod, DataviewState } from "../store/dataview.types";
-import GroupBox from "@/components/GroupBox.vue";
-import SyllableIdFilter from "@/components/SyllableIdFilter.vue";
+import GroupBox from "../components/GroupBox.vue";
+import SyllableIdFilter from "../components/SyllableIdFilter.vue";
 import { unnest } from "../util/Vuex";
 import EditableText from "./EditableText.vue";
 import { Chrome } from "vue-color";

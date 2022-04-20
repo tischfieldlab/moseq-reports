@@ -1,15 +1,15 @@
 <template>
     <div class="home">
-        <!-- <Sidebar :right="isSidebarRight" />
-        <NoDataPresent />
-        <WindowContainer />
-        <FileDropAcceptor /> -->
+        <Sidebar :right="isSidebarRight" />
+        <!-- <NoDataPresent /> -->
+        <!-- <WindowContainer /> -->
+        <!-- <FileDropAcceptor /> -->
     </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-// import Sidebar from "../components/Sidebar.vue";
+import Sidebar from "../components/Sidebar.vue";
 // import WindowContainer from "../components/Core/Window/WindowContainer.vue";
 // import NoDataPresent from "../components/NoDataPresent.vue";
 // import FileDropAcceptor from "../components/FileDropAcceptor.vue";
@@ -20,7 +20,7 @@ export default Vue.component("homepage", {
     name: "homepage",
     components: {
         // WindowContainer,
-        // Sidebar,
+        Sidebar,
         // NoDataPresent,
         // FileDropAcceptor,
     },
@@ -28,7 +28,7 @@ export default Vue.component("homepage", {
         title() {
             let title = "Moseq Reports";
             const currFile = this.$store.state.datasets.name;
-            if (currFile) {
+            if (currFile && currFile.length) {
                 title += " - " + currFile;
             }
             return title;
