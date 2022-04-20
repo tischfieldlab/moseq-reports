@@ -1,4 +1,4 @@
 {
     "genType": "markdown",
-    "outDir": "./docs"
+    "markdownDir": "*"
 }

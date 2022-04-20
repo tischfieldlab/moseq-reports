@@ -33,3 +33,7 @@ yarn-error.log*
 *.pfx
 
 .idea/
+
+
+#Vuese documentation generated files
+/docs/dev_guide/components/

@@ -14,69 +14,100 @@ if(process.env.APP_COMMIT_HASH){
   COMMIT_HASH= "Commit Hash - " + process.env.APP_COMMIT_HASH;
 }
 
+const siteBase = "/moseq-reports"
+
+function generateSidebar(folder){
+  // Read folder and filter folders from markdown files
+  let folderPath = folder.substring(folder.indexOf('/') + 1);
+  let filePath = folderPath.substring(folderPath.indexOf('/'));
+  //console.log(filePath);
+  let paths = fs.readdirSync(folder);
+  let files = paths.filter(path => path.includes(".md")).map((path) => {return folderPath + "/" + path.replace('.md', '')});
+  let dirs = paths.filter(path => !path.includes(".")).map((path) => {return folderPath + "/" + path});
+  
+  //Append nested folder by calling generate Sidebar
+  for (const dir of dirs){
+    files.push(generateSidebar("docs/" + dir));
+  }
+  for (const file of files){
+    console.log(file);
+  }
+  let sidebar = {
+    title: folder.substring(folder.lastIndexOf('/') + 1),
+    sidebarDepth: 0,
+    collapsable: true,
+    children: files
+  };
+  return sidebar;
+}
+
 module.exports = {
   title: 'Moseq Reports',
-  base: '/moseq-reports/',
+  base: siteBase+"/",
   theme: "craftdocs",
   plugins: [['vuepress-plugin-global-variables', { variables: { appVersion: version, commitRef: COMMIT_REF, commitHash: COMMIT_HASH} }]],
   chainWebpack: config => {
     config.resolve.alias.set('@img', path.resolve(__dirname, "../user_guide/Images"))
   },
-  /*
-  versions: [
-    ["3.x", { label: "3.x" }],
-    ["2.x", { label: "2.x" }]
-  ],
-  defaultVersion: "3.x",
-  */
   themeConfig: {
     head: [
-      ['link', { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png"}],
-      ['link', { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png"}],
-      ['link', { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png"}],
-      ['link', { rel: "manifest", href: "/site.webmanifest"}],
-      ['link', { rel: "mask-icon", href: "/safari-pinned-tab.svg", color: "#3a0839"}],
-      ['link', { rel: "shortcut icon", href: "/favicon.ico?"}]
+      ['link', { rel: "apple-touch-icon", sizes: "180x180", href: siteBase+"/apple-touch-icon.png"}],
+      ['link', { rel: "icon", type: "image/png", sizes: "32x32", href: siteBase+"/favicon-32x32.png"}],
+      ['link', { rel: "icon", type: "image/png", sizes: "16x16", href: siteBase+"/favicon-16x16.png"}],
+      ['link', { rel: "manifest", href: siteBase+"/site.webmanifest"}],
+      ['link', { rel: "mask-icon", href: siteBase+"/safari-pinned-tab.svg", color: "#5bbad5"}],
+      ['link', { rel: "shortcut icon", href: siteBase+"/favicon.ico"}],
+      ['meta', { name: "msapplication-TileColor", content: "#da532c"}],
+      ['meta', { name: "theme-color", content: "#ffffff"}],
     ],
     nav: [
-      { text: 'Github', link: 'https://github.com/tischfieldlab/moseq-reports' },
-      { text: 'Abraira Lab', link: 'https://www.abrairalab.org/' }
+      { text: 'Github', link: 'https://github.com/tischfieldlab/moseq-reports/'},
+      { text: 'Tichfield Lab', link: 'https://github.com/tischfieldlab'},
+      { text: 'Abraira Lab', link: 'https://www.abrairalab.org/'}
     ],
     sidebar: [{
         title: 'User Guide',
         sidebarDepth: 1,
         collapsable: false,
         children: [
-          '/user_guide/About.md',
+          '',
+          'About.md',
           '/user_guide/Installation.md',
-          '/user_guide/GettingStarted.md',
+          '/user_guide/UsingMoseq.md',
           '/user_guide/Tools.md',
-          '/user_guide/DeveloperGuide.md',
-          '/user_guide/Components.md',
         ]
       },
-      /*{
-        title: 'Component Documentation',
-        sidebarDepth: 0,
-        children: fs.readdirSync('docs/components').map((path) => { console.log(path); return "/components/" + path.replace('.md', '') })
-      },*/
+      {
+        title: 'Developer Guide',
+        sidebarDepth: 1,
+        collapsable: true,
+        children: [
+          '/dev_guide/GettingStarted.md',
+          generateSidebar('docs/dev_guide/components')
+        ]
+      },
+      // generateSidebar('docs/components')
+      // {
+      //   title: 'Component Documentation',
+      //   sidebarDepth: 0,
+      //   children: fs.readdirSync('docs/old_guide').map((path) => { console.log(path); return "/old_guide/" + path.replace('.md', '') })
+      // },
     ],
-    /*{
-      '/user_guide/': [
-        '',
-        'About',
-        'Installation',
-        'GettingStarted',
-        'Tools'
-      ],
-
-      
-      '/components/': [
-        '',
-        'AggregateOperation'
-      ],
-    },*/
-
+    
+    // sidebar: {
+    //   '/components/': [
+    //     generateSidebar('docs/components')
+    //   ],
+    //   '/': [
+    //     '',
+    //     'About',
+    //     '/user_guide/Installation',
+    //     '/user_guide/GettingStarted',
+    //     '/user_guide/Tools',
+    //     '/user_guide/DeveloperGuide',
+    //     '/user_guide/Components'
+    //   ],
+    // },
     
 
     codeLanguages: {

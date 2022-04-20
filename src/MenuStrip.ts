@@ -7,6 +7,7 @@ import {CheckUpdates} from '@/commands/LoadUpdates';
 import {SetSidebarLeft, SetSidebarRight, isSidebarLeft, isSidebarRight} from '@/commands/SidebarPosition';
 import {SnapshotWorkspace} from '@/components/Core/SnapshotHelper';
 import store from '@/store/root.store';
+import {documentation} from '../package.json';
 
 /**
  * Creates the main menu strip for the electron app
@@ -260,7 +261,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: 'User Guide',
                     type: 'normal',
                     click: (): void => { 
-                        shell.openExternal("https://tischfieldlab.github.io/moseq-reports");
+                        shell.openExternal(documentation);
                     },
                 },
             ],

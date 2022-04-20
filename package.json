@@ -11,6 +11,7 @@
     "email": "thackray@rutgers.edu"
   },
   "homepage": "https://github.com/tischfieldlab/moseq-reports",
+  "documentation": "https://tischfieldlab.github.io/moseq-reports/",
   "license": "UNLICENSED",
   "private": true,
   "engines": {
@@ -28,8 +29,9 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'",
-    "docs:dev": "npx vuese gen && vuepress dev docs",
-    "docs:build": "npx vuese gen && vuepress build docs"
+    "docs:dev": "vuepress dev docs",
+    "docs:clean": "npx vuese gen && node ./docs/vueseOrganize.js",
+    "docs:build": "npx vuese gen && node ./docs/vueseOrganize.js && vuepress build docs"
   },
   "resolutions": {
     "minimist": "1.2.3"
