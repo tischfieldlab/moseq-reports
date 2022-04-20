@@ -5,12 +5,19 @@
         "useDefineForClassFields": true,
         "module": "esnext",
         "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
         "strict": true,
+        "importHelpers": true,
         "jsx": "preserve",
         "sourceMap": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "lib": ["esnext", "dom"]
+        "noImplicitAny": false,
+        "lib": ["esnext", "dom"],
+        "paths": {
+            "@/*": ["src/*"]
+        }
     },
-    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
+    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+    "exclude": ["node_modules"]
 }
