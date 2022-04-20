@@ -1,9 +1,26 @@
 {
     "name": "electron-vue-vite",
-    "version": "1.0.0",
+    "version": "1.1.6",
+    "description": "Interactive interrogation of Moseq models",
+    "author": {
+        "name": "Jay A. Tischfield Lab",
+        "email": "thackray@rutgers.edu"
+    },
+    "bugs": {
+        "url": "https://github.com/tischfieldlab/moseq-reports/issues",
+        "email": "thackray@rutgers.edu"
+    },
+    "homepage": "https://github.com/tischfieldlab/moseq-reports",
+    "license": "UNLICENSED",
+    "private": true,
+    "engines": {
+        "node": ">=16"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tischfieldlab/moseq-reports.git"
+    },
     "main": "dist/main/index.cjs",
-    "author": "草鞋没号 <308487730@qq.com>",
-    "license": "MIT",
     "scripts": {
         "dev": "node scripts/watch.mjs",
         "prebuild": "vue-tsc --noEmit --p src/renderer/tsconfig.json && node scripts/build.mjs",
@@ -12,9 +29,6 @@
         "test:e2e": "npx playwright test",
         "test:e2e:headless": "npx playwright test --headed",
         "devtools": "concurrently \"./node_modules/.bin/vue-devtools\" \"node scripts/watch.mjs\""
-    },
-    "engines": {
-        "node": ">=14.17.0"
     },
     "devDependencies": {
         "@electron/remote": "^2.0.8",
