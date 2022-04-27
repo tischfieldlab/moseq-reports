@@ -83,7 +83,7 @@ export async function SnapshotWorkspace() {
     const opts = defaultOptions(app);
     opts.backgroundColor = '#FFFFFFFF' // opaque white background
 
-    const toSnapshot = WindowManager.getWindows();
+    const toSnapshot = WindowManager.getWindows(window => !window.$store.getters[`${(window as any).id}/isHidden`]);
 
     if (toSnapshot.length <= 0) {
         showSaveErrorToast('There are not any items to snapshot!', 'workspace snapshot');
