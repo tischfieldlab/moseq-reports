@@ -1,29 +1,29 @@
 Arguments: 
-  /Users/jared/.nvm/versions/node/v16.14.0/bin/node /Users/jared/.nvm/versions/node/v16.14.0/bin/yarn add -D @types/node-kmeans
+  C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\yarn\bin\yarn.js add -D @types/custom-electron-titlebar
 
 PATH: 
-  /Users/jared/.nvm/versions/node/v16.14.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/jared/.cargo/bin:/Users/jared/go-workspace/bin:/usr/local/opt/go/libexec/bin:/Users/jared/.antigen/bundles/robbyrussell/oh-my-zsh/lib:/Users/jared/.antigen/bundles/robbyrussell/oh-my-zsh/plugins/git:/Users/jared/.antigen/bundles/robbyrussell/oh-my-zsh/plugins/pip:/Users/jared/.antigen/bundles/robbyrussell/oh-my-zsh/plugins/command-not-found:/Users/jared/.antigen/bundles/zsh-users/zsh-syntax-highlighting:/Users/jared/.antigen/bundles/zsh-users/zsh-completions:/Users/jared/.antigen/bundles/zsh-users/zsh-autosuggestions:/Users/jared/.antigen/bundles/denysdovhan/spaceship-prompt:/Users/jared/.local/bin
+  D:\miniconda3\condabin;C:\Users\Jared Chester\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Jared Chester\bin;C:\Program Files\Eclipse Foundation\jdk-8.0.302.8-hotspot\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Python310\Scripts;C:\Python310;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files\Git\cmd;C:\Program Files\Microsoft SQL Server\130\Tools\Binn;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn;C:\ProgramData\chocolatey\bin;C:\Users\Jared Chester\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Microsoft SQL Server\150\Tools\Binn;C:\ProgramData\chocolatey\lib\gsudo\bin;C:\Program Files (x86)\Lua\5.1;C:\Program Files (x86)\Lua\5.1\clibs;C:\Program Files\CMake\bin;C:\Program Files\LLVM\bin;C:\Program Files\dotnet;D:\miniconda3;D:\miniconda3\Library\mingw-w64\bin;D:\miniconda3\Library\usr\bin;D:\miniconda3\Library\bin;D:\miniconda3\Scripts;C:\Users\Jared Chester\.cargo\bin;C:\Users\Jared Chester\AppData\Local\Programs\Python\Python310\Scripts;C:\Users\Jared Chester\AppData\Local\Programs\Python\Python310;C:\Users\Jared Chester\scoop\shims;C:\Users\Jared Chester\AppData\Local\Microsoft\WindowsApps;C:\Users\Jared Chester\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Jared Chester\AppData\Roaming\npm;C:\Users\Jared Chester\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Jared Chester\.dotnet\tools;C:\tools\neovim\Neovim\bin;C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin;C:\Program Files\PeaZip;C:\Users\Jared Chester\AppData\Local\nvim-data\lsp_servers\angularls\node_modules\@angular\language-server\bin;C:\Program Files (x86)\GitHub CLI;C:\Python27;C:\tools\flutter\bin;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3.2\bin;C:\Users\Jared Chester\.dotnet\tools;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
 
 Yarn version: 
-  1.22.17
+  1.22.18
 
 Node version: 
-  16.14.0
+  16.14.2
 
 Platform: 
-  darwin x64
+  win32 x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fnode-kmeans: Not found
-      at Request.params.callback [as _callback] (/Users/jared/.nvm/versions/node/v16.14.0/lib/node_modules/yarn/lib/cli.js:67029:18)
-      at Request.self.callback (/Users/jared/.nvm/versions/node/v16.14.0/lib/node_modules/yarn/lib/cli.js:140883:22)
-      at Request.emit (node:events:520:28)
-      at Request.<anonymous> (/Users/jared/.nvm/versions/node/v16.14.0/lib/node_modules/yarn/lib/cli.js:141855:10)
-      at Request.emit (node:events:520:28)
-      at IncomingMessage.<anonymous> (/Users/jared/.nvm/versions/node/v16.14.0/lib/node_modules/yarn/lib/cli.js:141777:12)
-      at Object.onceWrapper (node:events:639:28)
-      at IncomingMessage.emit (node:events:532:35)
-      at endReadableNT (node:internal/streams/readable:1346:12)
+  Error: https://registry.yarnpkg.com/@types%2fcustom-electron-titlebar: Not found
+      at Request.params.callback [as _callback] (C:\Users\Jared Chester\AppData\Roaming\nvm\v16.14.2\node_modules\yarn\lib\cli.js:66138:18)
+      at Request.self.callback (C:\Users\Jared Chester\AppData\Roaming\nvm\v16.14.2\node_modules\yarn\lib\cli.js:140883:22)
+      at Request.emit (node:events:526:28)
+      at Request.<anonymous> (C:\Users\Jared Chester\AppData\Roaming\nvm\v16.14.2\node_modules\yarn\lib\cli.js:141855:10)
+      at Request.emit (node:events:526:28)
+      at IncomingMessage.<anonymous> (C:\Users\Jared Chester\AppData\Roaming\nvm\v16.14.2\node_modules\yarn\lib\cli.js:141777:12)
+      at Object.onceWrapper (node:events:645:28)
+      at IncomingMessage.emit (node:events:538:35)
+      at endReadableNT (node:internal/streams/readable:1345:12)
       at processTicksAndRejections (node:internal/process/task_queues:83:21)
 
 npm manifest: 

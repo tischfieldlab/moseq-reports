@@ -1,4 +1,3 @@
-// import { remote, Menu, MenuItem } from "";
 import { Menu, app } from "@electron/remote";
 import loadDataCommand, { IsDataLoaded } from "./commands/LoadData";
 import loadLayoutCommand, {
@@ -8,7 +7,7 @@ import loadLayoutCommand, {
 } from "./commands/LoadLayout";
 import { AvailableComponents, CreateComponent } from "./commands/Windows";
 import showAboutWindow from "./commands/ShowAbout";
-import { CheckUpdates } from "./commands/LoadUpdates";
+// import { CheckUpdates } from "./commands/LoadUpdates";
 import {
     SetSidebarLeft,
     SetSidebarRight,
@@ -271,7 +270,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: "Check for Updates...",
                     type: "normal",
                     click: (): void => {
-                        CheckUpdates();
+                        // CheckUpdates();
                     },
                 },
                 {

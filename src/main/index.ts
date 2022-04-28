@@ -2,6 +2,14 @@
 import { app, BrowserWindow, shell } from "electron";
 import { release } from "os";
 import { join } from "path";
+import * as remoteMain from "@electron/remote/main";
+
+// @ts-ignore
+import { setupTitlebar, attachTitlebarToWindow } from "custom-electron-titlebar/main";
+remoteMain.initialize();
+
+// setup the titlebar main process
+setupTitlebar();
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -33,6 +41,8 @@ async function createWindow() {
         height: 720,
     });
 
+    remoteMain.enable(win.webContents);
+
     if (app.isPackaged) {
         win.loadFile(join(__dirname, "../renderer/index.html"));
     } else {
@@ -41,9 +51,6 @@ async function createWindow() {
 
         win.loadURL(url);
         win.webContents.openDevTools();
-
-        require("@electron/remote/main").initialize();
-        require("@electron/remote/main").enable(win.webContents);
     }
 
     // Test active push message to Renderer-process
@@ -56,9 +63,11 @@ async function createWindow() {
 
     // Make all links open with the browser, not with the application
     win.webContents.setWindowOpenHandler(({ url }) => {
-        if (url.startsWith("https:")) shell.openExternal(url);
-        return { action: "deny" };
+        shell.openExternal(url);
+        return { action: "allow" };
     });
+
+    attachTitlebarToWindow(win);
 }
 
 app.whenReady().then(createWindow);
