@@ -568,7 +568,14 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         },
         generateLayout(){
             const cy = (this as any).cy;
+            this.forceRedraw();
             cy.layout(this.graph_layout).run();
+        },
+        forceRedraw() {
+            const el = this.$refs.container as HTMLElement;
+            const display = el.style.display;
+            el.style.display = 'none';
+            el.style.display = display;
         }
     },
 });
