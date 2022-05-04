@@ -53,7 +53,7 @@ export default Vue.extend({
         HistoryViewer,
     },
     props: {
-        // Whether sidebar appears on the right side
+        // A boolean describing if sidebar appears on the right side
         right: {
             type: Boolean,
             default: false,

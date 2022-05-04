@@ -26,6 +26,7 @@
                 :style="{ background: this.titlebar_color }"
             >
                 <div class="titlebar-button-container">
+                    <!-- Space for extra buttons -->
                     <slot name="titlebarButtons"></slot>
                     <titlebar-button
                         v-if="minimizeable"
@@ -45,6 +46,7 @@
                 height: `${window_height - 37}px`
             }"
         >
+            <!-- Space to place content -->
             <slot></slot>
         </div>
         <div @mousedown="this.onResizeStart" class="noselect" v-if="!this.isCollapsed">

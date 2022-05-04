@@ -2,6 +2,7 @@
     <Portal>
         <div :id="$id('tooltip-contents')" class="tooltip_contents" v-show="show">
             <span data-popper-arrow class="arrow tt-arrow"></span>
+            <!-- Content of tool tip -->
             <slot></slot>
         </div>
     </Portal>

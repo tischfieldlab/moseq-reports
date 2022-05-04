@@ -93,9 +93,11 @@ export default Vue.extend({
     computed: {
         localValue: {
             get() {return this.value},
-            // Fires when local value is set
-            // @arg The local value
-            set(localValue) { this.$emit('input', localValue)}
+            set(localValue) {
+                // Fires when local value is set
+                // @arg The local value
+                this.$emit('input', localValue)
+            }
         },
         criteria(): string {
             // Compute the search criteria
