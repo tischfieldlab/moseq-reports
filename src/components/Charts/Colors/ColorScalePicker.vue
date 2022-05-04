@@ -87,9 +87,11 @@ export default Vue.extend({
         'ColorScaleBar': ColorScaleBar,
     },
     props: {
+        // Color value
         value: {
             type: String,
         },
+        // Color categories
         categories: {
             type: Array,
         } as PropValidator<string[]>,
@@ -155,6 +157,8 @@ export default Vue.extend({
         },
         select(option) {
             this.selected = option;
+            // Fires when input is selected
+            // @arg Color option
             this.$emit('input', option.value);
         },
         getContrast(hexcolor: string): string {

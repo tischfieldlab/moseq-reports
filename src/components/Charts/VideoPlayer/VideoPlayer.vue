@@ -2,6 +2,7 @@
     <div class="container">
         <div v-show="video_loaded" class="video-label-wrapper">
             <div class="info">
+                <!-- Space for extra information -->
                 <slot name="prepend"></slot>
                 <span>
                     {{current_time.toFixed(2)}} / {{duration.toFixed(2)}} s
@@ -19,9 +20,11 @@
                 autoplay="true"
                 muted="true"
             />
+            <!-- Space for extra information -->
             <slot name="append"></slot>
         </div>
         <div v-show="!video_loaded" class="no-syllable">
+            <!-- Information regarding missing video -->
             <slot name="no-video"></slot>
         </div>
     </div>
@@ -31,21 +34,25 @@
 import Vue from 'vue'
 export default Vue.extend({
     props: {
+        // File path of video
         videoPath: {
             type: String,
             required: true,
             default: undefined
         },
+        // Rate at which the video is played
         playbackRate: {
             type: Number,
             required: true,
             default: 1.0
         },
+        // Boolean describing if the video is looped
         loopVideo: {
             type: Boolean,
             required: false,
             default: true
         },
+        // Sub clip of main video 
         subClip: {
             required: false,
             default: undefined
@@ -128,6 +135,8 @@ export default Vue.extend({
         },
         sizeCalculated() {
             const video = (this.$refs.video as HTMLVideoElement);
+            // Fired when video scale is calculated
+            // @arg width and height of video
             this.$emit('sizeCalculated', { width: video.videoWidth, height: video.videoHeight });
         }
     },

@@ -2,6 +2,7 @@
     <div v-if="show" class="centered-message">
         <b-card bg-variant="primary" text-variant="white" class="text-center">
             <b-card-text>
+                <!-- Centers content in slot -->
                 <slot></slot>
             </b-card-text>
         </b-card>
@@ -14,6 +15,7 @@ import Vue from 'vue';
 
 export default Vue.extend({
     props: {
+        // Boolean describing if message is shown
         show: {
             type: Boolean,
             default: true,

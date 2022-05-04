@@ -14,9 +14,13 @@ export default Vue.extend({
     name: 'TitlebarButton',
     props: {
         /* tslint:disable-next-line */
+        // Function for when the titlebar is clicked
         clicked: { type: Function, required: false, default: () => {} },
+        // icon to use for this titlebar button
         icon: { type: String, required: true },
+        // Title attribute for this titlebar button, shown on hover via a tooltip
         title: { type: String, required: false },
+        // True if this titlebar button should be disabled, otherwise false
         disabled: { type: Boolean, required: false, default: false }
     },
 });

@@ -1,4 +1,4 @@
-import { remote, Menu, MenuItem } from 'electron';
+import { remote, Menu, MenuItem, shell } from 'electron';
 import loadDataCommand, {IsDataLoaded} from '@/commands/LoadData';
 import loadLayoutCommand, {LoadDefaultLayout, ClearLayout, SaveLayout} from '@/commands/LoadLayout';
 import {AvailableComponents, CreateComponent} from '@/commands/Windows';
@@ -7,6 +7,7 @@ import {CheckUpdates} from '@/commands/LoadUpdates';
 import {SetSidebarLeft, SetSidebarRight, isSidebarLeft, isSidebarRight} from '@/commands/SidebarPosition';
 import {SnapshotWorkspace} from '@/components/Core/SnapshotHelper';
 import store from '@/store/root.store';
+import {documentation} from '../package.json';
 
 /**
  * Creates the main menu strip for the electron app
@@ -255,6 +256,13 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: 'About',
                     type: 'normal',
                     click: (): void => { showAboutWindow(); },
+                },
+                {
+                    label: 'User Guide',
+                    type: 'normal',
+                    click: (): void => { 
+                        shell.openExternal(documentation);
+                    },
                 },
             ],
         },

@@ -28,14 +28,17 @@ import { range } from 'd3-array';
 
 export default Vue.extend({
     props: {
+        // Width of color scale bar
         width: {
             type: String,
             default: '100%',
         },
+        // Height of color scale bar
         height: {
             type: String,
             default: '20px',
         },
+        // Orientation of color scale bar, either vertical or horizontal
         orientation: {
             type: String,
             default: 'horizontal',
@@ -43,6 +46,7 @@ export default Vue.extend({
                 return ['horizontal', 'vertical'].indexOf(value) !== -1;
             }
         },
+        // Interpolator of color scale bar
         interpolator: {
             type: String,
             required: true,

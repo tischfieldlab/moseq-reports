@@ -32,13 +32,16 @@ export default Vue.extend({
         ColumnSelector,
     },
     props: {
+        // Operation used to aggregate
         Operation: {
             type: Object as PropType<AggregateOperation>,
             required: true,
         },
+        // Result of previous aggregation
         PreviousResult: {
             required: true,
         },
+        // Name of the owner
         Owner: {
             type: String,
             required: true,

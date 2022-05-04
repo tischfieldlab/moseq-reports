@@ -63,6 +63,7 @@ export default mixins(WindowMixin).extend({
         DatasetPicker,
     },
     computed: {
+        //returns current group order type. If changed, it sends a signal to the store to commit the `updateComponentSettings` mutation.
         group_order_type: {
             get(): string {
                 return this.settings.group_order_type;
@@ -76,6 +77,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        //returns current group order dataset. If changed, it sends a signal to the store to commit the `updateComponentSettings` mutation.
         group_order_dataset: {
             get(): string {
                 return this.settings.group_order_dataset;
@@ -89,6 +91,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        //Boolean that determines whether points on heatmap will show. If changed, it sends a signal to the store to commit the `updateComponentSettings` mutation.
         show_points: {
             get(): boolean {
                 return this.settings.show_points;
@@ -115,6 +118,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        //Boolean that determines whether boxplot will be visible. If changed, it sends a signal to the store to commit the `updateComponentSettings` mutation.
         show_boxplot: {
             get(): boolean {
                 return this.settings.show_boxplot;
@@ -128,6 +132,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
+        //Whisker type that determines type of whisker shown on boxplot. If changed, it sends a signal to the store to commit the `updateComponentSettings` mutations.
         boxplot_whiskers: {
             get(): WhiskerType {
                 return this.settings.boxplot_whiskers;

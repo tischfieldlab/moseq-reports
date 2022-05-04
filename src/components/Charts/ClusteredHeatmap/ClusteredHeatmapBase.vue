@@ -26,131 +26,164 @@ function default_tooltip_formatter(item, that){
 
 export default Vue.extend({
     props: {
+        // Data used in heatmap
         data: {
             required: true,
             type: Array as PropType<object[]>,
         },
+        // Width of heatmap
         width: {
             required: true,
             type: Number,
         },
         height: {
+        // Height of heatmap
             required: true,
             type: Number,
         },
+        // Colorscale of heatmap
         colorscale: {
             type: String,
             default: 'interpolateViridis',
         },
+        // Minimum value of heatmap
         vmin: {
             type: Number as PropType<number|undefined>,
             default: undefined,
         },
+        // Maximum value of heatmap
         vmax: {
             type: Number as PropType<number|undefined>,
             default: undefined,
         },
+        // Column key of heatmap
         columnKey: {
             required: true,
             type: String,
         },
+        // Row key of heatmap
         rowKey: {
             required: true,
             type: String,
         },
+        // Value key of heatmap
         valueKey: {
             required: true,
             type: String,
         },
+        // Ordering of column values of heatmap
         columnOrderType: {
             type: String,
             default: OrderingType.HCluster,
         },
+        // Distance between column clusters
         columnClusterDistance: {
             type: String,
             default: HClusterDistance.Euclidean,
         },
+        // Links between column clusters
         columnClusterLinkage: {
             type: String,
             default: HClusterLinkage.Avg,
         },
+        // Number of column clusters
         columnClusterK: {
             type: Number,
             default: 2,
         },
+        // Order of column values of heatmap
         columnOrderValue: {
             type: String,
         },
+        // Ascending or descending column order
         columnOrderDirection: {
             type: String,
             default: SortOrderDirection.Asc,
         },
+        // Dataset orderd by columnOrder
         columnOrderDataset: {
             type: Array,
         },
+        // Color of column label
         columnLabelColor: {
             type: Object as PropType<{[column: string]: string} | undefined>,
             default: undefined,
         },
+        // Ordering of row values of heatmap
         rowOrderType: {
             type: String,
             default: OrderingType.HCluster,
         },
+        // Distance between row clusters
         rowClusterDistance: {
             type: String,
             default: HClusterDistance.Euclidean,
         },
+        // Links between row clusters
         rowClusterLinkage: {
             type: String,
             default: HClusterLinkage.Avg,
         },
+        // Number of row clusters
         rowClusterK: {
             type: Number,
             default: 2,
         },
+        // Order of row values
         rowOrderValue: {
             type: String,
         },
+        // Ascending or descending row order
         rowOrderDirection: {
             type: String,
             default: SortOrderDirection.Asc,
         },
+        // Dataset orderd by rowOrder
         rowOrderDataset: {
             type: Array,
         },
+        // Color of row label
         rowLabelColor: {
             type: Object as PropType<{[column: string]: string} | undefined>,
             default: undefined,
         },
+        // List of groups
         groupLabels: {
             required: true,
             type: Array as PropType<string[]>,
             default: () => new Array<string>(),
         },
+        // Title of xAxis
         xAxisTitle: {
             type: String,
             default: 'Group',
         },
+        // Title of yAxis
         yAxisTitle: {
             type: String,
             default: 'Value',
         },
+        // Title of legend
         legendTitle: {
             type: String,
             default: 'Value',
         },
+        // Selected row
         selectedRow: {
             type: [String, Number],
             default: null,
         },
+        // Selected column
         selectedCol: {
             type: [String, Number],
             default: null,
         },
+        // Function to format tooltips
         tooltipFormatter: {
             type: Function,
             default: default_tooltip_formatter,
         },
+        // Message displayed for lack of data
         noDataMessage: {
             type: String,
             default: 'Sorry, no data available!',
@@ -177,12 +210,16 @@ export default Vue.extend({
         },
         rowOrder: {
             handler(newValue) {
+                // Fired when row order is changed
+                // @arg The new row order
                 this.$emit('row-order-changed', newValue);
             },
             immediate: true,
         },
         columnOrder: {
             handler(newValue) {
+                // Fired when column order is changed
+                // @arg The new column order
                 this.$emit('col-order-changed', newValue);
             },
             immediate: true,
@@ -478,6 +515,8 @@ export default Vue.extend({
             return Number.parseInt(label, 10) < 0;
         },
         handleHeatmapClick(event: Event) {
+            // Fired when heatmap is clicked
+            // @arg An event, the row, col, and value of the heatmap
             this.$emit('heatmapClick', {
                 e: event,
                 row: (event.target as SVGRectElement).dataset.row,
