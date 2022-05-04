@@ -10,7 +10,7 @@ import {
     UpdateComponentZIndexPayload,
     UpdateComponentAspectRatio,
     UpdateComponentAspectRatioByWidthAndHeight,
-    MinMaxPayload,
+    ShowHidePayload,
 } from './datawindow.types';
 import { Module } from 'vuex';
 import stateMerge from 'vue-object-merge';
@@ -32,6 +32,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             settings: {},
             z_index: 1000,
             aspect_ratio: undefined,
+            is_hidden: false
          };
     },
     getters: {
@@ -43,6 +44,9 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
         },
         aspectRatio(state) {
             return state.aspect_ratio;
+        },
+        isHidden(state) {
+            return state.is_hidden;
         }
     },
     mutations: {
@@ -57,10 +61,11 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             state.render_mode = payload.render_mode;
             state.z_index = payload.z_index
             state.aspect_ratio = payload.aspect_ratio;
+            state.is_hidden = payload.is_hidden;
             stateMerge(state.settings, payload.settings);
         },
-        toggleWindowMinMax(state, payload: MinMaxPayload) {
-            state.height = payload.height;
+        toggleWindowShowHide(state, payload: ShowHidePayload) {
+            state.is_hidden = payload.isHidden;
         },
         updateComponentLayout(state, payload: UpdateComponentLayoutPayload) {
             const deltaX: number = payload.width ? payload.width : state.width;
@@ -86,8 +91,8 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
 
             if (payload.position_y !== undefined) {
                 if (payload.position_y < 0) payload.position_y = 0;
-                if (payload.position_y + deltaY > maxY) payload.position_y = maxY - state.height - 65;
-                if (state.height === 0 && payload.position_y > (maxY - 65)) payload.position_y = maxY - 65;
+                if (state.is_hidden && payload.position_y > maxY - 70) payload.position_y = maxY - 70;
+                if (!state.is_hidden && payload.position_y + deltaY > maxY) payload.position_y = maxY - state.height - 65;
 
                 state.pos_y = payload.position_y;
             }

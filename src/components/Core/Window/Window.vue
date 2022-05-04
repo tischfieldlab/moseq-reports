@@ -2,22 +2,25 @@
     <BaseWindow
         ref="window"
         :id="id"
-        :titlebar_color="titlebar_color"
+        :swatch_color="swatch_color"
         :title="title"
         :width="this.window_width"
         :height="this.window_height"
         :pos="this.window_position"
+        :swatchTitle="this.swatch_title"
+        :isHidden="is_hidden"
         @onClosed="onClosed"
         @onMoved="onMoved"
         @onResized="onResized"
         @onWindowFocused="onWindowFocused"
-        @onMinMaxToggle="onWindowMinMaxToggle"
+        @onShowHideToggle="onShowHideToggle"
         :zIndex="z_index"
         :aspectRatio="aspect_ratio"
     >
         <template v-slot:titlebarButtons>
-            <titlebar-button :clicked="onSnapshotClicked" icon="camera-fill" />
-            <titlebar-button :clicked="onSettingsClicked" icon="gear-fill" />
+            <titlebar-button v-if="!is_hidden" :clicked="onSnapshotClicked" :title="'Take snapshot'" :icon="'camera-fill'" />
+            <titlebar-button v-else :disabled='true' :title="'Snapshot disabled while contents are hidden'" :icon="'camera-fill'" />
+            <titlebar-button :clicked="onSettingsClicked" :title="'Adjust settings'" :icon="'gear-fill'" />
         </template>
         <b-overlay :show="is_loading" no-fade class="overlay-container">
             <component ref="body" :id="id" :is="spec.component_type" />
@@ -50,7 +53,7 @@
                         No settings available for this component
                     </p>
                 </b-tab>
-                <b-tab title="Snapshots">
+                <b-tab title="Snapshots" :disabled="is_hidden">
                     <SnapshotSettings :id="id" />
                 </b-tab>
             </b-tabs>
@@ -65,7 +68,7 @@ import mixins from 'vue-typed-mixins';
 import WindowMixin from './WindowMixin';
 import Snapshot, { ensureDefaults } from '../SnapshotHelper';
 import { Position, Size } from '@/store/datawindow.types';
-import TitlebarButton from '@/components/Core/Window/WindowTitlebarButton.vue';
+import TitlebarButton from '@/components/Core/Window/Titlebar/TitlebarButton.vue';
 import WindowManager from '@/components/Core/Window/WindowManager';
 
 export default mixins(WindowMixin).extend({
@@ -96,28 +99,21 @@ export default mixins(WindowMixin).extend({
         return {
             show_settings_modal: false,
             component_loading: 0,
-            watchers: Array<() => void>(),
         };
     },
     computed: {
         settings_title(): string {
             return this.title + ' Settings';
         },
-        max_width(): number {
-            return window.innerWidth;
-        },
-        max_height(): number {
-            return window.innerHeight;
-        },
-        titlebar_color(): string {
+        swatch_color(): string {
             return this.dataview.color;
-        },
-        swatch_title(): string {
-            return `Using ${this.dataview.name}`;
         },
         is_loading(): boolean {
             const s = this.dataview;
             return this.component_loading > 0 || (s && s.loading);
+        },
+        swatch_title(): string {
+            return `Using ${this.dataview.name}`;
         },
         z_index(): number {
             return this.$store.getters[`${this.id}/zIndex`];
@@ -133,24 +129,10 @@ export default mixins(WindowMixin).extend({
         },
         window_position(): Position {
             return this.layout.position;
+        },
+        is_hidden(): boolean {
+            return this.$store.getters[`${this.id}/isHidden`];
         }
-    },
-    watch: {
-        title(newValue) {
-            (this.$refs.window as any).title = newValue;
-        },
-        titlebar_color: {
-            handler(newValue) {
-                const swatch = document.getElementById(this.$id('swatch'));
-                if (swatch) swatch.style.backgroundColor = newValue;
-            },
-        },
-        swatch_title: {
-            handler(newValue) {
-                const swatch = document.getElementById(this.$id('swatch'));
-                if (swatch) swatch.title = newValue;
-            },
-        },
     },
     methods: {
         onResized(event: any) {
@@ -196,10 +178,10 @@ export default mixins(WindowMixin).extend({
             const maxZ: number = this.$store.getters['datawindows/windowsMaxZIndex'] + 1;
             this.$store.commit(`${this.id}/updateZIndex`, { z_index: maxZ });
         },
-        onWindowMinMaxToggle(event: any) {
-            this.$store.commit(`${this.id}/toggleWindowMinMax`, {
+        onShowHideToggle(event: any) {
+            this.$store.commit(`${this.id}/toggleWindowShowHide`, {
                 id: this.id,
-                height: event.height,
+                isHidden: event.isHidden,
             });
         },
     },

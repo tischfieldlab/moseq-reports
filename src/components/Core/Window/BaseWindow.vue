@@ -23,23 +23,26 @@
                 data-draggable="dataview-swatch"
                 class="dataview-swatch"
                 :id="$id('swatch')"
-                :style="{ background: this.titlebar_color }"
+                :style="{ background: this.swatch_color }"
+                v-b-tooltip.hover
+                :title="swatchTitle"
             >
-                <div class="titlebar-button-container">
-                    <!-- Space for extra buttons -->
-                    <slot name="titlebarButtons"></slot>
-                    <titlebar-button
-                        v-if="minimizeable"
-                        :clicked="onCollapsedClicked"
-                        :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
-                    />
-                    <b-button-close @click="this.onClose" class="close-button" />
-                </div>
             </span>
-                {{ this.title }}
+            <div class="titlebar-button-container">
+                <!-- Space for extra buttons -->
+                <slot name="titlebarButtons"></slot>
+                <titlebar-button
+                    :title="isCollapsed ? 'Show contents' : 'Hide contents'"
+                    :clicked="onCollapsedClicked"
+                    :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
+                />
+                <close-button :clicked="this.onClose" :title="'Close window'"/>
+            </div>
+            {{ this.title }}
         </div>
         <div
             :id="`window-content-${this.id}`"
+            :hidden="this.isCollapsed"
             class="window-content"
             :style="{
                 width: `${contentWidth}px`,
@@ -65,7 +68,8 @@
 <script lang="ts">
 import { Position } from '@/store/datawindow.types';
 import Vue from 'vue';
-import TitlebarButton from '@/components/Core/Window/WindowTitlebarButton.vue';
+import TitlebarButton from '@/components/Core/Window/Titlebar/TitlebarButton.vue';
+import CloseButton from '@/components/Core/Window/Titlebar/CloseButton.vue';
 import { applyAspectRatio, isValidHeight, isValidWidth } from './util';
 
 enum ResizeType {
@@ -81,8 +85,12 @@ enum ResizeType {
 
 export default Vue.extend({
     name: 'BaseWindow',
+    mounted() {
+        this.collapseWindow();
+    },
     components: {
-        TitlebarButton
+        TitlebarButton,
+        CloseButton,
     },
     props: {
         // ID of the base window
@@ -90,8 +98,8 @@ export default Vue.extend({
             type: String,
             required: true
         },
-        // Color of the titlebar
-        titlebar_color: {
+        // Color of the swatch in the titlebar
+        swatch_color: {
             type: String,
             required: true
         },
@@ -115,11 +123,11 @@ export default Vue.extend({
             type: Object,
             required: true
         },
-        // Boolean describing if the window can be minimized
-        minimizeable: {
+        // Boolean describing if the window should be displayed in a minimized state (true) or maximized state (false)
+        isHidden: {
             type: Boolean,
             required: false,
-            default: true
+            default: false
         },
         // Boolean describing if the window can be resized
         resizeable: {
@@ -149,11 +157,15 @@ export default Vue.extend({
         zIndex: {
             type: Number,
             required: false,
-        }
+        },
+        swatchTitle: {
+            type: String,
+            required: false
+        },
     },
     data() {
         return {
-            isCollapsed: false,
+            isCollapsed: this.isHidden,
             restoredHeight: this.height,
             titlebarHeight: 35,
             contentWidth: this.width,
@@ -383,8 +395,10 @@ export default Vue.extend({
         },
         onCollapsedClicked(event: any) {
             this.isCollapsed = !this.isCollapsed;
-
-            if (this.$data.isCollapsed) {
+            this.collapseWindow();
+        },
+        collapseWindow() {
+            if (this.isCollapsed) {
                 this.restoredHeight = this.contentHeight;
                 this.contentHeight = 0;
             } else {
@@ -392,9 +406,9 @@ export default Vue.extend({
             }
 
             // Fired when window is minimized
-            // @arg The window height
-            this.$emit('onMinMaxToggle', {
-                height: this.contentHeight
+            // @arg object with `isHidden` property describing the current state
+            this.$emit('onShowHideToggle', {
+                isHidden: this.isCollapsed,
             });
         },
         applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {
@@ -509,16 +523,8 @@ export default Vue.extend({
 
 .titlebar-button-container {
     position: absolute;
-    margin-top: -3px;
-    right: 6px;
-}
-
-.titlebar-button-container svg {
-    margin-left: 9px;
-}
-.close-button {
-    margin-left: 5px;
-    cursor: pointer;
+    margin-top: -27px;
+    right: 8px;
 }
 
 .noselect {
