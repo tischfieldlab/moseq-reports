@@ -19,7 +19,7 @@ function findFiles(startPath,filter){
             findFiles(filename,filter); //recurse
         }
         else if (filename.indexOf(filter)>=0) {
-            console.log('-- found: ',filename);
+            //console.log('-- found: ',filename);
             folders.push(filename)
         };
     };
@@ -27,13 +27,13 @@ function findFiles(startPath,filter){
 
 //Clear docs folder
 function clearFolder(folder){
-    fs.rmdir(folder, { recursive: true }, (err) => {if (err) {throw err;}});
+    fs.rmdirSync(folder, {recursive: true, force: true}, (err) => {if (err) {throw err;}});
 };
 
 function moveFiles(){
     let folder = "";
     for(const file of folders) {
-        folder = file.replace('src\\', 'docs\\dev_guide\\').substring(0, file.lastIndexOf("\\")+1);
+        folder = file.substring(0, file.lastIndexOf("\\")+1).replace('src\\', 'docs\\dev_guide\\');
         if(!(fs.existsSync(folder))){
             fs.mkdirSync(folder, { recursive: true })
         }

@@ -228,6 +228,7 @@ export default mixins(LinePlotBase, CanvasMixin).extend({
 
             ctx.restore();
         },
+        
         handleClick(event: MouseEvent) {
             for (const node of this.data as object[]) {
                 const x1 = this.margin.left + this.scale.x(node[this.varKey]) - this.pointSize;
@@ -237,6 +238,8 @@ export default mixins(LinePlotBase, CanvasMixin).extend({
 
                 if (event.offsetX > x1 && event.offsetX <= x2
                  && event.offsetY > y1 && event.offsetY <= y2) {
+                    // Fire when line plot is clicked if offset is within range
+                    // @arg An event, the series key, var key, and value key of the line plot
                     this.$emit('lineplot-click', {
                         e: event,
                         series: node[this.seriesKey],

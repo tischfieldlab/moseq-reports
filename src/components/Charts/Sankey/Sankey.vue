@@ -99,60 +99,77 @@ export default Vue.extend({
         ToolTip,
     },
     props: {
+        // Data for sankey diagram
         data: {
             required: true,
             default: {nodes: [], links: []} as {nodes: Node[], links: Link[]},
         },
+        // Width of diagram
         width: {
             required: true,
             type: Number,
         },
+        // Height of diagram
         height: {
             required: true,
             type: Number,
         },
+        // Color of legend title
         colorLegendTitle: {
             type: String,
         },
+        // Title of diagram
         title: {
             type: String,
         },
+        // Function to format tool tip
         tooltipFormatter: {
             type: Function,
             default: default_tooltip_formatter,
         },
+        // Superset of node ID's
         nodeIdSuperset: {
             type: Array,
         },
+        // Alignment of nodes
         nodeAlignment: {
             default: NodeAlignment.Justify,
         },
+        // Width of nodes
         nodeWidth: {
             type: Number,
             default: 36,
         },
+        // Padding around nodes
         nodePadding: {
             type: Number,
             default: 3,
         },
+        // Color mode of nodes
         nodeColorMode: {
             default: ColoringMode.Categorical,
         },
+        // Color property of nodes
         nodeColorProperty: {
             default: 'id',
         },
+        // Color mode of links between nodes
         linkColorMode: {
             default: ColoringMode.Categorical,
         },
+        // Color property of links between nodes
         linkColorProperty: {
             default: '',
         },
+        // Color map based on categories
         categoricalColormap: {
             default: 'schemeDark2',
         },
+        // Color map based on quantaties
         quantitativeColormap: {
             default: 'interpolatePuOr',
         },
+        // Message displayed for lack of data
         noDataMessage: {
             default: 'No data available.',
             type: String,
@@ -265,6 +282,8 @@ export default Vue.extend({
             return color(value)
         },
         onNodeClick(event, node) {
+            // Fires when node is clicked
+            // @arg An event and clicked node
             this.$emit('node-click', {
                 event,
                 type: 'node',
@@ -272,6 +291,8 @@ export default Vue.extend({
             });
         },
         onEdgeClick(event, edge) {
+            // Fires when edge is clicked
+            // @arg An event and clicked edge
             this.$emit('edge-click', {
                 event,
                 type: 'edge',

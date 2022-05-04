@@ -83,55 +83,67 @@ export default Vue.extend({
         TitlebarButton
     },
     props: {
+        // ID of the base window
         id: {
             type: String,
             required: true
         },
+        // Color of the titlebar
         titlebar_color: {
             type: String,
             required: true
         },
+        // Text of the titlebar
         title: {
             type: String,
             required: true
         },
+        // Height of the window
         height: {
             type: [Number],
             required: true
         },
+        // Width of the window
         width: {
             type: [Number],
             required: true
         },
+        // Position of the window
         pos: {
             type: Object,
             required: true
         },
+        // Boolean describing if the window can be minimized
         minimizeable: {
             type: Boolean,
             required: false,
             default: true
         },
+        // Boolean describing if the window can be resized
         resizeable: {
             type: Boolean,
             required: false,
             default: true
         },
+        // Minimum width of the window
         minWidth: {
             type: Number,
             required: false,
             default: 260
         },
+        // Minimum height of the window
         minHeight: {
             type: Number,
             required: false,
             default: 155
         },
+        // Aspect ratio of the window
         aspectRatio: {
             type: Number,
             required: false,
             default: undefined,
         },
+        // z-index of the window
         zIndex: {
             type: Number,
             required: false,
@@ -177,6 +189,8 @@ export default Vue.extend({
                 const aspect = this.applyAspectRatio(this.windowWidth, this.windowHeight);
                 this.windowWidth = aspect.width;
                 this.windowHeight = aspect.height;
+                // Fires when window is resized
+                // @arg Window height and width
                 this.$emit('onResized', {
                     width: this.windowWidth,
                     height: this.windowHeight
@@ -203,6 +217,7 @@ export default Vue.extend({
     methods: {
         // Used to set the z-index to be the max one
         windowClicked() {
+            // Fired when window is clicked and used to set the z-index to be the max one
             this.$emit('onWindowFocused');
         },
         onTitlebarHover() {
@@ -228,6 +243,8 @@ export default Vue.extend({
             this.prevDeltaY = 0;
             this.isDragging = false;
 
+            // Fires when window is moved
+            // @arg Windows x and y coordinates
             this.$emit('onMoved', { x: this.windowPos.x, y: this.windowPos.y });
 
             document.body.style.cursor = 'grab';
@@ -339,11 +356,15 @@ export default Vue.extend({
             this.isResizing = false;
             this.resizeElement = null;
 
+            // Fires when window is resized
+            // @arg Window height and width
             this.$emit('onResized', {
                 width: this.windowWidth,
                 height: this.windowHeight,
             });
 
+            // Fires when window is moved
+            // @arg Windows x and y coordinates
             this.$emit('onMoved', {
                 x: this.windowPos.x,
                 y: this.windowPos.y,
@@ -353,6 +374,8 @@ export default Vue.extend({
             document.onmousemove = null;
         },
         onClose(event: any) {
+            // Fired when window is closed
+            // @arg An event
             this.$emit('onClosed', event);
         },
         onCollapsedClicked(event: any) {
@@ -365,6 +388,8 @@ export default Vue.extend({
                 this.windowHeight = this.restoredHeight;
             }
 
+            // Fired when window is minimized
+            // @arg The window height
             this.$emit('onMinMaxToggle', {
                 height: this.windowHeight
             });

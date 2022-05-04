@@ -45,17 +45,21 @@ export default Vue.extend({
         ColumnSelector,
     },
     props: {
+        // Operation used to filter data
         Operation: {
             type: Object as PropType<FilterOperation>,
             required: true,
         },
+        // Result of previously filtered data
         PreviousResult: {
             required: true,
         },
+        // Name of the owner
         Owner: {
             type: String,
             required: true,
         },
+        // Any special tokens used in filtering data
         SpecialTokens: {
             type: Object,
             required: true,

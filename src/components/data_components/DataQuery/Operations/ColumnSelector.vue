@@ -60,25 +60,31 @@ export default Vue.extend({
         };
     },
     props: {
+        // Column selector label
         label: {
             type: String,
             default: '',
         },
+        // Column selector options
         options: {
             type: Array as PropType<string[]>,
         },
+        // Value of the column selector
         value: {
             type: Array as PropType<string[]>,
             default: () => [],
         },
+        // Boolean describing if the column selctor has been disabled
         disabled: {
             type: Boolean,
             default: false,
         },
+        // Column selector icon
         icon: {
             type: String,
             default: 'layout-three-columns',
         },
+        // Noun of the column selector
         noun: {
             type: String,
             default: 'Column',
@@ -87,6 +93,8 @@ export default Vue.extend({
     computed: {
         localValue: {
             get() {return this.value},
+            // Fires when local value is set
+            // @arg The local value
             set(localValue) { this.$emit('input', localValue)}
         },
         criteria(): string {

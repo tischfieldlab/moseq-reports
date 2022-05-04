@@ -14,6 +14,7 @@ import Vue from 'vue';
 
 export default Vue.extend({
     props: {
+        // Whether message is shown
         show: {
             type: Boolean,
             default: true,

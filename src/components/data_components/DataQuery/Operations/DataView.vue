@@ -31,9 +31,11 @@ import Vue, { PropType } from 'vue';
 
 export default Vue.extend({
     props: {
+        // Dataset being viewed
         Dataset: {
             required: false,
         },
+        //Boolean describing if the dataset is collapsed
         Collapsed: {
             type: Boolean,
             default: true,

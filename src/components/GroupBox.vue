@@ -66,6 +66,7 @@ export default Vue.extend({
         'chrome-picker': Chrome,
     },
     props: {
+        // The source of the data
         datasource: {
             type: String,
             required: true,

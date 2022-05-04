@@ -94,7 +94,10 @@ export default mixins(ClusteredHeatmapBase).extend({
                 longest: Math.max(...widths),
             };
         },
+
         handleHeatmapClick(event: Event) {
+            // Fire when heatmap is clicked
+            // @arg An event, the row, col, and value of the heatmap
             this.$emit('heatmap-click', {
                 e: event,
                 row: (event.target as SVGRectElement).dataset.row,

@@ -11,7 +11,9 @@ import Vue from 'vue';
 export default Vue.extend({
     name: 'TitlebarButton',
     props: {
+        // Function for when the titlebar is clicked
         clicked: { type: Function },
+        // Path to icon of titlebar button
         icon: { type: String, required: true },
     },
     methods: {
