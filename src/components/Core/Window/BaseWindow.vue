@@ -42,8 +42,8 @@
             :id="`window-content-${this.id}`"
             class="window-content"
             :style="{
-                width: `${window_width - 2}px`,
-                height: `${window_height - 37}px`
+                width: `${contentWidth}px`,
+                height: `${contentHeight}px`
             }"
         >
             <!-- Space to place content -->
@@ -156,8 +156,8 @@ export default Vue.extend({
             isCollapsed: false,
             restoredHeight: this.height,
             titlebarHeight: 35,
-            windowWidth: this.width,
-            windowHeight: this.height,
+            contentWidth: this.width,
+            contentHeight: this.height,
             windowPos: this.pos,
             // Used for window move
             isDragging: false,
@@ -170,10 +170,10 @@ export default Vue.extend({
     },
     computed: {
         window_width(): number {
-            return this.windowWidth as number;
+            return this.contentWidth as number + 2; // add 2 px for border
         },
         window_height(): number {
-            return this.windowHeight as number + this.titlebarHeight;
+            return this.contentHeight as number + this.titlebarHeight + 2; // add titlebar height and 2px for border
         },
         window_xpos(): number {
             return (this.windowPos as Position).x;
@@ -188,25 +188,26 @@ export default Vue.extend({
     watch: {
         aspect_ratio: {
             handler(newValue) {
-                const aspect = this.applyAspectRatio(this.windowWidth, this.windowHeight);
-                this.windowWidth = aspect.width;
-                this.windowHeight = aspect.height;
+                const aspect = this.applyAspectRatio(this.contentWidth, this.contentHeight);
+                this.contentWidth = aspect.width;
+                this.contentHeight = aspect.height;
+
                 // Fires when window is resized
                 // @arg Window height and width
                 this.$emit('onResized', {
-                    width: this.windowWidth,
-                    height: this.windowHeight
+                    width: this.contentWidth,
+                    height: this.contentHeight
                 });
             }
         },
         width: {
             handler(newValue: number) {
-                this.windowWidth = newValue;
+                this.contentWidth = newValue;
             }
         },
         height: {
             handler(newValue: number) {
-                this.windowHeight = newValue;
+                this.contentHeight = newValue;
             }
         },
         pos: {
@@ -284,8 +285,8 @@ export default Vue.extend({
                 const deltaX = event.clientX - this.prevDeltaX;
                 const deltaY = event.clientY - this.prevDeltaY;
 
-                let newHeight = this.windowHeight;
-                let newWidth = this.windowWidth;
+                let newHeight = this.contentHeight;
+                let newWidth = this.contentWidth;
                 let newX = this.windowPos.x;
                 let newY = this.windowPos.y;
 
@@ -302,7 +303,7 @@ export default Vue.extend({
                     case ResizeType.Top:
                     case ResizeType.TopRight:
                     case ResizeType.TopLeft:
-                        newHeight = this.windowHeight - deltaY;
+                        newHeight = this.contentHeight - deltaY;
                         newY = this.windowPos.y + deltaY;
                         appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
                     break;
@@ -310,7 +311,7 @@ export default Vue.extend({
                     case ResizeType.Bottom:
                     case ResizeType.BottomRight:
                     case ResizeType.BottomLeft:
-                        newHeight = this.windowHeight + deltaY;
+                        newHeight = this.contentHeight + deltaY;
                         appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
                     break;
                 }
@@ -320,14 +321,14 @@ export default Vue.extend({
                     case ResizeType.TopRight:
                     case ResizeType.BottomRight:
                     case ResizeType.Right:
-                        newWidth = this.windowWidth + deltaX;
+                        newWidth = this.contentWidth + deltaX;
                         appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
                     break;
 
                     case ResizeType.BottomLeft:
                     case ResizeType.TopLeft:
                     case ResizeType.Left:
-                        newWidth = this.windowWidth - deltaX;
+                        newWidth = this.contentWidth - deltaX;
                         newX = this.windowPos.x + deltaX;
                         appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
 
@@ -342,12 +343,12 @@ export default Vue.extend({
 
                 // Respect the min height and width
                 if (isValidHeight(newHeight, this.minHeight)) {
-                    this.windowHeight = newHeight;
+                    this.contentHeight = newHeight;
                     this.windowPos.y = newY;
                 }
 
                 if (isValidWidth(newWidth, this.minWidth)) {
-                    this.windowWidth = newWidth;
+                    this.contentWidth = newWidth;
                     this.windowPos.x = newX;
                 }
             }
@@ -361,8 +362,8 @@ export default Vue.extend({
             // Fires when window is resized
             // @arg Window height and width
             this.$emit('onResized', {
-                width: this.windowWidth,
-                height: this.windowHeight,
+                width: this.contentWidth,
+                height: this.contentHeight,
             });
 
             // Fires when window is moved
@@ -384,16 +385,16 @@ export default Vue.extend({
             this.isCollapsed = !this.isCollapsed;
 
             if (this.$data.isCollapsed) {
-                this.restoredHeight = this.windowHeight;
-                this.windowHeight = 0;
+                this.restoredHeight = this.contentHeight;
+                this.contentHeight = 0;
             } else {
-                this.windowHeight = this.restoredHeight;
+                this.contentHeight = this.restoredHeight;
             }
 
             // Fired when window is minimized
             // @arg The window height
             this.$emit('onMinMaxToggle', {
-                height: this.windowHeight
+                height: this.contentHeight
             });
         },
         applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {
