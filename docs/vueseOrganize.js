@@ -3,23 +3,21 @@ const fs = require('fs');
 
 let folders = [];
 
-function findFiles(startPath,filter){
-    //console.log('Starting from dir '+startPath+'/');
+function findFiles(startPath, filter){
 
     if (!fs.existsSync(startPath)){
-        console.log("no dir ",startPath);
+        console.log("no dir ", startPath);
         return;
     }
 
     var files=fs.readdirSync(startPath);
-    for(var i=0;i<files.length;i++){
-        var filename=path.join(startPath,files[i]);
+    for(var i=0; i < files.length; i++){
+        var filename = path.join(startPath, files[i]);
         var stat = fs.lstatSync(filename);
         if (stat.isDirectory()){
-            findFiles(filename,filter); //recurse
+            findFiles(filename, filter); //recurse
         }
-        else if (filename.indexOf(filter)>=0) {
-            //console.log('-- found: ',filename);
+        else if (filename.indexOf(filter) >= 0) {
             folders.push(filename)
         };
     };
@@ -33,11 +31,11 @@ function clearFolder(folder){
 function moveFiles(){
     let folder = "";
     for(const file of folders) {
-        folder = file.substring(0, file.lastIndexOf("\\")+1).replace('src\\', 'docs\\dev_guide\\');
+        folder = path.normalize(path.dirname(file).replace('src', 'docs/dev_guide'));
         if(!(fs.existsSync(folder))){
             fs.mkdirSync(folder, { recursive: true })
         }
-        fs.rename(file, file.replace('src\\', 'docs\\dev_guide\\'), (err)=>{if(err) throw err;});
+        fs.rename(file, path.normalize(file.replace('src', 'docs/dev_guide')), (err)=>{if(err) throw err;});
     }
 };
 
