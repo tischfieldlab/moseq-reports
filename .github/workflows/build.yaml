@@ -5,7 +5,7 @@ on:
     tags:
       - 'buildAll-*'
   pull_request:
-    branches: [master]
+    branches: [master, patch*, release*]
   workflow_dispatch:
 
 jobs:

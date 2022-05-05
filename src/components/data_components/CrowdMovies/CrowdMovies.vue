@@ -54,7 +54,7 @@ export default mixins(WindowMixin).extend({
         count_method(): CountMethod {
             return this.dataview.countMethod;
         },
-        //Updates path to video based on changes to datasource and selected syllable
+        // Updates path to video based on changes to datasource and selected syllable
         crowd_movie_path(): string {
             const uID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Usage);
             const rID = this.$store.getters[`${this.datasource}/selectedSyllableAs`](CountMethod.Raw);

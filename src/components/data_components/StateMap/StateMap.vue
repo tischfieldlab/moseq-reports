@@ -242,7 +242,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         (this as any).cy = cy;
     },
     computed: {
-        //returns current graph layout if changes were made in State Map settings.
+        // returns current graph layout if changes were made in State Map settings.
         graph_layout(): LayoutOptions{
             switch(this.settings.layout){
                 case 'grid':
@@ -288,7 +288,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             // Layout currently not customizable - return default layout object
             return {name: this.settings.layout}
         },
-        //returns current style of the graph.
+        // returns current style of the graph.
         graph_styles(): any[] {
             return [ // the stylesheet for the graph
                 {
@@ -319,7 +319,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 },
             ];
         },
-        //returns Nodes of the Statemap given the current dataset.
+        // returns Nodes of the Statemap given the current dataset.
         elements(): any[] {
             const trans = this.raw_data.transitions.filter((row) => row.group === this.settings.plot_group);
             const transSum = trans.reduce((acc, curr) => acc + curr.raw, 0);
@@ -374,7 +374,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             }
             return elements;
         },
-        //returns scale of the graph.
+        // returns scale of the graph.
         scale(): any {
             const r = scaleLinear()
                         .domain(extent((this.raw_data.usages).map((n) => n.usage)) as [number, number])
@@ -428,7 +428,7 @@ export default mixins(WindowMixin, LoadingMixin).extend({
             }
             return { r, t, o, z, zo };
         },
-        //returns usage and transition of Nodes in the Source Data.
+        // returns usage and transition of Nodes in the Source Data.
         sourceData(): any {
             const usageSource = this.$store.getters[`datasets/resolve`]('usage');
             const transSource = this.$store.getters[`datasets/resolve`]('transitions');
@@ -523,23 +523,23 @@ export default mixins(WindowMixin, LoadingMixin).extend({
     },
 
     methods: {
-        //returns the current node color.
+        // returns the current node color.
         nodeColor(n) {
             return this.scale.r(n.data('usage'));
         },
-        //returns the link color between 2 syllables.
+        // returns the link color between 2 syllables.
         linkColor(l) {
             return this.scale.z(l.data('weight'));
                         /*.replace('rgb', 'rgba')
                         .replace(')', `, ${this.scale.o(Math.abs(l.data('weight')))})`)*/
         },
-        //changes selected syllable to the node clicked.
+        // changes selected syllable to the node clicked.
         onNodeClick(event) {
             if (event.target && event.target._private.data.id) {
                 this.selectedSyllable = Number.parseInt(event.target._private.data.id, 10);
             }
         },
-        //returns snapshot of the current layout of the State Map.
+        // returns snapshot of the current layout of the State Map.
         snapshot(options: SnapshotOptions): Promise<string> {
             return new Promise((resolve, reject) => {
                 return (this as any).cy.png({

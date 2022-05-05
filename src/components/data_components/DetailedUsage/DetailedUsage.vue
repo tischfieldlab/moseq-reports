@@ -85,15 +85,15 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return 'BoxPlotCanvas';
             }
         },
-        //returns new selected syllable based on change in dataview
+        // returns new selected syllable based on change in dataview
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
         },
-        //returns the count method based on change in dataview
+        // returns the count method based on change in dataview
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        //returns group names, will change based on `group_order_type` property in settings.
+        // returns group names, will change based on `group_order_type` property in settings.
         groupNames(): string[] {
             if (this.settings.group_order_type === OrderingType.Natural) {
                 return this.dataview.selectedGroups;
@@ -107,7 +107,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
             }
             return [];
         },
-        //returns group Colors based on change in dataview
+        // returns group Colors based on change in dataview
         groupColors(): string[] {
             return this.groupNames.map((gn) => this.dataview.groupColors[this.dataview.selectedGroups.indexOf(gn)]);
         },
@@ -138,7 +138,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     methods: {
-        //Updates the titles of the data on the graph
+        // Updates the titles of the data on the graph
         format_tooltip(itm: any): string {
             if (itm.hasOwnProperty('id')) {
                 return `ID: ${itm.id.split('-').pop()}<br />

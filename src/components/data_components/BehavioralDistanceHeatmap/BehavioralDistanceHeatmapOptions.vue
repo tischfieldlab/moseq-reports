@@ -37,7 +37,7 @@ export default mixins(WindowMixin).extend({
         },
     },
     computed: {
-        //In computed and watch, changes based on the current dataset. Retrieves data from store.
+        // In computed and watch, changes based on the current dataset. Retrieves data from store.
         method_options_spec(): any[] {
             const ds = this.$store.getters[`datasets/resolve`]('behave_dist');
             return [ds, [{ type: 'pluck', column: 'columns' }]];
@@ -51,7 +51,7 @@ export default mixins(WindowMixin).extend({
             }
             return vals.map((g) => ({text: g.toString(), value: g.toString()}));
         },
-        //Setting for distance metric of the Heatmap. If changed, it will send a signal for the store to commit the `updateComponentSettings` mutation.
+        // Setting for distance metric of the Heatmap. If changed, it will send a signal for the store to commit the `updateComponentSettings` mutation.
         distance_metric: {
             get(): string {
                 return this.settings.distance_metric;

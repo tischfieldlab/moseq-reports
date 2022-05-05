@@ -24,7 +24,7 @@ export default mixins(WindowMixin).extend({
         'chrome-picker': Chrome,
     },
     computed: {
-        //Changes line color of graph. Can be updated when changed through the `updateDataComponent` function.
+        // Changes line color of graph. Can be updated when changed through the `updateDataComponent` function.
         line_color: {
             get(): string {
                 return this.settings.line_color;
@@ -38,7 +38,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //Changes current thickness of the line. When changed, value is updated through the `updateDatacomponent` in the store.
+        // Changes current thickness of the line. When changed, value is updated through the `updateDatacomponent` in the store.
         line_weight: {
             get(): string {
                 return this.settings.line_weight;

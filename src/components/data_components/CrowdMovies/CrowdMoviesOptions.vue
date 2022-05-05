@@ -25,7 +25,7 @@ import WindowMixin from '@/components/Core/Window/WindowMixin';
 
 export default mixins(WindowMixin).extend({
      computed: {
-        //Boolean that determines whether video will loop or not, sends signal to store to run mutation updateComponentSettings when changed.
+        // Boolean that determines whether video will loop or not, sends signal to store to run mutation updateComponentSettings when changed.
         loop: {
             get(): boolean {
                 return this.settings.loop;
@@ -39,7 +39,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //Integer that determines current playback rate of video, sends signal to store to run mutation updateComponentSettings when changed.
+        // Integer that determines current playback rate of video, sends signal to store to run mutation updateComponentSettings when changed.
         playback_rate: {
             get(): number {
                 return this.settings.playback_rate;

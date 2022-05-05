@@ -69,23 +69,23 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return 'HexBinPlotSVG';
             }
         },
-        //returns current selected syllable if changed.
+        // returns current selected syllable if changed.
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
         },
-        //returns current count method if changed.
+        // returns current count method if changed.
         countMethod(): string {
             return this.dataview.countMethod;
         },
-        //boolean that determines whether the Position Plot will be in grouped mode.
+        // boolean that determines whether the Position Plot will be in grouped mode.
         useGroups(): boolean {
             return this.settings.mode === PositionPlotMode.Grouped;
         },
-        //returns current nonfiltered groups in dataview.
+        // returns current nonfiltered groups in dataview.
         groupNames(): string[] {
             return this.dataview.selectedGroups;
         },
-        //returns current color scheme in dataview if changed.
+        // returns current color scheme in dataview if changed.
         groupColors(): string[] {
             return this.dataview.groupColors;
         },
