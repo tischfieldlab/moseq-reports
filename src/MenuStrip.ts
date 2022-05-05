@@ -260,7 +260,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                 {
                     label: 'User Guide',
                     type: 'normal',
-                    click: (): void => { 
+                    click: (): void => {
                         shell.openExternal(documentation);
                     },
                 },
