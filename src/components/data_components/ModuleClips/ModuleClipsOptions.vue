@@ -38,7 +38,7 @@ export default mixins(WindowMixin).extend({
         };
     },
     computed: {
-        //Returns the stream of the current module clip. If changed, it sends a signal for the store to mutate the current Module Clip settings through `updateComponentSettings`
+        // Returns the stream of the current module clip. If changed, it sends a signal for the store to mutate the current Module Clip settings through `updateComponentSettings`
         stream: {
             get(): string {
                 return this.settings.stream;
@@ -52,7 +52,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //Boolean that determines whether only subclips are allowed. If changed, it sends a signal for the store to mutate the current Module Clips settings through `updateComponentSettings`
+        // Boolean that determines whether only subclips are allowed. If changed, it sends a signal for the store to mutate the current Module Clips settings through `updateComponentSettings`
         only_subclip: {
             get(): boolean {
                 return this.settings.only_subclip;
@@ -66,7 +66,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //Boolean that determines whether clip will be looped. If changed, it sends a signal for the store to mutate the current Module Clips settings through `updateComponentSettings`.
+        // Boolean that determines whether clip will be looped. If changed, it sends a signal for the store to mutate the current Module Clips settings through `updateComponentSettings`.
         loop: {
             get(): boolean {
                 return this.settings.loop;

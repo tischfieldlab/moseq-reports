@@ -228,7 +228,6 @@ export default mixins(LinePlotBase, CanvasMixin).extend({
 
             ctx.restore();
         },
-        
         handleClick(event: MouseEvent) {
             for (const node of this.data as object[]) {
                 const x1 = this.margin.left + this.scale.x(node[this.varKey]) - this.pointSize;

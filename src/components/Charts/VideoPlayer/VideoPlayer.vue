@@ -52,7 +52,7 @@ export default Vue.extend({
             required: false,
             default: true
         },
-        // Sub clip of main video 
+        // Sub clip of main video
         subClip: {
             required: false,
             default: undefined

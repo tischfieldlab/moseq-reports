@@ -176,7 +176,7 @@ export default mixins(WindowMixin).extend({
     },
     methods: {},
     computed: {
-        //Return current non filtered groups.
+        // Return current non filtered groups.
         available_groups(): {text: string, value: string}[] {
             return this.dataview.selectedGroups.map((g) => ({text: g, value: g}));
         },
@@ -185,7 +185,7 @@ export default mixins(WindowMixin).extend({
                     .map((g) => ({text: g, value: g}))
                     .filter((el) => el.value !== this.plot_group);
         },
-        //returns the plot group of the current dataset. If changed, value can be updated by committing the `updateComponentSettings` mutation.
+        // returns the plot group of the current dataset. If changed, value can be updated by committing the `updateComponentSettings` mutation.
         plot_group: {
             get(): string {
                 return this.settings.plot_group;
@@ -199,7 +199,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //Boolean that determines whether to display relative difference.
+        // Boolean that determines whether to display relative difference.
         show_relative_diff: {
             get(): boolean {
                 return this.settings.show_relative_diff;
@@ -213,7 +213,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //Boolean to determine whether to display relative different groups.
+        // Boolean to determine whether to display relative different groups.
         relative_diff_group: {
             get(): string {
                 return this.settings.relative_diff_group;
@@ -227,7 +227,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //Returns numerical value for prune threshold. If changed, value can be updated by committing the `updateComponentSettings` mutation.
+        // Returns numerical value for prune threshold. If changed, value can be updated by committing the `updateComponentSettings` mutation.
         prune_threshold: {
             get(): number {
                 return this.settings.prune_threshold;

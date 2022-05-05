@@ -110,29 +110,29 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return 'BoxPlotCanvas';
             }
         },
-        //returns current metric if changed
+        // returns current metric if changed
         currentMetric(): string {
             return this.settings.metric;
         },
-        //returns current unit of measurement if change occurs to currentMetric.
+        // returns current unit of measurement if change occurs to currentMetric.
         metricUnits(): string {
             return this.availableMetrics[this.currentMetric].units;
         },
         metricTitle(): string {
             return this.availableMetrics[this.currentMetric].title;
         },
-        //returns current selected syllable if changed.
+        // returns current selected syllable if changed.
         selectedSyllable(): number {
             return this.dataview.selectedSyllable;
         },
-        //returns current count method if changed.
+        // returns current count method if changed.
         countMethod(): string {
             return this.dataview.countMethod;
         },
         groupNames(): string[] {
             return this.dataview.selectedGroups;
         },
-        //returns current color scheme if changed.
+        // returns current color scheme if changed.
         groupColors(): string[] {
             return this.dataview.groupColors;
         },

@@ -35,7 +35,7 @@ export default Vue.extend({
         Dataset: {
             required: false,
         },
-        //Boolean describing if the dataset is collapsed
+        // Boolean describing if the dataset is collapsed
         Collapsed: {
             type: Boolean,
             default: true,

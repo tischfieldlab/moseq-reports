@@ -51,7 +51,7 @@ import {availableMetrics} from './ScalarData.types';
 
 export default mixins(WindowMixin).extend({
     computed: {
-        //returns current metric. If changed, value is updated through the `updateComponentSettings` in the store.
+        // returns current metric. If changed, value is updated through the `updateComponentSettings` in the store.
         metric: {
             get(): string {
                 return this.settings.metric;
@@ -78,7 +78,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //returns size of data points. If changed, value is updated through the `updateComponentSettings` mutation in the store.
+        // returns size of data points. If changed, value is updated through the `updateComponentSettings` mutation in the store.
         point_size: {
             get(): number {
                 return this.settings.point_size;
@@ -92,7 +92,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //boolean that determines whether boxplot will be shown. If changed, the value is updated through `updateComponentSettings` in the store.
+        // boolean that determines whether boxplot will be shown. If changed, the value is updated through `updateComponentSettings` in the store.
         show_boxplot: {
             get(): boolean {
                 return this.settings.show_boxplot;
@@ -106,7 +106,7 @@ export default mixins(WindowMixin).extend({
                 });
             },
         },
-        //Whisker data that determines the type of whisker the Boxplot has.
+        // Whisker data that determines the type of whisker the Boxplot has.
         boxplot_whiskers: {
             get(): WhiskerType {
                 return this.settings.boxplot_whiskers;
@@ -125,7 +125,7 @@ export default mixins(WindowMixin).extend({
                 return this.whisker_options.find((wo) => wo.value === this.boxplot_whiskers)!.description;
             },
         },
-        //boolean that determines whether illusion will be played. If changed, value is updated through the `updateComponentSettings` in the store.
+        // boolean that determines whether illusion will be played. If changed, value is updated through the `updateComponentSettings` in the store.
         show_violinplot: {
             get(): boolean {
                 return this.settings.show_violinplot;

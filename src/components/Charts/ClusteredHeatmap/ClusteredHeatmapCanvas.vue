@@ -258,7 +258,6 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
             this.$nextTick(() => this.compute_label_stats(labels));
             return;
         },
-        
         handleHeatmapClick(event: MouseEvent) {
             for (const node of this.data as object[]) {
                 const x1 = this.dims.heatmap.x + this.scale.x(node[this.columnKey].toString());
