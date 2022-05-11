@@ -28,16 +28,19 @@ Vue.use(VueTimeago as any, {
 });
 
 import store from "./store/root.store";
-import { CreateTitleBar } from "./WindowChrome";
+import { ipcRenderer } from "electron";
+import LoadData from "./commands/LoadData";
+import { MenuEvents } from "../../core/events/Events";
 
 const vm: any = new Vue({
     store: store,
     render: (h) => h(App),
-    beforeMount() {
-        CreateTitleBar();
-    },
 })
     .$mount("#app")
     .$nextTick(window.removeLoading);
+
+ipcRenderer.on(MenuEvents.LOAD_DATA, () => {
+    LoadData();
+});
 
 export default vm;

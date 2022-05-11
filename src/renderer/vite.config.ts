@@ -9,6 +9,7 @@ export default defineConfig({
     root: __dirname,
     plugins: [createVuePlugin(), electron()],
     base: "./",
+    publicDir: "./public",
     build: {
         outDir: "../../dist/renderer",
         emptyOutDir: true,

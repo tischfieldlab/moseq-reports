@@ -1,18 +1,19 @@
 "use strict";
-import { app, BrowserWindow, shell } from "electron";
-import { release } from "os";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { join } from "path";
 import * as remoteMain from "@electron/remote/main";
 
-// @ts-ignore
-import { setupTitlebar, attachTitlebarToWindow } from "custom-electron-titlebar/main";
+import {
+    setupTitlebar,
+    attachTitlebarToWindow,
+    // @ts-ignore
+} from "custom-electron-titlebar/main";
 remoteMain.initialize();
+
+import "./events/menuEvents";
 
 // setup the titlebar main process
 setupTitlebar();
-
-// Disable GPU Acceleration for Windows 7
-if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());

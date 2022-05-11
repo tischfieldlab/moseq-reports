@@ -29,3 +29,8 @@ export function UpdateTitle(title: string) {
         titlebar.updateTitle(title);
     }
 }
+
+// TODO: See if this hot reload works as intended
+if (import.meta.hot) {
+    import.meta.hot.dispose(() => DisposeTitlebar());
+}

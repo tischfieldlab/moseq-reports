@@ -1,21 +1,21 @@
 import { Menu, app } from "@electron/remote";
-import loadDataCommand, { IsDataLoaded } from "./commands/LoadData";
-import loadLayoutCommand, {
-    LoadDefaultLayout,
-    ClearLayout,
-    SaveLayout,
-} from "./commands/LoadLayout";
-import { AvailableComponents, CreateComponent } from "./commands/Windows";
-import showAboutWindow from "./commands/ShowAbout";
+// import loadDataCommand, { IsDataLoaded } from "./commands/LoadData";
+// import loadLayoutCommand, {
+//     LoadDefaultLayout,
+//     ClearLayout,
+//     SaveLayout,
+// } from "./commands/LoadLayout";
+// import { AvailableComponents, CreateComponent } from "./commands/Windows";
+// import showAboutWindow from "./commands/ShowAbout";
 // import { CheckUpdates } from "./commands/LoadUpdates";
-import {
-    SetSidebarLeft,
-    SetSidebarRight,
-    isSidebarLeft,
-    isSidebarRight,
-} from "./commands/SidebarPosition";
-import { SnapshotWorkspace } from "./components/Core/SnapshotHelper";
-import store from "./store/root.store";
+// import {
+//     SetSidebarLeft,
+//     SetSidebarRight,
+//     isSidebarLeft,
+//     isSidebarRight,
+// } from "./commands/SidebarPosition";
+// import { SnapshotWorkspace } from "./components/Core/SnapshotHelper";
+// import store from "./store/root.store";
 
 /**
  * Creates the main menu strip for the electron app
@@ -56,27 +56,27 @@ const menuItemsDependingOnLoadedData = [
     "menu-view-clear-layout",
     "menu-view-snapshot-workspace",
 ];
-store.watch(
-    (state) => (state as any).datasets.isLoaded,
-    (newValue, oldValue) => {
-        menuItemsDependingOnLoadedData.forEach((menuId) => {
-            if (localMenu) {
-                if (menuId.endsWith(".*")) {
-                    const mi = localMenu.getMenuItemById(
-                        menuId.replace(".*", "")
-                    );
-                    set_menu_item_enabled_recursively(mi, newValue);
-                } else {
-                    const mi = localMenu.getMenuItemById(menuId);
-                    mi.enabled = newValue;
-                }
-            }
-        });
-    },
-    {
-        immediate: true,
-    }
-);
+// store.watch(
+//     (state) => (state as any).datasets.isLoaded,
+//     (newValue, oldValue) => {
+//         menuItemsDependingOnLoadedData.forEach((menuId) => {
+//             if (localMenu) {
+//                 if (menuId.endsWith(".*")) {
+//                     const mi = localMenu.getMenuItemById(
+//                         menuId.replace(".*", "")
+//                     );
+//                     set_menu_item_enabled_recursively(mi, newValue);
+//                 } else {
+//                     const mi = localMenu.getMenuItemById(menuId);
+//                     mi.enabled = newValue;
+//                 }
+//             }
+//         });
+//     },
+//     {
+//         immediate: true,
+//     }
+// );
 function set_menu_item_enabled_recursively(
     menuItem: any,
     enabledValue: boolean,
@@ -107,7 +107,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: "Open Data...",
                     type: "normal",
                     accelerator: "CmdOrCtrl+O",
-                    click: loadDataCommand,
+                    // click: loadDataCommand,
                 },
                 {
                     type: "separator",
@@ -165,15 +165,15 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
         {
             id: "menu-tools",
             label: "Tools",
-            submenu: AvailableComponents()
-                .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
-                .map((cr) => {
-                    return {
-                        label: cr.friendly_name,
-                        type: "normal",
-                        click: () => CreateComponent(cr),
-                    } as Electron.MenuItemConstructorOptions;
-                }),
+            // submenu: AvailableComponents()
+            //     .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
+            //     .map((cr) => {
+            //         return {
+            //             label: cr.friendly_name,
+            //             type: "normal",
+            //             click: () => CreateComponent(cr),
+            //         } as Electron.MenuItemConstructorOptions;
+            //     }),
         },
         // ********************** VIEW MENU **********************
         {
@@ -183,7 +183,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     id: "menu-view-snapshot-workspace",
                     label: "Snapshot Workspace...",
                     type: "normal",
-                    click: () => SnapshotWorkspace(),
+                    // click: () => SnapshotWorkspace(),
                 },
                 {
                     label: "Sidebar Position...",
@@ -192,18 +192,18 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                         {
                             label: "Left",
                             type: "radio",
-                            checked: isSidebarLeft(),
+                            // checked: isSidebarLeft(),
                             click: (mi) => {
-                                SetSidebarLeft();
+                                // SetSidebarLeft();
                                 mi.checked = true;
                             },
                         },
                         {
                             label: "Right",
                             type: "radio",
-                            checked: isSidebarRight(),
+                            // checked: isSidebarRight(),
                             click: (mi) => {
-                                SetSidebarRight();
+                                // SetSidebarRight();
                                 mi.checked = true;
                             },
                         },
@@ -217,21 +217,21 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: "Save Layout...",
                     type: "normal",
                     click: (): void => {
-                        SaveLayout();
+                        // SaveLayout();
                     },
                 },
                 {
                     id: "menu-view-load-layout",
                     label: "Load Layout...",
                     type: "normal",
-                    click: loadLayoutCommand,
+                    // click: loadLayoutCommand,
                 },
                 {
                     id: "menu-view-clear-layout",
                     label: "Clear Layout",
                     type: "normal",
                     click: (): void => {
-                        ClearLayout();
+                        // ClearLayout();
                     },
                 },
                 {
@@ -239,7 +239,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: "Default Layout",
                     type: "normal",
                     click: (): void => {
-                        LoadDefaultLayout();
+                        // LoadDefaultLayout();
                     },
                 },
                 {
@@ -280,7 +280,7 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
                     label: "About",
                     type: "normal",
                     click: (): void => {
-                        showAboutWindow();
+                        // showAboutWindow();
                     },
                 },
             ],
