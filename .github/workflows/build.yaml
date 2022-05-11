@@ -1,5 +1,8 @@
 name: Build Moseq-Reports
 
+# TODO: https://docs.github.com/en/actions/using-workflows/reusing-workflows
+# Can we move the other conditionals to be environment variables
+
 on:
   push:
     tags:
@@ -49,7 +52,6 @@ jobs:
           branch: gh-pages
           force: true
           directory: ./docs/.vuepress/dist
-
 
   build:
     strategy:

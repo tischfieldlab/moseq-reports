@@ -40,6 +40,7 @@ jobs:
           cd -
 
       - name: Force push to destination branch
+        if: ${{ endsWith(github.ref, 'master') }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
