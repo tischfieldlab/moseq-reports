@@ -14,6 +14,7 @@ export interface ComponentRegistration {
     init_height?: number;
     available_render_modes: RenderMode[];
     default_render_mode: RenderMode;
+    is_hidden?: boolean;
     aspect_ratio?: number;
 }
 

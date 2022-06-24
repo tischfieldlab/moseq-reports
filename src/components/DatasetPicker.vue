@@ -43,6 +43,8 @@ export default Vue.component('dataset-picker', {
     },
     methods: {
         onInput(event) {
+            // Fire when the input is entered
+            // @arg An event
             this.$emit('input', event);
         },
     },

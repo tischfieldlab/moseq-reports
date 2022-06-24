@@ -23,28 +23,33 @@
                 data-draggable="dataview-swatch"
                 class="dataview-swatch"
                 :id="$id('swatch')"
-                :style="{ background: this.titlebar_color }"
+                :style="{ background: this.swatch_color }"
+                v-b-tooltip.hover
+                :title="swatchTitle"
             >
-                <div class="titlebar-button-container">
-                    <slot name="titlebarButtons"></slot>
-                    <titlebar-button
-                        v-if="minimizeable"
-                        :clicked="onCollapsedClicked"
-                        :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
-                    />
-                    <b-button-close @click="this.onClose" class="close-button" />
-                </div>
             </span>
-                {{ this.title }}
+            <div class="titlebar-button-container">
+                <!-- Space for extra buttons -->
+                <slot name="titlebarButtons"></slot>
+                <titlebar-button
+                    :title="isCollapsed ? 'Show contents' : 'Hide contents'"
+                    :clicked="onCollapsedClicked"
+                    :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
+                />
+                <close-button :clicked="this.onClose" :title="'Close window'"/>
+            </div>
+            {{ this.title }}
         </div>
         <div
             :id="`window-content-${this.id}`"
+            :hidden="this.isCollapsed"
             class="window-content"
             :style="{
-                width: `${window_width - 2}px`,
-                height: `${window_height - 37}px`
+                width: `${contentWidth}px`,
+                height: `${contentHeight}px`
             }"
         >
+            <!-- Space to place content -->
             <slot></slot>
         </div>
         <div @mousedown="this.onResizeStart" class="noselect" v-if="!this.isCollapsed">
@@ -63,7 +68,8 @@
 <script lang="ts">
 import { Position } from '@/store/datawindow.types';
 import Vue from 'vue';
-import TitlebarButton from '@/components/Core/Window/WindowTitlebarButton.vue';
+import TitlebarButton from '@/components/Core/Window/Titlebar/TitlebarButton.vue';
+import CloseButton from '@/components/Core/Window/Titlebar/CloseButton.vue';
 import { applyAspectRatio, isValidHeight, isValidWidth } from './util';
 
 enum ResizeType {
@@ -79,71 +85,91 @@ enum ResizeType {
 
 export default Vue.extend({
     name: 'BaseWindow',
+    mounted() {
+        this.collapseWindow();
+    },
     components: {
-        TitlebarButton
+        TitlebarButton,
+        CloseButton,
     },
     props: {
+        // ID of the base window
         id: {
             type: String,
             required: true
         },
-        titlebar_color: {
+        // Color of the swatch in the titlebar
+        swatch_color: {
             type: String,
             required: true
         },
+        // Text of the titlebar
         title: {
             type: String,
             required: true
         },
+        // Height of the window
         height: {
             type: [Number],
             required: true
         },
+        // Width of the window
         width: {
             type: [Number],
             required: true
         },
+        // Position of the window
         pos: {
             type: Object,
             required: true
         },
-        minimizeable: {
+        // Boolean describing if the window should be displayed in a minimized state (true) or maximized state (false)
+        isHidden: {
             type: Boolean,
             required: false,
-            default: true
+            default: false
         },
+        // Boolean describing if the window can be resized
         resizeable: {
             type: Boolean,
             required: false,
             default: true
         },
+        // Minimum width of the window
         minWidth: {
             type: Number,
             required: false,
             default: 260
         },
+        // Minimum height of the window
         minHeight: {
             type: Number,
             required: false,
             default: 155
         },
+        // Aspect ratio of the window
         aspectRatio: {
             type: Number,
             required: false,
             default: undefined,
         },
+        // z-index of the window
         zIndex: {
             type: Number,
             required: false,
-        }
+        },
+        swatchTitle: {
+            type: String,
+            required: false
+        },
     },
     data() {
         return {
-            isCollapsed: false,
+            isCollapsed: this.isHidden,
             restoredHeight: this.height,
             titlebarHeight: 35,
-            windowWidth: this.width,
-            windowHeight: this.height,
+            contentWidth: this.width,
+            contentHeight: this.height,
             windowPos: this.pos,
             // Used for window move
             isDragging: false,
@@ -156,10 +182,10 @@ export default Vue.extend({
     },
     computed: {
         window_width(): number {
-            return this.windowWidth as number;
+            return this.contentWidth as number + 2; // add 2 px for border
         },
         window_height(): number {
-            return this.windowHeight as number + this.titlebarHeight;
+            return this.contentHeight as number + this.titlebarHeight + 2; // add titlebar height and 2px for border
         },
         window_xpos(): number {
             return (this.windowPos as Position).x;
@@ -174,23 +200,26 @@ export default Vue.extend({
     watch: {
         aspect_ratio: {
             handler(newValue) {
-                const aspect = this.applyAspectRatio(this.windowWidth, this.windowHeight);
-                this.windowWidth = aspect.width;
-                this.windowHeight = aspect.height;
+                const aspect = this.applyAspectRatio(this.contentWidth, this.contentHeight);
+                this.contentWidth = aspect.width;
+                this.contentHeight = aspect.height;
+
+                // Fires when window is resized
+                // @arg Window height and width
                 this.$emit('onResized', {
-                    width: this.windowWidth,
-                    height: this.windowHeight
+                    width: this.contentWidth,
+                    height: this.contentHeight
                 });
             }
         },
         width: {
             handler(newValue: number) {
-                this.windowWidth = newValue;
+                this.contentWidth = newValue;
             }
         },
         height: {
             handler(newValue: number) {
-                this.windowHeight = newValue;
+                this.contentHeight = newValue;
             }
         },
         pos: {
@@ -203,6 +232,7 @@ export default Vue.extend({
     methods: {
         // Used to set the z-index to be the max one
         windowClicked() {
+            // Fired when window is clicked and used to set the z-index to be the max one
             this.$emit('onWindowFocused');
         },
         onTitlebarHover() {
@@ -228,6 +258,8 @@ export default Vue.extend({
             this.prevDeltaY = 0;
             this.isDragging = false;
 
+            // Fires when window is moved
+            // @arg Windows x and y coordinates
             this.$emit('onMoved', { x: this.windowPos.x, y: this.windowPos.y });
 
             document.body.style.cursor = 'grab';
@@ -265,8 +297,8 @@ export default Vue.extend({
                 const deltaX = event.clientX - this.prevDeltaX;
                 const deltaY = event.clientY - this.prevDeltaY;
 
-                let newHeight = this.windowHeight;
-                let newWidth = this.windowWidth;
+                let newHeight = this.contentHeight;
+                let newWidth = this.contentWidth;
                 let newX = this.windowPos.x;
                 let newY = this.windowPos.y;
 
@@ -283,7 +315,7 @@ export default Vue.extend({
                     case ResizeType.Top:
                     case ResizeType.TopRight:
                     case ResizeType.TopLeft:
-                        newHeight = this.windowHeight - deltaY;
+                        newHeight = this.contentHeight - deltaY;
                         newY = this.windowPos.y + deltaY;
                         appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
                     break;
@@ -291,7 +323,7 @@ export default Vue.extend({
                     case ResizeType.Bottom:
                     case ResizeType.BottomRight:
                     case ResizeType.BottomLeft:
-                        newHeight = this.windowHeight + deltaY;
+                        newHeight = this.contentHeight + deltaY;
                         appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
                     break;
                 }
@@ -301,14 +333,14 @@ export default Vue.extend({
                     case ResizeType.TopRight:
                     case ResizeType.BottomRight:
                     case ResizeType.Right:
-                        newWidth = this.windowWidth + deltaX;
+                        newWidth = this.contentWidth + deltaX;
                         appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
                     break;
 
                     case ResizeType.BottomLeft:
                     case ResizeType.TopLeft:
                     case ResizeType.Left:
-                        newWidth = this.windowWidth - deltaX;
+                        newWidth = this.contentWidth - deltaX;
                         newX = this.windowPos.x + deltaX;
                         appliedAspectRatio = this.applyAspectRatio(newWidth, newHeight);
 
@@ -323,12 +355,12 @@ export default Vue.extend({
 
                 // Respect the min height and width
                 if (isValidHeight(newHeight, this.minHeight)) {
-                    this.windowHeight = newHeight;
+                    this.contentHeight = newHeight;
                     this.windowPos.y = newY;
                 }
 
                 if (isValidWidth(newWidth, this.minWidth)) {
-                    this.windowWidth = newWidth;
+                    this.contentWidth = newWidth;
                     this.windowPos.x = newX;
                 }
             }
@@ -339,11 +371,15 @@ export default Vue.extend({
             this.isResizing = false;
             this.resizeElement = null;
 
+            // Fires when window is resized
+            // @arg Window height and width
             this.$emit('onResized', {
-                width: this.windowWidth,
-                height: this.windowHeight,
+                width: this.contentWidth,
+                height: this.contentHeight,
             });
 
+            // Fires when window is moved
+            // @arg Windows x and y coordinates
             this.$emit('onMoved', {
                 x: this.windowPos.x,
                 y: this.windowPos.y,
@@ -353,20 +389,26 @@ export default Vue.extend({
             document.onmousemove = null;
         },
         onClose(event: any) {
+            // Fired when window is closed
+            // @arg An event
             this.$emit('onClosed', event);
         },
         onCollapsedClicked(event: any) {
             this.isCollapsed = !this.isCollapsed;
-
-            if (this.$data.isCollapsed) {
-                this.restoredHeight = this.windowHeight;
-                this.windowHeight = 0;
+            this.collapseWindow();
+        },
+        collapseWindow() {
+            if (this.isCollapsed) {
+                this.restoredHeight = this.contentHeight;
+                this.contentHeight = 0;
             } else {
-                this.windowHeight = this.restoredHeight;
+                this.contentHeight = this.restoredHeight;
             }
 
-            this.$emit('onMinMaxToggle', {
-                height: this.windowHeight
+            // Fired when window is minimized
+            // @arg object with `isHidden` property describing the current state
+            this.$emit('onShowHideToggle', {
+                isHidden: this.isCollapsed,
             });
         },
         applyAspectRatio(newWidth: number, newHeight: number): { width: number, height: number } {
@@ -481,16 +523,8 @@ export default Vue.extend({
 
 .titlebar-button-container {
     position: absolute;
-    margin-top: -3px;
-    right: 6px;
-}
-
-.titlebar-button-container svg {
-    margin-left: 9px;
-}
-.close-button {
-    margin-left: 5px;
-    cursor: pointer;
+    margin-top: -27px;
+    right: 8px;
 }
 
 .noselect {

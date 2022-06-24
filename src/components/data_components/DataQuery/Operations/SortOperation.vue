@@ -23,13 +23,16 @@ import Vue, { PropType } from 'vue';
 
 export default Vue.extend({
     props: {
+        // Operation used to sort data
         Operation: {
             type: Object as PropType<SortOperation>,
             required: true,
         },
+        // Result of previously sorted data
         PreviousResult: {
             required: true,
         },
+        // Name of the owner
         Owner: {
             type: String,
             required: true,

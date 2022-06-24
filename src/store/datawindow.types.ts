@@ -11,11 +11,12 @@ export interface DataWindowState {
     render_mode: RenderMode;
     settings: object;
     z_index: number;
+    is_hidden: boolean;
     aspect_ratio?: number;
 }
 
-export interface MinMaxPayload {
-    height: number;
+export interface ShowHidePayload {
+    isHidden: boolean;
 };
 
 export interface UpdateComponentLayoutPayload {
@@ -76,6 +77,7 @@ export interface DehydratedDataWindow {
     source?: string;
     render_mode?: RenderMode;
     settings: object | undefined;
+    is_hidden?: boolean;
     z_index?: number;
     aspect_ratio?: number;
 }

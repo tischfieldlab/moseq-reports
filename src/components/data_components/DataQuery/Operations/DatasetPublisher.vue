@@ -36,13 +36,16 @@ import { showSaveErrorToast, showSaveSuccessToast } from '@/components/Core/IO/T
 
 export default Vue.extend({
     props: {
+        // Dataset to be published
         Dataset: {
             required: true,
         },
+        // Source of the dataset
         Source: {
             type: String,
             required: true,
         },
+        // Owner of the dataset
         Owner: {
             type: String,
             required: true,

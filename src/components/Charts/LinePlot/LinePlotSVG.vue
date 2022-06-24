@@ -106,6 +106,8 @@ export default mixins(LinePlotBase).extend({
     },
     methods: {
         handleClick(event: Event) {
+            // Fire when line plot is clicked
+            // @arg An event, the series, var, and value of the line plot
             this.$emit('lineplot-click', {
                 e: event,
                 series: (event.target as SVGCircleElement).dataset.series,

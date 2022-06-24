@@ -18,13 +18,16 @@ export default Vue.extend({
         ColumnSelector,
     },
     props: {
+        // Operation used to map data
         Operation: {
             type: Object as PropType<MapOperation>,
             required: true,
         },
+        // Result of previously mapped data
         PreviousResult: {
             required: true,
         },
+        // Name of the owner
         Owner: {
             type: String,
             required: true,

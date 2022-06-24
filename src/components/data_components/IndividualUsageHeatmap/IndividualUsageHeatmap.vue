@@ -111,11 +111,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return undefined;
             }
         },
+        // returns groups contained in aggregateView.
         selectedGroups(): string[] {
             return [...new Set(this.aggregateView.slice()
                                    .sort((a,b) => (a.group as string).localeCompare(b.group))
                                    .map((row) => row.uuid))];
         },
+        // returns selected syllable, it can also change the selected syllable through signaling the store to commit the setSelectedSyllable mutation.
         selectedSyllable: {
             get(): number {
                 return this.dataview.selectedSyllable;
@@ -124,9 +126,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 this.$store.commit(`${this.datasource}/setSelectedSyllable`, event);
             },
         },
+        // returns  `this.dataview.countMethod` if changes occur to it.
         countMethod(): string {
             return this.dataview.countMethod;
         },
+        // returns current order of dataset if changes occur to it.
         rowOrderDataset(): any[] {
             if (this.settings.row_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.row_order_dataset].data;
@@ -159,6 +163,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     watch: {
+        // Reacts to changes in the dataset and returns new dataset.
         dataset: {
             handler(): any {
                 LoadData(this.dataset[0], this.dataset[1], false)
@@ -172,11 +177,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     methods: {
+        // changes current selected syllable.
         onHeatmapClick(event) {
             if (event.row) {
                 this.selectedSyllable = Number.parseInt(event.row, 10);
             }
         },
+        // changes row order by sending a signal to store to commit mutation publishDataset.
         rowOrderChanged(event) {
             this.$store.commit(`${this.datasource}/publishDataset`, {
                 owner: this.id,
@@ -184,6 +191,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 data: event,
             });
         },
+        // changes column order by sending a signal to store to commit mutation publishDataset.
         colOrderChanged(event) {
             this.$store.commit(`${this.datasource}/publishDataset`, {
                 owner: this.id,
@@ -191,6 +199,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 data: event,
             });
         },
+        // Gives UUID, Group, Module, and Usage current names based on the current data.
         heatmap_node_tooltip(item: any) {
             return `<div style="text-align:left;">
                         UUID: ${item.uuid}<br />

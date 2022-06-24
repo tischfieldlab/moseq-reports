@@ -93,12 +93,14 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return 'ClusteredHeatmapSVG';
             }
         },
+        // Reacts to changes in properties `row_order_dataset`, and `dataset.views` in settings` to return new row order
         rowOrderDataset(): any[] {
             if (this.settings.row_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.row_order_dataset].data;
             }
             return [];
         },
+        // Reacts to changes in properties `column_order_dataset`, and `dataset.views` in settings to return new column ordering.
         columnOrderDataset(): any[] {
             if (this.settings.column_order_dataset in this.dataview.views) {
                 return this.dataview.views[this.settings.column_order_dataset].data;
@@ -112,6 +114,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 return this.dataview.moduleIdFilter;
             }
         },
+        // Reacts to changes in dataview and returns groups that are not filtered
         selectedSyllable: {
             get(): number {
                 return this.dataview.selectedSyllable;
@@ -148,6 +151,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     watch: {
+        // listens and reacts to changes in dataset.
         dataset: {
             handler(): any {
                 LoadData(this.dataset[0], this.dataset[1])
@@ -163,11 +167,13 @@ export default mixins(LoadingMixin, WindowMixin).extend({
         },
     },
     methods: {
+        // changes current selected syllable based on area clicked in heatmap sends signal to store to run publishDataset method in mutations
         onHeatmapClick(event) {
             if (event.row) {
                 this.selectedSyllable = Number.parseInt(event.row, 10);
             }
         },
+        // Changes Row Order
         rowOrderChanged(event) {
             this.$store.commit(`${this.datasource}/publishDataset`, {
                 owner: this.id,
@@ -175,6 +181,7 @@ export default mixins(LoadingMixin, WindowMixin).extend({
                 data: event,
             });
         },
+        // Changes column Order
         colOrderChanged(event) {
             this.$store.commit(`${this.datasource}/publishDataset`, {
                 owner: this.id,

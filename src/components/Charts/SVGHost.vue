@@ -1,5 +1,6 @@
 <template>
     <svg>
+        <!-- // Collect SVG elements from multiple sources -->
         <slot></slot>
     </svg>
 </template>
