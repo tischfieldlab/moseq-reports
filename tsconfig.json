@@ -14,6 +14,7 @@
       "@render/*": ["./src/renderer/*"],
       "@main/*": ["./src/electron/*"]
     },
+    "typeRoots": ["./src/renderer/@types"],
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true
   },

@@ -3,9 +3,11 @@ import Vue from "vue";
 // @ts-ignore
 import App from "@render/App.vue";
 
-// @ts-ignore
 import VueResize from "vue-resize";
 import VueForceNextTick from "vue-force-next-tick";
+import UniqueId from "vue-unique-id";
+Vue.use(UniqueId);
+
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
