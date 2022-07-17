@@ -37,6 +37,12 @@ export default defineConfig({
       renderer: {},
     }),
   ],
+  resolve: {
+    alias: [
+      { find: "@render", replacement: join(__dirname, "src/renderer") },
+      { find: "@main", replacement: join(__dirname, "src/electron") },
+    ],
+  },
   server: {
     host: pkg.env.VITE_DEV_SERVER_HOST,
     port: pkg.env.VITE_DEV_SERVER_PORT,
