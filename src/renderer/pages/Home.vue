@@ -1,18 +1,22 @@
 <template>
   <div class="home">
-    <!-- <Sidebar :right="isSidebarRight" />
-        <NoDataPresent />
+    <Sidebar :right="isSidebarRight" />
+    <!--    <NoDataPresent />
         <WindowContainer />
         <FileDropAcceptor /> -->
   </div>
 </template>
 
 <script lang="ts">
-import { UpdateTitle } from "@render/core/ChromeWindow";
 import Vue from "vue";
+import Sidebar from "@render/components/Sidebar.vue";
+import { UpdateTitle } from "@render/core/ChromeWindow";
 
 export default Vue.component("homepage", {
   name: "homepage",
+  components: {
+    Sidebar,
+  },
   computed: {
     title() {
       let title = "MoSeq Reports";
