@@ -93,6 +93,9 @@ export function createMainMenu(): Electron.CrossProcessExports.Menu {
           label: "Snapshot Workspace...",
           type: "normal",
           // click: () => SnapshotWorkspace(),
+          click(_item, window, _event) {
+            window?.webContents.send(MenuEvents.SNAPSHOT_WORKSPACE);
+          },
         },
         {
           label: "Sidebar Position...",
