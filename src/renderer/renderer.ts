@@ -5,7 +5,7 @@ import App from "@render/App.vue";
 
 // @ts-ignore
 import VueResize from "vue-resize";
-import { VueForceNextTick } from "vue-force-next-tick";
+import VueForceNextTick from "vue-force-next-tick";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
