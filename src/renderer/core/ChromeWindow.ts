@@ -1,4 +1,5 @@
 import { Titlebar, Color } from "custom-electron-titlebar";
+import createMainMenu from "@render/core/MenuStrip";
 
 let titlebar: any;
 
@@ -7,7 +8,7 @@ export function CreateTitleBar() {
   titlebar = new Titlebar({
     icon: "/img/mouse.png",
     backgroundColor: Color.fromHex("#FFFFFF"),
-    // menu: createMainMenu(),
+    menu: createMainMenu(),
     shadow: false,
   });
 }

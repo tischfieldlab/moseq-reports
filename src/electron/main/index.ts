@@ -59,6 +59,8 @@ async function createWindow() {
     height: 720,
   });
 
+  remoteMain.enable(win.webContents);
+
   if (app.isPackaged) {
     win.loadFile(indexHtml);
   } else {
