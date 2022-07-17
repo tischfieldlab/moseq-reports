@@ -14,6 +14,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { CreateTitleBar } from "./core/ChromeWindow";
 import { ipcRenderer } from "electron";
+import { MenuEvents } from "@main/shared/Events";
 
 Vue.use(Vuex);
 Vue.config.devtools = true;
@@ -40,6 +41,6 @@ app.$mount("#app").$nextTick(() => {
   postMessage({ payload: "removeLoading" }, "*");
 });
 
-ipcRenderer.on("open-data", () => {
+ipcRenderer.on(MenuEvents.OPEN_DATA, () => {
   console.log("open-data");
 });

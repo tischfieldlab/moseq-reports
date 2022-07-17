@@ -1,4 +1,5 @@
 import { Menu } from "@electron/remote";
+import { MenuEvents } from "../shared/Events";
 
 export function createMainMenu(): Electron.CrossProcessExports.Menu {
   "use strict";
@@ -7,17 +8,12 @@ export function createMainMenu(): Electron.CrossProcessExports.Menu {
       label: "File",
       submenu: [
         {
-          label: "",
-          type: "normal",
-          click: () => {},
-        },
-        {
           label: "&Open data...",
           type: "normal",
           accelerator: "CmdOrCtrl+O",
           // click: loadDataCommand,
           click: (_item, window, _event) => {
-            window?.webContents.send("open-data");
+            window?.webContents.send(MenuEvents.OPEN_DATA);
           },
         },
         {
