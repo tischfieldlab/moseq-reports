@@ -38,13 +38,15 @@ async function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
     },
+    width: 1280,
+    height: 720,
   });
 
   if (app.isPackaged) {
     win.loadFile(indexHtml);
   } else {
     win.loadURL(url);
-    // win.webContents.openDevTools()
+    win.webContents.openDevTools();
   }
 
   // Test actively push message to the Electron-Renderer
