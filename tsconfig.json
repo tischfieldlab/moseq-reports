@@ -16,7 +16,8 @@
     },
     "typeRoots": ["./src/renderer/@types"],
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noImplicitAny": false
   },
   "references": [{ "path": "./tsconfig.node.json" }]
 }
