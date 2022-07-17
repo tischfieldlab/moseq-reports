@@ -41,6 +41,7 @@ export default defineConfig({
     alias: [
       { find: "@render", replacement: join(__dirname, "src/renderer") },
       { find: "@main", replacement: join(__dirname, "src/electron") },
+      { find: "@shared", replacement: join(__dirname, "src/shared") },
     ],
   },
   server: {

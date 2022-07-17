@@ -12,7 +12,8 @@
     "strict": true,
     "paths": {
       "@render/*": ["./src/renderer/*"],
-      "@main/*": ["./src/electron/*"]
+      "@main/*": ["./src/electron/*"],
+      "@shared/*": ["./src/shared/*"]
     },
     "typeRoots": ["./src/renderer/@types"],
     "allowSyntheticDefaultImports": true,
