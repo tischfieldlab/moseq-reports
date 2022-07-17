@@ -1,6 +1,9 @@
 import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { release } from "os";
 import { join } from "path";
+import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+
+const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -37,6 +40,7 @@ async function createWindow() {
       preload,
       nodeIntegration: true,
       contextIsolation: false,
+      sandbox: false,
     },
     width: 1280,
     height: 720,
@@ -61,7 +65,19 @@ async function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+app
+  .whenReady()
+  .then(async () => {
+    if (isDevelopment && !process.env.IS_TEST) {
+      // Install extensions
+      await installExtension(VUEJS_DEVTOOLS.id)
+        .then((name) => console.log(`Added Extension: ${name}`)) // tslint:disable-line:no-console
+        .catch((err) =>
+          console.error(`Failed to install extension:`, err.toString())
+        ); // tslint:disable-line:no-console
+    }
+  })
+  .then(createWindow);
 
 app.on("window-all-closed", () => {
   win = null;
