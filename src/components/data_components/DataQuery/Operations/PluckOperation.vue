@@ -11,13 +11,16 @@ import Vue, { PropType } from 'vue';
 
 export default Vue.extend({
     props: {
+        // Operation used to pluck data
         Operation: {
             type: Object as PropType<PluckOperation>,
             required: true,
         },
+        // Result of previously plucked data
         PreviousResult: {
             required: true,
         },
+        // Name of the owner
         Owner: {
             type: String,
             required: true,

@@ -9,7 +9,7 @@ class WindowManager {
      * object.
      * @param  {Vue} window Vue instance to add to the manager.
      * @public
-     * @returns void
+     * @returns {void}
      */
     public addWindow(key: string, window: Vue): void {
         this.windows.set(key, window);
@@ -20,7 +20,7 @@ class WindowManager {
      * object.
      * @param  {Vue} target Vue instance to remove from the manager.
      * @public
-     * @returns void
+     * @returns {void}
      */
     public removeWindow(key: string): void {
         this.windows.delete(key);
@@ -28,16 +28,23 @@ class WindowManager {
 
     /**
      * Returns this list of windows managed by this manager.
-     * @returns Vue[] List of windows managed by the manager.
+     * @param  {(value:Vue,index:number,array:Vue[])=>boolean} predicate? Predicate to filter windows by
+     * @public
+     * @returns {Vue[]} List of windows managed by the manager.
      */
-    public getWindows(): Vue[] {
-        return [...this.windows.values()];
+    public getWindows(predicate?: (value: Vue, index: number, array: Vue[]) => boolean): Vue[] {
+        const result = [...this.windows.values()];
+        if (predicate) {
+            return result.filter(predicate);
+        } else {
+            return result;
+        }
     }
 
     /**
      * Returns the Vue window associated with the given ID.
      * @param  {string} id ID of the window to return.
-     * @returns Vue | undefined The window corresponding to the given ID, or `undefined` if it is not found.
+     * @returns {Vue | undefined} The window corresponding to the given ID, or `undefined` if it is not found.
      */
     public getWindowByID(id: string): Vue | undefined {
         return this.windows.get(id);

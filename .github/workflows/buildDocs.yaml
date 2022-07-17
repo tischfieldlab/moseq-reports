@@ -1,0 +1,49 @@
+name: Build Moseq-Docs
+
+on:
+  push:
+    tags:
+      - 'docs-*'
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  buildDocs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Downloading version 14 of Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Install Repo
+        run: npm install
+        
+      - name: Build docs
+        run: npm run docs:build
+        env:
+          APP_COMMIT_HASH: ${{ github.sha }}
+          APP_COMMIT_REF: ${{ github.ref }}
+
+      - name: Init new repo in dist folder and commit generated files
+        run: |
+          cd docs/.vuepress/dist
+          git init
+          git add -A
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m 'deploy ${{ github.ref }}'
+          cd -
+
+      - name: Force push to destination branch
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # change as neccessary
+          branch: gh-pages
+          force: true
+          directory: ./docs/.vuepress/dist

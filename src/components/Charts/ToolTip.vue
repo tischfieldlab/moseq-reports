@@ -2,6 +2,7 @@
     <Portal>
         <div :id="$id('tooltip-contents')" class="tooltip_contents" v-show="show">
             <span data-popper-arrow class="arrow tt-arrow"></span>
+            <!-- Content of tool tip -->
             <slot></slot>
         </div>
     </Portal>
@@ -18,14 +19,17 @@ export default Vue.extend({
         Portal,
     },
     props: {
+        // Whether tool tip is shown
         show: {
             type: Boolean,
             default: false,
         },
+
+        // Position of tool tip
         position: {
             type: Object,
-            // tslint:disable-next-line:only-arrow-functions
             default() { return { x: 0, y: 0 }; },
+            // tslint:disable-next-line:only-arrow-functions
         },
     },
     data() {

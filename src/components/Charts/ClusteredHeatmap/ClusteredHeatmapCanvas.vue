@@ -267,6 +267,8 @@ export default mixins(ClusteredHeatmapBase, CanvasMixin).extend({
 
                 if (event.offsetX > x1 && event.offsetX <= x2
                  && event.offsetY > y1 && event.offsetY <= y2) {
+                    // Fire when heatmap is clicked if offset is within range
+                    // @arg An event, the row key, column key, and value key of the heatmap
                     this.$emit('heatmap-click', {
                         e: event,
                         row: node[this.rowKey],
