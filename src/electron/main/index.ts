@@ -2,6 +2,16 @@ import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { release } from "os";
 import { join } from "path";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import * as remoteMain from "@electron/remote/main";
+
+import {
+  setupTitlebar,
+  attachTitlebarToWindow,
+  // @ts-ignore
+} from "custom-electron-titlebar/main";
+remoteMain.initialize();
+
+setupTitlebar();
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -67,6 +77,8 @@ async function createWindow() {
     if (url.startsWith("https:")) shell.openExternal(url);
     return { action: "deny" };
   });
+
+  attachTitlebarToWindow(win);
 }
 
 app

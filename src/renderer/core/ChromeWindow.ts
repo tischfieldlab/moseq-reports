@@ -29,6 +29,6 @@ export function UpdateTitle(title: string) {
   }
 }
 
-// if (module.hot) {
-//   module.hot?.addDisposeHandler(() => DisposeTitlebar());
-// }
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => DisposeTitlebar());
+}
