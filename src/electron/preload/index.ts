@@ -1,3 +1,7 @@
+import { Menu } from "@electron/remote";
+import { Color, Titlebar } from "custom-electron-titlebar";
+import { createMainMenu } from "./MenuStrip";
+
 function domReady(
   condition: DocumentReadyState[] = ["complete", "interactive"]
 ) {
@@ -92,3 +96,16 @@ window.onmessage = (ev) => {
 };
 
 setTimeout(removeLoading, 4999);
+
+window.addEventListener("DOMContentLoaded", () => {
+  // Title bar implemenation
+  const menu = createMainMenu();
+  new Titlebar({
+    menu: menu,
+    shadow: false,
+    backgroundColor: Color.fromHex("#FFFFFF"),
+    icon: "/img/mouse.png",
+  });
+
+  Menu.setApplicationMenu(menu);
+});

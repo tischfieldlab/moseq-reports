@@ -13,6 +13,7 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { CreateTitleBar } from "./core/ChromeWindow";
+import { ipcRenderer } from "electron";
 
 Vue.use(Vuex);
 Vue.config.devtools = true;
@@ -37,4 +38,8 @@ const app = new Vue({
 
 app.$mount("#app").$nextTick(() => {
   postMessage({ payload: "removeLoading" }, "*");
+});
+
+ipcRenderer.on("open-data", () => {
+  console.log("open-data");
 });

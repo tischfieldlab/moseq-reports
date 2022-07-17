@@ -52,8 +52,6 @@ async function createWindow() {
       preload,
       nodeIntegration: true,
       contextIsolation: false,
-      nodeIntegrationInWorker: true,
-      sandbox: false,
     },
     width: 1280,
     height: 720,

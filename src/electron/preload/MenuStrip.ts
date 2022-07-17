@@ -1,67 +1,24 @@
-import { Menu, app } from "@electron/remote";
+import { Menu } from "@electron/remote";
 
-let localMenu: any | undefined;
-export default function createMainMenu(forceRebuild = false): any {
-  if (localMenu === undefined || forceRebuild) {
-    localMenu = Menu.buildFromTemplate(createMainMenuStripOptions());
-  }
-  return localMenu;
-}
-createMainMenu();
-
-const menuItemsDependingOnLoadedData = [
-  "menu-tools.*",
-  "menu-view-load-layout",
-  "menu-view-default-layout",
-  "menu-view-save-layout",
-  "menu-view-clear-layout",
-  "menu-view-snapshot-workspace",
-];
-
-// store.watch(
-//   (state) => (state as any).datasets.isLoaded,
-//   (newValue, oldValue) => {
-//     menuItemsDependingOnLoadedData.forEach((menuId) => {
-//       if (localMenu) {
-//         if (menuId.endsWith(".*")) {
-//           const mi = localMenu.getMenuItemById(menuId.replace(".*", ""));
-//           set_menu_item_enabled_recursively(mi, newValue);
-//         } else {
-//           const mi = localMenu.getMenuItemById(menuId);
-//           mi.enabled = newValue;
-//         }
-//       }
-//     });
-//   },
-//   {
-//     immediate: true,
-//   }
-// );
-
-function set_menu_item_enabled_recursively(
-  menuItem: any,
-  enabledValue: boolean,
-  includeTop = false
-) {
-  if (includeTop) {
-    menuItem.enabled = enabledValue;
-  }
-  menuItem.submenu?.items.forEach((smi: any) =>
-    set_menu_item_enabled_recursively(smi, enabledValue, true)
-  );
-}
-
-function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
-  return [
-    // ********************** FILE MENU **********************
+export function createMainMenu(): Electron.CrossProcessExports.Menu {
+  "use strict";
+  const menu = Menu.buildFromTemplate([
     {
       label: "File",
       submenu: [
         {
-          label: "Open Data...",
+          label: "",
+          type: "normal",
+          click: () => {},
+        },
+        {
+          label: "&Open data...",
           type: "normal",
           accelerator: "CmdOrCtrl+O",
           // click: loadDataCommand,
+          click: (_item, window, _event) => {
+            window?.webContents.send("open-data");
+          },
         },
         {
           type: "separator",
@@ -70,8 +27,8 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
           label: "Exit",
           type: "normal",
           accelerator: "Alt+F4",
-          click: () => {
-            app.quit();
+          click: (_item, win, _event) => {
+            win?.close();
           },
         },
       ],
@@ -120,12 +77,14 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
       id: "menu-tools",
       label: "Tools",
       // submenu: AvailableComponents()
-      //     .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
+      //     .sort((a, b) =>
+      //         a.friendly_name.localeCompare(b.friendly_name)
+      //     )
       //     .map((cr) => {
       //         return {
       //             label: cr.friendly_name,
       //             type: "normal",
-      //             click: () => CreateComponent(cr),
+      //             // click: () => CreateComponent(cr),
       //         } as Electron.MenuItemConstructorOptions;
       //     }),
     },
@@ -233,11 +192,13 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
         {
           label: "About",
           type: "normal",
-          click: (): void => {
-            // showAboutWindow();
+          click: (_item, window, _event): void => {
+            window?.webContents.send("open-about");
           },
         },
       ],
     },
-  ];
+  ]);
+
+  return menu;
 }

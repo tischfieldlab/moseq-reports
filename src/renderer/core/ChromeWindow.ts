@@ -1,16 +1,10 @@
+import { createMainMenu } from "@main/preload/MenuStrip";
 import { Titlebar, Color } from "custom-electron-titlebar";
-import createMainMenu from "@render/core/MenuStrip";
 
 let titlebar: any;
 
 export function CreateTitleBar() {
   DisposeTitlebar();
-  titlebar = new Titlebar({
-    icon: "/img/mouse.png",
-    backgroundColor: Color.fromHex("#FFFFFF"),
-    menu: createMainMenu(),
-    shadow: false,
-  });
 }
 
 export function DisposeTitlebar() {
