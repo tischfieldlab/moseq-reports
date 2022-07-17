@@ -36,10 +36,14 @@ async function createWindow() {
   win = new BrowserWindow({
     title: "Main window",
     icon: join(ROOT_PATH.public, "img", "msq.ico"),
+    frame: false,
+    titleBarStyle: "hidden",
+    backgroundColor: "#FFFFFF",
     webPreferences: {
       preload,
       nodeIntegration: true,
       contextIsolation: false,
+      nodeIntegrationInWorker: true,
       sandbox: false,
     },
     width: 1280,
