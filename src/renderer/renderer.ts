@@ -6,6 +6,7 @@ import App from "@render/App.vue";
 import VueResize from "vue-resize";
 import VueForceNextTick from "vue-force-next-tick";
 import UniqueId from "vue-unique-id";
+import VueTimeago from "vue-timeago";
 
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
@@ -16,6 +17,11 @@ Vue.use(IconsPlugin);
 Vue.use(VueResize);
 Vue.use(VueForceNextTick);
 Vue.use(UniqueId);
+Vue.use(VueTimeago, {
+  name: "Timeago",
+  locale: "en",
+  autoUpdate: 60,
+});
 
 const app = new Vue({
   render: (h) => h(App),
