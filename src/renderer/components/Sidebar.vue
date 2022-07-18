@@ -71,8 +71,7 @@ export default Vue.extend({
           icon: ["funnel-fill", "funnel"],
           component: "DataFilterContainer",
           align: "flex-start",
-          // isVisible: () => this.$store.state.datasets.name !== "",
-          isVisible: () => true,
+          isVisible: () => this.$store.state.datasets.name !== "",
         } as SidebarItem,
         {
           name: "History",

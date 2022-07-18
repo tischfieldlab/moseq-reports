@@ -11,6 +11,7 @@
 import Vue from "vue";
 import Sidebar from "@render/components/Sidebar.vue";
 import { UpdateTitle } from "@render/core/ChromeWindow";
+import { SidebarPosition } from "@render/store/root.types";
 
 export default Vue.component("homepage", {
   name: "homepage",
@@ -20,16 +21,14 @@ export default Vue.component("homepage", {
   computed: {
     title() {
       let title = "MoSeq Reports";
-      // const currFile = this.$store.state.datasets.name;
-      const currFile = undefined;
+      const currFile = this.$store.state.datasets.name;
       if (currFile) {
         title += " - " + currFile;
       }
       return title;
     },
     isSidebarRight(): boolean {
-      // return this.$store.state.sidebarPosition === SidebarPosition.Right;
-      return false;
+      return this.$store.state.sidebarPosition === SidebarPosition.Right;
     },
   },
   watch: {
