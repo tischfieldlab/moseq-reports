@@ -41,3 +41,5 @@ const app = new Vue({
 app.$mount("#app").$nextTick(() => {
   postMessage({ payload: "removeLoading" }, "*");
 });
+
+export default app;
