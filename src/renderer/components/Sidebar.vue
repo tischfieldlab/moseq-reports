@@ -36,7 +36,7 @@
 import Vue from "vue";
 
 // import DataFilterContainer from "@/components/DataFilterContainer.vue";
-// import HistoryViewer from "@/components/HistoryViewer.vue";
+import HistoryViewer from "@render/components/HistoryViewer.vue";
 import { Portal } from "@linusborg/vue-simple-portal";
 
 interface SidebarItem {
@@ -52,7 +52,7 @@ export default Vue.extend({
   components: {
     Portal,
     // DataFilterContainer,
-    // HistoryViewer,
+    HistoryViewer,
   },
   props: {
     // A boolean describing if sidebar appears on the right side
