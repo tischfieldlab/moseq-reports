@@ -3,6 +3,7 @@ import { release } from "os";
 import { join } from "path";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import * as remoteMain from "@electron/remote/main";
+import "./events/Listeners";
 
 import {
   setupTitlebar,
@@ -87,9 +88,7 @@ app
       // Install extensions
       await installExtension(VUEJS_DEVTOOLS.id)
         .then((name) => console.log(`Added Extension: ${name}`)) // tslint:disable-line:no-console
-        .catch((err) =>
-          console.error(`Failed to install extension:`, err.toString())
-        ); // tslint:disable-line:no-console
+        .catch((err) => console.error(`Failed to install extension:`, err.toString())); // tslint:disable-line:no-console
     }
   })
   .then(createWindow);

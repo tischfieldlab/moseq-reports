@@ -1,4 +1,5 @@
 import { Menu } from "@electron/remote";
+import { ipcRenderer } from "electron";
 import { MenuEvents } from "../shared/Events";
 
 export function createMainMenu(): Electron.CrossProcessExports.Menu {
@@ -12,8 +13,8 @@ export function createMainMenu(): Electron.CrossProcessExports.Menu {
           type: "normal",
           accelerator: "CmdOrCtrl+O",
           // click: loadDataCommand,
-          click: (_item, window, _event) => {
-            window?.webContents.send(MenuEvents.OPEN_DATA);
+          click: (_item, _window, _event) => {
+            ipcRenderer.send(MenuEvents.OPEN_DATA);
           },
         },
         {
