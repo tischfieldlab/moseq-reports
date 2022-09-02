@@ -41,9 +41,9 @@ The main process is in charge of plumbing the window events to the OS layer, boo
 
 Additionally, the main process is responsible for bootstrapping the Chromium window and subsequent renderer processes that the UI is written in.
 
-It is located in the `src/electron` folder. For more information on the structure of the main process, please refer to the (wiki)[https://www.electronjs.org/docs/latest].
+It is located in the `src/electron` folder. For more information on the structure of the main process, please refer to the [wiki](https://www.electronjs.org/docs/latest).
 
 ### Renderer Process
 The renderer process is responsible for rendering the UI and handling the interaction with the application. This is where the Vue application is located and all subsequent UI logic is handled.
 
-It is located in the `src/renderer` folder. For more information on the structure of the renderer process, please refer to the (wiki)[https://www.electronjs.org/docs/latest].
+It is located in the `src/renderer` folder. For more information on the structure of the renderer process, please refer to the [wiki](https://www.electronjs.org/docs/latest).
