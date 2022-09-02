@@ -2,7 +2,7 @@
   <div class="home">
     <Sidebar :right="isSidebarRight" />
     <NoDataPresent />
-    <!-- <WindowContainer /> -->
+    <WindowContainer />
     <FileDropAcceptor />
   </div>
 </template>
@@ -12,6 +12,8 @@ import Vue from "vue";
 import Sidebar from "@render/components/Sidebar.vue";
 import NoDataPresent from "@render/components/NoDataPresent.vue";
 import FileDropAcceptor from "@render/components/FileDropAcceptor.vue";
+import WindowContainer from "@render/components/Core/Window/WindowContainer.vue";
+
 import { UpdateTitle } from "@render/core/ChromeWindow";
 import { SidebarPosition } from "@render/store/root.types";
 
@@ -21,6 +23,7 @@ export default Vue.component("homepage", {
     Sidebar,
     NoDataPresent,
     FileDropAcceptor,
+    WindowContainer,
   },
   computed: {
     title() {
