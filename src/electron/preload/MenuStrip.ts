@@ -1,6 +1,7 @@
 import { Menu } from "@electron/remote";
 import { ipcRenderer } from "electron";
 import { MenuEvents } from "../shared/Events";
+import showAboutWindow from "../../renderer/commands/ShowAbout";
 
 export function createMainMenu(): Electron.CrossProcessExports.Menu {
   "use strict";
@@ -13,7 +14,7 @@ export function createMainMenu(): Electron.CrossProcessExports.Menu {
           type: "normal",
           accelerator: "CmdOrCtrl+O",
           // click: loadDataCommand,
-          click: (_item, _window, _event) => {
+          click: () => {
             ipcRenderer.send(MenuEvents.OPEN_DATA);
           },
         },
@@ -192,8 +193,8 @@ export function createMainMenu(): Electron.CrossProcessExports.Menu {
         {
           label: "About",
           type: "normal",
-          click: (_item, window, _event): void => {
-            window?.webContents.send("open-about");
+          click: (): void => {
+            showAboutWindow();
           },
         },
       ],

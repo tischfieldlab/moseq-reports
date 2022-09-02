@@ -2,9 +2,7 @@ import { Menu } from "@electron/remote";
 import { Color, Titlebar } from "custom-electron-titlebar";
 import { createMainMenu } from "./MenuStrip";
 
-function domReady(
-  condition: DocumentReadyState[] = ["complete", "interactive"]
-) {
+function domReady(condition: DocumentReadyState[] = ["complete", "interactive"]) {
   return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {
       resolve(true);

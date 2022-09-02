@@ -5,6 +5,7 @@ import path from "path";
 import { DatasetsState } from "@render/store/datasets.types";
 import { LoadDefaultLayout } from "./LoadLayout";
 import StreamZip from "node-stream-zip";
+import { dialog } from "@electron/remote";
 
 // NOTE: Event for loading file for file association sent by the main proc
 ipcRenderer.on("ready-to-load-file", (event: IpcRendererEvent, data: string) => {
@@ -14,6 +15,28 @@ ipcRenderer.on("ready-to-load-file", (event: IpcRendererEvent, data: string) => 
 
   LoadDataFile(data);
 });
+
+export const DataFileExt = "msq";
+
+/**
+ * Allows the user to pick a .MSQ file, and then
+ * loads that file.
+ */
+export default function () {
+  const filenames = dialog.showOpenDialogSync({
+    properties: ["openFile"],
+    // defaultPath: process.cwd(),
+    filters: [
+      { name: "MoSeq Data Files", extensions: [DataFileExt] },
+      { name: "All Files", extensions: ["*"] },
+    ],
+  });
+  if (filenames === undefined) {
+    return;
+  }
+
+  LoadDataFile(filenames[0]);
+}
 
 export function IsDataLoaded() {
   return (store.state as any).datasets.isLoaded;
