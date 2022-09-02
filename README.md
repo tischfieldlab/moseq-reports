@@ -16,6 +16,11 @@ npm install -g yarn
 ## Commands
 To interact with the application, please refer to the `package.json` file to see the full list of supported scripts. Below is a list of the useful commands that you will run and build the app on your machine.
 
+### Installing the Dependencies
+```sh
+yarn
+```
+
 ### Running the App
 To run the application, type the following command:
 
