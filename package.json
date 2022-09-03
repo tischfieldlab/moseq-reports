@@ -17,7 +17,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "yarn lint && vite build && electron-builder",
+    "build": "yarn lint && vite build && electron-builder build --config .electron-builder.js --dir",
     "clean": "rm -rf dist release",
     "lint": "prettier --write src/**/{*.js,*.vue,*.ts} --config ./.prettierrc.json"
   },
@@ -53,6 +53,7 @@
     "electron": "^19.0.8",
     "electron-builder": "^23.1.0",
     "electron-devtools-installer": "^3.2.0",
+    "electron-notarize": "^1.2.1",
     "file-type": "^18.0.0",
     "html-to-image": "^1.10.8",
     "lru-cache": "^7.14.0",
