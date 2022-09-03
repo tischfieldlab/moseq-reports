@@ -7,6 +7,9 @@ const config = {
   files: ["dist"],
   productName: "moseq-reports",
   appId: "edu.rutgers.tischfieldlab.moseq-reports",
+  directories: {
+    output: "release",
+  },
   fileAssociations: [
     {
       ext: "msq",
