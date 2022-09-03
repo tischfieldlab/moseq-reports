@@ -7,30 +7,29 @@ import { ComponentRegistration } from "@render/store/root.types";
 // // Globally register all base components for convenience, because they
 // // will be used very frequently. Components are registered using the
 // // PascalCased version of their file name.
-// export function DiscoverDataComponents() {
-//   // register core components
-//   GlobalRegisterVueComponents(
-//     require.context(
-//       "@/components/Core", // directory path
-//       true, // Do look in subdirectories
-//       /[\w-]+\.vue$/ // filename match pattern
-//     )
-//   );
-
-//   // register data components
-//   GlobalRegisterVueComponents(
-//     require.context(
-//       "@/components/data_components", // directory path
-//       true, // Do look in subdirectories
-//       /[\w-]+\.vue$/ // filename match pattern
-//     )
-//   );
-// }
+export function DiscoverDataComponents() {
+  // register core components
+  // GlobalRegisterVueComponents(
+  //   require.context(
+  //     "@/components/Core", // directory path
+  //     true, // Do look in subdirectories
+  //     /[\w-]+\.vue$/ // filename match pattern
+  //   )
+  // );
+  // // register data components
+  // GlobalRegisterVueComponents(
+  //   require.context(
+  //     "@/components/data_components", // directory path
+  //     true, // Do look in subdirectories
+  //     /[\w-]+\.vue$/ // filename match pattern
+  //   )
+  // );
+}
 // DiscoverDataComponents();
 
-// export default function RegisterDataComponent(meta: ComponentRegistration) {
-//   store.commit("registerComponent", meta);
-// }
+export default function RegisterDataComponent(meta: ComponentRegistration) {
+  store.commit("registerComponent", meta);
+}
 
 // function GlobalRegisterVueComponents(requireComponent: __WebpackModuleApi.RequireContext) {
 //   // https://webpack.js.org/guides/dependency-management/#require-context
