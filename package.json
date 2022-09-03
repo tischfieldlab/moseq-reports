@@ -19,7 +19,7 @@
     "dev": "vite",
     "build": "yarn lint && vite build && electron-builder build --config .electron-builder.js --dir",
     "clean": "rm -rf dist release",
-    "lint": "prettier --write src/**/{*.js,*.vue,*.ts} --config ./.prettierrc.json"
+    "lint": "prettier --write ./**/{*.js,*.vue,*.ts} --config ./.prettierrc.json"
   },
   "pre-commit": [
     "lint"
