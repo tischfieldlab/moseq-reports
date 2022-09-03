@@ -5,10 +5,10 @@
     class="title-button"
     size="sm"
     variant="link"
-    @click="clicked"
     :class="{ 'disabled-icon-button': disabled }"
+    @click="clicked"
   >
-    <b-icon :icon="this.icon" />
+    <b-icon :icon="icon" />
   </b-button>
 </template>
 

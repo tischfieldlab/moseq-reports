@@ -50,12 +50,9 @@ const DataviewModule: Module<DataviewState, RootState> = {
       const result = lm.find((row) => row[from] === state.selectedSyllable);
       if (result !== undefined) {
         return {
-          [CountMethod.Frames.toLowerCase()]:
-            result[CountMethod.Frames.toLowerCase()],
-          [CountMethod.Usage.toLowerCase()]:
-            result[CountMethod.Usage.toLowerCase()],
-          [CountMethod.Raw.toLowerCase()]:
-            result[CountMethod.Raw.toLowerCase()],
+          [CountMethod.Frames.toLowerCase()]: result[CountMethod.Frames.toLowerCase()],
+          [CountMethod.Usage.toLowerCase()]: result[CountMethod.Usage.toLowerCase()],
+          [CountMethod.Raw.toLowerCase()]: result[CountMethod.Raw.toLowerCase()],
         };
       } else {
         return undefined;
@@ -142,8 +139,7 @@ const DataviewModule: Module<DataviewState, RootState> = {
       const newSelectedSyllable = context.getters.selectedSyllableAs(payload);
 
       // translate the module id filters to new count method
-      const lm = ((context.rootState as any).datasets as DatasetsState)
-        .label_map;
+      const lm = ((context.rootState as any).datasets as DatasetsState).label_map;
       const from = context.state.countMethod.toLowerCase();
       const filterSyllables = context.state.moduleIdFilter.map((id) => {
         const result = lm.find((row) => row[from] === id);
@@ -185,10 +181,8 @@ const DataviewModule: Module<DataviewState, RootState> = {
       try {
         // console.log(context.state.moduleIdFilter);
         payload.countMethod = payload.countMethod || context.state.countMethod;
-        payload.selectedGroups =
-          payload.selectedGroups || context.state.selectedGroups;
-        payload.moduleIdFilter =
-          payload.moduleIdFilter || context.state.moduleIdFilter;
+        payload.selectedGroups = payload.selectedGroups || context.state.selectedGroups;
+        payload.moduleIdFilter = payload.moduleIdFilter || context.state.moduleIdFilter;
         // console.log(payload.moduleIdFilter);
         context.commit("setView", payload);
       } catch (e) {

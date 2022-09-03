@@ -1,7 +1,7 @@
 <template>
   <svg>
     <!-- // Collect SVG elements from multiple sources -->
-    <slot></slot>
+    <slot />
   </svg>
 </template>
 

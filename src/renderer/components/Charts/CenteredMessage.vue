@@ -3,7 +3,7 @@
     <b-card bg-variant="primary" text-variant="white" class="text-center">
       <b-card-text>
         <!-- Centers content in slot -->
-        <slot></slot>
+        <slot />
       </b-card-text>
     </b-card>
   </div>

@@ -95,18 +95,15 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
 
       if (payload.position_x !== undefined) {
         if (payload.position_x < 0) payload.position_x = 0;
-        if (payload.position_x + deltaX > maxX)
-          payload.position_x = maxX - state.width;
+        if (payload.position_x + deltaX > maxX) payload.position_x = maxX - state.width;
 
         state.pos_x = payload.position_x;
       }
 
       if (payload.position_y !== undefined) {
         if (payload.position_y < 0) payload.position_y = 0;
-        if (state.is_hidden && payload.position_y > maxY - 70)
-          payload.position_y = maxY - 70;
-        if (!state.is_hidden && payload.position_y + deltaY > maxY)
-          payload.position_y = maxY - state.height - 65;
+        if (state.is_hidden && payload.position_y > maxY - 70) payload.position_y = maxY - 70;
+        if (!state.is_hidden && payload.position_y + deltaY > maxY) payload.position_y = maxY - state.height - 65;
 
         state.pos_y = payload.position_y;
       }
@@ -114,16 +111,10 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
     updateComponentTitle(state, payload: UpdateComponentTitlePayload) {
       state.title = payload.title;
     },
-    updateComponentDataSource(
-      state,
-      payload: UpdateComponentDataSourcePayload
-    ) {
+    updateComponentDataSource(state, payload: UpdateComponentDataSourcePayload) {
       state.datasource = payload.source;
     },
-    updateComponentRenderMode(
-      state,
-      payload: UpdateComponentRenderModePayload
-    ) {
+    updateComponentRenderMode(state, payload: UpdateComponentRenderModePayload) {
       state.render_mode = payload.render_mode;
     },
     updateComponentSettings(state, payload: UpdateComponentSettingsPayload) {
@@ -132,11 +123,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
     updateZIndex(state, payload: UpdateComponentZIndexPayload) {
       state.z_index = payload.z_index;
     },
-    updateAspectRatio(
-      state,
-      payload: UpdateComponentAspectRatio &
-        UpdateComponentAspectRatioByWidthAndHeight
-    ) {
+    updateAspectRatio(state, payload: UpdateComponentAspectRatio & UpdateComponentAspectRatioByWidthAndHeight) {
       if (payload.aspect_ratio) {
         state.aspect_ratio = payload.aspect_ratio;
       } else {
@@ -146,9 +133,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
   },
   actions: {
     resetSize(context) {
-      const spec = context.rootGetters.getSpecification(
-        context.state.type
-      ) as ComponentRegistration;
+      const spec = context.rootGetters.getSpecification(context.state.type) as ComponentRegistration;
       context.commit("updateComponentLayout", {
         width: spec.init_width,
         height: spec.init_height,

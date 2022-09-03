@@ -1,9 +1,6 @@
 import { Module } from "vuex";
 import { RootState, ComponentRegistration } from "@render/store/root.types";
-import {
-  DehydratedDataWindow,
-  DataWindowState,
-} from "@render/store/datawindow.types";
+import { DehydratedDataWindow, DataWindowState } from "@render/store/datawindow.types";
 import store from "@render/store/root.store";
 import { getModuleNamespace, unnest } from "@render/util/Vuex";
 import DataWindowModule from "@render/store/datawindow.store";
@@ -157,9 +154,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
 }
 
 function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
-  const spec = store.getters.getSpecification(
-    data.type
-  ) as ComponentRegistration;
+  const spec = store.getters.getSpecification(data.type) as ComponentRegistration;
   const win = createDataWindow(spec);
   const maxZ: number = store.getters["datawindows/windowsMaxZIndex"] + 1;
   win.title = clone(data.title || spec.friendly_name);

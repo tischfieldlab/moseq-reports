@@ -1,10 +1,6 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
-import {
-  RootState,
-  ComponentRegistration,
-  SidebarPosition,
-} from "@render/store/root.types";
+import { RootState, ComponentRegistration, SidebarPosition } from "@render/store/root.types";
 import DatasetsStore from "@render/store/datasets.store";
 import FiltersModule from "@render/store/filters.store";
 import WindowsModule from "@render/store/windows.store";
@@ -31,16 +27,12 @@ const store: StoreOptions<RootState> = {
   },
   mutations: {
     registerComponent(state, payload: ComponentRegistration) {
-      const loc = state.registry.findIndex(
-        (r) => r.component_type === payload.component_type
-      );
+      const loc = state.registry.findIndex((r) => r.component_type === payload.component_type);
       if (loc === -1) {
         state.registry.push(payload);
       } else {
         // tslint:disable-next-line:no-console
-        console.warn(
-          `${payload.component_type} has already been registered! Merging...`
-        );
+        console.warn(`${payload.component_type} has already been registered! Merging...`);
         state.registry.splice(loc, 1, payload);
       }
     },

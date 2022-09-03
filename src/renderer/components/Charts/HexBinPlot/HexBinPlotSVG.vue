@@ -1,6 +1,6 @@
 <template>
   <div>
-    <svg ref="canvas" v-show="has_data" :width="width" :height="height">
+    <svg v-show="has_data" ref="canvas" :width="width" :height="height">
       <g :transform="`translate(${margin.left},${margin.top})`">
         <g
           v-for="cell in scale.gl"
@@ -45,7 +45,9 @@
         {{ title }}
       </text>
     </svg>
-    <MessageBox :show="!has_data">{{ noDataMessage }}</MessageBox>
+    <MessageBox :show="!has_data">
+      {{ noDataMessage }}
+    </MessageBox>
   </div>
 </template>
 

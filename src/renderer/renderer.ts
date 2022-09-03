@@ -32,10 +32,10 @@ Vue.use(VueTimeago, {
 
 const app = new Vue({
   store,
-  render: (h) => h(App),
   beforeMount() {
     CreateTitleBar();
   },
+  render: (h) => h(App),
 });
 
 app.$mount("#app").$nextTick(() => {

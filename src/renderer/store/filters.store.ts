@@ -34,10 +34,10 @@ const FiltersModule: Module<FiltersState, RootState> = {
   actions: {
     async serializeFilters(context): Promise<any> {
       const dehydrated = context.state.items.map(async (id) => {
-        return [
-          id.split("/")[1],
-          await context.dispatch(`${id}/serialize`, undefined, { root: true }),
-        ] as [string, Promise<any>];
+        return [id.split("/")[1], await context.dispatch(`${id}/serialize`, undefined, { root: true })] as [
+          string,
+          Promise<any>
+        ];
       });
       return Object.fromEntries(await Promise.all(dehydrated));
     },
@@ -57,9 +57,7 @@ const FiltersModule: Module<FiltersState, RootState> = {
           context.commit("addFilter", fullpath);
         }
       });
-      existing
-        .filter((ns) => !imported.includes(ns))
-        .forEach((id) => context.dispatch("removeFilter", id));
+      existing.filter((ns) => !imported.includes(ns)).forEach((id) => context.dispatch("removeFilter", id));
     },
     async addFilter(context) {
       const namespace = getModuleNamespace(store, context.state) as string;
@@ -81,14 +79,9 @@ const FiltersModule: Module<FiltersState, RootState> = {
     removeFilter(context, namespace: string) {
       context.commit("removeFilter", namespace);
 
-      const winsUsingFilter =
-        context.rootGetters["datawindows/windowsUsingDataView"](namespace);
+      const winsUsingFilter = context.rootGetters["datawindows/windowsUsingDataView"](namespace);
       for (const win of winsUsingFilter) {
-        context.commit(
-          `${win}/updateComponentDataSource`,
-          { source: context.getters.default },
-          { root: true }
-        );
+        context.commit(`${win}/updateComponentDataSource`, { source: context.getters.default }, { root: true });
       }
 
       store.unregisterModule(namespace.split("/"));

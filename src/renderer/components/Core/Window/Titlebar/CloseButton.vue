@@ -1,5 +1,5 @@
 <template>
-  <b-button-close v-b-tooltip.hover @click="clicked" :title="title" class="close-button" />
+  <b-button-close v-b-tooltip.hover :title="title" class="close-button" @click="clicked" />
 </template>
 
 <script lang="ts">
