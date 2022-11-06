@@ -21,9 +21,7 @@
     "clean": "rm -rf dist release",
     "lint": "prettier --write ./**/{*.js,*.vue,*.ts} --config ./.prettierrc.json"
   },
-  "pre-commit": [
-    "lint"
-  ],
+  "pre-commit": [],
   "engines": {
     "node": ">=16.0.0"
   },

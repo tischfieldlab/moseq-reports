@@ -4,6 +4,7 @@ import { defineConfig } from "vite";
 import electron from "vite-plugin-electron";
 import { createVuePlugin } from "vite-plugin-vue2";
 import pkg from "./package.json";
+import { fileURLToPath } from "node:url";
 
 rmSync("dist", { recursive: true, force: true }); // v14.14.0
 
@@ -24,7 +25,7 @@ export default defineConfig({
         input: {
           // You can configure multiple preload here
           index: join(__dirname, "src/electron/preload/index.ts"),
-          dataserver: join(__dirname, "src/electron/preload/dataserver/index.ts"),
+          dataserver: join(__dirname, "src/dataserver/index.ts"),
         },
         vite: {
           build: {
@@ -41,7 +42,6 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: "@render", replacement: join(__dirname, "src/renderer") },
-      { find: "@dataserver", replacement: join(__dirname, "src/electron/preload/dataserver") },
       { find: "@main", replacement: join(__dirname, "src/electron") },
     ],
   },

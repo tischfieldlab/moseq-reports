@@ -10,7 +10,7 @@ import {
   attachTitlebarToWindow,
   // @ts-ignore
 } from "custom-electron-titlebar/main";
-import { DataServer } from "../preload/dataserver";
+import { DataServer } from "../../dataserver/index";
 remoteMain.initialize();
 
 setupTitlebar();
