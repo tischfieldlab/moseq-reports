@@ -24,6 +24,7 @@ export default defineConfig({
         input: {
           // You can configure multiple preload here
           index: join(__dirname, "src/electron/preload/index.ts"),
+          dataserver: join(__dirname, "src/electron/preload/dataserver/index.ts"),
         },
         vite: {
           build: {
@@ -40,6 +41,7 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: "@render", replacement: join(__dirname, "src/renderer") },
+      { find: "@dataserver", replacement: join(__dirname, "src/electron/preload/dataserver") },
       { find: "@main", replacement: join(__dirname, "src/electron") },
     ],
   },

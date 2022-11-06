@@ -10,11 +10,14 @@ import {
   attachTitlebarToWindow,
   // @ts-ignore
 } from "custom-electron-titlebar/main";
+import { DataServer } from "../preload/dataserver";
 remoteMain.initialize();
 
 setupTitlebar();
 
 const isDevelopment = process.env.NODE_ENV !== "production";
+
+const dataServer: DataServer = new DataServer();
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -95,7 +98,10 @@ app
 
 app.on("window-all-closed", () => {
   win = null;
-  if (process.platform !== "darwin") app.quit();
+  if (process.platform !== "darwin") {
+    dataServer.shutdown();
+    app.quit();
+  }
 });
 
 app.on("second-instance", () => {
@@ -112,6 +118,12 @@ app.on("activate", () => {
     allWindows[0].focus();
   } else {
     createWindow();
+
+    // This can really live anywhere, but we would like to at least keep the
+    // life cycle management of the dataserver connected to the main process
+    // so that we can wrap the dataserver in the same lifecycle as the main
+    // process.
+    dataServer.init();
   }
 });
 
