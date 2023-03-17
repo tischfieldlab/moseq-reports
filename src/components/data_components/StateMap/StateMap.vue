@@ -590,12 +590,13 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 })
                 .then((graphURI: string) => {
                     const graphContainer = this.$refs.container as HTMLElement;
+                    console.log(graphContainer.clientHeight, graphContainer.clientWidth);
                     return {
                         dataURI: graphURI,
                         pos_x: 0,
                         pos_y: 0,
-                        width: graphContainer.clientWidth,
-                        height: graphContainer.clientHeight,
+                        width: graphContainer.clientWidth * (window.devicePixelRatio || 1),
+                        height: graphContainer.clientHeight * (window.devicePixelRatio || 1),
                     } as SubImage;
                 })
                 .then(async (graphSubImage: SubImage) => {
@@ -605,8 +606,8 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                         dataURI: await targetToDataURI(this.$refs.legendHost as Vue, options),
                         pos_x: 0,
                         pos_y: graphSubImage.height,
-                        width: lel.clientWidth,
-                        height: lel.clientHeight,
+                        width: lel.clientWidth * (window.devicePixelRatio || 1),
+                        height: lel.clientHeight * (window.devicePixelRatio || 1),
                     } as SubImage;
                     return composite_images([graphSubImage, legend], options);
                 });
