@@ -590,7 +590,6 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                 })
                 .then((graphURI: string) => {
                     const graphContainer = this.$refs.container as HTMLElement;
-                    console.log(graphContainer.clientHeight, graphContainer.clientWidth);
                     return {
                         dataURI: graphURI,
                         pos_x: 0,
@@ -600,7 +599,6 @@ export default mixins(WindowMixin, LoadingMixin).extend({
                     } as SubImage;
                 })
                 .then(async (graphSubImage: SubImage) => {
-                    console.log(graphSubImage);
                     const lel = (this.$refs.legendHost as Vue).$el as HTMLElement;
                     const legend = {
                         dataURI: await targetToDataURI(this.$refs.legendHost as Vue, options),
