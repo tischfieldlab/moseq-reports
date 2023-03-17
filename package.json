@@ -1,6 +1,6 @@
 {
   "name": "moseq-reports",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Interactive interrogation of Moseq models",
   "author": {
     "name": "Jay A. Tischfield Lab",
