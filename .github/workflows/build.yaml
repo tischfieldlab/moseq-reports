@@ -72,8 +72,6 @@ jobs:
 
       - name: Print environment info
         run: |
-          whereis python
-          which python
           python --version
           pip --version
           node --version
