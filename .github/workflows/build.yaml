@@ -74,6 +74,7 @@ jobs:
         run: |
           whereis python
           which python
+          python --version
           pip --version
           node --version
 
