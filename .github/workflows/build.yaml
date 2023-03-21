@@ -70,6 +70,13 @@ jobs:
         with:
           node-version: 14
 
+      - name: Print environment info
+        run: |
+          whereis python
+          which python
+          pip --version
+          node --version
+
       # BEGIN WINDOWS CERT PREP
       - name: Decode and Prep Windows Cert
         if: ${{ runner.os == 'Windows' }}
