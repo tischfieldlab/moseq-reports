@@ -1,6 +1,6 @@
 {
   "name": "moseq-reports",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Interactive interrogation of Moseq models",
   "author": {
     "name": "Jay A. Tischfield Lab",
@@ -51,6 +51,7 @@
     "cytoscape-avsdf": "^1.0.0",
     "cytoscape-cise": "^1.0.0",
     "cytoscape-fcose": "^2.1.0",
+    "cytoscape-svg": "^0.4.0",
     "d3": "^7.0.0",
     "d3-hexbin": "^0.2.2",
     "d3-sankey": "^0.12.3",

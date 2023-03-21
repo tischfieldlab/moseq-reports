@@ -38,6 +38,9 @@ cytoscape.use(fcose);
 import cise from 'cytoscape-cise';
 cytoscape.use(cise);
 
+import svg from 'cytoscape-svg';
+cytoscape.use(svg);
+
 
 RegisterDataComponent({
     friendly_name: 'State Map',
@@ -45,7 +48,7 @@ RegisterDataComponent({
     settings_type: 'StateMapOptions',
     init_width: 400,
     init_height: 500,
-    available_render_modes: [RenderMode.CANVAS],
+    available_render_modes: [RenderMode.CANVAS, RenderMode.SVG],
     default_render_mode: RenderMode.CANVAS,
     default_settings: {
         plot_group: '',
@@ -541,39 +544,74 @@ export default mixins(WindowMixin, LoadingMixin).extend({
         },
         // returns snapshot of the current layout of the State Map.
         snapshot(options: SnapshotOptions): Promise<string> {
-            return new Promise((resolve, reject) => {
-                return (this as any).cy.png({
-                    output: 'blob-promise',
-                    bg: options.backgroundColor,
-                    full: false,
-                    scale: options.scale,
-                }).then((blob: Blob) => {
+            if (options.format === 'svg'){
+                /**
+                 * This is a bit dirty, but here is what we will do:
+                 * 1) grab a SVG version of the cytoscape graph
+                 * 2) grab a SVG of the legend
+                 *      a) We can only easily get this as a data URI
+                 *      b) take data portion of URI, and base64 decode it
+                 *      c) take only the inner `<svg>...</svg>` nodes
+                 * 3) build a "nested" SVG, containing both the graph and legend
+                 * 4) convert to a blob
+                 * 5) convert to a data URI
+                 */
+                return new Promise(async (resolve, reject) => {
+                    const svgStr = (this as any).cy.svg({
+                        bg: options.backgroundColor,
+                        full: false,
+                        scale: options.scale,
+                    });
+                    const legendDataURI = await targetToDataURI(this.$refs.legendHost as Vue, options)
+                    const legendSvg = atob(legendDataURI?.split(',')[1] as string);
+                    const innerLegendSvgMatch = legendSvg.match(/(<svg.+<\/svg>)/s);
+                    const innerLegendSvg = innerLegendSvgMatch != null ? innerLegendSvgMatch[1] : '';
+                    const newSvg = '<svg>'+svgStr+innerLegendSvg+'</svg>';
+                    const svgBlob = new Blob([newSvg], {type: 'image/svg+xml'});
+
                     const r = new FileReader();
                     r.onload = (e) => resolve(e?.target?.result as string);
-                    r.readAsDataURL(blob);
+                    r.readAsDataURL(svgBlob);
                 });
-            })
-            .then((graphURI) => {
-                const graphContainer = this.$refs.container as HTMLElement;
-                return {
-                    dataURI: graphURI,
-                    pos_x: 0,
-                    pos_y: 0,
-                    width: graphContainer.clientWidth,
-                    height: graphContainer.clientHeight,
-                } as SubImage;
-            })
-            .then(async (graphSubImage) => {
-                const lel = (this.$refs.legendHost as Vue).$el as HTMLElement;
-                const legend = {
-                    dataURI: await targetToDataURI(this.$refs.legendHost as Vue, options),
-                    pos_x: 0,
-                    pos_y: graphSubImage.height,
-                    width: lel.clientWidth,
-                    height: lel.clientHeight,
-                } as SubImage;
-                return composite_images([graphSubImage, legend], options);
-            });
+
+            } else if (options.format === 'png') {
+                return new Promise<string>((resolve, reject) => {
+                    return (this as any).cy.png({
+                        output: 'blob-promise',
+                        bg: options.backgroundColor,
+                        full: false,
+                        scale: options.scale,
+                    })
+                    .then((blob: Blob) => {
+                        const r = new FileReader();
+                        r.onload = (e) => resolve(e?.target?.result as string);
+                        r.readAsDataURL(blob);
+                    });
+                })
+                .then((graphURI: string) => {
+                    const graphContainer = this.$refs.container as HTMLElement;
+                    return {
+                        dataURI: graphURI,
+                        pos_x: 0,
+                        pos_y: 0,
+                        width: graphContainer.clientWidth * (window.devicePixelRatio || 1),
+                        height: graphContainer.clientHeight * (window.devicePixelRatio || 1),
+                    } as SubImage;
+                })
+                .then(async (graphSubImage: SubImage) => {
+                    const lel = (this.$refs.legendHost as Vue).$el as HTMLElement;
+                    const legend = {
+                        dataURI: await targetToDataURI(this.$refs.legendHost as Vue, options),
+                        pos_x: 0,
+                        pos_y: graphSubImage.height,
+                        width: lel.clientWidth * (window.devicePixelRatio || 1),
+                        height: lel.clientHeight * (window.devicePixelRatio || 1),
+                    } as SubImage;
+                    return composite_images([graphSubImage, legend], options);
+                });
+            } else {
+                throw Error('unsupported format: ' + options.format)
+            }
         },
         generateLayout(){
             const cy = (this as any).cy;
