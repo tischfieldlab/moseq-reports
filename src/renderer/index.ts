@@ -1,10 +1,8 @@
-import { createApp } from "vue";
+import { createApp, h } from "vue";
 
 // @ts-ignore
 import App from "@render/App.vue";
 
-import Vuex from "vuex";
-import store from "@render/store/root.store"
 import VueResize from "vue-resize";
 import VueForceNextTick from "vue-force-next-tick";
 import UniqueId from "vue-unique-id";
@@ -17,20 +15,18 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-console.log("in renderer");
 
 const app = createApp(App, {
   store,
   beforeMount() {
     CreateTitleBar();
   },
-  render: (h) => h(App),
 });
 
 app.use(store);
 app.config.devtools = true;
 
-app.use(BootstrapVue);
+//app.use(BootstrapVue);
 app.use(IconsPlugin);
 app.use(VueResize);
 app.use(VueForceNextTick);

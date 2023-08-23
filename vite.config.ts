@@ -20,7 +20,7 @@ export default defineConfig(({ command }) => {
         template: {
           compilerOptions: {
             compatConfig: {
-              MODE: 2
+              MODE: 3
             }
           }
         }
