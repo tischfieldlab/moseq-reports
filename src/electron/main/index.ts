@@ -56,6 +56,7 @@ async function createWindow() {
     icon: join(ROOT_PATH.public, "img", "msq.ico"),
     frame: false,
     titleBarStyle: "hidden",
+    // titleBarOverlay: true,
     backgroundColor: "#FFFFFF",
     webPreferences: {
       preload,

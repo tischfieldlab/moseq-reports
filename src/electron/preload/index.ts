@@ -1,5 +1,5 @@
 import { Menu } from "@electron/remote";
-import { Color, Titlebar } from "custom-electron-titlebar";
+import { TitlebarColor, Titlebar } from "custom-electron-titlebar";
 import { createMainMenu } from "./MenuStrip";
 
 console.log("in preload!")
@@ -103,7 +103,7 @@ window.addEventListener("DOMContentLoaded", () => {
   new Titlebar({
     menu: menu,
     shadow: false,
-    backgroundColor: Color.fromHex("#FFFFFF"),
+    backgroundColor: TitlebarColor.fromHex("#FFFFFF"),
     icon: "/img/mouse.png",
   });
 
