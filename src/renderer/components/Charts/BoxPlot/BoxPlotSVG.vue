@@ -215,29 +215,29 @@ export default mixins(BoxPlotBase).extend({
 </script>
 
 <style scoped>
-svg >>> g.x-axis text.label,
-svg >>> g.y-axis text.label {
+svg:deep() g.x-axis text.label,
+svg:deep() g.y-axis text.label {
   text-anchor: middle;
   fill: #000000;
   font-family: Verdana, Arial, sans-serif;
   font-size: 12px;
 }
-svg >>> text.tick-measurement,
-svg >>> g.tick text {
+svg:deep() text.tick-measurement,
+svg:deep() g.tick text {
   font-size: 10px;
   fill: #000000;
 }
 
-svg >>> g.x-axis.rotate g.tick text {
+svg:deep() g.x-axis.rotate g.tick text {
   transform: translate(-10px, 0px) rotate(-45deg);
   text-anchor: end;
 }
-svg >>> line,
-svg >>> rect {
+svg:deep() line,
+svg:deep() rect {
   shape-rendering: crispEdges;
 }
-svg >>> circle,
-svg >>> path {
+svg:deep() circle,
+svg:deep() path {
   shape-rendering: geometricPrecision;
 }
 </style>

@@ -190,17 +190,17 @@ export default Vue.extend({
   display: inline-flex;
   width: 100%;
 }
-.picker-container >>> .dropdown-menu {
+.picker-container:deep() .dropdown-menu {
   max-height: 400px;
   overflow-y: auto;
 }
-.b-dropdown >>> .btn {
+.b-dropdown:deep() .btn {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-color: rgb(206, 212, 218);
   background: #ffffff;
 }
-.b-dropdown.custom >>> .btn {
+.b-dropdown.custom:deep() .btn {
   border-bottom-right-radius: 0;
 }
 </style>

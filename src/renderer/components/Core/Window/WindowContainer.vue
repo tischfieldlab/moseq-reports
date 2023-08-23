@@ -1,7 +1,7 @@
 <template>
   <div>
-    <template v-for="wid in windows">
-      <UiCard :key="wid" :id="wid" />
+    <template v-for="wid in windows" :key="wid">
+      <UiCard :id="wid" />
     </template>
   </div>
 </template>

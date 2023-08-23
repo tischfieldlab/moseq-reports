@@ -206,73 +206,73 @@ export default mixins(ClusteredHeatmapBase).extend({
 </script>
 
 <style scoped>
-svg >>> g.rtree path.rlink,
-svg >>> g.ctree path.clink {
+svg:deep() g.rtree path.rlink,
+svg:deep() g.ctree path.clink {
   fill: none;
   stroke: #aaa;
   stroke-width: 1.5px;
   shape-rendering: geometricPrecision;
 }
-svg >>> g.heatmap rect {
+svg:deep() g.heatmap rect {
   shape-rendering: crispEdges;
 }
-svg >>> g.legend path.domain {
+svg:deep() g.legend path.domain {
   stroke: none;
 }
-svg >>> g.x-axis text.label,
-svg >>> g.y-axis text.label {
+svg:deep() g.x-axis text.label,
+svg:deep() g.y-axis text.label {
   font-family: Verdana, Arial, sans-serif;
   font-size: 13px;
   text-anchor: middle;
   fill: #000;
 }
-svg >>> g.x-axis.rotate g.tick text {
+svg:deep() g.x-axis.rotate g.tick text {
   transform: translate(-10px, 0px) rotate(-45deg);
   text-anchor: end;
 }
-svg >>> text.tick-measurement,
-svg >>> g.tick text {
+svg:deep() text.tick-measurement,
+svg:deep() g.tick text {
   font-size: 10px;
 }
-svg >>> g.y-axis g.tick text {
+svg:deep() g.y-axis g.tick text {
   font-size: 8px;
 }
-svg >>> g.x-axis g.tick line,
-svg >>> g.y-axis g.tick line {
+svg:deep() g.x-axis g.tick line,
+svg:deep() g.y-axis g.tick line {
   stroke: #888;
   shape-rendering: crispEdges;
 }
-svg >>> g.x-axis .domain,
-svg >>> g.y-axis .domain {
+svg:deep() g.x-axis .domain,
+svg:deep() g.y-axis .domain {
   stroke: none;
 }
-svg >>> g.heatmap {
+svg:deep() g.heatmap {
   cursor: crosshair;
 }
-svg >>> g.y-axis g.tick {
+svg:deep() g.y-axis g.tick {
   fill: #888;
 }
 
-svg >>> g.y-axis g.tick.selected text,
-svg >>> g.x-axis g.tick.selected text {
+svg:deep() g.y-axis g.tick.selected text,
+svg:deep() g.x-axis g.tick.selected text {
   font-weight: bold;
   font-size: 16px;
   fill: #000;
   z-index: 1000;
 }
-svg >>> g.x-axis g.tick.selected text {
+svg:deep() g.x-axis g.tick.selected text {
   transform: translateY(12px);
   text-anchor: middle;
 }
-svg >>> g.y-axis g.tick.selected text {
+svg:deep() g.y-axis g.tick.selected text {
   transform: translateX(18px);
   text-anchor: middle;
 }
-svg >>> g.y-axis g.tick.selected line {
+svg:deep() g.y-axis g.tick.selected line {
   stroke: #000;
   transform: scaleX(3) scaleY(1.5);
 }
-svg >>> g.x-axis g.tick.selected line {
+svg:deep() g.x-axis g.tick.selected line {
   stroke: #000;
   transform: scaleX(2) scaleY(3);
 }

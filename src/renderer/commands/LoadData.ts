@@ -1,4 +1,4 @@
-import app from "@render/renderer";
+import app from "@render/index";
 import store from "@render/store/root.store";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import path from "path";

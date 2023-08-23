@@ -1,4 +1,3 @@
-import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 import { RootState, ComponentRegistration, SidebarPosition } from "@render/store/root.types";
 import DatasetsStore from "@render/store/datasets.store";
@@ -6,7 +5,7 @@ import FiltersModule from "@render/store/filters.store";
 import WindowsModule from "@render/store/windows.store";
 import HistoryModule from "@render/store/history.store";
 
-Vue.use(Vuex);
+
 
 const store: StoreOptions<RootState> = {
   strict: process.env.NODE_ENV !== "production",

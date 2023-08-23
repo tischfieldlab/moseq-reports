@@ -1,4 +1,4 @@
-import app from "@render/renderer";
+import app from "@render/index";
 import { shell } from "electron";
 import { mapStackTrace } from "sourcemapped-stacktrace";
 

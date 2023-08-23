@@ -1,4 +1,4 @@
-import app from "@render/renderer";
+import app from "@render/index";
 import { ipcRenderer, IpcRendererEvent } from "electron";
 
 // NOTE: Only call the update when we are reloaded at startup...

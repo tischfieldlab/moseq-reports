@@ -245,15 +245,15 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 path {
   fill: none;
 }
-svg >>> g.x-axis text.label,
-svg >>> g.y-axis text.label,
-svg >>> text.title {
+svg:deep() g.x-axis text.label,
+svg:deep() g.y-axis text.label,
+svg:deep() text.title {
   text-anchor: middle;
   fill: #000;
   font-family: Verdana, Arial, sans-serif;
   font-size: 13px;
 }
-svg >>> g.legend text.label {
+svg:deep() g.legend text.label {
   font-size: 10px;
   transform: translateY(-10px);
 }

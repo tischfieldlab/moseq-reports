@@ -230,25 +230,25 @@ export default mixins(LoadingMixin, WindowMixin).extend({
 </script>
 
 <style scoped>
-svg >>> g.heatmap text.label,
-svg >>> g.legend text.label {
+svg:deep() g.heatmap text.label,
+svg:deep() g.legend text.label {
   font-family: Verdana, Arial, sans-serif;
   font-size: 13px;
   text-anchor: middle;
   fill: #000;
 }
-svg >>> g.legend g.tick line {
+svg:deep() g.legend g.tick line {
   stroke: #888;
 }
-svg >>> g.legend g.tick text,
-svg >>> g.legend text.label {
+svg:deep() g.legend g.tick text,
+svg:deep() g.legend text.label {
   fill: #888;
 }
-svg >>> g.legend path.domain {
+svg:deep() g.legend path.domain {
   stroke: none;
 }
 
-svg >>> rect.selected {
+svg:deep() rect.selected {
   transform: matrix(3, 0, 0, 3, 0, 0);
   transform-origin: 50% 50%;
   stroke: #000;

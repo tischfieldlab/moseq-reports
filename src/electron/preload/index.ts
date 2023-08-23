@@ -2,6 +2,8 @@ import { Menu } from "@electron/remote";
 import { Color, Titlebar } from "custom-electron-titlebar";
 import { createMainMenu } from "./MenuStrip";
 
+console.log("in preload!")
+
 function domReady(condition: DocumentReadyState[] = ["complete", "interactive"]) {
   return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {

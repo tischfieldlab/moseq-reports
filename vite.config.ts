@@ -1,52 +1,88 @@
-import { rmSync } from "fs";
+import { rmSync } from 'node:fs'
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import electron from 'vite-plugin-electron'
+import renderer from 'vite-plugin-electron-renderer'
+import pkg from './package.json'
 import { join } from "path";
-import { defineConfig } from "vite";
-import electron from "vite-plugin-electron";
-import { createVuePlugin } from "vite-plugin-vue2";
-import pkg from "./package.json";
-import { fileURLToPath } from "node:url";
-
-rmSync("dist", { recursive: true, force: true }); // v14.14.0
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    createVuePlugin(),
-    electron({
-      main: {
-        entry: "src/electron/main/index.ts",
-        vite: {
-          build: {
-            outDir: "dist/electron/main",
+export default defineConfig(({ command }) => {
+  rmSync('dist-electron', { recursive: true, force: true })
+
+  const isServe = command === 'serve'
+  const isBuild = command === 'build'
+  const sourcemap = isServe || !!process.env.VSCODE_DEBUG
+
+  return {
+    plugins: [
+      vue({
+        template: {
+          compilerOptions: {
+            compatConfig: {
+              MODE: 2
+            }
+          }
+        }
+      }),
+      electron([
+        {
+          // Main-Process entry file of the Electron App.
+          entry: 'src/electron/main/index.ts',
+          onstart(options) {
+            if (process.env.VSCODE_DEBUG) {
+              console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App')
+            } else {
+              options.startup()
+            }
+          },
+          vite: {
+            build: {
+              sourcemap,
+              minify: isBuild,
+              outDir: 'dist/electron/main',
+              rollupOptions: {
+                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+              },
+            },
           },
         },
-      },
-      preload: {
-        input: {
-          // You can configure multiple preload here
-          index: join(__dirname, "src/electron/preload/index.ts"),
-          dataserver: join(__dirname, "src/dataserver/index.ts"),
-        },
-        vite: {
-          build: {
-            // For debug
-            sourcemap: "inline",
-            outDir: "dist/electron/preload",
+        {
+          entry: 'src/electron/preload/index.ts',
+          onstart(options) {
+            // Notify the Renderer-Process to reload the page when the Preload-Scripts build is complete, 
+            // instead of restarting the entire Electron App.
+            options.reload()
           },
-        },
-      },
-      // Enables use of Node.js API in the Renderer-process
-      renderer: {},
-    }),
-  ],
-  resolve: {
-    alias: [
-      { find: "@render", replacement: join(__dirname, "src/renderer") },
-      { find: "@main", replacement: join(__dirname, "src/electron") },
+          vite: {
+            build: {
+              sourcemap: sourcemap ? 'inline' : undefined, // #332
+              minify: isBuild,
+              outDir: 'dist/electron/preload',
+              rollupOptions: {
+                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+              },
+            },
+          },
+        }
+      ]),
+      // Use Node.js API in the Renderer-process
+      renderer(),
     ],
-  },
-  server: {
-    host: pkg.env.VITE_DEV_SERVER_HOST,
-    port: pkg.env.VITE_DEV_SERVER_PORT,
-  },
-});
+    resolve: {
+      alias: [
+        { find: "@render", replacement: join(__dirname, "src/renderer") },
+        { find: "@main", replacement: join(__dirname, "src/electron") },
+        { find: "vue", replacement: "@vue/compat" },
+      ],
+    },
+    server: process.env.VSCODE_DEBUG && (() => {
+      const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
+      return {
+        host: url.hostname,
+        port: +url.port,
+      }
+    })(),
+    clearScreen: false,
+  }
+})

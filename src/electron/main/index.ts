@@ -13,6 +13,8 @@ import {
 import { DataServer } from "../../dataserver/index";
 remoteMain.initialize();
 
+
+
 setupTitlebar();
 
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -43,10 +45,13 @@ let win: BrowserWindow | null = null;
 // Here, you can also use other preload
 const preload = join(__dirname, "../preload/index.js");
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
-const url = `http://${process.env["VITE_DEV_SERVER_HOST"]}:${process.env["VITE_DEV_SERVER_PORT"]}`;
+const url = process.env["VITE_DEV_SERVER_URL"];
 const indexHtml = join(ROOT_PATH.dist, "index.html");
+console.log(preload, indexHtml, url)
+console.log(process.env)
 
 async function createWindow() {
+  console.log("in createWindow()")
   win = new BrowserWindow({
     icon: join(ROOT_PATH.public, "img", "msq.ico"),
     frame: false,
@@ -64,8 +69,10 @@ async function createWindow() {
   remoteMain.enable(win.webContents);
 
   if (app.isPackaged) {
+    console.log("here", indexHtml)
     win.loadFile(indexHtml);
   } else {
+    console.log("there", url)
     win.loadURL(url);
     win.webContents.openDevTools();
   }
@@ -86,6 +93,7 @@ async function createWindow() {
 
 app
   .whenReady()
+  .then(() => console.log("app is ready!"))
   .then(async () => {
     if (isDevelopment && !process.env.IS_TEST) {
       // Install extensions
@@ -94,6 +102,7 @@ app
         .catch((err) => console.error(`Failed to install extension:`, err.toString())); // tslint:disable-line:no-console
     }
   })
+  .then(() => console.log("dev tools installed!"))
   .then(createWindow);
 
 app.on("window-all-closed", () => {
@@ -142,3 +151,5 @@ ipcMain.handle("open-win", (event, arg) => {
     // childWindow.webContents.openDevTools({ mode: "undocked", activate: true })
   }
 });
+
+console.log("in electon/main")

@@ -103,7 +103,7 @@ export default mixins(WindowMixin).extend({
 .b-table-sticky-header {
   margin-bottom: 0;
 }
-.b-table-sticky-header >>> .table.b-table > thead > tr > th {
+.b-table-sticky-header:deep() .table.b-table > thead > tr > th {
   top: -1px;
 }
 </style>

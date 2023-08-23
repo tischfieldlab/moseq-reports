@@ -1,7 +1,7 @@
 import fs from "fs";
 import store from "@render/store/root.store";
 import { dialog, shell } from "@electron/remote";
-import app from "@render/renderer";
+import app from "@render/index";
 
 export const LayoutFileExt = "msl";
 const LayoutFileFilters = [

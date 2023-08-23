@@ -344,11 +344,11 @@ export default mixins(LoadingMixin, WindowMixin).extend({
   color: #555;
   font-style: italic;
 }
-.wrapper >>> h6 {
+.wrapper:deep() h6 {
   display: inline-block;
   line-height: 26px;
 }
-.wrapper >>> .card-header {
+.wrapper:deep() .card-header {
   padding: 0.5rem 1.25rem;
 }
 </style>

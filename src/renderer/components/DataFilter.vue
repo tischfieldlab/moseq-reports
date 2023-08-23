@@ -238,7 +238,7 @@ div.editable-text {
   display: inline;
   margin: 0 0.5em;
 }
-div.editable-text >>> input {
+div.editable-text:deep() input {
   width: calc(100% - 80px);
   display: inline-block;
 }

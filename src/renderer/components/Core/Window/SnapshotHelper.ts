@@ -2,7 +2,7 @@ import { toPng, toSvg } from "html-to-image";
 import { svgAsDataUri, svgAsPngUri } from "save-svg-as-png";
 import { Store } from "vuex";
 import { unnest } from "@render/util/Vuex";
-import app from "@render/renderer";
+import app from "@render/index";
 import { dialog } from "@electron/remote";
 import fs from "fs";
 import mime from "mime-types";
