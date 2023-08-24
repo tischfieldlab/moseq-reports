@@ -1,8 +1,7 @@
 import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { release } from "os";
 import { join } from "path";
-//import installExtension, { VUEJS3_DEVTOOLS, VUEJS_DEVTOOLS } from "electron-devtools-installer";
-devtools
+import installExtension, { VUEJS3_DEVTOOLS, VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import * as remoteMain from "@electron/remote/main";
 import "./events/Listeners";
 
@@ -93,7 +92,7 @@ app
   .then(async () => {
     if (isDevelopment && !process.env.IS_TEST) {
       // Install extensions
-      await installExtension(VUEJS3_DEVTOOLS)
+      await installExtension(VUEJS_DEVTOOLS)
         .then((name) => console.log(`Added Extension: ${name}`)) // tslint:disable-line:no-console
         .catch((err) => console.error(`Failed to install extension:`, err.toString())); // tslint:disable-line:no-console
     }

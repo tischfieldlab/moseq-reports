@@ -16,15 +16,15 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 
-const app = createApp(App, {
+const app = createApp({
   store,
   beforeMount() {
     CreateTitleBar();
   },
+  render: () => h(App)
 });
 
 app.use(store);
-app.config.devtools = true;
 
 //app.use(BootstrapVue);
 app.use(IconsPlugin);
