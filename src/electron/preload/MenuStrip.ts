@@ -3,7 +3,7 @@ import { ipcRenderer } from "electron";
 import { MenuEvents } from "../shared/Events";
 import showAboutWindow from "../../renderer/commands/ShowAbout";
 
-export function createMainMenu(): Electron.CrossProcessExports.Menu {
+export function createMainMenu(): Electron.Menu {
   "use strict";
   const menu = Menu.buildFromTemplate([
     {
@@ -200,6 +200,8 @@ export function createMainMenu(): Electron.CrossProcessExports.Menu {
       ],
     },
   ]);
+
+  Menu.setApplicationMenu(menu);
 
   return menu;
 }

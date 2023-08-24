@@ -100,11 +100,9 @@ window.addEventListener("DOMContentLoaded", () => {
   // Title bar implemenation
   const menu = createMainMenu();
   new Titlebar({
-    menu: menu,
     shadow: false,
     backgroundColor: TitlebarColor.fromHex("#FFFFFF"),
     icon: "/img/mouse.png",
   });
 
-  Menu.setApplicationMenu(menu);
 });
