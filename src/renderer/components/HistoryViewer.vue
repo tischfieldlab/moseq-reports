@@ -31,17 +31,17 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 import { HistoryItem } from "@render/store/history.types";
 
-const RenderNode = Vue.extend({
+const RenderNode = defineComponent({
   props: ["data"],
   render(h, context) {
     return h("div", this.data);
   },
 });
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     RenderNode,
   },

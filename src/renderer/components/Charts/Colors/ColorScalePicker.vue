@@ -79,13 +79,13 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 import { GetInterpolatedScaleOptions, getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
 import { PropValidator } from "vue/types/options";
 import { Chrome } from "vue-color";
 import ColorScaleBar from "@render/components/Charts/Colors/ColorScaleBar.vue";
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     "chrome-picker": Chrome,
     ColorScaleBar: ColorScaleBar,

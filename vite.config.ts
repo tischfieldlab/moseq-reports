@@ -74,6 +74,8 @@ export default defineConfig(({ command }) => {
         { find: "@render", replacement: join(__dirname, "src/renderer") },
         { find: "@main", replacement: join(__dirname, "src/electron") },
         { find: "vue", replacement: "@vue/compat" },
+        { find: "vue$", replacement: "vue/dist/vue.runtime.esm.js" },
+        { find: "vue3", replacement: "vue" },
       ],
     },
     server: process.env.VSCODE_DEBUG && (() => {

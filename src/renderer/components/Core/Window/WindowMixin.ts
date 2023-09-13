@@ -1,10 +1,10 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import { ComponentRegistration } from "@render/store/root.types";
 import { DataWindowState, Layout } from "@render/store/datawindow.types";
 import { unnest } from "@render/util/Vuex";
 import { DataviewState } from "@render/store/dataview.types";
 
-const WindowMixin = Vue.extend({
+const WindowMixin = defineComponent({
   props: {
     id: {
       type: String,

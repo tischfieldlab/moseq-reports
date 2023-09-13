@@ -1,5 +1,5 @@
 <template>
-  <Portal>
+  <Teleport to="body">
     <div :class="{ 'button-bar': true, 'shadow-lg': !is_open, right: right }">
       <div
         v-for="itm in items"
@@ -29,15 +29,15 @@
         <component :is="current ? current.component : ''" />
       </keep-alive>
     </b-sidebar>
-  </Portal>
+  </Teleport>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 
 // import DataFilterContainer from "@/components/DataFilterContainer.vue";
 import HistoryViewer from "@render/components/HistoryViewer.vue";
-import { Portal } from "@linusborg/vue-simple-portal";
+//import { Portal } from "@linusborg/vue-simple-portal";
 
 interface SidebarItem {
   name: string;
@@ -47,10 +47,10 @@ interface SidebarItem {
   isVisible: () => boolean;
 }
 
-export default Vue.extend({
+export default defineComponent({
   name: "Sidebar",
   components: {
-    Portal,
+    //Portal,
     // DataFilterContainer,
     HistoryViewer,
   },

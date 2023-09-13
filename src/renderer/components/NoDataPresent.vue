@@ -10,10 +10,10 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent } from "vue";
 import loadDataCommand from "@render/commands/LoadData";
 
-export default Vue.extend({
+export default defineComponent({
   data() {
     return {
       show_help_text: true,

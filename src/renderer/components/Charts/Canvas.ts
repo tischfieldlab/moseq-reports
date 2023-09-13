@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 
 export function getScaledContext2d(canvas: HTMLCanvasElement, width: number, height: number) {
   const ctx = canvas.getContext("2d");
@@ -19,7 +19,7 @@ export function getScaledContext2d(canvas: HTMLCanvasElement, width: number, hei
   return ctx;
 }
 
-const CanvasMixin = Vue.extend({
+const CanvasMixin = defineComponent({
   provide(): { canvas: { cxt: CanvasRenderingContext2D | null } } {
     return {
       canvas: this.canvas,

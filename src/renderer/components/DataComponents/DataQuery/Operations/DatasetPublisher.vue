@@ -36,14 +36,14 @@
 
 <script lang="ts">
 import { dialog } from "@electron/remote";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import { tsvFormat, csvFormat } from "d3-dsv";
 import path from "path";
 import fs from "fs";
 import { SaveCancelledError } from "@render/components/Core/IO/types";
 import { showSaveErrorToast, showSaveSuccessToast } from "@render/components/Core/IO/Toasts";
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     // Dataset to be published
     Dataset: {

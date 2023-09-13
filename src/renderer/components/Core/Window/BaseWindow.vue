@@ -67,7 +67,7 @@
 
 <script lang="ts">
 import { Position } from "@render/store/datawindow.types";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import TitlebarButton from "@render/components/Core/Window/Titlebar/TitlebarButton.vue";
 import CloseButton from "@render/components/Core/Window/Titlebar/CloseButton.vue";
 import { applyAspectRatio, isValidHeight, isValidWidth } from "@render/components/Core/Window/util";
@@ -83,7 +83,7 @@ enum ResizeType {
   BottomLeft = "bottom-left",
 }
 
-export default Vue.extend({
+export default defineComponent({
   name: "BaseWindow",
   mounted() {
     this.collapseWindow();

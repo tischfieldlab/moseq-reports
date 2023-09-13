@@ -1,21 +1,21 @@
 <template>
-  <Portal>
+  <Teleport to="body">
     <div :id="$id('tooltip-contents')" class="tooltip_contents" v-show="show">
       <span data-popper-arrow class="arrow tt-arrow"></span>
       <!-- Content of tool tip -->
       <slot></slot>
     </div>
-  </Portal>
+  </Teleport>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 import { createPopper, Instance, VirtualElement } from "@popperjs/core";
-import { Portal } from "@linusborg/vue-simple-portal";
+//import { Portal } from "@linusborg/vue-simple-portal";
 
-export default Vue.extend({
+export default defineComponent({
   components: {
-    Portal,
+    //Portal,
   },
   props: {
     // Whether tool tip is shown

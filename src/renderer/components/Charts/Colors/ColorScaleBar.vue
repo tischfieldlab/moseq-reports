@@ -12,12 +12,12 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 import { scaleSequential } from "d3-scale";
 import { GetScale } from "@render/components/Charts/Colors/D3ColorProvider";
 import { range } from "d3-array";
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     // Width of color scale bar
     width: {

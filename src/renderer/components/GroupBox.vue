@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent } from "vue";
 import draggable from "vuedraggable";
 import { Chrome } from "vue-color";
 import { debounce } from "@render/util/Events";
@@ -60,7 +60,7 @@ class SelectableGroupItem {
   }
 }
 
-export default Vue.extend({
+export default defineComponent({
   name: "groupbox",
   components: {
     draggable,
@@ -135,7 +135,7 @@ export default Vue.extend({
       )
     );
   },
-  destroyed() {
+  unmounted() {
     this.watchers.forEach((w) => w());
   },
   methods: {

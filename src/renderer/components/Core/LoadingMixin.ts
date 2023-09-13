@@ -1,6 +1,6 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 
-const LoadingMixin = Vue.extend({
+const LoadingMixin = defineComponent({
   beforeUpdate() {
     this.emitStartLoading();
   },

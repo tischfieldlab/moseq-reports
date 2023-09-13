@@ -46,8 +46,10 @@ export interface AggregateOperation {
 }
 export type Statistic =
   | "mean"
-  | "median" /*|'mode'*/
-  | "sum" /*|'cumsum'*/
+  | "median"
+  /*|'mode'*/
+  | "sum"
+  /*|'cumsum'*/
   | "min"
   | "max"
   | "extent"

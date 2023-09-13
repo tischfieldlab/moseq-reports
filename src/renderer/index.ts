@@ -16,17 +16,11 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 
-const app = createApp({
-  store,
-  beforeMount() {
-    CreateTitleBar();
-  },
-  render: () => h(App)
-});
+const app = createApp(App);
 
 app.use(store);
 
-//app.use(BootstrapVue);
+app.use(BootstrapVue);
 app.use(IconsPlugin);
 app.use(VueResize);
 app.use(VueForceNextTick);
@@ -38,6 +32,7 @@ app.use(VueTimeago, {
 });
 
 app.mount("#app").$nextTick(() => {
+
   postMessage({ payload: "removeLoading" }, "*");
 });
 

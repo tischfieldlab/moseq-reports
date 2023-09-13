@@ -7,10 +7,10 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 import UiCard from "@render/components/Core/Window/Window.vue";
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     UiCard,
   },

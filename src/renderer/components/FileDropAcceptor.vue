@@ -1,6 +1,6 @@
 <template>
-  <Portal>
-    <div ref="acceptor" v-show="is_file_hover" class="file-acceptor-wrapper">
+  <Teleport to="body">
+    <div ref="acceptor" v-show="is_file_hover" class="file-acceptor-wrapper" @dragleave="hideOverlay" @drop="onFileDrop">
       <div class="file-acceptor"></div>
       <b-card bg-variant="primary" text-variant="white" class="text-center">
         <b-card-text>
@@ -9,19 +9,21 @@
         </b-card-text>
       </b-card>
     </div>
-  </Portal>
+  </Teleport>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import { Portal } from "@linusborg/vue-simple-portal";
+import {defineComponent, ref} from "vue3";
+//import { Portal } from "@linusborg/vue-simple-portal";
 
 import { LoadDataFile, DataFileExt } from "@render/commands/LoadData";
 import { LoadLayoutFile, LayoutFileExt } from "@render/commands/LoadLayout";
 
-export default Vue.extend({
+const acceptor = ref(null);
+
+export default defineComponent({
   components: {
-    Portal,
+    //Portal,
   },
   data() {
     return {
@@ -42,33 +44,33 @@ export default Vue.extend({
     await this.$nextTick();
     this.watchDrop();
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.unwatchDrop();
   },
   methods: {
     watchDrop() {
       const parent = document.body;
-      const self = this.$refs.acceptor as HTMLElement;
+      //const self = this.$refs.acceptor as HTMLElement;
 
       parent.addEventListener("dragenter", this.onFileDragEnter);
       parent.addEventListener("dragover", this.dragEventPreventDefault);
       parent.addEventListener("dragleave", this.dragEventPreventDefault);
       parent.addEventListener("drop", this.dragEventPreventDefault);
 
-      self.addEventListener("dragleave", this.hideOverlay);
-      self.addEventListener("drop", this.onFileDrop);
+      //acceptor.addEventListener("dragleave", this.hideOverlay);
+      //acceptor.addEventListener("drop", this.onFileDrop);
     },
     unwatchDrop() {
       const parent = document.body;
-      const self = this.$refs.acceptor as HTMLElement;
+      //const self = this.$refs.acceptor as HTMLElement;
 
       parent.removeEventListener("dragenter", this.onFileDragEnter);
       parent.removeEventListener("dragover", this.dragEventPreventDefault);
       parent.removeEventListener("dragleave", this.dragEventPreventDefault);
       parent.removeEventListener("drop", this.dragEventPreventDefault);
 
-      self.removeEventListener("dragleave", this.hideOverlay);
-      self.removeEventListener("drop", this.onFileDrop);
+      //self.removeEventListener("dragleave", this.hideOverlay);
+      //self.removeEventListener("drop", this.onFileDrop);
     },
     hideOverlay(ev: DragEvent) {
       this.is_file_hover = false;

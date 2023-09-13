@@ -9,10 +9,10 @@
 
 <script lang="ts">
 import { MapOperation } from "@render/components/Core/DataLoader/DataLoader.types";
-import Vue, { PropType } from "vue";
+import { PropType, defineComponent } from "vue";
 import ColumnSelector from "@render/components/DataComponents/DataQuery/Operations/ColumnSelector.vue";
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     ColumnSelector,
   },

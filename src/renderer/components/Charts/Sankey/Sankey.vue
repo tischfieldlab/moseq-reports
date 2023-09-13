@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 import { Node, Link, NodeAlignment, ColoringMode } from "@render/components/Charts/Sankey/Sankey.types";
 import { sankey, sankeyCenter, sankeyLeft, sankeyRight, sankeyJustify } from "d3-sankey";
 import { linkHorizontal } from "d3-shape";
@@ -103,7 +103,7 @@ function default_tooltip_formatter(hoverItem, that) {
   return "";
 }
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     ColorScaleLegend,
     ToolTip,

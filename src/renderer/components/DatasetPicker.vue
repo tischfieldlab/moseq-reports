@@ -3,9 +3,9 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 
-export default Vue.component("dataset-picker", {
+export default defineComponent({
   props: {
     value: {
       type: String,

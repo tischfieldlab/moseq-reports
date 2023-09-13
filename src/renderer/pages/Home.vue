@@ -4,11 +4,12 @@
     <NoDataPresent />
     <WindowContainer />
     <FileDropAcceptor />
+    <p>hello</p>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent} from "vue";
 import Sidebar from "@render/components/Sidebar.vue";
 import NoDataPresent from "@render/components/NoDataPresent.vue";
 import FileDropAcceptor from "@render/components/FileDropAcceptor.vue";
@@ -17,7 +18,7 @@ import WindowContainer from "@render/components/Core/Window/WindowContainer.vue"
 import { UpdateTitle } from "@render/core/ChromeWindow";
 import { SidebarPosition } from "@render/store/root.types";
 
-export default Vue.component("homepage", {
+export default defineComponent({
   name: "homepage",
   components: {
     Sidebar,

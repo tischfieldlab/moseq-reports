@@ -1,5 +1,5 @@
 <script lang="ts">
-import Vue, { PropType } from "vue";
+import { PropType, defineComponent } from "vue";
 import { OrderingType, SortOrderDirection, HClusterDistance, HClusterLinkage } from "./ClusteredHeatmap.types";
 import { cluster, hierarchy, min, max } from "d3";
 import { scaleBand, scaleOrdinal, scaleSequential } from "d3-scale";
@@ -26,7 +26,7 @@ function default_tooltip_formatter(item, that) {
             Value: ${item[that.valueKey].toExponential(3)}`;
 }
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     // Data used in heatmap
     data: {
@@ -269,7 +269,7 @@ export default Vue.extend({
   mounted() {
     this.prep_data();
   },
-  destroyed() {
+  unmounted() {
     // un-watch the store
     this.watchers.forEach((w) => w());
   },

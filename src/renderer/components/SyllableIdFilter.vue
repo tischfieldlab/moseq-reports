@@ -15,12 +15,12 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {defineComponent}from "vue";
 import { DataviewState } from "@render/store/dataview.types";
 import { unnest } from "@render/util/Vuex";
 import parsePart from "parse-numeric-range";
 
-export default Vue.component("syllable-id-filter", {
+export default defineComponent({
   props: {
     datasource: {
       type: String,

@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent } from "vue";
 import { CountMethod, DataviewState } from "@render/store/dataview.types";
 import GroupBox from "@render/components/GroupBox.vue";
 import SyllableIdFilter from "@render/components/SyllableIdFilter.vue";
@@ -70,7 +70,7 @@ import EditableText from "@render/components/EditableText.vue";
 import { Chrome } from "vue-color";
 import { getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
 
-export default Vue.component("datafilter", {
+export default defineComponent({
   components: {
     GroupBox,
     SyllableIdFilter,

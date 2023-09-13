@@ -166,7 +166,7 @@ export default mixins(LoadingMixin).extend({
 
     this.prep_data();
   },
-  destroyed() {
+  unmounted() {
     // un-watch
     this.watchers.forEach((w) => w());
   },

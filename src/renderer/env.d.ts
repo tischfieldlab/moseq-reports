@@ -15,3 +15,7 @@ declare module 'vue' {
   const { configureCompat } = Vue
   export { configureCompat }
 }
+
+declare module 'vue3' {
+  export * from 'vue'
+}

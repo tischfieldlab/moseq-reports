@@ -16,9 +16,9 @@
 
 <script lang="ts">
 import { SortDirection, SortOperation } from "@render/components/Core/DataLoader/DataLoader.types";
-import Vue, { PropType } from "vue";
+import { PropType, defineComponent } from "vue";
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     // Operation used to sort data
     Operation: {
