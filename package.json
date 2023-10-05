@@ -109,7 +109,7 @@
     "chai": "^4.3.4",
     "chromedriver": "^91.0.1",
     "devtron": "^1.4.0",
-    "electron": "^9.4.0",
+    "electron": "^22.3.25",
     "electron-devtools-installer": "^3.2.0",
     "electron-log": "^4.3.5",
     "electron-notarize": "^1.1.1",
