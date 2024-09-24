@@ -1,10 +1,10 @@
 import { Module } from 'vuex';
-import { RootState, ComponentRegistration } from '@/store/root.types';
+import { RootState, ComponentRegistration } from './root.types';
 import { DehydratedDataWindow, DataWindowState, RenderMode } from './datawindow.types';
 import store from './root.store';
-import { getModuleNamespace, unnest } from '@/util/Vuex';
+import { getModuleNamespace, unnest } from '../util/Vuex';
 import DataWindowModule from './datawindow.store';
-import { clone } from '@/util/Object';
+import { clone } from '../util/Object';
 import { WindowsState } from './windows.types';
 
 const WindowsModule: Module<WindowsState, RootState> = {
@@ -12,19 +12,19 @@ const WindowsModule: Module<WindowsState, RootState> = {
     state() {
         return {
             basename: 'datawindow',
-            items: [],
-         };
+            items: [] as string[], 
+        };
     },
     getters: {
-        windowsUsingDataView: (state, getters, rootState) => (dataView) => {
-            return state.items.filter((wNamespace) => {
+        windowsUsingDataView: (state: WindowsState, getters, rootState: RootState) => (dataView: string) => {
+            return state.items.filter((wNamespace: string) => {
                 return unnest(rootState, wNamespace).datasource === dataView;
             });
         },
-        windowsMaxZIndex: (state, getters, rootState) : number => {
+        windowsMaxZIndex: (state: WindowsState, getters, rootState: RootState): number => {
             let maxZIndex: number = 0;
             state.items.forEach((item: string) => {
-                const winState: DataWindowState = state[item.split('/')[1]];
+                const winState: DataWindowState = (state as any)[item.split('/')[1]];
                 if (winState.z_index > maxZIndex) {
                     maxZIndex = winState.z_index;
                 }
@@ -32,37 +32,37 @@ const WindowsModule: Module<WindowsState, RootState> = {
 
             return maxZIndex;
         },
-        numberOfWindows(state) {
+        numberOfWindows(state: WindowsState): number {
             return state.items.length;
         }
     },
     mutations: {
-        addWindow(state, namespace: string) {
+        addWindow(state: WindowsState, namespace: string): void {
             state.items.push(namespace);
         },
-        removeWindow(state, namespace: string) {
+        removeWindow(state: WindowsState, namespace: string): void {
             const start = state.items.indexOf(namespace);
             state.items.splice(start, 1);
         },
-        clearWindows(state) {
+        clearWindows(state: WindowsState): void {
             state.items = [];
         },
     },
     actions: {
-        createWindow(context, component: ComponentRegistration) {
+        createWindow(context: { dispatch: Function, state: WindowsState }, component: ComponentRegistration): void {
             const ws = createDataWindow(component);
             context.dispatch('commitWindow', ws);
         },
-        hydrateWindow(context, data: DehydratedDataWindow) {
+        hydrateWindow(context: { dispatch: Function, state: WindowsState }, data: DehydratedDataWindow): void {
             const ws = hydrateWindow(data);
             context.dispatch('commitWindow', ws);
         },
-        commitWindow(context, windowState: DataWindowState) {
+        commitWindow(context: { commit: Function, state: WindowsState }, windowState: DataWindowState): string {
             const namespace = getModuleNamespace(store, context.state) as string;
             let i = 0;
             while (true) {
                 const name = `${context.state.basename}-${i}`;
-                if (store.state[namespace][name] === undefined) {
+                if (!store.hasModule([namespace, name])) {
                     const fullpath = `${namespace}/${name}`;
                     store.registerModule([namespace, name], DataWindowModule, {});
                     context.commit(`${fullpath}/replaceState`, windowState, { root: true });
@@ -72,11 +72,11 @@ const WindowsModule: Module<WindowsState, RootState> = {
                 i++;
             }
         },
-        removeWindow(context, namespace: string) {
+        removeWindow(context: { commit: Function }, namespace: string): void {
             context.commit('removeWindow', namespace);
             store.unregisterModule(namespace.split('/'));
         },
-        duplicateWindow(context, namespace: string) {
+        duplicateWindow(context: { dispatch: Function, rootState: RootState }, namespace: string): void {
             // grab a copy of the window state
             const winstate = dehydrateWindow(unnest(context.rootState, namespace));
             // Prefix the window title to differentiate
@@ -87,20 +87,20 @@ const WindowsModule: Module<WindowsState, RootState> = {
             // add the modified window back into the windows store
             context.dispatch('hydrateWindow', winstate);
         },
-        clearLayout(context) {
+        clearLayout(context: { commit: Function, state: WindowsState }): void {
             const namespaces = [...context.state.items];
             context.commit('clearWindows');
             for (const namespace of namespaces) {
                 store.unregisterModule(namespace.split('/'));
             }
         },
-        serializeLayout(context): DehydratedDataWindow[] {
-            const dehydrated = context.state.items.map((id) => {
+        serializeLayout(context: { state: WindowsState, rootState: RootState }): DehydratedDataWindow[] {
+            const dehydrated = context.state.items.map((id: string) => {
                 return dehydrateWindow(unnest(context.rootState, id));
             });
             return dehydrated;
         },
-        async loadLayout(context, layout: DehydratedDataWindow[]) {
+        async loadLayout(context: { dispatch: Function }, layout: DehydratedDataWindow[]): Promise<void> {
             // clear out any existing windows
             await context.dispatch('clearLayout');
 
@@ -111,9 +111,6 @@ const WindowsModule: Module<WindowsState, RootState> = {
     },
 };
 export default WindowsModule;
-
-
-
 
 function createDataWindow(component: ComponentRegistration): DataWindowState {
     return {
@@ -133,7 +130,7 @@ function createDataWindow(component: ComponentRegistration): DataWindowState {
 }
 
 function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
-    const dehydrated = {
+    const dehydrated: DehydratedDataWindow = {
         type: window.type,
         title: window.title,
         layout: {

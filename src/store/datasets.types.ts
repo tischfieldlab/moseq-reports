@@ -9,7 +9,9 @@ export interface DatasetsState {
     label_map: LabelMapRecord[];
 }
 
+// Updated LabelMapRecord interface with an index signature
 export interface LabelMapRecord {
+    [key: string]: number; // Added index signature
     raw: number;
     usage: number;
     frames: number;

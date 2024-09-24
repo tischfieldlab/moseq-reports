@@ -1,11 +1,8 @@
-import { RootState } from '@/store/root.types';
+import { RootState } from './root.types';
 import { Module } from 'vuex';
-import Vue from 'vue';
 import { DatasetsState } from './datasets.types';
 import path from 'path';
-import { unnest } from '@/util/Vuex';
-
-
+import { unnest } from '../util/Vuex';
 
 const DatasetsModule: Module<DatasetsState, RootState> = {
     namespaced: true,
@@ -59,7 +56,8 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
             state.manifest = payload.manifest;
         },
         SetGroupInfo(state, data: DatasetsState) {
-            Vue.set(state, 'groups', [...data.groups]);
+            // Vue.set is no longer required in Vue 3; you can directly assign values
+            state.groups = [...data.groups];
         },
         SetLabelMap(state, data: DatasetsState) {
             state.label_map = data.label_map;
@@ -69,14 +67,14 @@ const DatasetsModule: Module<DatasetsState, RootState> = {
         },
     },
     actions: {
-        Unload(context) {
-            context.commit('Unload');
+        Unload({ commit }) {
+            commit('Unload');
         },
-        setData(context, payload: DatasetsState) {
-            context.commit('SetDataSourceInfo', payload);
-            context.commit('SetGroupInfo', payload);
-            context.commit('SetLabelMap', payload);
-            context.commit('SetLoaded');
+        setData({ commit }, payload: DatasetsState) {
+            commit('SetDataSourceInfo', payload);
+            commit('SetGroupInfo', payload);
+            commit('SetLabelMap', payload);
+            commit('SetLoaded');
         },
     },
 };

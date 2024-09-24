@@ -1,7 +1,7 @@
 import { Module } from 'vuex';
 import { RootState } from './root.types';
 import store from './root.store';
-import { getModuleNamespace } from '@/util/Vuex';
+import { getModuleNamespace } from '../util/Vuex';
 import DataviewModule from './dataview.store';
 
 interface FiltersState {
@@ -65,7 +65,7 @@ const FiltersModule: Module<FiltersState, RootState> = {
             let i = 0;
             while (true) {
                 const name = `${context.state.basename}-${i}`;
-                if (store.state[namespace][name] === undefined) {
+                if (!store.hasModule([namespace, name])) {
                     const fullpath = `${namespace}/${name}`;
                     store.registerModule([namespace, name], DataviewModule, {});
                     if ((store.state as any).datasets.usageByUsage !== null) {

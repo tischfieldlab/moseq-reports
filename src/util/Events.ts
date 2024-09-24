@@ -13,7 +13,7 @@ export function debounce<F extends Procedure>(
     options: DebounceOptions = {
         isImmediate: false
     },
-  ): (this: ThisParameterType<F>, ...args: Parameters<F>) => void {
+): (this: ThisParameterType<F>, ...args: Parameters<F>) => void {
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     return function(this: ThisParameterType<F>, ...args: Parameters<F>) {

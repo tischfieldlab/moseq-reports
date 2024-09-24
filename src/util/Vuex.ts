@@ -1,5 +1,5 @@
 
-export function getModuleNamespace(store: any, state) {
+export function getModuleNamespace(store: any, state: any) {
     const moduleNamespace = Object.keys(store._modulesNamespaceMap)
         .find((path) => store._modulesNamespaceMap[path].context.state === state);
     if (typeof moduleNamespace === 'string') {
@@ -13,7 +13,7 @@ export function unnest(theObject: object, path: string, separator: string = '/',
             path = path.replace('[', separator).replace(']', '');
         }
         return path.split(separator)
-                   .reduce((obj, property) => obj[property], theObject);
+                   .reduce((obj, property) => (obj as any)[property], theObject);
     } catch (err) {
         return undefined;
     }

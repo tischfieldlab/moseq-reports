@@ -1,16 +1,13 @@
-import Vue from 'vue';
-import Vuex, {StoreOptions} from 'vuex';
+import { createStore, StoreOptions } from 'vuex';
 import {
     RootState,
     ComponentRegistration,
     SidebarPosition
 } from './root.types';
-import DatasetsStore from '@/store/datasets.store';
-import FiltersModule from '@/store/filters.store';
+import DatasetsStore from './datasets.store';
+import FiltersModule from './filters.store';
 import WindowsModule from './windows.store';
 import HistoryModule from './history.store';
-
-Vue.use(Vuex);
 
 const store: StoreOptions<RootState> = {
     strict: process.env.NODE_ENV !== 'production',
@@ -21,7 +18,7 @@ const store: StoreOptions<RootState> = {
         history: HistoryModule,
     },
     state: {
-        registry: Array<ComponentRegistration>(),
+        registry: [] as ComponentRegistration[],
         sidebarPosition: SidebarPosition.Left,
     },
     getters: {
@@ -35,8 +32,7 @@ const store: StoreOptions<RootState> = {
             if (loc === -1) {
                 state.registry.push(payload);
             } else {
-                // tslint:disable-next-line:no-console
-                console.warn(`${payload.component_type} has already been registered! Merging...`)
+                console.warn(`${payload.component_type} has already been registered! Merging...`);
                 state.registry.splice(loc, 1, payload);
             }
         },
@@ -48,4 +44,4 @@ const store: StoreOptions<RootState> = {
     },
 };
 
-export default new Vuex.Store<RootState>(store);
+export default createStore<RootState>(store);

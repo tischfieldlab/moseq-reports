@@ -14,26 +14,23 @@ import {
 } from './datawindow.types';
 import { Module } from 'vuex';
 import stateMerge from 'vue-object-merge';
-import { applyAspectRatio, isValidHeight, isValidWidth } from '@/components/Core/Window/util';
-
+//import { applyAspectRatio, isValidHeight, isValidWidth } from '../components/Core/Window/util';
 
 const DataWindowModule: Module<DataWindowState, RootState> = {
     namespaced: true,
-    state() {
-        return {
-            type: '',
-            title: '',
-            width: 0,
-            height: 0,
-            pos_x: 0,
-            pos_y: 0,
-            datasource: '',
-            render_mode: RenderMode.UNDEFINED,
-            settings: {},
-            z_index: 1000,
-            aspect_ratio: undefined,
-            is_hidden: false
-         };
+    state: {
+        type: '',
+        title: '',
+        width: 0,
+        height: 0,
+        pos_x: 0,
+        pos_y: 0,
+        datasource: '',
+        render_mode: RenderMode.UNDEFINED,
+        settings: {},
+        z_index: 1000,
+        aspect_ratio: undefined,
+        is_hidden: false,
     },
     getters: {
         spec(state, getters, rootState, rootGetters) {
@@ -59,7 +56,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             state.title = payload.title;
             state.datasource = payload.datasource;
             state.render_mode = payload.render_mode;
-            state.z_index = payload.z_index
+            state.z_index = payload.z_index;
             state.aspect_ratio = payload.aspect_ratio;
             state.is_hidden = payload.is_hidden;
             stateMerge(state.settings, payload.settings);
@@ -75,12 +72,12 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
             const maxY = clientRect.clientHeight;
 
             // In the event that this is a resize, we apply the aspect ratio constraints if there is an aspect ratio
-            const apsectRatioDims = applyAspectRatio(deltaX, deltaY, state.aspect_ratio);
+            //const aspectRatioDims = applyAspectRatio(deltaX, deltaY, state.aspect_ratio);
 
-            if ((payload.width || payload.height) && (isValidWidth(apsectRatioDims.width) && isValidHeight(apsectRatioDims.height))) {
-                state.width = apsectRatioDims.width;
-                state.height = apsectRatioDims.height;
-            }
+            //if ((payload.width || payload.height) && (isValidWidth(aspectRatioDims.width) && isValidHeight(aspectRatioDims.height))) {
+            //    state.width = aspectRatioDims.width;
+            //    state.height = aspectRatioDims.height;
+            //}
 
             if (payload.position_x !== undefined) {
                 if (payload.position_x < 0) payload.position_x = 0;
