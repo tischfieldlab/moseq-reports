@@ -1,20 +1,30 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "useDefineForClassFields": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
-    "strict": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
     "jsx": "preserve",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "allowJs": true,
+    "baseUrl": "./",
+    "strict": true,
+    "paths": {
+      "@render/*": ["./src/renderer/*"],
+      "@main/*": ["./src/electron/*"]
+    },
+    "typeRoots": ["./src/renderer/@types"],
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noImplicitAny": false
   },
-  "include": ["src"],
-  "references": [
-    { "path": "./tsconfig.node.json" }
-  ]
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*",
+    "src/dataserver/**/*" ,
+  ],
+  "exclude": ["node_modules", "dist", "buildfiles"]
 }

@@ -1,0 +1,201 @@
+<template>
+  <BaseWindow
+    ref="window"
+    :id="id"
+    :swatch_color="swatch_color"
+    :title="title"
+    :width="window_width"
+    :height="window_height"
+    :pos="window_position"
+    :swatchTitle="swatch_title"
+    :isHidden="is_hidden"
+    @onClosed="onClosed"
+    @onMoved="onMoved"
+    @onResized="onResized"
+    @onWindowFocused="onWindowFocused"
+    @onShowHideToggle="onShowHideToggle"
+    :zIndex="z_index"
+    :aspectRatio="aspect_ratio"
+  >
+    <template v-slot:titlebarButtons>
+      <!--<titlebar-button v-if="!is_hidden" :clicked="onSnapshotClicked" :title="'Take snapshot'" :icon="'camera-fill'" />
+      <titlebar-button
+        v-else
+        :disabled="true"
+        :title="'Snapshot disabled while contents are hidden'"
+        :icon="'camera-fill'"
+      />-->
+      <titlebar-button :clicked="onSettingsClicked" :title="'Adjust settings'" :icon="'gear-fill'" />
+    </template>
+    <b-overlay :show="is_loading" no-fade class="overlay-container">
+      <component ref="bodyRef" :id="id" :is="spec.component_type" />
+    </b-overlay>
+
+    <b-modal
+      :title="settings_title"
+      v-model="show_settings_modal"
+      header-bg-variant="dark"
+      header-text-variant="light"
+      body-bg-variant="light"
+      body-text-variant="dark"
+      hide-footer
+    >
+      <b-tabs>
+        <b-tab title="Layout">
+          <LayoutSettings :id="id" />
+        </b-tab>
+        <b-tab title="Data">
+          <DataSettings :id="id" />
+        </b-tab>
+        <b-tab title="Component">
+          <component v-if="spec.settings_type" ref="modal_component" :id="id" :is="spec.settings_type" />
+          <p v-else class="no-settings text-muted">No settings available for this component</p>
+        </b-tab>
+        <b-tab title="Snapshots" :disabled="is_hidden">
+          <SnapshotSettings :id="id" />
+        </b-tab>
+      </b-tabs>
+    </b-modal>
+  </BaseWindow>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref, onMounted, onUnmounted, Ref } from "vue";
+import BaseWindow from "@render/components/Core/Window/BaseWindow.vue";
+import TitlebarButton from "@render/components/Core/Window/Titlebar/TitlebarButton.vue";
+import WindowMixin from "@render/components/Core/Window/WindowMixin";
+//import Snapshot, { ensureDefaults } from "../SnapshotHelper";
+import { Position, Size } from "@render/store/datawindow.types";
+
+export default defineComponent({
+  components: {
+    BaseWindow,
+    TitlebarButton,
+  },
+  extends: WindowMixin,
+  setup() {
+    const bodyRef = ref<HTMLElement | null>(null);
+
+    const componentLoading = ref(0);
+
+    onMounted(() => {
+      if (bodyRef.value) {
+        //ensureDefaults(bodyRef.value, window.$store);
+        /*bodyRef.value.addEventListener("start-loading", () => {
+          componentLoading.value++;
+        });
+        bodyRef.value.addEventListener("finish-loading", () => {
+          componentLoading.value = clamp(componentLoading.value - 1, 0);
+        });*/
+      }
+    });
+
+    onUnmounted(() => {
+      if (bodyRef.value) {
+        bodyRef.value.removeEventListener("start-loading", () => {});
+        bodyRef.value.removeEventListener("finish-loading", () => {});
+      }
+    });
+
+    return {
+      bodyRef,
+      componentLoading,
+    };
+  },
+  data() {
+    return {
+      show_settings_modal: false,
+    };
+  },
+  computed: {
+    settings_title(): string {
+      return this.title + " Settings";
+    },
+    swatch_color(): string {
+      return this.dataview.color;
+    },
+    is_loading(): boolean {
+      return this.component_loading > 0 || (this.dataview && this.dataview.loading);
+    },
+    swatch_title(): string {
+      return `Using ${this.dataview.name}`;
+    },
+    z_index(): number {
+      return this.$store.getters[`${this.id}/zIndex`];
+    },
+    aspect_ratio(): number {
+      return this.$store.getters[`${this.id}/aspectRatio`];
+    },
+    window_width(): number {
+      return this.layout.width;
+    },
+    window_height(): number {
+      return this.layout.height;
+    },
+    window_position(): Position {
+      return this.layout.position;
+    },
+    is_hidden(): boolean {
+      return this.$store.getters[`${this.id}/isHidden`];
+    },
+  },
+  methods: {
+    onResized(event: any) {
+      const s: Size = {
+        width: event.width,
+        height: event.height,
+      };
+      this.$store.commit(`${this.id}/updateComponentLayout`, {
+        id: this.id,
+        width: s.width,
+        height: s.height,
+      });
+    },
+    onSettingsClicked(event: any) {
+      this.show_settings_modal = true;
+    },
+    onSnapshotClicked(event: any) {
+      this.snapshotContent(event);
+    },
+    onMoved(event: any) {
+      const p: Position = {
+        x: event.x,
+        y: event.y,
+      };
+
+      this.$store.commit(`${this.id}/updateComponentLayout`, {
+        id: this.id,
+        position_x: p.x,
+        position_y: clamp(p.y, 0),
+      });
+    },
+    onClosed(event: any) {
+      this.$store.dispatch("datawindows/removeWindow", this.id);
+    },
+    async snapshotContent(event: MouseEvent) {
+      await Snapshot(this.bodyRef as HTMLElement, this.title, this.settings.snapshot);
+    },
+    onWindowFocused() {
+      const maxZ: number = this.$store.getters["datawindows/windowsMaxZIndex"] + 1;
+      this.$store.commit(`${this.id}/updateZIndex`, { z_index: maxZ });
+    },
+    onShowHideToggle(event: any) {
+      this.$store.commit(`${this.id}/toggleWindowShowHide`, {
+        id: this.id,
+        isHidden: event.isHidden,
+      });
+    },
+  },
+});
+
+function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
+  return Math.min(Math.max(value, min), max);
+}
+</script>
+
+<style scoped>
+.overlay-container {
+  width: inherit;
+  height: inherit;
+}
+</style>

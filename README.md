@@ -1,7 +1,14 @@
 # electron-vite-vue
 
-🥳 Really simple `Electron` + `Vue` + `Vite` boilerplate for `Moseq Reports`.
+🥳 Really simple `Electron` + `Vue` + `Vite` boilerplate.
 
+<!-- [![awesome-vite](https://awesome.re/mentioned-badge.svg)](https://github.com/vitejs/awesome-vite) -->
+<!-- [![Netlify Status](https://api.netlify.com/api/v1/badges/ae3863e3-1aec-4eb1-8f9f-1890af56929d/deploy-status)](https://app.netlify.com/sites/electron-vite/deploys) -->
+<!-- [![GitHub license](https://img.shields.io/github/license/caoxiemeihao/electron-vite-vue)](https://github.com/electron-vite/electron-vite-vue/blob/main/LICENSE) -->
+<!-- [![GitHub stars](https://img.shields.io/github/stars/caoxiemeihao/electron-vite-vue?color=fa6470)](https://github.com/electron-vite/electron-vite-vue) -->
+<!-- [![GitHub forks](https://img.shields.io/github/forks/caoxiemeihao/electron-vite-vue)](https://github.com/electron-vite/electron-vite-vue) -->
+[![GitHub Build](https://github.com/electron-vite/electron-vite-vue/actions/workflows/build.yml/badge.svg)](https://github.com/electron-vite/electron-vite-vue/actions/workflows/build.yml)
+[![GitHub Discord](https://img.shields.io/badge/chat-discord-blue?logo=discord)](https://discord.gg/sRqjYpEAUK)
 
 ## Features
 
@@ -10,51 +17,23 @@
 🌱 Extensible, really simple directory structure  
 💪 Support using Node.js API in Electron-Renderer  
 🔩 Support C/C++ native addons  
-🖥 It's easy to implement multiple windows
+🖥 It's easy to implement multiple windows  
 
-# moseq-reports [![Build Status](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml/badge.svg)](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml)
+## Quick Setup
 
-## Project setup
-```
-git clone https://github.com/tischfieldlab/moseq-reports.git
-cd moseq-reports
+```sh
+# clone the project
+git clone https://github.com/electron-vite/electron-vite-vue.git
+
+# enter the project directory
+cd electron-vite-vue
+
+# install dependency
 npm install
-```
 
-### Compiles and hot-reloads for development
+# develop
+npm run dev
 ```
-npm run electron:serve
-```
-
-### Compiles and minifies for production
-```
-npm run electron:build
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Run your end-to-end tests
-```
-npm run test:e2e
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-### To update the Libraries
-```
-npm install -g npm-check-updates
-ncu
-ncu -u
-npm install
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Debug
 

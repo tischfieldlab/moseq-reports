@@ -1,0 +1,157 @@
+import { nextTick } from 'vue';
+import store from '@render/store/root.store';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
+import { dialog } from '@electron/remote';
+import path from 'path';
+import { DatasetsState } from '@render/store/datasets.types';
+import { LoadDefaultLayout } from './LoadLayout';
+import StreamZip from 'node-stream-zip';
+import { EventEmitter } from "@render/util/EventEmitter";
+// NOTE: Event for loading file for file association sent by the main proc
+ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent, data: string) => {
+  if (data) {
+    LoadDataFile(data);
+  }
+});
+
+export const DataFileExt = 'msq';
+
+/**
+ * Allows the user to pick a .MSQ file and loads it.
+ */
+export default function () {
+  const filenames = dialog.showOpenDialogSync({
+    properties: ['openFile'],
+    filters: [
+      { name: 'MoSeq Data Files', extensions: [DataFileExt] },
+      { name: 'All Files', extensions: ['*'] },
+    ],
+  });
+  if (filenames && filenames[0]) {
+    LoadDataFile(filenames[0]);
+  }
+}
+
+export function IsDataLoaded() {
+  return (store.state as any).datasets.isLoaded;
+}
+
+export function LoadDataFile(filename: string) {
+  // Show a toast message indicating that data loading is starting
+  showStartLoadingToast();
+  nextTick().then(() => beginLoadingProcess(filename));
+}
+
+function beginLoadingProcess(filename: string) {
+  nextTick()
+    .then(() => {
+      console.log("Starting data load process...");
+      EventEmitter.emit("begin-dataset-load"); // Emit the event
+      store.commit("datasets/Unload"); // Unload previous data if necessary
+    })
+    .then(() => readDataBundle(filename))
+    .then((data) => {
+      console.log("Data loaded from bundle:", data);
+      return store.dispatch("datasets/setData", data);
+    })
+    .then(() => {
+      let init;
+      if ((store.state as any).filters.items.length === 0) {
+        init = store.dispatch("filters/addFilter");
+      } else {
+        init = Promise.resolve();
+      }
+      return init.then(() =>
+        Promise.allSettled(
+          (store.state as any).filters.items.map((item) => {
+            return store.dispatch(`${item}/initialize`);
+          })
+        )
+      );
+    })
+    .then(async () => {
+      if ((store.state as any).datawindows.items.length  === 0) {
+        await nextTick();
+        return LoadDefaultLayout(false);
+      }
+    })
+    .then(() => {
+      console.log("Data load process completed successfully.");
+      hideLoadingToast();
+      const message = 'File "'+ (store.state as any).datasets.name +'" was loaded successfully.';
+      showSuccessToast(message);
+      store.commit("history/addEntry", { message, variant: "success" });
+      EventEmitter.emit("finish-dataset-load"); // Emit the event
+    })
+    .catch((reason) => {
+      console.error("Error during data load process:", reason);
+      hideLoadingToast();
+      showErrorToast(reason.toString());
+      store.commit("history/addEntry", { message: reason, variant: "danger" });
+      EventEmitter.emit("fail-dataset-load"); // Emit the event
+    });
+}
+
+
+function showStartLoadingToast() {
+  console.log('Showing loading toast...');
+  // Implement your own toast logic or use a library like Vue Toastification
+}
+
+function hideLoadingToast() {
+  console.log('Hiding loading toast...');
+  // Implement your own toast logic or use a library like Vue Toastification
+}
+
+function showSuccessToast(message: string) {
+  console.log('Showing success toast:', message);
+  // Implement your own toast logic or use a library like Vue Toastification
+}
+
+function showErrorToast(message: string) {
+  console.log('Showing error toast:', message);
+  // Implement your own toast logic or use a library like Vue Toastification
+}
+
+function readDataBundle(filename: string): Promise<Partial<DatasetsState>> {
+  return new Promise((resolve, reject) => {
+    let zip;
+    try {
+      zip = new StreamZip({ file: filename, storeEntries: true });
+      zip.on('error', reject);
+      zip.on('ready', async () => {
+        try {
+          const dataset: Partial<DatasetsState> = {
+            bundle: filename,
+            name: path.basename(filename, `.${DataFileExt}`),
+            ...await LoadMetadataData(zip),
+          };
+          resolve(dataset);
+        } catch (e) {
+          reject(e);
+        } finally {
+          zip.close();
+        }
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+async function LoadMetadataData(zip: StreamZip) {
+  return {
+    manifest: await jsonParseZipEntry(zip, 'manifest.json'),
+    groups: await jsonParseZipEntry(zip, 'groups.json'),
+    label_map: await jsonParseZipEntry(zip, 'label_map.json'),
+  };
+}
+
+async function jsonParseZipEntry(zip: StreamZip, entryName: string) {
+  try {
+    const entry = zip.entryDataSync(entryName);
+    return JSON.parse(entry.toString());
+  } catch {
+    throw new Error(`Entry ${entryName} is missing from data file!`);
+  }
+}
