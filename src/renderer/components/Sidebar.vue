@@ -30,7 +30,7 @@
       <div class="offcanvas-body">
         <!-- Using keep-alive to cache dynamic components -->
         <keep-alive>
-          <component :is="current ? current.component : ''" />
+          <component :is="current ?.component || null" />
         </keep-alive>
       </div>
     </div>
@@ -70,14 +70,14 @@ export default defineComponent({
         {
           name: "Data Filters",
           icon: ["bi bi-funnel-fill", "bi bi-funnel"], // Bootstrap Icons
-          component: "DataFilterContainer",
+          component: 'DataFilterContainer',
           align: "flex-start",
-          isVisible: () => this.$store.state.datasets.name !== "",
+          isVisible: () => this.$store?.state?.datasets?.name !== "",
         } as SidebarItem,
         {
           name: "History",
           icon: ["bi bi-clock-fill", "bi bi-clock-history"], // Bootstrap Icons
-          component: "HistoryViewer",
+          component: 'HistoryViewer',
           align: "flex-end",
           isVisible: () => true,
         } as SidebarItem,

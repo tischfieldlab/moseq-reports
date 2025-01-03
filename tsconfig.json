@@ -23,8 +23,13 @@
   "references": [{ "path": "./tsconfig.node.json" }],
   "include": [
     "src/**/*.d.ts",
-    "src/**/*",
-    "src/dataserver/**/*" ,
+    "@types/**/*.ts",
+    //"src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/**/*.json",
+    "src/dataserver/**/*.ts" ,
+    "src/dataserver/*.ts"
   ],
   "exclude": ["node_modules", "dist", "buildfiles"]
 }

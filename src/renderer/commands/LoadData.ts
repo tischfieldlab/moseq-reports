@@ -7,6 +7,8 @@ import { DatasetsState } from '@render/store/datasets.types';
 import { LoadDefaultLayout } from './LoadLayout';
 import StreamZip from 'node-stream-zip';
 import { EventEmitter } from "@render/util/EventEmitter";
+import axios from "axios";
+
 // NOTE: Event for loading file for file association sent by the main proc
 ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent, data: string) => {
   if (data) {
@@ -28,6 +30,7 @@ export default function () {
     ],
   });
   if (filenames && filenames[0]) {
+    console.log("Selected file:", filenames); 
     LoadDataFile(filenames[0]);
   }
 }
@@ -42,7 +45,18 @@ export function LoadDataFile(filename: string) {
   nextTick().then(() => beginLoadingProcess(filename));
 }
 
-function beginLoadingProcess(filename: string) {
+async function beginLoadingProcess(filename: string) {
+  try {
+    const serverAddress = await ipcRenderer.invoke("get-data-server-address");
+
+    if (!serverAddress) {
+      console.error("DataServer is not running. Cannot send data.");
+      hideLoadingToast();
+      return;
+    }
+
+    console.log("Server address fetched:", serverAddress);
+  
   nextTick()
     .then(() => {
       console.log("Starting data load process...");
@@ -52,7 +66,17 @@ function beginLoadingProcess(filename: string) {
     .then(() => readDataBundle(filename))
     .then((data) => {
       console.log("Data loaded from bundle:", data);
-      return store.dispatch("datasets/setData", data);
+      return store.dispatch("datasets/setData", data).then(() => data);
+    })
+    .then(async (data) => {
+      // Send the dataset to the DataServer
+      console.log("Data to be sent to DataServer:", data.bundle); // Add this log
+      try {
+        const response = await axios.post(`${serverAddress}/api/data`, data.bundle);
+        console.log("Dataset successfully sent to DataServer:", response.data);
+      } catch (error) {
+        console.error("Failed to send dataset to DataServer:", error);
+      }
     })
     .then(() => {
       let init;
@@ -90,6 +114,10 @@ function beginLoadingProcess(filename: string) {
       store.commit("history/addEntry", { message: reason, variant: "danger" });
       EventEmitter.emit("fail-dataset-load"); // Emit the event
     });
+}catch (error) {
+  console.error("Error fetching server address:", error);
+  hideLoadingToast();
+}
 }
 
 

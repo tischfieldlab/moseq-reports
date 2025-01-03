@@ -1,7 +1,7 @@
 <template>
   <b-card class="shadow datafilter">
     <template v-slot:header>
-      <div :style="{ background: color }" class="d-flex align-items-center px-2">
+      <div :style="{ background: color.hex }" class="d-flex align-items-center px-2">
         <button
           @click="toggleCollapse"
           :title="is_expanded ? 'Collapse Filters' : 'Expand Filters'"
@@ -36,15 +36,10 @@
     <b-collapse v-model="is_expanded" :id="generateId('filter-collapse')">
       <b-overlay :show="is_loading" no-fade>
         <div class="container">
-          <!-- Group Selection Section -->
-          <!--GroupBox :datasource="datasource" class="mb-3" /-->
-
-          <!-- Count Method -->
           <b-input-group prepend="Count Method" class="filter-item count-method mb-3">
             <b-form-select v-model="selectedCountMethod" :options="countMethods" />
           </b-input-group>
 
-          <!-- Selected Syllable -->
           <b-input-group prepend="Selected Syllable" class="filter-item selected-syllable mb-3">
             <button
               class="prev btn btn-outline-info btn-sm"
@@ -55,7 +50,6 @@
             </button>
             <b-form-select
               class="syllable-number"
-              debounce="1000"
               v-model="syllable"
               :options="syllableIdOptions"
             />
@@ -68,19 +62,18 @@
             </button>
           </b-input-group>
 
-          <!-- Filter Module ID -->
           <div class="filter-module-id mb-2">
             <label for="filter-module-id" class="d-flex justify-content-between align-items-center">
               <span>Filter Module ID</span>
-              </label>
               <button
-              v-if="tags.length > 0"
+                v-if="tags.length > 0"
                 class="btn btn-link p-0 text"
                 @click="clearAllTags"
                 title="Clear all IDs"
               >
                 <i class="bi-x-circle-fill"></i>
               </button>
+            </label>
             <b-form-tags
               id="filter-module-id"
               v-model="tags"
@@ -93,7 +86,6 @@
       </b-overlay>
     </b-collapse>
 
-    <!-- Modal for Confirmation -->
     <b-modal ref="confirmModal" title="Confirmation" ok-title="Yes" cancel-title="No" @ok="removeFilter">
       Are you sure you want to remove this data filter?
     </b-modal>
@@ -103,17 +95,15 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { CountMethod, DataviewState } from "@render/store/dataview.types";
-import SyllableIdFilter from "@render/components/SyllableIdFilter.vue";
-import { unnest } from "@render/util/Vuex";
 import EditableText from "@render/components/EditableText.vue";
-import { Chrome } from "vue-color";
-import parsePart from "parse-numeric-range"; // Import for parsing numeric ranges
+import { ChromePicker } from "vue-color";
+import parsePart from "parse-numeric-range";
+import { unnest } from "@render/util/Vuex";
 
 export default defineComponent({
   components: {
-    SyllableIdFilter,
     EditableText,
-    "chrome-picker": Chrome,
+    "chrome-picker": ChromePicker,
   },
   props: {
     datasource: {
@@ -124,7 +114,7 @@ export default defineComponent({
   data() {
     return {
       is_expanded: true,
-      tags: [], // Filter Module IDs
+      tags: [],
       countMethods: [
         { text: "Usage", value: CountMethod.Usage },
         { text: "Frames", value: CountMethod.Frames },
@@ -141,10 +131,10 @@ export default defineComponent({
       },
     },
     color: {
-      get(): string {
-        return this.dataview?.color || "";
+      get(): { hex: string } {
+        return { hex: this.dataview?.color || "#000000" };
       },
-      set(value: any) {
+      set(value: { hex: string }) {
         this.$store.commit(`${this.datasource}/setColor`, value.hex);
       },
     },
@@ -171,11 +161,13 @@ export default defineComponent({
       },
     },
     syllableIdOptions(): { value: number; text: string }[] {
-      const filterIds = this.tagsAsIds; // Get Filter Module IDs
-      const availableIds = this.$store.getters[`${this.datasource}/availableModuleIds`] || [];
+      const filterIds = this.tagsAsIds;
+      const availableIds =
+        this.$store.getters[`${this.datasource}/availableModuleIds`] || [];
 
-      // Filter IDs based on tags or return all available IDs
-      const filteredIds = filterIds.length > 0 ? availableIds.filter((id) => filterIds.includes(id)) : availableIds;
+      const filteredIds = filterIds.length > 0
+        ? availableIds.filter((id) => filterIds.includes(id))
+        : availableIds;
 
       return filteredIds.map((id) => ({
         value: id,
@@ -183,8 +175,11 @@ export default defineComponent({
       }));
     },
     tagsAsIds(): number[] {
-      // Convert tags to a numeric array
-      return parsePart(this.tags.join(",")) || [];
+      try {
+        return parsePart(this.tags.join(",")) || [];
+      } catch {
+        return [];
+      }
     },
     canPreviousSyllable(): boolean {
       return this.syllable > Math.min(...this.syllableIdOptions.map((opt) => opt.value));
@@ -193,7 +188,7 @@ export default defineComponent({
       return this.syllable < Math.max(...this.syllableIdOptions.map((opt) => opt.value));
     },
     isDefaultFilter(): boolean {
-      return this.$store.state.filters.items.length === 1;
+      return this.$store.state.filters?.items?.length === 1;
     },
   },
   methods: {
@@ -205,7 +200,7 @@ export default defineComponent({
     },
     confirmRemoveFilter() {
       if (!this.isDefaultFilter) {
-        this.$refs.confirmModal?.show();
+        this.$refs.confirmModal?.show?.();
       }
     },
     removeFilter() {
@@ -222,8 +217,8 @@ export default defineComponent({
       }
     },
     clearAllTags() {
-      this.tags = []; 
-    }
+      this.tags = [];
+    },
   },
 });
 </script>
@@ -260,5 +255,4 @@ export default defineComponent({
 .btn-close {
   margin-left: auto;
 }
-
 </style>

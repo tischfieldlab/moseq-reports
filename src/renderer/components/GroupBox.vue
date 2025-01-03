@@ -37,7 +37,7 @@ import { debounce } from "@render/util/Events";
 import { unnest } from "@render/util/Vuex";
 import deepEqual from "deep-equal";
 import { DataviewState } from "../store/dataview.types";
-import LoadData from "@render/components/Core/DataLoader/DataLoader";
+import LoadData from "src/dataserver/DataLoader/DataLoader";
 import { getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
 
 class SelectableGroupItem {

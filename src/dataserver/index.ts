@@ -3,18 +3,170 @@
 // and then have a directory structure that fits the express standards of controllers
 // routes, and data access.
 
+import express, { Application, Request, Response } from "express";
+import http from "http";
+import portscanner from "portscanner";
+import * as FileType from "file-type";
+import { readFileContents } from "./DataLoader/DataLoader.lib";
+
+const minSearchPort = 3000;
+const maxSearchPort = 4000;
+
 export class DataServer {
-  private server: any; // Should be the express server when you implement it.
+  private app: Application;
+  private server: http.Server | null = null;
+  private port: number | null = null;
+  private datasets: any = {};
 
-  constructor() {
-    // This is where you would bootstrap and configure the express server.
+  constructor(private resolveFilePath: (url: string) => string) {
+    this.app = express();
+    this.configureRoutes();
   }
 
-  public init() {
-    console.log("DataServer init");
+  /**
+   * Configure the Express server routes.
+   */
+  private configureRoutes() {
+    //this.app.use(express.json());
+    this.app.use(express.text({ type: "*/*" }));
+    this.app.use((req: Request, res: Response, next: Function) => {
+       // Set CORS headers
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Request-Method", "*");
+      res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET");
+      res.setHeader("Access-Control-Allow-Headers", "*");
+      next();
+    });
+    this.app.post("/api/data", (req: Request, res: Response) => {
+      try {
+        //console.log(req)
+        this.datasets = req.body;
+        console.log("Dataset received:", this.datasets);
+        res.status(200).json({ message: "Dataset received successfully." });
+      } catch (error) {
+        console.error("Error receiving dataset:", error);
+        res.status(500).json({ message: "Failed to receive dataset." });
+      }
+  });
+  this.app.get("*/crowd_movies/*", async (req: Request, res: Response) =>{
+    try{
+    //console.log("request got",req)
+    const url = decodeURI(req.url as string);
+    const fpath = `${this.datasets}/${url}`;
+    //console.log("Resolved file path:", fpath)
+    const buffer = await readFileContents(fpath);
+    const fileType = await FileType.fileTypeFromBuffer(buffer);
+
+    const size = buffer.length;
+    const range = req.headers.range;
+
+    if (range) {
+      console.log("Range request received:", range);
+      const [rStart, rEnd] = range.replace(/bytes=/, "").split("-");
+      let start = parseInt(rStart, 10);
+      let end = rEnd ? parseInt(rEnd, 10) : size - 1;
+
+      if (!isNaN(start) && isNaN(end)) {
+        start = start;
+        end = size - 1;
+      }
+      if (isNaN(start) && !isNaN(end)) {
+        start = size - end;
+        end = size - 1;
+      }
+
+      if (start >= size || end >= size) {
+        console.warn("Range not satisfiable:", { start, end, size });
+        res.writeHead(416, {
+          "Content-Range": `bytes */${size}`,
+        });
+        return res.end();
+      }
+
+      res.writeHead(206, {
+        "Content-Range": `bytes ${start}-${end}/${size}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": end - start + 1,
+        "Content-Type": fileType?.mime || "application/octet-stream",
+      });
+      res.end(buffer.slice(start, end + 1));
+    } else {
+      console.log("Full content request for:", fpath);
+      res.writeHead(200, { "Content-Type": fileType?.mime || "application/octet-stream" });
+      res.end(buffer);
+    }
+  }catch (err) {
+      console.error("Error in request handler:", err);
+      res.writeHead(404).end(JSON.stringify(err));
+    }
+  });
+
   }
 
-  public shutdown() {
-    console.log("DataServer shutdown");
+  /**
+   * Find an available port and start the server.
+   */
+  public async start(): Promise<void> {
+    if (this.server) {
+      console.warn("DataServer is already running.");
+      throw new Error("DataServer is already running.");
+    }
+
+    try {
+      this.port = await portscanner.findAPortNotInUse(minSearchPort, maxSearchPort);
+      this.server = this.app.listen(this.port, () => {
+        console.log(`DataServer started on port ${this.port}`);
+      });
+    } catch (error) {
+      console.error("Failed to start DataServer:", error);
+      throw new Error("Failed to start DataServer.");
+    }
+  }
+
+  /**
+   * Shut down the server if it is running.
+   */
+  public shutdown(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.server) {
+        this.server.close((err) => {
+          if (err) {
+            console.error("Error shutting down DataServer:", err);
+            return reject(err);
+          }
+
+          console.log("DataServer successfully shut down.");
+          this.server = null;
+          this.port = null;
+          resolve();
+        });
+      } else {
+        console.warn("Shutdown called, but DataServer is not running.");
+        resolve();
+      }
+    });
+  }
+
+  /**
+   * Check if the server is running.
+   */
+  public isServerRunning(): boolean {
+    return !!this.server;
+  }
+
+  /**
+   * Get the address of the running server.
+   */
+  public getAddress(): string {
+    if (this.server && this.port) {
+      return `http://localhost:${this.port}`;
+    }
+    return "Server not running.";
+  }
+  public getfilepath(): string {
+    return this.datasets;
   }
 }
+
+
+

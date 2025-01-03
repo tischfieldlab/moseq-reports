@@ -6,15 +6,15 @@ import pkg from './package.json'
 import { join } from "path";
 import Components from 'unplugin-vue-components/vite'
 import {BootstrapVueNextResolver} from 'bootstrap-vue-next'
-
+import vueDevTools from 'vite-plugin-vue-devtools'
+import electronRenderer from "vite-plugin-electron-renderer";
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   fs.rmSync('dist-electron', { recursive: true, force: true })
-
+  
   const isServe = command === 'serve'
   const isBuild = command === 'build'
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
-
   return {
     plugins: [
       vue({
@@ -51,7 +51,10 @@ export default defineConfig(({ command }) => {
                 // we can use `external` to exclude them to ensure they work correctly.
                 // Others need to put them in `dependencies` to ensure they are collected into `app.asar` after the app is built.
                 // Of course, this is not absolute, just this way is relatively simple. :)
-                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+                external: [
+                  ...Object.keys(pkg.dependencies || {}),
+                  //"@render/util" // Add any specific paths you want to externalize.
+                ],                
               },
             },
           },
@@ -86,6 +89,7 @@ export default defineConfig(({ command }) => {
       alias: [
         { find: "@render", replacement: join(__dirname, "src/renderer") },
         { find: "@main", replacement: join(__dirname, "src/electron") },
+        { find: "@dataserver", replacement: join(__dirname, "src/dataserver") },
         //{ find: "vue", replacement: "@vue/compat" },
         //{ find: "vue$", replacement: "vue/dist/vue.runtime.esm.js" },
         //{ find: "vue3", replacement: "vue" },
@@ -97,7 +101,8 @@ export default defineConfig(({ command }) => {
         host: url.hostname,
         port: +url.port,
       }
-    })(),
+    }
+  )(),
     clearScreen: false,
   }
 })
