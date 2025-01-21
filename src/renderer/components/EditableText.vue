@@ -8,12 +8,15 @@
         @blur="onBlur"
         @keyup.enter="onBlur"
         ref="input"
+        class="inline-edit-input"
       />
     </template>
-    <b-button @click="startEdit" title="Click to edit" variant="link" class="text-dark text-decoration-none">
-      {{ local_value }}
-      <!-- <i class="bi bi-pencil"></i> -->
-    </b-button>
+    <template v-else>
+      <span class="editable-text" @click="startEdit" title="Click to edit">
+        {{ local_value }}
+        <i class="bi bi-pencil"></i>
+      </span>
+    </template>
   </div>
 </template>
 
@@ -72,15 +75,19 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn {
-  padding: 0;
+.editable-text {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
 }
-.b-icon {
+
+.inline-edit-input {
+  display: inline-block;
+  width: auto;
+  min-width: 100px;
+}
+
+.bi-pencil {
   margin-left: 6px;
-  width: 16px;
-}
-.b-button,
-.btn-link {
-  color: inherit !important;
 }
 </style>

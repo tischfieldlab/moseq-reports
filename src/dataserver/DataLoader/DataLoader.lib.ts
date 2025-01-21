@@ -8,12 +8,57 @@ import {
   PluckOperation,
   KeysOperation,
   ValuesOperation,
-} from "@render/components/Core/DataLoader/DataLoader.types";
-import { groupby } from "@render/util/Array";
+} from "./DataLoader.types";
+import { groupby } from "../../electron/shared/Events";
 import { mean, median, sum, min, max, extent, variance, deviation } from "d3-array";
 import { tsvParse, csvParse } from "d3-dsv";
 import StreamZip from "node-stream-zip";
 import fs from "fs";
+import path from "path";
+
+export function readDataBundle(filename: string): Promise<any> {
+  const normalizedFilename = path.normalize(filename);
+  return new Promise((resolve, reject) => {
+    let zip;
+    try {
+      zip = new StreamZip({ file: normalizedFilename, storeEntries: true });
+      zip.on('error', reject);
+      zip.on('ready', async () => {
+        try {
+          const dataset = {
+            bundle: filename,
+            name: path.basename(filename, `.msq`),
+            ...await LoadMetadataData(zip),
+          };
+          resolve(dataset);
+        } catch (e) {
+          reject(e);
+        } finally {
+          zip.close();
+        }
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+async function LoadMetadataData(zip: StreamZip) {
+  return {
+    manifest: await jsonParseZipEntry(zip, 'manifest.json'),
+    groups: await jsonParseZipEntry(zip, 'groups.json'),
+    label_map: await jsonParseZipEntry(zip, 'label_map.json'),
+  };
+}
+
+async function jsonParseZipEntry(zip: StreamZip, entryName: string) {
+  try {
+    const entry = zip.entryDataSync(entryName);
+    return JSON.parse(entry.toString());
+  } catch {
+    throw new Error(`Entry ${entryName} is missing from data file!`);
+  }
+}
 
 export function mapColumns(obj: DataObject | object[], op: MapOperation): object[] {
   let objCols;

@@ -185,9 +185,11 @@ const DataviewModule: Module<DataviewState, RootState> = {
       }
     },
     async initialize(context) {
+      //console.log("Initializing dataview for:", getModuleNamespace(store, context.state));
       const namespace = getModuleNamespace(store, context.state);
       const name = "filter" + namespace?.split("/")[1].split("-")[1];
       context.commit("setName", name);
+      //console.log("Dataview state after initialization:", JSON.stringify(context.state));
       const groups = context.getters.availableGroups;
       const colorScale = scaleOrdinal(schemeDark2);
       context.commit("setColor", FilterColorGenerator(name));

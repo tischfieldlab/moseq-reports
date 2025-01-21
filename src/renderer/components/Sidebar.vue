@@ -9,34 +9,31 @@
         :style="{ 'justify-self': itm.align }"
         :title="current === itm ? `Hide ${itm.name}` : `Show ${itm.name}`"
       >
-        <!-- Using native Bootstrap icon classes and click event -->
-        <button class="btn btn-link" @click="toggleItem(itm)">
+        <BButton class="btn-link" @click="toggleItem(itm)">
           <i :class="current === itm ? itm.icon[0] : itm.icon[1]"></i>
-        </button>
+        </BButton>
       </div>
     </div>
 
-    <!-- Custom sidebar using Bootstrap's offcanvas classes -->
+    <!-- Sidebar -->
     <div
-      class="offcanvas offcanvas-start"
-      :class="{ show: is_open }"
+      class="offcanvas"
+      :class="{ 'offcanvas-end': right, 'offcanvas-start': !right, show: is_open }"
       tabindex="-1"
       id="sidebar"
       aria-labelledby="sidebarLabel"
     >
       <div class="offcanvas-header">
-        <button type="button" class="btn-close" @click="close" aria-label="Close" style="margin-top: 14px;"></button>
+        <BButton type="button" class="btn-close" @click="close" aria-label="Close"></BButton>
       </div>
       <div class="offcanvas-body">
-        <!-- Using keep-alive to cache dynamic components -->
         <keep-alive>
-          <component :is="current ? current.component : ''" />
+          <component :is="current ?.component || null" />
         </keep-alive>
       </div>
     </div>
   </Teleport>
 </template>
-
 <script lang="ts">
 import { defineComponent } from "vue";
 import DataFilterContainer from "@render/components/DataFilterContainer.vue";
@@ -69,14 +66,14 @@ export default defineComponent({
       items: [
         {
           name: "Data Filters",
-          icon: ["bi bi-funnel-fill", "bi bi-funnel"], // Bootstrap Icons
+          icon: ["bi bi-funnel-fill", "bi bi-funnel"],
           component: "DataFilterContainer",
           align: "flex-start",
-          isVisible: () => this.$store.state.datasets.name !== "",
+          isVisible: () => this.$store?.state?.datasets?.name !== "",
         } as SidebarItem,
         {
           name: "History",
-          icon: ["bi bi-clock-fill", "bi bi-clock-history"], // Bootstrap Icons
+          icon: ["bi bi-clock-fill", "bi bi-clock-history"],
           component: "HistoryViewer",
           align: "flex-end",
           isVisible: () => true,
@@ -108,7 +105,6 @@ export default defineComponent({
   },
 });
 </script>
-
 <style scoped>
 .button-bar {
   display: flex;

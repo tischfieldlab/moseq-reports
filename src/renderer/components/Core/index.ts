@@ -16,10 +16,6 @@ export function DiscoverDataComponents(app: App) {
   );
 }
 
-export default function RegisterDataComponent(meta: ComponentRegistration) {
-  store.commit("registerComponent", meta);
-
-}
 
 function GlobalRegisterVueComponents(app: App, components: Record<string, any>) {
   Object.entries(components).forEach(([path, componentConfig]) => {
@@ -34,4 +30,9 @@ function GlobalRegisterVueComponents(app: App, components: Record<string, any>) 
     // Register the component globally
     app.component(componentName, componentConfig.default || componentConfig);
   });
+}
+
+export default function RegisterDataComponent(meta: ComponentRegistration) {
+  store.commit("registerComponent", meta);
+
 }

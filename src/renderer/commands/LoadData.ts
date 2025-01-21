@@ -2,16 +2,15 @@ import { nextTick } from 'vue';
 import store from '@render/store/root.store';
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import { dialog } from '@electron/remote';
-import path from 'path';
-import { DatasetsState } from '@render/store/datasets.types';
 import { LoadDefaultLayout } from './LoadLayout';
-import StreamZip from 'node-stream-zip';
 import { EventEmitter } from "@render/util/EventEmitter";
+import axios from "axios";
+
 // NOTE: Event for loading file for file association sent by the main proc
 ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent, data: string) => {
-  if (data) {
-    LoadDataFile(data);
-  }
+  if (data == null || data === "" || data === undefined) {
+    return;
+  }LoadDataFile(data);
 });
 
 export const DataFileExt = 'msq';
@@ -28,6 +27,7 @@ export default function () {
     ],
   });
   if (filenames && filenames[0]) {
+    console.log("Selected file:", filenames); 
     LoadDataFile(filenames[0]);
   }
 }
@@ -42,17 +42,45 @@ export function LoadDataFile(filename: string) {
   nextTick().then(() => beginLoadingProcess(filename));
 }
 
-function beginLoadingProcess(filename: string) {
+async function beginLoadingProcess(filename: string) {
+  try {
+    const serverAddress = await ipcRenderer.invoke("get-data-server-address");
+
+    if (!serverAddress) {
+      console.error("DataServer is not running. Cannot send data.");
+      hideLoadingToast();
+      return;
+    }
+
+    console.log("Server address fetched:", serverAddress);
+    store.dispatch('server/updateServerAddress', serverAddress);
+  
   nextTick()
     .then(() => {
       console.log("Starting data load process...");
       EventEmitter.emit("begin-dataset-load"); // Emit the event
       store.commit("datasets/Unload"); // Unload previous data if necessary
     })
-    .then(() => readDataBundle(filename))
+    //.then(() => readDataBundle(filename))
+    //.then((data) => {
+    //  console.log("Data loaded from bundle:", data);
+    //  return store.dispatch("datasets/setData", data).then(() => data);
+    //})
+    .then(async (data) => {
+      // Send the dataset to the DataServer
+      try {
+        console.log(filename)
+        const response = await axios.post(`${serverAddress}/api/load-file`, {filename});
+        console.log("Dataset successfully sent to DataServer:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Failed to send filename to DataServer:", error);
+        throw error;
+      }
+    })
     .then((data) => {
-      console.log("Data loaded from bundle:", data);
-      return store.dispatch("datasets/setData", data);
+      console.log("Processed data received from DataServer:", data);
+      return store.dispatch("datasets/setData", data).then(() => data);
     })
     .then(() => {
       let init;
@@ -90,6 +118,10 @@ function beginLoadingProcess(filename: string) {
       store.commit("history/addEntry", { message: reason, variant: "danger" });
       EventEmitter.emit("fail-dataset-load"); // Emit the event
     });
+}catch (error) {
+  console.error("Error fetching server address:", error);
+  hideLoadingToast();
+}
 }
 
 
@@ -113,7 +145,7 @@ function showErrorToast(message: string) {
   // Implement your own toast logic or use a library like Vue Toastification
 }
 
-function readDataBundle(filename: string): Promise<Partial<DatasetsState>> {
+/*function readDataBundle(filename: string): Promise<Partial<DatasetsState>> {
   return new Promise((resolve, reject) => {
     let zip;
     try {
@@ -154,4 +186,4 @@ async function jsonParseZipEntry(zip: StreamZip, entryName: string) {
   } catch {
     throw new Error(`Entry ${entryName} is missing from data file!`);
   }
-}
+}*/

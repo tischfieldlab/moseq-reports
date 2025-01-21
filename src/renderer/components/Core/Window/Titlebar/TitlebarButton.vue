@@ -1,47 +1,42 @@
 <template>
-  <b-button
-    v-b-tooltip.hover
+  <BButton
+    v-b-tooltip="{ triggers: 'hover' }"
     :title="title"
     class="title-button"
     size="sm"
     variant="link"
-    :class="{ 'disabled-icon-button': disabled }"
+    :disabled="disabled"
     @click="clicked"
   >
-    <i :icon="icon" ></i>
-  </b-button>
+    <i :class="icon" aria-hidden="true"></i>
+  </BButton>
 </template>
-
 <script lang="ts">
-import {defineComponent} from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "TitlebarButton",
   props: {
-    /* tslint:disable-next-line */
-    // Function for when the titlebar is clicked
+    // Function to handle button click
     clicked: {
-      type: Function,
+      type: Function as () => void,
       required: false,
-      default: () => {
-        /* do nothing */
-      },
+      default: () => {},
     },
-    // icon to use for this titlebar button
+    // Icon to display
     icon: { type: String, required: true },
-    // Title attribute for this titlebar button, shown on hover via a tooltip
+    // Tooltip title
     title: { type: String, required: false },
-    // True if this titlebar button should be disabled, otherwise false
+    // Disabled state
     disabled: { type: Boolean, required: false, default: false },
   },
 });
 </script>
-
 <style scoped>
 .title-button {
   width: 24px;
   height: 24px;
-  color: #747474;
+  color: #d61a1a;
   padding: 5px;
   margin-right: 2px;
 }
@@ -51,16 +46,14 @@ export default defineComponent({
 }
 
 .title-button:focus,
-title-button:active {
+.title-button:active {
   outline: none !important;
   box-shadow: none;
 }
 
-.disabled-icon-button:hover {
-  cursor: not-allowed !important;
-  color: #989ea3;
-}
-.disabled-icon-button {
+.title-button[disabled] {
+  cursor: not-allowed;
   color: #989ea3;
 }
 </style>
+

@@ -2,7 +2,6 @@
   <div>
     <template v-for="wid in windows" :key="wid">
       <UiCard :id="wid" />
-      <p>{{ wid }}</p> <!-- Debug log in UI -->
     </template>
   </div>
 </template>

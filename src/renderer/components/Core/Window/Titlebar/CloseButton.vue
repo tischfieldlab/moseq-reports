@@ -1,5 +1,5 @@
 <template>
-  <bbutton v-b-tooltip.hover :title="title" class="btn-close ms-auto" @click="clicked" />
+  <BCloseButton v-b-tooltip.hover :title="title" class="btn-close-thick" @click="clicked" />
 </template>
 
 <script lang="ts">
@@ -19,6 +19,7 @@ export default defineComponent({
 .close-button {
   margin-left: 5px;
   cursor: pointer;
-  margin-top: 4px;
+  margin-top: 12px;
+  color: white;
 }
 </style>

@@ -1,8 +1,8 @@
-//import { Menu } from "@electron/remote";
+// Import necessary modules
 import { TitlebarColor, Titlebar } from "custom-electron-titlebar";
 import { createMainMenu } from "./MenuStrip";
 
-
+// DOM ready function
 function domReady(condition: DocumentReadyState[] = ["complete", "interactive"]) {
   return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {
@@ -16,8 +16,8 @@ function domReady(condition: DocumentReadyState[] = ["complete", "interactive"])
     }
   });
 }
-//console.log('Preload script is running');
 
+// Safe DOM manipulation
 const safeDOM = {
   append(parent: HTMLElement, child: HTMLElement) {
     if (!Array.from(parent.children).find((e) => e === child)) {
@@ -31,12 +31,7 @@ const safeDOM = {
   },
 };
 
-/**
- * https://tobiasahlin.com/spinkit
- * https://connoratherton.com/loaders
- * https://projects.lukehaas.me/css-loaders
- * https://matejkustec.github.io/SpinThatShit
- */
+// Loading spinner setup
 function useLoading() {
   const className = `loaders-css__square-spin`;
   const styleContent = `
@@ -98,12 +93,11 @@ window.onmessage = (ev) => {
 setTimeout(removeLoading, 4999);
 
 window.addEventListener("DOMContentLoaded", () => {
-  // Title bar implemenation
+  // Title bar implementation
   const menu = createMainMenu();
   new Titlebar({
     shadow: false,
     backgroundColor: TitlebarColor.fromHex("#FFFFFF"),
-    //icon: "/img/mouse.png",
   });
-
 });
+
