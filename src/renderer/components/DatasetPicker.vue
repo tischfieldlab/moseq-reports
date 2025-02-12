@@ -1,5 +1,5 @@
 <template>
-  <b-form-select :modelValue="value" @update:modelValue="onInput" :options="options"></b-form-select>
+  <BFormSelect :modelValue="value" @update:modelValue="onInput" :options="options"></BFormSelect>
 </template>
 
 <script lang="ts">

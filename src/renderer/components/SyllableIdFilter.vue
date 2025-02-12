@@ -1,26 +1,33 @@
 <template>
-  <b-card no-body>
-    <div class="input-group-text">
-      Filter Module ID
-      <button v-show="hasTags" @click="clearAllTags" title="Clear all IDs"  class="btn-close"></button>
-    </div>
-    <b-form-tags
+  <div class="filter-module-id mb-2">
+    <label for="filter-module-id" class="d-flex justify-content-between align-items-center">
+      <span>Filter Module ID</span>
+      <button
+        v-if="tags.length > 0"
+        class="btn btn-link p-0 text"
+        @click="clearAllTags"
+        title="Clear all IDs"
+      >
+        <i class="bi-x-circle-fill"></i>
+      </button>
+    </label>
+    <BFormTags
+      id="filter-module-id"
       v-model="tags"
       class="mb-2"
       separator=" ,;"
-      :tag-validator="tagValidator"
       placeholder="Add ID(s)..."
-    ></b-form-tags>
-  </b-card>
+      :tag-validator="tagValidator"
+    ></BFormTags>
+  </div>
 </template>
 
 <script lang="ts">
-import {defineComponent}from "vue";
-import { DataviewState } from "@render/store/dataview.types";
-import { unnest } from "@render/util/Vuex";
+import { defineComponent, computed } from "vue";
 import parsePart from "parse-numeric-range";
 
 export default defineComponent({
+  name: "SyllableIdFilter",
   props: {
     datasource: {
       type: String,
@@ -29,115 +36,61 @@ export default defineComponent({
   },
   data() {
     return {
-      tags: Array<string>(),
-      dirty: true,
+      tags: [],
     };
   },
   computed: {
-    dataview(): DataviewState {
-      return unnest(this.$store.state, this.datasource);
-    },
-    isValid(): boolean {
-      // Overall component validation state
-      return false;
-    },
-    hasTags(): boolean {
-      return this.tags.length > 0;
+    availableIds(): number[] {
+      return (
+        this.$store.getters[`${this.datasource}/availableModuleIds`] || []
+      );
     },
     tagsAsIds(): number[] {
-      let ids = parsePart(this.tags.join(",")) as number[];
-      ids = [...new Set(ids)].sort((a, b) => a - b);
-      return ids;
-    },
-    tagsAsRanges(): string[] {
-      return this.idsToRanges(this.tagsAsIds);
-    },
-    module_filter: {
-      get(): number[] {
-        return this.dataview.moduleIdFilter || [];
-      },
-      set(event: number[]) {
-        this.$store.dispatch(`${this.datasource}/updateModuleIdFilters`, event);
-      },
-    },
-    syllableIdOptions() {
-      return this.$store.getters[`${this.datasource}/availableModuleIds`];
+      try {
+        return parsePart(this.tags.join(",")) || [];
+      } catch {
+        return [];
+      }
     },
   },
   watch: {
-    tags(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.module_filter = this.tagsAsIds;
-      }
+    tagsAsIds: {
+      handler(newIds: number[], oldIds: number[]) {
+        if (newIds.length > 0 && JSON.stringify(newIds) !== JSON.stringify(oldIds)) {
+          const newSelected = Math.min(...newIds); // Automatically select the lowest ID in the new filter
+          this.$store.commit(`${this.datasource}/setSelectedSyllable`, newSelected);
+        }
+      },
+      deep: true,
     },
-    module_filter(newValue, oldValue) {
-      const newTags = this.idsToRanges(newValue);
-      if (JSON.stringify(newTags) !== JSON.stringify(this.tags)) {
-        this.tags = newTags;
-      }
-    },
-  },
-  mounted() {
-    this.tags = this.idsToRanges(this.module_filter);
   },
   methods: {
     clearAllTags() {
-      this.tags.splice(0, this.tags.length);
+      this.tags = [];
     },
-    tagValidator(tag) {
-      // Individual tag validator function
+    tagValidator(tag: string) {
       const ids = parsePart(tag) as number[];
-      if (ids.length <= 0) {
-        return false;
+      if (!ids || ids.length === 0) {
+        return false; // Invalid if the tag cannot be parsed into IDs
       }
-      for (const id of ids) {
-        if (!(id in this.syllableIdOptions)) {
-          return false;
-        }
-      }
-      return true;
-    },
-    idsToRanges(ids: number[]): string[] {
-      const ranges: string[] = [];
-      const sortedIds: number[] = [...ids];
-
-      // These are used to track where we are in the range, should one exist
-      let rstart: number;
-      let rend: number;
-      for (let i = 0; i < sortedIds.length; ++i) {
-        rstart = sortedIds[i];
-        rend = rstart;
-        // Loop through if they are sequential
-        while (sortedIds[i + 1] - sortedIds[i] === 1) {
-          rend = sortedIds[i + 1]; // increment the index if the numbers sequential
-          i++;
-        }
-
-        if (rstart === rend) {
-          ranges.push(`${rstart}`);
-        } else {
-          ranges.push(`${rstart}-${rend}`);
-        }
-      }
-
-      return ranges;
+      // Check if every ID is in the available syllable options
+      return ids.every((id) => this.availableIds.includes(id));
     },
   },
 });
 </script>
 
-<style scoped lang="scss">
-.input-group-text {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-  margin: -1px;
+<style scoped>
+.filter-module-id {
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
 }
-.b-form-tags {
-  margin: 0 !important;
-  border: none;
-  background: none;
+.filter-module-id label {
+  display: block;
+  margin-bottom: 0.25rem;
 }
-button.close {
-  margin-left: auto;
+.filter-module-id .BFormTags {
+  margin: 0;
 }
 </style>

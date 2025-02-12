@@ -2,17 +2,17 @@
   <div class="sidebar-container">
     <h3>Notification History</h3>
     <template v-if="items.length > 0">
-      <div v-for="(itm, idx) in items" :key="idx" class="toast show mb-3" role="alert" :class="'bg-' + itm.variant">
+      <div v-for="(itm, idx) in items" :key="idx" class="toast show mb-3" role="alert" :class="`bg-${itm.variant}`">
         <div class="toast-header">
           <!--strong class="me-auto">Notification</strong-->
           <small>{{ formatTime(itm.time) }}</small>
-          <button type="button" class="btn-close" aria-label="Close" @click="removeNotification(idx)"></button>
+          <button class="btn-close" aria-label="Close" @click="removeNotification(idx)"></button>
         </div>
         <div class="toast-body">
           {{ itm.message }}
-          <a v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link">
+          <BLink v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link">
             {{ itm.showDetails ? "Hide Details" : "Show Details" }}
-          </a>
+          </BLink>
           <div v-if="itm.showDetails" class="details mt-2">
             <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
           </div>

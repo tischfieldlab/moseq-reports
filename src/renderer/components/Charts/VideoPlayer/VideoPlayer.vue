@@ -1,144 +1,157 @@
 <template>
   <div class="container">
-    <div v-show="video_loaded" class="video-label-wrapper">
+    <div v-show="videoLoaded" class="video-label-wrapper">
       <div class="info">
-        <!-- Space for extra information -->
         <slot name="prepend"></slot>
-        <span> {{ current_time.toFixed(2) }} / {{ duration.toFixed(2) }} s </span>
-        <span v-show="playbackRate !== 1.0"> {{ playbackRate }}x </span>
+        <span>{{ currentTime.toFixed(2) }} / {{ duration.toFixed(2) }} s</span>
+        <span v-show="playbackRate !== 1.0">{{ playbackRate }}x</span>
       </div>
       <video
         ref="video"
+        :id="videoId"
         crossOrigin="anonymous"
         :src="videoPath"
         type="video/mp4"
-        controls="true"
-        autoplay="true"
-        muted="true"
+        controls
+        autoplay
+        muted
       />
-      <!-- Space for extra information -->
       <slot name="append"></slot>
     </div>
-    <div v-show="!video_loaded" class="no-syllable">
-      <!-- Information regarding missing video -->
+    <div v-show="!videoLoaded" class="no-syllable">
       <slot name="no-video"></slot>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import { defineComponent, ref, WatchEffect,computed, onMounted, onUnmounted, watchEffect } from "vue";
+
 export default defineComponent({
+  name: "VideoClips",
   props: {
-    // File path of video
     videoPath: {
       type: String,
       required: true,
-      default: undefined,
     },
-    // Rate at which the video is played
     playbackRate: {
       type: Number,
-      required: true,
       default: 1.0,
     },
-    // Boolean describing if the video is looped
     loopVideo: {
       type: Boolean,
-      required: false,
       default: true,
     },
-    // Sub clip of main video
     subClip: {
-      required: false,
+      type: Array as unknown as () => [number, number] | undefined,
       default: undefined,
     },
   },
-  data() {
-    return {
-      video_loaded: true,
-      duration: 0,
-      current_time: 0,
+  setup(props, { emit }) {
+    const video = ref<HTMLVideoElement | null>(null);
+    const videoId = ref(`video-${Math.random().toString(36).substr(2, 9)}`);
+    const videoLoaded = ref(true);
+    const duration = ref(0);
+    const currentTime = ref(0);
+    const validatedPlaybackRate = computed(() => {
+      // Ensure the playback rate is within a valid range (0.1 to 16.0)
+      return Math.min(Math.max(props.playbackRate, 0.1), 16.0);
+    });
+    const updateVideoPlaybackRate = () => {
+      if (video.value) {
+        video.value.playbackRate = validatedPlaybackRate.value;
+      }
     };
-  },
-  mounted() {
-    const video = this.$refs.video as HTMLMediaElement;
-    video.addEventListener("error", this.hide_video);
-    video.addEventListener("loadedmetadata", this.show_video);
-    video.addEventListener("timeupdate", this.updateCurrentTime);
-    video.addEventListener("ended", this.videoEnded);
-  },
-  beforeDestroy() {
-    const video = this.$refs.video as HTMLMediaElement;
-    video.removeEventListener("error", this.hide_video);
-    video.removeEventListener("loadedmetadata", this.show_video);
-    video.removeEventListener("timeupdate", this.updateCurrentTime);
-    video.removeEventListener("ended", this.videoEnded);
-  },
-  methods: {
-    show_video(ev: Event) {
-      const video = this.$refs.video as HTMLVideoElement;
-      this.video_loaded = true;
-      this.duration = (this.$refs.video as HTMLVideoElement).duration;
-      if (this.subClip) {
-        video.currentTime = this.subClip![0];
-      }
 
-      this.updateVideoPlaybackRate();
-      this.updateVideoLooping();
-      this.sizeCalculated();
-    },
-    hide_video(ev: Event) {
-      this.video_loaded = false;
-    },
-    updateVideoPlaybackRate() {
-      const video = this.$refs.video as HTMLVideoElement;
-      video.playbackRate = this.playbackRate;
-    },
-    updateVideoLooping() {
-      const video = this.$refs.video as HTMLVideoElement;
-      video.loop = this.loopVideo;
-    },
-    updateCurrentTime() {
-      const video = this.$refs.video as HTMLVideoElement;
-      if (this.loopVideo) {
-        if (this.subClip) {
-          if (video.currentTime > this.subClip![1]) {
-            video.currentTime = this.subClip![0];
-          }
-        } else {
-          if (video.currentTime >= video.duration) {
-            video.currentTime = 0;
+    const updateVideoLooping = () => {
+      if (video.value) {
+        video.value.loop = props.loopVideo;
+      }
+    };
+
+    const sizeCalculated = () => {
+      if (video.value) {
+        emit("sizeCalculated", {
+          width: video.value.videoWidth,
+          height: video.value.videoHeight,
+        });
+      }
+    };
+
+    const showVideo = () => {
+      if (video.value) {
+        videoLoaded.value = true;
+        duration.value = video.value.duration;
+        if (props.subClip) {
+          video.value.currentTime = props.subClip[0];
+        }
+        updateVideoPlaybackRate();
+        updateVideoLooping();
+        sizeCalculated();
+      }
+    };
+
+    const hideVideo = () => {
+      videoLoaded.value = false;
+    };
+
+    const updateCurrentTime = () => {
+      if (video.value) {
+        if (props.loopVideo) {
+          if (props.subClip && video.value.currentTime > props.subClip[1]) {
+            video.value.currentTime = props.subClip[0];
+          } else if (!props.subClip && video.value.currentTime >= video.value.duration) {
+            video.value.currentTime = 0;
           }
         }
+        currentTime.value = video.value.currentTime;
       }
-      this.current_time = video.currentTime;
-    },
-    videoEnded() {
-      const video = this.$refs.video as HTMLVideoElement;
-      if (this.loopVideo) {
-        if (this.subClip) {
-          if (video.currentTime > this.subClip![1]) {
-            video.currentTime = this.subClip![0];
-          }
+    };
+
+    const handleVideoEnded = () => {
+      if (video.value && props.loopVideo) {
+        if (props.subClip) {
+          video.value.currentTime = props.subClip[0];
         } else {
-          if (video.currentTime >= video.duration) {
-            video.currentTime = 0;
-          }
+          video.value.currentTime = 0;
         }
-        video.play();
+        video.value.play();
       }
-    },
-    sizeCalculated() {
-      const video = this.$refs.video as HTMLVideoElement;
-      // Fired when video scale is calculated
-      // @arg width and height of video
-      this.$emit("sizeCalculated", { width: video.videoWidth, height: video.videoHeight });
-    },
-  },
-  watch: {
-    playbackRate: "updateVideoPlaybackRate",
-    loopVideo: "updateVideoLooping",
+    };
+
+    onMounted(() => {
+      if (video.value) {
+        video.value.addEventListener("error", hideVideo);
+        video.value.addEventListener("loadedmetadata", showVideo);
+        video.value.addEventListener("timeupdate", updateCurrentTime);
+        video.value.addEventListener("ended", handleVideoEnded);
+      }
+    });
+
+    onUnmounted(() => {
+      if (video.value) {
+        video.value.removeEventListener("error", hideVideo);
+        video.value.removeEventListener("loadedmetadata", showVideo);
+        video.value.removeEventListener("timeupdate", updateCurrentTime);
+        video.value.removeEventListener("ended", handleVideoEnded);
+      }
+    });
+    watchEffect(() => {
+      updateVideoPlaybackRate();
+      updateVideoLooping();
+    });
+
+
+    return {
+      video,
+      videoId,
+      videoLoaded,
+      duration,
+      currentTime,
+      updateVideoPlaybackRate,
+      updateVideoLooping,
+      sizeCalculated,
+    };
   },
 });
 </script>
@@ -155,7 +168,6 @@ export default defineComponent({
 video {
   width: 100%;
   height: 100%;
-  /* object-fit: cover; */
 }
 video:focus {
   outline: none;

@@ -1,12 +1,12 @@
 [ {
-    "title": "Crowd Movies",
-    "type": "CrowdMovies",
+    "type": "DetailedUsage",
+    "title": "Usage Details",
     "layout": {
-        "width": 360,
-        "height": 360,
+        "width": 430,
+        "height": 600,
         "position": {
-            "x": 900,
-            "y": 540
+            "x": 465,
+            "y": 5
         }
     },
     "settings": {}

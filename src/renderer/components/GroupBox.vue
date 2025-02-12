@@ -1,15 +1,15 @@
 <template>
-  <b-card no-body class="group_selection filter-item">
+  <BCard no-body class="group_selection filter-item">
     <div class="input-group-text">Group Selection</div>
-    <b-list-group flush>
-      <draggable v-model="groups" @change="updateGroups()">
-        <b-list-group-item v-for="option in groups" :key="option.name">
+    <BListGroup flush>
+      <!--draggable v-model="groups" @change="updateGroups()"--->
+        <BListGroupItem v-for="option in groups" :key="option.name" >
           <div :class="{ 'group-wrap': true, [option.style]: true }">
-            <b-form-checkbox switch @input="updateGroups()" v-model="option.selected" :name="option.name">
-            </b-form-checkbox>
+            <BFormCheckbox switch @input="updateGroups()" v-model="option.selected" :name="option.name">
+            </BFormCheckbox>
             <div
               class="swatch"
-              :id="$id(option.id)"
+              :id="generateId(option.id)"
               :style="{ 'background-color': option.color }"
               title="Click to select color"
             >
@@ -17,29 +17,30 @@
                 group_counts[option.name]
               }}</span>
             </div>
-            <b-popover :target="$id(option.id)" triggers="click blur" placement="top">
-              <template v-slot:title>Group Color ({{ option.name }})</template>
-              <chrome-picker :value="option.color" @input="colorChangeHandler(option, $event)" :disableAlpha="true" />
-            </b-popover>
+            <BPopover :target="generateId(option.id)" triggers="click blur" placement="end" :click="true" offset="35">
+              <template #title>Group Color ({{ option.name }})</template>
+              <chrome-picker
+                :modelValue="option.color"
+                @update:modelValue="(value) => colorChangeHandler(option, value)"
+                :disableAlpha="true"
+              />
+            </BPopover>
             <span class="group_name" :title="option.name">{{ option.name }}</span>
           </div>
-        </b-list-group-item>
-      </draggable>
-    </b-list-group>
-  </b-card>
+        </BListGroupItem>
+    </BListGroup>
+  </BCard>
 </template>
-
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, computed, onMounted, onUnmounted } from "vue";
 import draggable from "vuedraggable";
-import { Chrome } from "vue-color";
+import { Chrome } from "@ckpack/vue-color";
 import { debounce } from "@render/util/Events";
-import { unnest } from "@render/util/Vuex";
 import deepEqual from "deep-equal";
-import { DataviewState } from "../store/dataview.types";
-import LoadData from "@render/components/Core/DataLoader/DataLoader";
 import { getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
-
+import axios from "axios";
+import { useStore } from "vuex";
+import { unnest } from "@render/util/Vuex";
 class SelectableGroupItem {
   public name: string;
   public selected: boolean;
@@ -61,150 +62,175 @@ class SelectableGroupItem {
 }
 
 export default defineComponent({
-  name: "groupbox",
+  name: "GroupBox",
   components: {
     draggable,
-    "chrome-picker": Chrome,
+    ChromePicker: Chrome,
   },
   props: {
-    // The source of the data
     datasource: {
       type: String,
       required: true,
     },
   },
-  data() {
-    return {
-      groups: [] as SelectableGroupItem[],
-      group_counts: {},
-      colorChangeHandler: (option, event) => {
-        /**/
-      },
-      watchers: Array<() => void>(),
-    };
-  },
-  computed: {
-    dataview(): DataviewState {
-      return unnest(this.$store.state, this.datasource);
-    },
-  },
-  mounted() {
-    this.colorChangeHandler = debounce((option, event) => {
-      option.color = event.hex;
-      this.updateColors();
-    }, 100);
-
-    this.watchers.push(
-      this.$store.watch(
-        (state, getters) => {
-          return getters[`${this.datasource}/availableGroups`];
-        },
-        () => {
-          if (this.datasource !== undefined) {
-            this.updateGroupCounts();
-            this.buildGroups();
-          }
-        },
-        { immediate: true }
-      )
-    );
-    this.watchers.push(
-      this.$store.watch(
-        (state, getters) => {
-          const dv = unnest(state, this.datasource);
-          if (dv === undefined) {
-            return {};
-          }
-          return {
-            c: unnest(state, this.datasource).groupColors || ([] as string[]),
-            s: unnest(state, this.datasource).selectedGroups || ([] as string[]),
-          };
-        },
-        (newValue) => {
-          if (newValue.s && newValue.c) {
-            this.groups.forEach((g) => {
-              const isSelected = newValue.s.includes(g.name);
-              g.selected = isSelected;
-              if (isSelected) {
-                g.color = newValue.c[newValue.s.indexOf(g.name)];
-              }
-            });
-          }
-        },
-        { deep: true }
-      )
-    );
-  },
-  unmounted() {
-    this.watchers.forEach((w) => w());
-  },
-  methods: {
-    async buildGroups() {
-      const groups = [] as SelectableGroupItem[]; // Need to reset this so that we don't have duplicate options.
-      const availableGroups = this.$store.getters[`${this.datasource}/availableGroups`] || [];
-      const selectedGroups = this.dataview !== undefined ? this.dataview.selectedGroups : [];
-      const colorScale = this.dataview !== undefined ? this.dataview.groupColors : [];
-      availableGroups.map((g, i) => {
-        const sgi = new SelectableGroupItem(g, selectedGroups.includes(g));
-        sgi.color = colorScale[i];
-        groups.push(sgi);
+  setup(props) {
+    const store = useStore(); // Access Vuex store
+    const groups = ref<SelectableGroupItem[]>([]);
+    const group_counts = ref<Record<string, number>>({});
+    const serverAddress = computed(() => store.getters["server/getServerAddress"]);
+    const watchers: (() => void)[] = [];
+    const colorChangeHandler = ref<(option: SelectableGroupItem, value: string) => void>(() => {});
+    const dataview = computed(() =>  unnest(store.state, props.datasource));
+    //onst dataview = computed(() => store.state[props.datasource]);
+    console.log("dataview value",dataview.value)
+    
+    const buildGroups = async () => {
+      const availableGroups =
+        store.getters[`${props.datasource}/availableGroups`] || [];
+      const selectedGroups = dataview.value?.selectedGroups || [];
+      const colorScale = dataview.value?.groupColors || [];
+      groups.value = availableGroups.map((g: string, i: number) => {
+        const groupItem = new SelectableGroupItem(g, selectedGroups.includes(g));
+        groupItem.color = colorScale[i] || "#000000";
+        return groupItem;
       });
-      this.groups = groups;
-    },
-    updateGroups() {
-      const groups = this.groups.filter((g) => g.selected).map((g) => g.name);
-      const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-      if (!deepEqual(groups, this.dataview.selectedGroups)) {
-        this.$store.dispatch(`${this.datasource}/updateSelectedGroups`, {
-          groups,
-          colors,
+    };
+
+    const updateGroups = () => {
+      const selectedGroups = groups.value
+        .filter((g) => g.selected)
+        .map((g) => g.name);
+      const selectedColors = groups.value
+        .filter((g) => g.selected)
+        .map((g) => g.color);
+
+      if (!deepEqual(selectedGroups, dataview.value?.selectedGroups)) {
+        store.dispatch(`${props.datasource}/updateSelectedGroups`, {
+          groups: selectedGroups,
+          colors: selectedColors,
         });
       }
-    },
-    updateColors() {
-      const colors = this.groups.filter((g) => g.selected).map((g) => g.color);
-      if (!deepEqual(colors, this.dataview.groupColors)) {
-        this.$store.dispatch(`${this.datasource}/updateSelectedGroups`, { colors });
+      console.log("Update grouops:",selectedGroups)
+    };
+
+    const updateColors = () => {
+      const selectedColors = groups.value
+        .filter((g) => g.selected)
+        .map((g) => g.color);
+
+      if (!deepEqual(selectedColors, dataview.value?.groupColors)) {
+        store.dispatch(`${props.datasource}/updateSelectedGroups`, {
+          colors: selectedColors,
+        });
       }
-    },
-    async updateGroupCounts() {
+    };
+
+    const updateGroupCounts = async () => {
       try {
-        this.group_counts = await LoadData(this.$store.getters[`datasets/resolve`]("samples"), [{ type: "map" }]).then(
-          (data: any[]) => {
-            return data.reduce((acc, curr) => {
-              if (acc[curr.default_group] === undefined) {
-                acc[curr.default_group] = 1;
-              } else {
-                acc[curr.default_group] += 1;
-              }
-              return acc;
-            }, {});
-          }
-        );
-      } catch {
-        return;
+        const response = await axios.get(`${serverAddress.value}/fetch-samples`, {
+          params: {
+            path: store.getters[`datasets/resolve`]("samples"),
+            operations: JSON.stringify([{ type: "map" }]),
+            debug: false,
+            },
+        });
+        const resolvedData = response.data;
+        console.log(resolvedData)
+        if (Array.isArray(resolvedData)) {
+          group_counts.value = resolvedData.reduce((acc, curr) => {
+            if (curr.default_group !== undefined) {
+              acc[curr.default_group] = (acc[curr.default_group] || 0) + 1;
+            }
+            return acc;
+          }, {});
+        } else {
+          console.error("Resolved data is not an array:", resolvedData);
+        }
+      } catch (err) {
+        console.error("Error updating group counts:", err);
       }
-    },
-    getContrast(hexcolor: string): string {
-      const c = getContrastingColor(hexcolor);
-      if (c === "dark") {
-        return "black";
-      } else {
-        return "white";
-      }
-    },
+    };
+
+    const getContrast = (hexcolor: string): string => {
+      const contrast = getContrastingColor(hexcolor);
+      return contrast === "dark" ? "black" : "white";
+    };
+
+    onMounted(() => {
+      const colorChangeHandler = debounce((option, event) => {
+        option.color = event.hex;
+        updateColors();
+      }, 100);
+
+      watchers.push(
+        store.watch(
+          (state, getters) => getters[`${props.datasource}/availableGroups`],
+          () => {
+            updateGroupCounts();
+            buildGroups();
+          },
+          { immediate: true }
+        )
+      );
+
+      watchers.push(
+        store.watch(
+          (state) => {
+            const dv = state[props.datasource];
+            return {
+              c: dv?.groupColors || [],
+              s: dv?.selectedGroups || [],
+            };
+          },
+          (newValue) => {
+            if (newValue.s && newValue.c) {
+              groups.value.forEach((g) => {
+                const isSelected = newValue.s.includes(g.name);
+                g.selected = isSelected;
+                if (isSelected) {
+                  g.color = newValue.c[newValue.s.indexOf(g.name)];
+                  console.log("g color",g.color)
+                }
+              });
+            }
+          },
+          { deep: true }
+        )
+      );
+    });
+
+    onUnmounted(() => {
+      watchers.forEach((unwatch) => unwatch());
+    });
+
+    return {
+      groups,
+      group_counts,
+      buildGroups,
+      updateGroups,
+      updateColors,
+      updateGroupCounts,
+      getContrast,
+      colorChangeHandler,
+  
+    };
   },
+  methods:{
+    generateId(suffix: string): string {
+        return `${this.datasource}-${suffix}`;
+      },
+  }
 });
 </script>
 
+
 <style scoped>
-.list-group {
-  margin: -1px;
-}
+
 .list-group-item {
   padding: 0.5em 0.25em;
 }
 .group-wrap {
+  display: flex;
   height: 24px;
 }
 .group-wrap::after {
@@ -222,14 +248,15 @@ export default defineComponent({
   margin: -1px;
 }
 .custom-switch {
-  float: left;
+  float: right;
 }
+
 .swatch {
   width: 24px;
   height: 24px;
   float: left;
   border: 1px solid #efefef;
-  margin: 0 10px 0 5px;
+  margin: 0 7px 0 2px;
   border-radius: 24px;
   cursor: pointer;
   text-align: center;
@@ -238,6 +265,7 @@ export default defineComponent({
   font-weight: bold;
 }
 .group_name {
+  flex-grow: 1;
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;

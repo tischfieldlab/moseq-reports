@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="action_container">
-      <b-button @click="addDatasource" block size="sm" variant="primary">
-        <b-spinner v-if="isAddingSource" small type="grow"></b-spinner>
+      <BButton @click="addDatasource" block size="sm" variant="primary">
+        <BSpinner v-if="isAddingSource" small type="grow"></BSpinner>
         <i class="bi bi-plus"></i>
         
-      </b-button>
+      </BButton>
     </div>
     <h3>Data Filters</h3>
 

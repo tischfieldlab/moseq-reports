@@ -23,19 +23,25 @@
         class="dataview-swatch"
         :id="`${id}-swatch`"
         :style="{ background: swatch_color }"
-        v-b-tooltip.hover
-        :title="swatchTitle"
+        
+        v-b-tooltip.hover="{ title: swatch_title, delay: { show: 0, hide: 0 } }"
+        
       >
       </span>
       <div class="titlebar-button-container">
         <slot name="titlebarButtons"></slot>
-        <TitlebarButton
-          :title="isCollapsed ? 'Show contents' : 'Hide contents'"
-          :clicked="onCollapsedClicked"
-          :icon="isCollapsed ? 'caret-up-fill' : 'caret-down-fill'"
-        />
-        <CloseButton :clicked="onClose" :title="'Close window'" />
+  
+        <!-- Toggle Button for Show/Hide Contents -->
+        <BButton variant="link" :title="isCollapsed ? 'Show contents' : 'Hide contents'" @click="collapseWindow">
+          <i :class="isCollapsed ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"></i>
+        </BButton>
+  
+        <!-- Close Button -->
+        <BButton variant="link" :title="'Close window'" @click="onClose">
+            <i class="btn-close"></i>
+        </BButton>
       </div>
+
       {{ title }}
     </div>
     <div
@@ -63,12 +69,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch, reactive } from "vue";
+import { defineComponent, ref, computed, watch, reactive ,onMounted} from "vue";
 import { Position } from "@render/store/datawindow.types";
 import TitlebarButton from "@render/components/Core/Window/Titlebar/TitlebarButton.vue";
 import CloseButton from "@render/components/Core/Window/Titlebar/CloseButton.vue";
 import { applyAspectRatio, isValidHeight, isValidWidth } from "@render/components/Core/Window/util";
-
 enum ResizeType {
   Right = "right",
   Left = "left",
@@ -82,10 +87,10 @@ enum ResizeType {
 
 export default defineComponent({
   name: "BaseWindow",
-  components: {
-    TitlebarButton,
-    CloseButton,
-  },
+    components: {
+      TitlebarButton,
+      CloseButton,
+    },
   props: {
     id: { type: String, required: true },
     swatch_color: { type: String, required: true },
@@ -99,155 +104,190 @@ export default defineComponent({
     minHeight: { type: Number, default: 155 },
     aspectRatio: { type: Number, default: undefined },
     zIndex: { type: Number, required: false },
-    swatchTitle: { type: String, required: false },
+    swatch_title: { type: String, required: false },
   },
   setup(props, { emit }) {
-    const isCollapsed = ref(props.isHidden);
-    const restoredHeight = ref(props.height);
-    const titlebarHeight = ref(35);
-    const contentWidth = ref(props.width);
-    const contentHeight = ref(props.height);
-    const windowPos = reactive(props.pos);
+  const isCollapsed = ref(props.isHidden);
+  const restoredHeight = ref(props.height);
+  const titlebarHeight = ref(35);
 
-    const isDragging = ref(false);
-    const prevDeltaX = ref(0);
-    const prevDeltaY = ref(0);
-    const isResizing = ref(false);
-    const resizeElement = ref<HTMLElement | null>(null);
+  const contentWidth = ref(props.width);
+  const contentHeight = ref(props.height);
+  const windowPos = reactive(props.pos);
+  const isDragging = ref(false);
+  const prevDeltaX = ref(0);
+  const prevDeltaY = ref(0);
+  const isResizing = ref(false);
+  const resizeElement = ref<HTMLElement | null>(null);
 
-    const window_width = computed(() => contentWidth.value + 2);
-    const window_height = computed(() => contentHeight.value + titlebarHeight.value + 2);
-    const window_xpos = computed(() => windowPos.x);
-    const window_ypos = computed(() => windowPos.y);
+  const window_width = computed(() => contentWidth.value + 2);
+  const window_height = computed(() => contentHeight.value + titlebarHeight.value + 2);
+  const window_xpos = computed(() => windowPos.x);
+  const window_ypos = computed(() => windowPos.y);
 
-    const applyAspect = (newWidth: number, newHeight: number) =>
-      applyAspectRatio(newWidth, newHeight, props.aspectRatio);
+  const applyAspect = (newWidth: number, newHeight: number) =>
+    applyAspectRatio(newWidth, newHeight, props.aspectRatio);
 
-    const collapseWindow = () => {
-      if (isCollapsed.value) {
-        restoredHeight.value = contentHeight.value;
-        contentHeight.value = 0;
-      } else {
-        contentHeight.value = restoredHeight.value;
+  const collapseWindow = () => {
+    isCollapsed.value = !isCollapsed.value; 
+    if (isCollapsed.value) {
+      restoredHeight.value = contentHeight.value;
+      contentHeight.value = 0;
+    } else {
+      contentHeight.value = restoredHeight.value;
+    }
+    emit("onShowHideToggle", { isHidden: isCollapsed.value });
+  };
+
+  const onTitlebarHover = () => {
+    if (!isDragging.value) document.body.style.cursor = "grab";
+  };
+
+  const onTitlebarLeave = () => {
+    if (!isDragging.value) document.body.style.cursor = "auto";
+  };
+
+  const windowClicked = () => {
+    emit("onWindowFocused");
+  };
+  const onClose = (event: any) => {
+  emit("onClosed", event);
+};
+
+  const onDragStart = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (!target.dataset.draggable) {
+      return;
+    }
+    prevDeltaX.value = event.clientX;
+    prevDeltaY.value = event.clientY;
+    isDragging.value = true;
+
+    document.onmousemove = (e: MouseEvent) => {
+      if (isDragging.value) {
+        const deltaX = e.clientX - prevDeltaX.value;
+        const deltaY = e.clientY - prevDeltaY.value;
+        prevDeltaX.value = e.clientX;
+        prevDeltaY.value = e.clientY;
+        windowPos.x += deltaX;
+        windowPos.y += deltaY;
       }
-      emit("onShowHideToggle", { isHidden: isCollapsed.value });
     };
 
-    const onDragStart = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.dataset.draggable) {
-        return;
-      }
-      prevDeltaX.value = event.clientX;
-      prevDeltaY.value = event.clientY;
-      isDragging.value = true;
-
-      document.onmousemove = (e: MouseEvent) => {
-        if (isDragging.value) {
-          const deltaX = e.clientX - prevDeltaX.value;
-          const deltaY = e.clientY - prevDeltaY.value;
-          prevDeltaX.value = e.clientX;
-          prevDeltaY.value = e.clientY;
-          windowPos.x += deltaX;
-          windowPos.y += deltaY;
-        }
-      };
-
-      document.onmouseup = () => {
-        isDragging.value = false;
-        emit("onMoved", { x: windowPos.x, y: windowPos.y });
-        document.onmousemove = null;
-        document.onmouseup = null;
-      };
+    document.onmouseup = () => {
+      isDragging.value = false;
+      emit("onMoved", { x: windowPos.x, y: windowPos.y });
+      document.onmousemove = null;
+      document.onmouseup = null;
     };
+  };
 
-    const onResizeStart = (event: MouseEvent) => {
-      if (!props.resizeable) return;
-      resizeElement.value = event.target as HTMLElement;
-      prevDeltaX.value = event.clientX;
-      prevDeltaY.value = event.clientY;
-      isResizing.value = true;
+  const onResizeStart = (event: MouseEvent) => {
+    if (!props.resizeable) return;
+    resizeElement.value = event.target as HTMLElement;
+    prevDeltaX.value = event.clientX;
+    prevDeltaY.value = event.clientY;
+    isResizing.value = true;
 
-      document.onmousemove = (e: MouseEvent) => {
-        if (isResizing.value && !isCollapsed.value) {
-          const deltaX = e.clientX - prevDeltaX.value;
-          const deltaY = e.clientY - prevDeltaY.value;
+    document.onmousemove = (e: MouseEvent) => {
+      if (isResizing.value && !isCollapsed.value) {
+        const deltaX = e.clientX - prevDeltaX.value;
+        const deltaY = e.clientY - prevDeltaY.value;
 
-          let newHeight = contentHeight.value;
-          let newWidth = contentWidth.value;
-          let newX = windowPos.x;
-          let newY = windowPos.y;
+        let newHeight = contentHeight.value;
+        let newWidth = contentWidth.value;
+        let newX = windowPos.x;
+        let newY = windowPos.y;
 
-          const resizeType = resizeElement.value?.dataset.direction as ResizeType;
+        const resizeType = resizeElement.value?.dataset.direction as ResizeType;
 
-          if (resizeType) {
-            // Vertical resize
-            if ([ResizeType.Top, ResizeType.TopRight, ResizeType.TopLeft].includes(resizeType)) {
-              newHeight -= deltaY;
-              newY += deltaY;
-            } else if ([ResizeType.Bottom, ResizeType.BottomRight, ResizeType.BottomLeft].includes(resizeType)) {
-              newHeight += deltaY;
-            }
-
-            // Horizontal resize
-            if ([ResizeType.Right, ResizeType.TopRight, ResizeType.BottomRight].includes(resizeType)) {
-              newWidth += deltaX;
-            } else if ([ResizeType.Left, ResizeType.TopLeft, ResizeType.BottomLeft].includes(resizeType)) {
-              newWidth -= deltaX;
-              newX += deltaX;
-            }
+        if (resizeType) {
+          // Vertical resize
+          if ([ResizeType.Top, ResizeType.TopRight, ResizeType.TopLeft].includes(resizeType)) {
+            newHeight -= deltaY;
+            newY += deltaY;
+          } else if ([ResizeType.Bottom, ResizeType.BottomRight, ResizeType.BottomLeft].includes(resizeType)) {
+            newHeight += deltaY;
           }
 
-          const adjusted = applyAspect(newWidth, newHeight);
-          contentWidth.value = isValidWidth(adjusted.width, props.minWidth) ? adjusted.width : contentWidth.value;
-          contentHeight.value = isValidHeight(adjusted.height, props.minHeight) ? adjusted.height : contentHeight.value;
-          windowPos.x = newX;
-          windowPos.y = newY;
-
-          prevDeltaX.value = e.clientX;
-          prevDeltaY.value = e.clientY;
+          // Horizontal resize
+          if ([ResizeType.Right, ResizeType.TopRight, ResizeType.BottomRight].includes(resizeType)) {
+            newWidth += deltaX;
+          } else if ([ResizeType.Left, ResizeType.TopLeft, ResizeType.BottomLeft].includes(resizeType)) {
+            newWidth -= deltaX;
+            newX += deltaX;
+          }
         }
-      };
 
-      document.onmouseup = () => {
-        isResizing.value = false;
-        resizeElement.value = null;
-        emit("onResized", { width: contentWidth.value, height: contentHeight.value });
-        emit("onMoved", { x: windowPos.x, y: windowPos.y });
-        document.onmousemove = null;
-        document.onmouseup = null;
-      };
-    };
+        const adjusted = applyAspect(newWidth, newHeight);
+        contentWidth.value = isValidWidth(adjusted.width, props.minWidth) ? adjusted.width : contentWidth.value;
+        contentHeight.value = isValidHeight(adjusted.height, props.minHeight) ? adjusted.height : contentHeight.value;
+        windowPos.x = newX;
+        windowPos.y = newY;
 
-    watch(
-      () => props.aspectRatio,
-      (newValue) => {
-        if (newValue) {
-          const adjusted = applyAspect(contentWidth.value, contentHeight.value);
-          contentWidth.value = adjusted.width;
-          contentHeight.value = adjusted.height;
-          emit("onResized", { width: contentWidth.value, height: contentHeight.value });
-        }
+        prevDeltaX.value = e.clientX;
+        prevDeltaY.value = e.clientY;
       }
-    );
-
-    return {
-      isCollapsed,
-      contentWidth,
-      contentHeight,
-      window_width,
-      window_height,
-      window_xpos,
-      window_ypos,
-      collapseWindow,
-      onDragStart,
-      onResizeStart,
     };
+
+    document.onmouseup = () => {
+      isResizing.value = false;
+      resizeElement.value = null;
+      emit("onResized", { width: contentWidth.value, height: contentHeight.value });
+      emit("onMoved", { x: windowPos.x, y: windowPos.y });
+      document.onmousemove = null;
+      document.onmouseup = null;
+    };
+  };
+
+  watch(
+    () => props.aspectRatio,
+    (newValue) => {
+      if (newValue) {
+        const adjusted = applyAspect(contentWidth.value, contentHeight.value);
+        contentWidth.value = adjusted.width;
+        contentHeight.value = adjusted.height;
+        emit("onResized", { width: contentWidth.value, height: contentHeight.value });
+      }
+    }
+  );
+
+  return {
+    isCollapsed,
+    contentWidth,
+    contentHeight,
+    window_width,
+    window_height,
+    window_xpos,
+    window_ypos,
+    collapseWindow,
+    onDragStart,
+    onResizeStart,
+    onTitlebarHover,
+    onTitlebarLeave,
+    windowClicked,
+    onClose,
+  };
   },
 });
 </script>
 
 <style scoped>
+.titlebar-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.titlebar-button-container .btn-link {
+  padding: 0.01rem;
+  color: #495057;
+  font-size: 1.2rem;
+  margin: 0 0.2rem;
+}
+.titlebar-button-container .btn-link:hover {
+  color: #0056b3;
+}
 .resizer {
   position: absolute;
 }

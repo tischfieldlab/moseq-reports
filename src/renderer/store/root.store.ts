@@ -4,6 +4,7 @@ import DatasetsStore from "@render/store/datasets.store";
 import FiltersModule from "@render/store/filters.store";
 import WindowsModule from "@render/store/windows.store";
 import HistoryModule from "@render/store/history.store";
+import serverModule from "@render/store/serveraddress.store";
 
 const store: StoreOptions<RootState> = {
   strict: process.env.NODE_ENV !== "production",
@@ -12,6 +13,7 @@ const store: StoreOptions<RootState> = {
     filters: FiltersModule,
     datawindows: WindowsModule,
     history: HistoryModule,
+    server: serverModule,
   },
   state: {
     registry: [] as ComponentRegistration[],
@@ -19,7 +21,7 @@ const store: StoreOptions<RootState> = {
   },
   getters: {
     getSpecification: (state) => (componentType: string) => {
-      console.log("Registered specifications:", state.registry);
+      //console.log("Registered specifications:", state.registry);
       return state.registry.find((r) => r.component_type === componentType);
     },
   },
