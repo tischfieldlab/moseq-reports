@@ -81,10 +81,6 @@
           <template v-for="node in points" :key="node.id">
             <path
               v-if="is_outlier(node)"
-<<<<<<< HEAD
-=======
-              :key="node.id"
->>>>>>> 02bec58ab107fd45fb9ddafdb43eb11270fb9a22
               :data-identifier="node.id"
               :d="diamond()"
               :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.value)})`"
@@ -92,10 +88,6 @@
             />
             <circle
               v-else
-<<<<<<< HEAD
-=======
-              :key="node.id"
->>>>>>> 02bec58ab107fd45fb9ddafdb43eb11270fb9a22
               :data-identifier="node.id"
               :r="point_size"
               :cx="scale.x(node.group) + node.jitter + halfBandwith"
