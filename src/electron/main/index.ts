@@ -117,15 +117,14 @@ app
   })
   .then(createWindow);
 
-app.on("window-all-closed", () => {
-  win = null;
-  //if (process.platform !== "darwin") {
+  app.on("window-all-closed", async () => {
+    win = null;
     if (dataServer) {
-      dataServer.shutdown();
+      await dataServer.shutdown();
     }
     app.quit();
-  //}
-});
+  });
+  
 
 app.on("second-instance", () => {
   if (win) {

@@ -50,34 +50,44 @@ export default async function LoadData(
   operations: Operation[],
   debug?: boolean
 ): Promise<any> {
-  console.log(path)
-  const cacheKey = JSON.stringify({ path, operations, debug });
-  console.log("cachekey",cacheKey)
-  if (!cache.has(cacheKey)) {
-    //const result = await pool.queue(async (worker) => {
-    //LoadJson(path, operations, debug);
-    //});
-    //console.log(result)
-    
-    //cache.set(cacheKey, Object.freeze(result));
-    //return 'hi' ;
-    
-  } else {
-    console.log("else",cacheKey)
+
+  //const cacheKey = JSON.stringify({ path, operations, debug });
+  const cacheKey = JSON.stringify({
+    path,
+    operations: operations.map((op) => {
+      if (op.type === "filter") {
+        // Ensure syllable remains consistent in the cache key
+        op.filters.syllable = op.filters.syllable.map(Number);
+      }
+      return op;
+    }),
+    debug,
+  });
+  //console.log("Cache key:", cacheKey);
+  //debug = true;
+  if (cache.has(cacheKey)) {
+    console.log("Cache hit for key:", cacheKey);
     return cache.get(cacheKey);
   }
+
   try {
     // Read and parse the file
-    const rawData = await readFileContents(path);
-    const parsedData = getParser(path)(rawData.toString());
-
+    const parsedData = await readFileContents(path)
+      .then((buffer) => buffer.toString())
+      .then((data) => getParser(path)(data));
+      //console.log("Parsed Data:", parsedData);
     if (debug) {
       console.log("Parsed data:", parsedData);
     }
 
     // Process operations
     let result = Promise.resolve(parsedData);
+
     for (const operation of operations) {
+      if (debug) {
+        console.log("Applying operation:", operation.type);
+      }
+
       switch (operation.type) {
         case "pluck":
           result = result.then((data) => pluck(data, operation));
@@ -106,13 +116,13 @@ export default async function LoadData(
 
       if (debug) {
         result = result.then((data) => {
-          console.log("Operation result:", operation, data);
+          console.log("Result after operation:", operation.type, data);
           return data;
         });
       }
     }
 
-    // Resolve and cache the result
+    // Cache and return the final result
     const finalResult = await result;
     cache.set(cacheKey, Object.freeze(finalResult));
     return finalResult;
@@ -121,6 +131,7 @@ export default async function LoadData(
     throw error;
   }
 }
+
 
 // Handle HMR for Vue 3
 /*

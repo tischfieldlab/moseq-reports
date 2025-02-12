@@ -9,6 +9,7 @@ import portscanner from "portscanner";
 import * as FileType from "file-type";
 import { readFileContents,readDataBundle  } from "./DataLoader/DataLoader.lib";
 import LoadData  from "./DataLoader/DataLoader";
+import { Operation } from "./DataLoader/DataLoader.types";
 
 const minSearchPort = 3000;
 const maxSearchPort = 4000;
@@ -101,26 +102,44 @@ export class DataServer {
     }
   }catch (err) {
       console.error("Error in request handler:", err);
-      res.writeHead(404).end(JSON.stringify(err));
+      res.status(500).json({ error: "Internal Server Error" });
     }
   });
-  this.app.get('*/fetch-data', async (req, res) => {
+  this.app.get('*/fetch-samples', async (req, res) => {
     try {
       // Extract any necessary parameters from the request, e.g., path, operations
       const { path, operations, debug } = req.query;
-      console.log(path)
-      console.log(operations)
       // Call the LoadData function with the required arguments
       const data = await LoadData(path as string, JSON.parse(operations as string), debug === 'true');
-      
-      // Log the data and send it as a response
-      console.log("Data",data);
       res.json(data);
     } catch (error) {
       console.error('Error in /fetch-data:', error);
       res.status(500).json({ error: 'Failed to fetch data' });
     }
   });
+  this.app.get("/load-usagedata/", async (req, res) => {
+    try {
+      // Extract query parameters from the request
+      const { path, operations, debug } = req.query;
+  
+      if (!path || !operations) {
+        return res.status(400).json({ error: "Missing required query parameters" });
+      }
+  
+      // Decode and parse the query parameters
+      const decodedPath = decodeURIComponent(path as string); // Decode the path
+      const parsedOperations = typeof operations === "string" ? JSON.parse(decodeURIComponent(operations)) : operations;
+      // Call your LoadData function
+      const data = await LoadData(decodedPath, parsedOperations, debug === true);
+  
+      // Send the response as JSON
+      res.json(data);
+    } catch (error) {
+      console.error("Error handling /load-usagedata request:", error);
+      res.status(500).json({ error: "An error occurred while processing the request" });
+    }
+  });
+  
   
 
   }
@@ -148,7 +167,7 @@ export class DataServer {
   /**
    * Shut down the server if it is running.
    */
-  public shutdown(): Promise<void> {
+  public async shutdown(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.server) {
         this.server.close((err) => {

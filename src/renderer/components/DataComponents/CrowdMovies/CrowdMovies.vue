@@ -46,25 +46,25 @@ export default defineComponent({
     const crowdMoviePath = ref<string>("");
     const errorMessage = ref<string>("");
     const aspectRatio = ref<number>(0);
+    const uID = computed(() => {
+      if (!datasource.value) return null;
+      return store.getters[`${datasource.value}/selectedSyllableAs`](CountMethod.Usage);
+    });
 
-    // Computed Properties
-    const uID = computed(() =>
-      store.getters[`${datasource.value}/selectedSyllableAs`](CountMethod.Usage)
-    );
+    const rID = computed(() => {
+      if (!datasource.value) return null;
+      return store.getters[`${datasource.value}/selectedSyllableAs`](CountMethod.Raw);
+    });
 
-    const rID = computed(() =>
-      store.getters[`${datasource.value}/selectedSyllableAs`](CountMethod.Raw)
-    );
-
-    const fname = computed(() =>
-      `syllable_sorted-id-${uID.value} (usage)_original-id-${rID.value}.mp4`
-    );
+    const fname = computed(() => {
+      return `syllable_sorted-id-${uID.value} (usage)_original-id-${rID.value}.mp4`;
+    });
 
     const serverAddress = computed(() => store.getters["server/getServerAddress"]);
     const selected_syllable = computed(() => dataview.value.selectedSyllable);
     const count_method = computed(() => dataview.value.countMethod);
     const settings = computed(() => $wstate.value.settings as { playback_rate: number; loop: boolean }|| { playback_rate: 1.0, loop: true });
-    console.log(settings)
+    //console.log(settings)
     // Construct the movie path
     const fetchMoviePath = async () => {
       try {

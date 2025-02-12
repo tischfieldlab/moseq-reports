@@ -27,7 +27,6 @@ export default function () {
     ],
   });
   if (filenames && filenames[0]) {
-    console.log("Selected file:", filenames); 
     LoadDataFile(filenames[0]);
   }
 }
@@ -51,13 +50,12 @@ async function beginLoadingProcess(filename: string) {
       hideLoadingToast();
       return;
     }
-
     console.log("Server address fetched:", serverAddress);
     store.dispatch('server/updateServerAddress', serverAddress);
   
   nextTick()
     .then(() => {
-      console.log("Starting data load process...");
+      //console.log("Starting data load process...");
       EventEmitter.emit("begin-dataset-load"); // Emit the event
       store.commit("datasets/Unload"); // Unload previous data if necessary
     })
@@ -69,9 +67,7 @@ async function beginLoadingProcess(filename: string) {
     .then(async (data) => {
       // Send the dataset to the DataServer
       try {
-        console.log(filename)
         const response = await axios.post(`${serverAddress}/api/load-file`, {filename});
-        console.log("Dataset successfully sent to DataServer:", response.data);
         return response.data;
       } catch (error) {
         console.error("Failed to send filename to DataServer:", error);
@@ -104,7 +100,6 @@ async function beginLoadingProcess(filename: string) {
       }
     })
     .then(() => {
-      console.log("Data load process completed successfully.");
       hideLoadingToast();
       const message = 'File "'+ (store.state as any).datasets.name +'" was loaded successfully.';
       showSuccessToast(message);

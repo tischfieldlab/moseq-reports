@@ -22,4 +22,7 @@ export default defineComponent({
   margin-top: 12px;
   color: white;
 }
+.close-button:hover {
+  color: #0056b3;
+}
 </style>

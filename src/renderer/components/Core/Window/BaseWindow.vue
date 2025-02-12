@@ -283,7 +283,7 @@ export default defineComponent({
   padding: 0.01rem;
   color: #495057;
   font-size: 1.2rem;
-  margin: 0 0.3rem;
+  margin: 0 0.2rem;
 }
 .titlebar-button-container .btn-link:hover {
   color: #0056b3;

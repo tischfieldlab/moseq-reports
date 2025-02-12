@@ -21,7 +21,7 @@ const store: StoreOptions<RootState> = {
   },
   getters: {
     getSpecification: (state) => (componentType: string) => {
-      console.log("Registered specifications:", state.registry);
+      //console.log("Registered specifications:", state.registry);
       return state.registry.find((r) => r.component_type === componentType);
     },
   },

@@ -38,9 +38,7 @@ const WindowsModule: Module<WindowsState, RootState> = {
   },
   mutations: {
     addWindow(state, namespace: string) {
-      console.log("state items:",state.items,namespace)
       state.items.push(namespace);
-      console.log("state items:",state.items)
     },
     removeWindow(state, namespace: string) {
       const start = state.items.indexOf(namespace);
@@ -52,27 +50,22 @@ const WindowsModule: Module<WindowsState, RootState> = {
   },
   actions: {
     createWindow(context, component: ComponentRegistration) {
-      console.log("Creating data window for component:", component);
       const ws = createDataWindow(component);
       context.dispatch("commitWindow", ws);
     },
     hydrateWindow(context, data: DehydratedDataWindow) {
       const ws = hydrateWindow(data);
-      console.log("Hydrating window for component type:", data.type);
-      console.log("Payload for hydrateWindow:", data);
+      //console.log("Payload for hydrateWindow:", data);
 
       context.dispatch("commitWindow", ws);
     },
     commitWindow(context, windowState: DataWindowState) {
       const namespace = getModuleNamespace(store, context.state) as string;
-      console.log("window store get module namespace:",namespace)
       let i = 0;
       while (true) {
         const name = `${context.state.basename}-${i}`;
-        console.log("name:",name)
         if (store.state[namespace][name] === undefined) {
           const fullpath = `${namespace}/${name}`;
-          console.log("fullpath",fullpath)
           store.registerModule([namespace, name], DataWindowModule, {});
           context.commit(`${fullpath}/replaceState`, windowState, {
             root: true,
@@ -114,7 +107,6 @@ const WindowsModule: Module<WindowsState, RootState> = {
     async loadLayout(context, layout: DehydratedDataWindow[]) {
       // clear out any existing windows
       await context.dispatch("clearLayout");
-      console.log("Loading layout with data:", layout);
       for (const dh of layout) {
         context.dispatch("hydrateWindow", dh);
       }
@@ -124,7 +116,7 @@ const WindowsModule: Module<WindowsState, RootState> = {
 export default WindowsModule;
 
 function createDataWindow(component: ComponentRegistration): DataWindowState {
-  console.log("Creating data window for component:", component);
+  //console.log("Creating data window for component:", component);
   if (!component) {
     throw new Error("Component is undefined in createDataWindow");
   }
@@ -167,12 +159,11 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
 }
 
 function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
-  console.log("Hydrating window for type:", data.type);
   const spec = store.getters.getSpecification(data.type) as ComponentRegistration;
-  console.log("Specification found:", spec);
+  //console.log("Specification found:", spec);
   if (!spec) {
     console.warn(`Specification for type "${data.type}" not found. Skipping this entry.`);
-  }////////////////////////
+  }
   const win = createDataWindow(spec);
   const maxZ: number = store.getters["datawindows/windowsMaxZIndex"] + 1;
   win.title = clone(data.title || spec.friendly_name);

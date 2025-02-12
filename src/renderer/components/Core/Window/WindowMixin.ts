@@ -7,23 +7,25 @@ import { DataviewState } from "@render/store/dataview.types";
 
 export function useWindowMixin(id: string) {
   const store = useStore();
-
   // Computed Properties
-  const subid = computed(() => id.replace("datawindows/", ""));
-  const $wstate = computed(() => store.state.datawindows[subid.value] as DataWindowState);
-  const spec = computed(() => store.getters[`${id}/spec`] as ComponentRegistration);
-  const datasource = computed(() => $wstate.value.datasource);
-  const dataview = computed(() => unnest(store.state, datasource.value) as DataviewState);
-  const settings = computed(() => $wstate.value.settings);
+  const subid = computed(() =>  id.replace("datawindows/", "") );
+  const $wstate = computed(() => store.state.datawindows[subid.value] || {} as DataWindowState);
+  const spec = computed(() => store.getters[`${id}/spec`] || {} as ComponentRegistration);
+  const datasource = computed(() => $wstate.value.datasource || "");
+  const dataview = computed(() => {
+    if (!datasource.value) return {} as DataviewState;
+    return unnest(store.state, datasource.value) as DataviewState;
+  });
+  const settings = computed(() => $wstate.value.settings || {});
   const layout = computed(() => ({
-    height: $wstate.value.height,
-    width: $wstate.value.width,
+    height: $wstate.value?.height || 0,
+    width: $wstate.value?.width || 0,
     position: {
-      x: $wstate.value.pos_x,
-      y: $wstate.value.pos_y,
+      x: $wstate.value?.pos_x || 0,
+      y: $wstate.value?.pos_y || 0,
     },
   }) as Layout);
-  const title = computed(() => $wstate.value.title);
+  const title = computed(() => $wstate.value?.title || "");
   //const aspect_ratio = computed(() => store.getters[`${id}/aspectRatio`]);
 
   return {

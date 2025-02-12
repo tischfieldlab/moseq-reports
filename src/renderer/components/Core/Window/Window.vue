@@ -118,24 +118,15 @@ export default defineComponent({
   const spec = computed(() => store.getters[`${props.id}/spec`]);
   console.log(spec.value)
   const settings_title = computed(() => `${title.value} Settings`);
-  console.log(settings_title.value)
   const swatch_color = computed(() => dataview.value.color);
-  console.log(swatch_color.value)
   const is_loading = computed(() => component_loading.value > 0 || dataview.value.loading);
   const swatch_title = computed(() => `Using ${dataview.value.name}`);
-  console.log(swatch_title.value)
   const z_index = computed(() => store.getters[`${props.id}/zIndex`]);
-  console.log(z_index.value)
   const aspect_ratio = computed(() => store.getters[`${props.id}/aspectRatio`]||1);
-  console.log(aspect_ratio.value)
   const window_width = computed(() => layout.value.width);
-  console.log(window_width.value)
   const window_height = computed(() => layout.value.height);
-  console.log(window_height.value)
   const window_position = computed(() => layout.value.position);
-  console.log(window_position.value)
   const is_hidden = computed(() => store.getters[`${props.id}/isHidden`]);
-  console.log(is_hidden.value)
 
   const onResized = (event: any) => {
     const size: Size = { width: event.width, height: event.height };
@@ -162,7 +153,6 @@ export default defineComponent({
   };
 
   const onClosed = (event: any) => {
-    console.log("Window closed:", event);
     store.dispatch("datawindows/removeWindow", props.id);
   };
 
@@ -239,7 +229,7 @@ export default defineComponent({
 .titlebar-button {
   padding: 0.01rem; 
   font-size: 1.2rem; /* Adjust icon size */
-  margin: 0 0.3rem; /* Reduce horizontal spacing between buttons */
+  margin: 0 0.2rem; /* Reduce horizontal spacing between buttons */
   color: #495057;
 }
 

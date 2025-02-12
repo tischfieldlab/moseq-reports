@@ -37,7 +37,10 @@
     >
       <i class="bi-droplet-half" :style="{ color: headerStyles.color }"></i>
     </button>
-
+    <BPopover :target="generateId(datasource)" :click="true" placement="top">
+      <template v-slot:title>Dataview `{{ filter_name }}` Color </template>
+      <chrome-picker v-model="color" :disableAlpha="true" />
+    </BPopover>
 
     <!-- Close Button -->
     <BButton
