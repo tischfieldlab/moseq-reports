@@ -98,7 +98,7 @@ export function useBoxPlotBase(props) {
       case WhiskerType.TUKEY:
         return {
           lower: (gs) => Math.max(gs.q1 - 1.5 * gs.iqr, gs.min),
-          upper: (gs) => Math.min(gs.q3 + 1.5 * gs.iqr, gs.max),
+          upper: (gs) =>Math.min(gs.q3 + 1.5 * gs.iqr, gs.max),
         };
       default:
         throw new Error(`Unsupported Whisker Type ${props.whisker_type}!`);
@@ -147,6 +147,9 @@ export function useBoxPlotBase(props) {
 
   const is_outlier = (node) => {
     const group = groupedData.value.find((v) => v.group === node.group);
+      //if (group) {
+    //console.log(`🛠 [DEBUG] Node: ${node.id}, Value: ${node.value}, Lower: ${fences.value.lower(group)}, Upper: ${fences.value.upper(group)}`);
+  //}
     return group ? node.value < fences.value.lower(group) || node.value > fences.value.upper(group) : false;
   };
 

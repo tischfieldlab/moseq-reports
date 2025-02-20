@@ -53,13 +53,14 @@
 
               <!-- Outliers -->
               <g class="outliers">
-                <template v-for="point in points" :key="point.id">
+                <template v-for="node in points">
                   <path
-                    v-if="is_outlier(point)"
-                    :data-identifier="point.id"
+                    v-if="is_outlier(node)"
+                    :key="node.id"
+                    :data-identifier="node.id"
                     :d="diamond()"
-                    :transform="`translate(${scale.x(point.group) + point.jitter + halfBandwith}, ${scale.y(point.value)})`"
-                    :style="{ fill: scale.c(point.group), stroke: '#000000' }"
+                    :transform="`translate(${scale.x(node.group) + node.jitter + halfBandwith}, ${scale.y(node.value)})`"
+                    :style="{ fill: scale.c(node.group), stroke: '#000000' }"
                   />
                 </template>
               </g>

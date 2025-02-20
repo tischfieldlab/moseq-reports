@@ -94,7 +94,7 @@ function computeGroupStats(
   };
 
   [gstats.min, gstats.max] = extent(data) as [number, number];
-  gstats.iqr = gstats.q1 - gstats.q3; // 🔥 **Fixed IQR Calculation**
+  gstats.iqr = gstats.q1 - gstats.q3; 
   
   return gstats;
 }

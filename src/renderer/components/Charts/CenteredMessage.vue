@@ -1,13 +1,13 @@
 <template>
     <div v-if="show" class="centered-message">
-      <b-card bg-variant="primary" text-variant="white" class="text-center">
-        <b-card-text>
+      <BCard bg-variant="primary" text-variant="white" class="text-center">
+        <BCardText>
           <slot>
             <!-- Default content if no slot is provided -->
             No content available.
           </slot>
-        </b-card-text>
-      </b-card>
+        </BCardText>
+      </BCard>
     </div>
   </template>
   

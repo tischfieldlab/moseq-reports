@@ -91,12 +91,12 @@ export default {
     dpiAdapt,
   },
  template: `
-    <b-card>
+    <BCard>
       <canvas
         v-dpiAdapt="{ width: 300, height: 150 }"
         ref="canvasRef"
         style="border: 1px solid #ccc;"
         ></canvas>
-    </b-card>
+    </BCard>
   `,
 };
