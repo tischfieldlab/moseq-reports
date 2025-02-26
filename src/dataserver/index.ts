@@ -130,6 +130,8 @@ export class DataServer {
       const decodedPath = decodeURIComponent(path as string); // Decode the path
       const parsedOperations = typeof operations === "string" ? JSON.parse(decodeURIComponent(operations)) : operations;
       // Call your LoadData function
+      console.log(decodedPath)
+      console.log(parsedOperations)
       const data = await LoadData(decodedPath, parsedOperations, debug === true);
   
       // Send the response as JSON

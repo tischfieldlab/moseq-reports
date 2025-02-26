@@ -1,14 +1,13 @@
 [{
-    "type": "DetailedUsage",
-    "title": "Usage Details",
+    "type": "Spinogram",
+    "title": "Spinogram",
     "layout": {
-        "width": 430,
-        "height": 600,
+        "width": 400,
+        "height": 300,
         "position": {
-            "x": 465,
-            "y": 5
+            "x": 900,
+            "y": 200
         }
     },
     "settings": {}
-}
-]
+}]

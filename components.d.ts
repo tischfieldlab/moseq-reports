@@ -29,6 +29,7 @@ declare module 'vue' {
     BListGroupItem: typeof import('bootstrap-vue-next/components/BListGroup')['BListGroupItem']
     BModal: typeof import('bootstrap-vue-next/components/BModal')['BModal']
     BOverlay: typeof import('bootstrap-vue-next/components/BOverlay')['BOverlay']
+    BPagination: typeof import('bootstrap-vue-next/components/BPagination')['BPagination']
     BPopover: typeof import('bootstrap-vue-next/components/BPopover')['BPopover']
     BRow: typeof import('bootstrap-vue-next/components/BContainer')['BRow']
     BSpinner: typeof import('bootstrap-vue-next/components/BSpinner')['BSpinner']

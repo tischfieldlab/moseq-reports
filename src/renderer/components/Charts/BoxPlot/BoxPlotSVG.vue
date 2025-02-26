@@ -209,26 +209,6 @@ const handleHover = (event) => {
   }
 };
 
-// const directives = {
-//   axis:{
-//     mounted: (el, binding) => {
-//       if (!binding.value) return;
-//       const axis = binding.arg;
-//       const axisMethod = { x: d3.axisBottom, y: d3.axisLeft }[axis];
-//       d3.select(el).call(axisMethod(binding.value));
-//     }
-//   }
-// };
-
-const axis = {
-  updated: (el, binding) => {
-    if (!binding.value) return;
-    const axis = binding.arg;
-    const axisMethod = { x: d3.axisBottom, y: d3.axisLeft }[axis];
-    d3.select(el).call(axisMethod(binding.value));
-  }
-};
-
 
 // Lifecycle hooks
 onMounted(() => {

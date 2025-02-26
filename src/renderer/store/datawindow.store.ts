@@ -54,7 +54,7 @@ const DataWindowModule: Module<DataWindowState, RootState> = {
   },
   mutations: {
     replaceState(state, payload: DataWindowState) {
-      //console.log("Replacing state with payload:", payload);
+      console.log("Replacing state with payload:", payload);
       state.type = payload.type;
       state.width = payload.width;
       state.height = payload.height;

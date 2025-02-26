@@ -21,7 +21,7 @@ import {
 
 
 const numWorkers = os.cpus().length - 1 || 1; // Number of workers to use
-console.log(`Creating pool with ${numWorkers} workers.`);
+//console.log(`Creating pool with ${numWorkers} workers.`);
 // Resolve worker file path and convert URL to string
 //const workerPath = new Worker((new URL("./assets/worker.ts", import.meta.url).toString()));
 
@@ -51,8 +51,8 @@ export default async function LoadData(
   debug?: boolean
 ): Promise<any> {
 
-  //const cacheKey = JSON.stringify({ path, operations, debug });
-  const cacheKey = JSON.stringify({
+  //const cacheKey = JSON.stringify(arguments);
+  /*const cacheKey = JSON.stringify({
     path,
     operations: operations.map((op) => {
       if (op.type === "filter") {
@@ -62,13 +62,13 @@ export default async function LoadData(
       return op;
     }),
     debug,
-  });
+  });*/
   //console.log("Cache key:", cacheKey);
   //debug = true;
-  if (cache.has(cacheKey)) {
-    console.log("Cache hit for key:", cacheKey);
-    return cache.get(cacheKey);
-  }
+  //if (cache.has(cacheKey)) {
+  //  console.log("Cache hit for key:", cacheKey);
+  //  return cache.get(cacheKey);
+  //}
 
   try {
     // Read and parse the file
@@ -79,7 +79,6 @@ export default async function LoadData(
     if (debug) {
       console.log("Parsed data:", parsedData);
     }
-
     // Process operations
     let result = Promise.resolve(parsedData);
 
@@ -90,25 +89,25 @@ export default async function LoadData(
 
       switch (operation.type) {
         case "pluck":
-          result = result.then((data) => pluck(data, operation));
+          result = result.then((obj) => pluck(obj, operation));
           break;
         case "keys":
-          result = result.then((data) => keys(data, operation));
+          result = result.then((obj) => keys(obj, operation));
           break;
         case "values":
-          result = result.then((data) => values(data, operation));
+          result = result.then((obj) => values(obj, operation));
           break;
         case "map":
-          result = result.then((data) => mapColumns(data, operation));
+          result = result.then((obj) => mapColumns(obj, operation));
           break;
         case "filter":
-          result = result.then((data) => filterBy(data, operation));
+          result = result.then((obj) => filterBy(obj, operation));
           break;
         case "sort":
-          result = result.then((data) => sortBy(data, operation));
+          result = result.then((obj) => sortBy(obj, operation));
           break;
         case "aggregate":
-          result = result.then((data) => aggregate(data, operation));
+          result = result.then((obj) => aggregate(obj, operation));
           break;
         default:
           throw new Error(`Unsupported operation '${operation}'`);
@@ -124,7 +123,7 @@ export default async function LoadData(
 
     // Cache and return the final result
     const finalResult = await result;
-    cache.set(cacheKey, Object.freeze(finalResult));
+    //cache.set(cacheKey, Object.freeze(finalResult));
     return finalResult;
   } catch (error) {
     console.error("Error loading data:", error);

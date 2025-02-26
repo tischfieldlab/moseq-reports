@@ -55,7 +55,7 @@ const WindowsModule: Module<WindowsState, RootState> = {
     },
     hydrateWindow(context, data: DehydratedDataWindow) {
       const ws = hydrateWindow(data);
-      //console.log("Payload for hydrateWindow:", data);
+      console.log("Payload for hydrateWindow:", data);
 
       context.dispatch("commitWindow", ws);
     },
@@ -116,7 +116,7 @@ const WindowsModule: Module<WindowsState, RootState> = {
 export default WindowsModule;
 
 function createDataWindow(component: ComponentRegistration): DataWindowState {
-  //console.log("Creating data window for component:", component);
+  console.log("Creating data window for component:", component);
   if (!component) {
     throw new Error("Component is undefined in createDataWindow");
   }
@@ -160,7 +160,7 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
 
 function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
   const spec = store.getters.getSpecification(data.type) as ComponentRegistration;
-  //console.log("Specification found:", spec);
+  console.log("Specification found:", spec);
   if (!spec) {
     console.warn(`Specification for type "${data.type}" not found. Skipping this entry.`);
   }
