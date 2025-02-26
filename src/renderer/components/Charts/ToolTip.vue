@@ -8,7 +8,6 @@
         :data-popper-placement="placement"
       >
         <span data-popper-arrow class="arrow tt-arrow"></span>
-        <!-- Content of tooltip -->
         <slot></slot>
       </div>
     </Teleport>
@@ -21,17 +20,14 @@
   export default defineComponent({
     name: "Tooltip",
     props: {
-      // Whether tooltip is shown
       show: {
         type: Boolean,
         default: false,
       },
-      // Position of the tooltip
       position: {
         type: Object as () => { x: number; y: number },
         default: () => ({ x: 0, y: 0 }),
       },
-      // Placement of the tooltip
       placement: {
         type: String as () => "top" | "bottom" | "left" | "right",
         default: "right",

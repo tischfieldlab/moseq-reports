@@ -17,17 +17,14 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "TitlebarButton",
   props: {
-    // Function to handle button click
     clicked: {
       type: Function as () => void,
       required: false,
       default: () => {},
     },
-    // Icon to display
+
     icon: { type: String, required: true },
-    // Tooltip title
     title: { type: String, required: false },
-    // Disabled state
     disabled: { type: Boolean, required: false, default: false },
   },
 });

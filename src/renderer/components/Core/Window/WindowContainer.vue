@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-import { useStore } from "vuex"; // Ensure you're using the Vuex composable
+import { useStore } from "vuex"; 
 import UiCard from "@render/components/Core/Window/Window.vue";
 
 export default defineComponent({
@@ -16,9 +16,7 @@ export default defineComponent({
     UiCard,
   },
   setup() {
-    const store = useStore(); // Use the Vuex store
-
-    // Computed property for the reactive state
+    const store = useStore(); 
     const windows = computed(() => {
       console.log("State items:", store.state.datawindows.items);
       return store.state.datawindows.items;

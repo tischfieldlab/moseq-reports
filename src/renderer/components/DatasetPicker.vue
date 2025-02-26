@@ -12,12 +12,12 @@ export default defineComponent({
       required: true,
     },
     dataview: {
-      type: Object, // This should align with the Dataview type definition
+      type: Object, 
       required: true,
     },
     filters: {
       type: Function,
-      default: (item: any) => true, // Default filter function allows all items
+      default: (item: any) => true, 
     },
     owner: {
       type: String,
@@ -39,13 +39,12 @@ export default defineComponent({
           }
           return undefined;
         })
-        .filter((item) => item !== undefined) // Filter out undefined items
-        .filter(this.filters as (item: any) => boolean); // Apply user-defined filters
+        .filter((item) => item !== undefined) 
+        .filter(this.filters as (item: any) => boolean); 
     },
   },
   methods: {
     onInput(newValue: string) {
-      // Emit the updated value when the user selects an option
       this.$emit("update:value", newValue);
     },
   },

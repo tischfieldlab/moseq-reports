@@ -1,4 +1,3 @@
-// Updated BoxPlot.types file
 export enum WhiskerType {
     TUKEY = "tukey",
     MIN_MAX = "min_max",

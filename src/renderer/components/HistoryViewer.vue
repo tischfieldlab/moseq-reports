@@ -39,7 +39,7 @@ export default defineComponent({
     const items = computed(() =>
       store.state.history.items.map((item) => ({
         ...item,
-        showDetails: false, // Add a local property for toggling details
+        showDetails: false, 
       }))
     );
 
@@ -52,7 +52,7 @@ export default defineComponent({
     };
 
     const removeNotification = (idx) => {
-      store.commit("history/removeEntry", idx); // Update Vuex state
+      store.commit("history/removeEntry", idx); 
     };
 
     return {
@@ -69,8 +69,8 @@ export default defineComponent({
   margin: 6px;
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
-  padding: 12px; /* Ensure content inside the toast has padding */
-  word-wrap: break-word; /* Handle long messages */
+  padding: 12px; 
+  word-wrap: break-word; 
 }
 
 .toast-header {
@@ -84,8 +84,8 @@ export default defineComponent({
 }
 
 .notification-item {
-  margin-left: 16px; /* Add consistent margin on left */
-  margin-right: 16px; /* Add consistent margin on right */
+  margin-left: 16px; 
+  margin-right: 16px; 
 }
 
 h3 {
@@ -97,8 +97,8 @@ h3 {
   text-align: center;
   font-size: 14px;
   color: #a5a5a5;
-  margin: 24px auto; /* Center-align and add proper margin */
-  padding: 12px; /* Add padding for better spacing */
+  margin: 24px auto; 
+  padding: 12px;
 }
 
 .details-link {
@@ -116,11 +116,11 @@ textarea {
   font-size: 12px;
   white-space: pre;
   width: 100%;
-  box-sizing: border-box; /* Ensure proper width sizing */
+  box-sizing: border-box; 
 }
 
 .sidebar-container {
-  padding: 16px; /* Add padding around the entire container */
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+  padding: 16px; 
+  overflow-x: hidden; 
 }
 </style>

@@ -59,7 +59,7 @@ import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import { WhiskerType } from "@render/components/Charts/BoxPlot";
 import { OrderingType } from "@render/components/Charts/ClusteredHeatmap/ClusteredHeatmap.types";
 import DatasetPicker from "@render/components/DatasetPicker.vue";
-import { debounce } from "lodash"; // ✅ Import debounce to prevent excessive updates
+import { debounce } from "lodash"; 
 
 export default defineComponent({
   name: "DetailedUsageOptions",
@@ -69,8 +69,6 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     const { settings, dataview } = useWindowMixin(props.id);
-
-    // ✅ Ensure settings exist and provide safe defaults
     const safeSettings = computed(() => ({
       group_order_type: settings.value?.group_order_type || OrderingType.Natural,
       group_order_dataset: settings.value?.group_order_dataset || "",
@@ -82,7 +80,6 @@ export default defineComponent({
       violin_kde_scale: settings.value?.violin_kde_scale ?? 0.01,
     }));
 
-    // ✅ Prevent infinite loop in Vuex commits
     const group_order_type = computed({
       get: () => safeSettings.value.group_order_type,
       set: (value) => {
@@ -108,8 +105,6 @@ export default defineComponent({
     });
 
     const point_size = ref<number>(safeSettings.value.point_size);
-
-    // ✅ Debounced update for point size
     watch(
       point_size,
       debounce((newSize) => {
@@ -122,7 +117,6 @@ export default defineComponent({
       }, 300)
     );
 
-    // ✅ Static options
     const whisker_options = ref([
       { value: WhiskerType.TUKEY, text: "Tukey", description: "Whiskers extend up to 1.5 * IQR from 25<sup>th</sup> and 75<sup>th</sup> percentile" },
       { value: WhiskerType.MIN_MAX, text: "Min/Max", description: "Whiskers extend to min and max data points" },

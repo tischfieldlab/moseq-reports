@@ -112,37 +112,25 @@
       categories: { type: Array as () => string[] },
     },
     setup(props, { emit }) {
-      // ✅ Reactive State
       const selected = ref<{ text: string; value: string } | undefined>();
       const options = ref(GetInterpolatedScaleOptions());
       const custom1 = ref("#FFFFFF");
       const custom2 = ref("#000000");
-  
-      // ✅ Unique IDs for color pickers
       const colorOneId = computed(() => `color-picker-one`);
       const colorTwoId = computed(() => `color-picker-two`);
-  
-      // ✅ Compute Custom Option
       const customOption = computed(() => ({
         text: "Custom",
         value: `custom:${custom1.value}:${custom2.value}`,
       }));
   
-      // ✅ Detect if custom mode is active
       const isCustom = computed(() => selected.value?.value.startsWith("custom:") ?? false);
-  
-      // ✅ Handle Category Filtering
       const categoryEnabled = (category: string) => {
         return !props.categories || props.categories.length === 0 || props.categories.includes(category);
       };
-  
-      // ✅ Select Color Scale
       const select = (option: { text: string; value: string }) => {
         selected.value = option;
         emit("input", option.value);
       };
-  
-      // ✅ Update Custom Colors
       const updateCustomColor1 = (value: any) => {
         custom1.value = value.hex;
         select(customOption.value);
@@ -153,7 +141,6 @@
         select(customOption.value);
       };
   
-      // ✅ Watch Value Prop for Changes
       watch(
         () => props.value,
         (newValue) => {

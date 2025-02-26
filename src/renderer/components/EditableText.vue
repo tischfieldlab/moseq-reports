@@ -39,7 +39,6 @@ export default defineComponent({
     const local_value = ref(props.modelValue);
     const inputRef = ref<HTMLInputElement | null>(null);
 
-    // Watch for changes in the `modelValue` prop and update `local_value`
     watch(
       () => props.modelValue,
       (newValue) => {
@@ -49,7 +48,6 @@ export default defineComponent({
 
     const startEdit = () => {
       edit.value = true;
-      // Focus on the input element after it renders
       nextTick(() => inputRef.value?.focus());
     };
 

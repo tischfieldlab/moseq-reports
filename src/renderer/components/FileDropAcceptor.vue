@@ -28,7 +28,7 @@ export default defineComponent({
   setup() {
     const is_file_hover = ref(false);
 
-    // File associations for handling .msq and .msl
+  
     const file_associations = [
       {
         ext: ".msq",
@@ -72,7 +72,7 @@ export default defineComponent({
         );
 
         if (matchedAssoc) {
-          matchedAssoc.handler(filePath); // Call the appropriate handler
+          matchedAssoc.handler(filePath); 
         } else {
           alert(`Unsupported file type: "${file.name}". Please upload a .msq or .msl file.`);
         }

@@ -1,5 +1,5 @@
-import { createMainMenu } from "@main/preload/MenuStrip";
-import { Titlebar } from "custom-electron-titlebar";
+//import { createMainMenu } from "@main/preload/MenuStrip";
+//import { Titlebar } from "custom-electron-titlebar";
 
 let titlebar: any;
 
@@ -24,6 +24,6 @@ export function UpdateTitle(title: string) {
   }
 }
 
-if (import.meta.hot) {
-  import.meta.hot.dispose(() => DisposeTitlebar());
-}
+//if (import.meta.hot) {
+ // import.meta.hot.dispose(() => DisposeTitlebar());
+//}

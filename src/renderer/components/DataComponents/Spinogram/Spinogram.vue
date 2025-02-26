@@ -1,7 +1,6 @@
 <template>
     <div style="overflow: hidden;">
       <template v-if="has_data">
-        <!-- Pagination -->
         <BPagination
           v-if="num_examples > 0"
           v-model="example_num"
@@ -13,7 +12,7 @@
           size="sm"
         ></BPagination>
   
-        <!-- Spinogram Chart -->
+
         <svg :width="outsideWidth" :height="outsideHeight">
           <text class="title" :x="outsideWidth / 2" y="10">
             Module #{{ selectedSyllable }} ({{ countMethod }}) Spinogram
@@ -31,7 +30,6 @@
             />
           </g>
   
-          <!-- Axes -->
           <g v-axis:x="scale" class="x-axis" :transform="`translate(${margin.left},${dims.y-10})`">
             <text class="label" :x="dims.w / 2" :y="35">
               Relative Lateral Position (mm)
@@ -47,7 +45,6 @@
             </text>
           </g>
   
-          <!-- Color Legend -->
           <ColorScaleLegend
             title="Time (ms)"
             :scale="scale.t"
@@ -58,7 +55,6 @@
         </svg>
       </template>
   
-      <!-- No Data Message -->
       <div v-else class="no-data">
         <BCard bg-variant="primary" text-variant="white" class="text-center">
           <BCardText>
@@ -83,7 +79,7 @@
   import RegisterDataComponent from "@render/components/Core";
   import { RenderMode } from "@render/store/datawindow.types";
   import { DirectiveBinding } from "vue";
-  /** ✅ Define Interfaces */
+
   interface Spinogram {
     data: SpinogramTimepoint[];
   }
@@ -96,7 +92,7 @@
     t: number;
   }
   
-  /** ✅ Register Spinogram Component */
+  
   RegisterDataComponent({
     friendly_name: "Spinogram",
     component_type: "Spinogram",
@@ -136,24 +132,20 @@
       },
     },
     setup(props) {
-      // ✅ Vuex Store & Window Mixin
+      
       const store = useStore();
       const { layout, dataview, settings } = useWindowMixin(props.id);
-  
-      // ✅ Data Fetching Variables
       const items = ref<Spinogram[]>([]);
       const example_num = ref(1);
       const serverAddress = computed(() => store.getters["server/getServerAddress"]);
   
-      // ✅ Margins for SVG
       const margin = {
         top: 30,
         right: 20,
         bottom: 45,
         left: 45,
       };
-  
-      // ✅ Computed Properties
+
       const num_examples = computed(() => items.value.length);
       const selectedSyllable = computed(() => dataview.value.selectedSyllable);
       const countMethod = computed(() => dataview.value.countMethod);
@@ -173,18 +165,13 @@
       }));
   
       const legendHeight = computed(() => Math.min(150, Math.max(25, height.value * 0.75)));
-  
-      // ✅ Spinogram Data Extraction
       const spinogram_data = computed(() => {
         return example_num.value - 1 < items.value.length ? items.value[example_num.value - 1].data : [];
       });
-  
-      // ✅ D3 Scale Calculations
       const scale = computed(() => {
         if (!spinogram_data.value.length) {
           return { x: scaleLinear(), y: scaleLinear(), t: scaleSequential((n) => n) };
         }
-  
         const x = scaleLinear().domain([0, 200]).rangeRound([0, dims.value.w]);
         const y = scaleLinear().domain([0, 100]).rangeRound([dims.value.h, 0]);
   
@@ -255,15 +242,15 @@
 path {
     fill:none;
 }
-svg >>> g.x-axis text.label,
-svg >>> g.y-axis text.label,
-svg >>> text.title {
+svg:deep() g.x-axis text.label,
+svg:deep() g.y-axis text.label,
+svg:deep() text.title {
     text-anchor:middle;
     fill:#000;
     font-family: Verdana,Arial,sans-serif;
     font-size: 13px;
 }
-svg >>> g.legend text.label {
+svg:deep() g.legend text.label {
     font-size: 10px;
     transform: translateY(-10px);
 }

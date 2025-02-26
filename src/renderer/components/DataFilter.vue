@@ -231,7 +231,7 @@
       tagsAsIds: {
         handler(newIds: number[], oldIds: number[]) {
           if (newIds.length > 0 && JSON.stringify(newIds) !== JSON.stringify(oldIds)) {
-            const newSelected = Math.min(...newIds); // Automatically select the lowest ID in the new filter
+            const newSelected = Math.min(...newIds); 
             this.updateSelectedSyllable(newSelected);
           }
         },
@@ -275,14 +275,14 @@
       clearAllTags() {
         this.tags = [];
       },
-      tagValidator(tag: string) { // added
-        const ids = parsePart(tag) as number[]; // Parse the tag into numeric IDs
+      tagValidator(tag: string) { 
+        const ids = parsePart(tag) as number[];
         const availableIds =
         this.$store.getters[`${this.datasource}/availableModuleIds`] || [];
         if (!ids || ids.length === 0) {
-          return false; // Invalid if the tag cannot be parsed into IDs
+          return false;
         }
-          // Check if every ID is in the available syllable options
+         
           return ids.every((id) =>
           availableIds.includes(id));
       },

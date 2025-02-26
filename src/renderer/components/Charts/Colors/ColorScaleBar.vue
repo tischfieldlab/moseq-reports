@@ -49,17 +49,14 @@
     },
   
     setup(props) {
-      // ✅ Unique gradient ID to prevent conflicts
+    
       const gradientId = computed(() => `color-gradient-${props.interpolator}`);
-  
-      // ✅ Compute gradient direction based on orientation
       const offsets = computed(() => {
         return props.orientation === "horizontal"
           ? { x1: "0%", x2: "100%", y1: "0%", y2: "0%" }
           : { x1: "0%", x2: "0%", y1: "100%", y2: "0%" };
       });
   
-      // ✅ Generate color scale stops
       const scale = computed(() => {
         const z = scaleSequential(GetScale(props.interpolator) as (t: number) => string).domain([0, 1]);
         return range(0, 1.1, 0.05).map((v) => ({ v: v * 100, z: z(v) }));

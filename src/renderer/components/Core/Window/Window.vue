@@ -18,7 +18,6 @@
     :aspectRatio="aspect_ratio"
   >
   <template v-slot:titlebarButtons>
-  <!-- Show snapshot button when not hidden -->
   <BButton
     v-if="!is_hidden"
     @click="onSnapshotClicked"
@@ -29,7 +28,6 @@
     <i class="bi bi-camera-fill" aria-hidden="true"></i>
   </BButton>
 
-  <!-- Disabled snapshot button when hidden -->
   <BButton
     v-else
     :disabled="true"
@@ -39,8 +37,6 @@
   >
     <i class="bi bi-camera-fill" aria-hidden="true"></i>
   </BButton>
-
-  <!-- Adjust settings button -->
   <BButton
     @click="onSettingsClicked"
     title="Adjust settings"
@@ -228,8 +224,8 @@ export default defineComponent({
 <style scoped>
 .titlebar-button {
   padding: 0.01rem; 
-  font-size: 1.2rem; /* Adjust icon size */
-  margin: 0 0.2rem; /* Reduce horizontal spacing between buttons */
+  font-size: 1.2rem; 
+  margin: 0 0.2rem; 
   color: #495057;
 }
 

@@ -64,8 +64,6 @@ export default defineComponent({
     const selected_syllable = computed(() => dataview.value.selectedSyllable);
     const count_method = computed(() => dataview.value.countMethod);
     const settings = computed(() => $wstate.value.settings as { playback_rate: number; loop: boolean }|| { playback_rate: 1.0, loop: true });
-    //console.log(settings)
-    // Construct the movie path
     const fetchMoviePath = async () => {
       try {
         if (!serverAddress.value) {
@@ -79,7 +77,6 @@ export default defineComponent({
       }
     };
 
-    // Calculate aspect ratio
     const sizeCalculated = (payload: { width: number; height: number }) => {
       const { width, height } = payload;
       aspectRatio.value = width / height;
@@ -89,12 +86,10 @@ export default defineComponent({
       });
     };
 
-    // Lifecycle hooks
     onMounted(() => {
       fetchMoviePath();
     });
 
-    // Watchers
     watch([uID, rID, serverAddress], fetchMoviePath, { immediate: true });
 
     return {
@@ -112,7 +107,6 @@ export default defineComponent({
   },
 });
 
-// Register the component with metadata
 RegisterDataComponent({
   friendly_name: "Crowd Movies",
   component_type: "CrowdMovies",
@@ -128,6 +122,3 @@ RegisterDataComponent({
 });
 </script>
 
-<style scoped>
-/* Add scoped styles if needed */
-</style>

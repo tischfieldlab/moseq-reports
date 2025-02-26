@@ -19,13 +19,8 @@ export default defineComponent({
   },
 
   setup(props) {
-    // ✅ Inject canvas context
     const canvas = inject("canvas") as { cxt: CanvasRenderingContext2D } | undefined;
-
-    // ✅ Determine if the legend is horizontal
     const isHorizontal = computed(() => props.orientation === Orientation.Horizontal);
-
-    // ✅ Define linear scale for legend axis
     const linearscale = computed(() => {
       const domain = props.scale.domain();
       const rangeValues = isHorizontal.value
@@ -34,8 +29,6 @@ export default defineComponent({
 
       return scaleLinear().domain([domain[0], domain[domain.length - 1]]).range(rangeValues);
     });
-
-    // ✅ Compute number of ticks based on available space
     const calcNumTicks = (cxt: CanvasRenderingContext2D) => {
       const tickFormat = linearscale.value.tickFormat(undefined, props.tickformat);
       const tickMeasurements = linearscale.value
@@ -52,7 +45,6 @@ export default defineComponent({
       return Math.max(props.minticks, Math.min(numTicks, props.maxticks));
     };
 
-    // ✅ Render canvas legend
     const renderCanvas = () => {
       if (!canvas || !canvas.cxt) {
         console.warn("No canvas context received");
@@ -67,8 +59,6 @@ export default defineComponent({
       cxt.save();
       cxt.translate(props.x - props.width / 2, props.y);
       cxt.clearRect(-20, 0, props.width + 30, props.height + 50);
-
-      // 🎨 Create color gradient
       let grad = isHorizontal.value
         ? cxt.createLinearGradient(0, 0, props.width, 0)
         : cxt.createLinearGradient(0, props.height, 0, 0);
@@ -81,8 +71,6 @@ export default defineComponent({
 
       cxt.fillStyle = grad;
       cxt.fillRect(0, 0, props.width, props.height);
-
-      // 📏 Draw axis ticks
       const numTicks = calcNumTicks(cxt);
       const tickFormat = linearscale.value.tickFormat(numTicks, props.tickformat);
       cxt.fillStyle = "#888";
@@ -117,7 +105,6 @@ export default defineComponent({
         });
       }
 
-      // 🏷️ Draw title
       cxt.font = "13px Verdana";
       cxt.fillStyle = "#888";
 
@@ -132,8 +119,6 @@ export default defineComponent({
 
       cxt.restore();
     };
-
-    // ✅ Trigger canvas rendering
     renderCanvas();
 
     return () => h("div");

@@ -7,7 +7,7 @@ export interface GridCell {
       paddingX: number;
       paddingY: number;
     };
-    data: any; // Change `any` to a specific type based on your data
+    data: any; 
   }
   
   export default function gridLayout() {
@@ -22,12 +22,9 @@ export interface GridCell {
       numCells = data.length;
   
       const widthIndividual = Math.sqrt((aspect * widthTotal * heightTotal) / numCells);
-  
-      // Fill the window horizontally
       const minNx = Math.floor(widthTotal / widthIndividual);
       const maxNy = Math.ceil(numCells / minNx);
   
-      // Fill the window vertically
       let maxNx = Math.ceil(widthTotal / widthIndividual);
       let minNy = Math.ceil(numCells / maxNx);
   

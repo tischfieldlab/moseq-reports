@@ -70,7 +70,6 @@ export async function LoadLayoutFile(filename: string, showNotifications = true)
     });
 
     if (Array.isArray(content)) {
-      // Old-style layout (list of window layouts)
       await store.dispatch("datawindows/loadLayout", content);
     } else if (typeof content === "object" && content !== null) {
       const layoutContent = content as { filters?: unknown; layout?: unknown };
@@ -93,9 +92,6 @@ export async function LoadLayoutFile(filename: string, showNotifications = true)
   }
 }
 
-/**
- * Saves the current layout to a file.
- */
 export async function SaveLayout() {
   const dest = dialog.showSaveDialogSync({
     title: "Save Layout",

@@ -3,7 +3,6 @@
       <BCard bg-variant="primary" text-variant="white" class="text-center">
         <BCardText>
           <slot>
-            <!-- Default content if no slot is provided -->
             No content available.
           </slot>
         </BCardText>
@@ -17,7 +16,6 @@
   export default defineComponent({
     name: "CenteredMessage",
     props: {
-      // Boolean describing if the message should be shown
       show: {
         type: Boolean,
         default: true,

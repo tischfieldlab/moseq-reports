@@ -141,17 +141,17 @@ export default defineComponent({
   margin: 0;
 }
 .datafilter.card {
-  margin-left: 10px; /* Add a small left margin to align the content */
+  margin-left: 10px; 
 }
 
 .button-bar {
-  margin-left: 0; /* Ensure the toggle buttons on the left are aligned */
+  margin-left: 0; 
 }
 .offcanvas-header .btn-close {
-  margin-bottom: -30px; /* Ensure no margin below */
-  margin-top: 16px; /* Adjust the top margin to control the spacing */
+  margin-bottom: -30px; 
+  margin-top: 16px; 
   position: relative;
-  top: 5px; /* Fine-tune this value to pull the button closer to the title */
+  top: 5px;
 }
 
 .offcanvas.show {

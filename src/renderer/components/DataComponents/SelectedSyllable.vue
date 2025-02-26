@@ -23,7 +23,6 @@
     setup(props) {
       const store = useStore();
       const { dataview} = useWindowMixin(props.id);
-      // Computed properties for syllable and countMethod
       const syllable = computed(() => dataview.value.selectedSyllable);
       const countMethod = computed(() => dataview.value.countMethod.toLowerCase());
   
@@ -31,9 +30,6 @@
         syllable,
         countMethod,
       };
-    },
-    components: {
-      // Register data component logic if required
     },
   });
   RegisterDataComponent({

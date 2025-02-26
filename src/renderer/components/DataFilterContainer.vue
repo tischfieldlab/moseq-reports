@@ -10,7 +10,6 @@
     <h3>Data Filters</h3>
 
     <div class="filters_container">
-      <!-- Place the key attribute on the <template> tag -->
       <template v-for="ns in filters" :key="ns">
         <DataFilter :datasource="ns" />
       </template>
@@ -20,7 +19,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, ref } from "vue";
-import { useStore } from "vuex"; // Ensure Vuex 4 is installed
+import { useStore } from "vuex"; 
 import DataFilter from "@render/components/DataFilter.vue";
 import { nextTick } from "vue";
 
@@ -30,15 +29,15 @@ export default defineComponent({
     DataFilter,
   },
   setup() {
-    const store = useStore(); // Access Vuex store
+    const store = useStore(); 
 
     const isAddingSource = ref(false);
 
-    const filters = computed(() => store.state.filters.items); // Reactive state
+    const filters = computed(() => store.state.filters.items); 
 
     const addDatasource = async () => {
       isAddingSource.value = true;
-      await nextTick(); // Ensure DOM updates before dispatching action
+      await nextTick(); 
       try {
         await store.dispatch("filters/addFilter");
       } finally {

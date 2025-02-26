@@ -56,7 +56,7 @@
 import { defineComponent, computed } from "vue";
 import { useStore } from "vuex";
 import { UpdateComponentLayoutPayload, UpdateComponentTitlePayload } from "@render/store/datawindow.types";
-import { useWindowMixin } from "@render/components/Core/Window/WindowMixin"; // Assuming useWindowMixin is available for Vue 3
+import { useWindowMixin } from "@render/components/Core/Window/WindowMixin"; 
 
 export default defineComponent({
   name: "ComponentName",
@@ -69,8 +69,6 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
     const { layout, $wstate } = useWindowMixin(props.id);
-
-    // Computed properties
     const title = computed({
       get: () => $wstate.value.title,
       set: (value: string) => {
@@ -121,7 +119,6 @@ export default defineComponent({
       },
     });
 
-    // Methods
     const resetSize = () => {
       store.dispatch(`${props.id}/resetSize`);
     };

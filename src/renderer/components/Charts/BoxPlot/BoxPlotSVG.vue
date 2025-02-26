@@ -77,7 +77,7 @@
           </template>
         </g>
 
-        <!-- Points -->
+      
         <g v-if="actuallyShowPoints" class="node">
           <template v-for="node in points" :key="node.id">
             <path
@@ -98,7 +98,6 @@
           </template>
         </g>
 
-        <!-- X and Y axes -->
         <g :class="{ 'x-axis': true, rotate: rotate_labels }" v-axis:x="scale" :transform="`translate(${origin.x},${origin.y})`">
           <text class="label" :y="xAxisLabelYPos" :x="innerWidth / 2">{{ xAxisTitle }}</text>
         </g>
@@ -165,7 +164,6 @@ const { points,
     rotate_labels,
     noDataMessage } = useBoxPlotBase(props);
 
-//const BoxPlotBase = ref(null);
 const canvas = ref(null);
 const debouncedHover = ref(() => {});
 const labelStats = ref({ count: 0, total: 0, longest: 0 });
@@ -191,8 +189,6 @@ const computeLabelStats = (labels) => {
   });
 };
 
-
-// Handle tooltip hover
 const handleHover = (event) => {
   if (!event?.target) return;
   const target = event.target;
@@ -210,7 +206,6 @@ const handleHover = (event) => {
 };
 
 
-// Lifecycle hooks
 onMounted(() => {
   debouncedHover.value = throttle(handleHover, 10);
 });

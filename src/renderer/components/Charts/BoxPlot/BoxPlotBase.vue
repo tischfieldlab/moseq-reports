@@ -4,7 +4,6 @@ import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { WhiskerType } from './BoxPlot.types';
-// Import Worker using Vite's worker syntax
 import Worker from './Worker.ts?worker';
 
 function default_tooltip_formatter(value) {
@@ -47,8 +46,6 @@ export function useBoxPlotBase(props) {
   const hoverItem = ref(undefined);
 
   const has_data = computed(() => props.data?.length > 0);
-
-  // ✅ Fix: Restored proper sorting of `groupLabels`
   const scale = computed(() => {
     const orderedLabels = groupedData.value.map(gs => gs.group).sort((a, b) => 
       props.groupLabels.indexOf(a) - props.groupLabels.indexOf(b)
@@ -86,8 +83,6 @@ export function useBoxPlotBase(props) {
   const halfBandwith = computed(() => scale.value.x.bandwidth() / 2);
   const quaterBandwith = computed(() => scale.value.x.bandwidth() / 4);
   const origin = computed(() => ({ x: scale.value.x.range()[0], y: scale.value.y.range()[0] }));
-
-  // ✅ Fix: Ensured `fences` calculation remains the same as old logic
   const fences = computed(() => {
     switch (props.whisker_type) {
       case WhiskerType.MIN_MAX:
@@ -132,7 +127,6 @@ export function useBoxPlotBase(props) {
     });
   };
 
-  // ✅ Fix: Ensured swarm points update remains consistent
   const updateSwarmPoints = async () => {
     worker.postMessage({
       type: "updateSwarmPoints",
@@ -147,9 +141,6 @@ export function useBoxPlotBase(props) {
 
   const is_outlier = (node) => {
     const group = groupedData.value.find((v) => v.group === node.group);
-      //if (group) {
-    //console.log(`🛠 [DEBUG] Node: ${node.id}, Value: ${node.value}, Lower: ${fences.value.lower(group)}, Upper: ${fences.value.upper(group)}`);
-  //}
     return group ? node.value < fences.value.lower(group) || node.value > fences.value.upper(group) : false;
   };
 

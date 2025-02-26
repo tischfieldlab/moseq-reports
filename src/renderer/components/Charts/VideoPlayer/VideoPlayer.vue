@@ -54,7 +54,6 @@ export default defineComponent({
     const duration = ref(0);
     const currentTime = ref(0);
     const validatedPlaybackRate = computed(() => {
-      // Ensure the playback rate is within a valid range (0.1 to 16.0)
       return Math.min(Math.max(props.playbackRate, 0.1), 16.0);
     });
     const updateVideoPlaybackRate = () => {

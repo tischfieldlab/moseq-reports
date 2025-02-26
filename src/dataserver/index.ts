@@ -107,9 +107,8 @@ export class DataServer {
   });
   this.app.get('*/fetch-samples', async (req, res) => {
     try {
-      // Extract any necessary parameters from the request, e.g., path, operations
+
       const { path, operations, debug } = req.query;
-      // Call the LoadData function with the required arguments
       const data = await LoadData(path as string, JSON.parse(operations as string), debug === 'true');
       res.json(data);
     } catch (error) {
@@ -119,22 +118,14 @@ export class DataServer {
   });
   this.app.get("/load-usagedata/", async (req, res) => {
     try {
-      // Extract query parameters from the request
       const { path, operations, debug } = req.query;
   
       if (!path || !operations) {
         return res.status(400).json({ error: "Missing required query parameters" });
       }
-  
-      // Decode and parse the query parameters
-      const decodedPath = decodeURIComponent(path as string); // Decode the path
+      const decodedPath = decodeURIComponent(path as string); 
       const parsedOperations = typeof operations === "string" ? JSON.parse(decodeURIComponent(operations)) : operations;
-      // Call your LoadData function
-      console.log(decodedPath)
-      console.log(parsedOperations)
       const data = await LoadData(decodedPath, parsedOperations, debug === true);
-  
-      // Send the response as JSON
       res.json(data);
     } catch (error) {
       console.error("Error handling /load-usagedata request:", error);
@@ -146,9 +137,6 @@ export class DataServer {
 
   }
 
-  /**
-   * Find an available port and start the server.
-   */
   public async start(): Promise<void> {
     if (this.server) {
       console.warn("DataServer is already running.");
@@ -166,9 +154,6 @@ export class DataServer {
     }
   }
 
-  /**
-   * Shut down the server if it is running.
-   */
   public async shutdown(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.server) {
@@ -189,26 +174,16 @@ export class DataServer {
       }
     });
   }
-
-  /**
-   * Check if the server is running.
-   */
   public isServerRunning(): boolean {
     return !!this.server;
   }
-
-  /**
-   * Get the address of the running server.
-   */
   public getAddress(): string {
     if (this.server && this.port) {
       return `http://localhost:${this.port}`;
     }
     return "Server not running.";
   }
-  //public getfilepath(): string {
-    //return this.currentFilename;
-  //}
+
 }
 
 

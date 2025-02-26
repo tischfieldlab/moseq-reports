@@ -43,8 +43,8 @@ process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 process.env.THREADS_WORKER_INIT_TIMEOUT = "200000";
 
 export const ROOT_PATH = {
-  dist: join(__dirname, "../.."), // /dist
-  public: join(__dirname, app.isPackaged ? "../.." : "../../../public"), // /dist or /public
+  dist: join(__dirname, "../.."), 
+  public: join(__dirname, app.isPackaged ? "../.." : "../../../public"), 
 };
 
 let win: BrowserWindow | null = null;
@@ -53,9 +53,6 @@ const preload = join(__dirname, "../preload/index.mjs");
 const url = process.env["VITE_DEV_SERVER_URL"] || "localhost";
 const indexHtml = join(ROOT_PATH.dist, "index.html");
 
-/**
- * Create the main application window.
- */
 async function createWindow() {
   win = new BrowserWindow({
     icon: join(ROOT_PATH.public, "img", "msq.ico"),
@@ -80,13 +77,10 @@ async function createWindow() {
     win.loadURL(url);
     win.webContents.openDevTools({ mode: "right" });
   }
-
-  // Notify renderer of main process message
   win.webContents.on("did-finish-load", () => {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
   });
 
-  // Open external links in the browser
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https:")) shell.openExternal(url);
     return { action: "deny" };
@@ -100,7 +94,6 @@ app
   .then(async () => {
     // console.log(process.env.NODE_ENV)
     if (isDevelopment && !process.env.IS_TEST) {
-      // Install extensions
       await installExtension(VUEJS_DEVTOOLS)
         .then((name) => console.log(`Added Extension2: ${name.name}`)) // tslint:disable-line:no-console
         .catch((err) => console.error(`Failed to install extension:`, err.toString())); // tslint:disable-line:no-console
@@ -144,7 +137,7 @@ app.on("activate", async () => {
   }
 });
 
-// IPC Handlers for DataServer Lifecycle
+
 ipcMain.handle("is-data-server-running", () => {
   return dataServer ? dataServer.isServerRunning() : false;
 });

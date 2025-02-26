@@ -30,13 +30,9 @@
       </span>
       <div class="titlebar-button-container">
         <slot name="titlebarButtons"></slot>
-  
-        <!-- Toggle Button for Show/Hide Contents -->
         <BButton variant="link" :title="isCollapsed ? 'Show contents' : 'Hide contents'" @click="collapseWindow">
           <i :class="isCollapsed ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"></i>
         </BButton>
-  
-        <!-- Close Button -->
         <BButton variant="link" :title="'Close window'" @click="onClose">
             <i class="btn-close"></i>
         </BButton>
@@ -397,11 +393,11 @@ export default defineComponent({
 }
 
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+  -webkit-touch-callout: none; 
+  -webkit-user-select: none;
+  -khtml-user-select: none; 
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 </style>

@@ -11,7 +11,6 @@
         </linearGradient>
       </defs>
   
-      <!-- Color Scale Bar -->
       <rect
         :x="-width / 2"
         :y="0"
@@ -20,10 +19,8 @@
         :fill="`url(#${gradientId})`"
       />
   
-      <!-- Axis (Replaces v-axis directive) -->
+
       <g ref="axisRef" :transform="`translate(${axis_translate.x},${axis_translate.y})`" />
-  
-      <!-- Legend Title -->
       <text class="label"
         :x="label_translate.x"
         :y="label_translate.y"
@@ -57,29 +54,23 @@
     setup(props) {
       const axisRef = ref<SVGGElement | null>(null);
       const gradientId = computed(() => `color-gradient-${props.title.replace(/\s+/g, "-")}`);
-  
-      // ✅ Compute gradient direction
+
       const offsets = computed(() => {
         return props.orientation === Orientation.Horizontal
           ? { x1: "0%", x2: "100%", y1: "0%", y2: "0%" }
           : { x1: "0%", x2: "0%", y1: "100%", y2: "0%" };
       });
-  
-      // ✅ Compute axis translation based on orientation
+
       const axis_translate = computed(() => {
         return props.orientation === Orientation.Horizontal
           ? { x: 0, y: props.height }
           : { x: props.width / 2, y: props.height / 2 };
       });
-  
-      // ✅ Compute label positioning
       const label_translate = computed(() => {
         return props.orientation === Orientation.Horizontal
           ? { x: 0, y: props.height + 38, r: 0 }
           : { x: -props.height / 2, y: props.width + 38, r: -90 };
       });
-  
-      // ✅ Compute linear scale for axis
       const linearscale = computed(() => {
         const domain = props.scale.domain();
         const rangeValues =
@@ -90,7 +81,6 @@
         return scaleLinear().domain([domain[0], domain[domain.length - 1]]).range(rangeValues);
       });
   
-      // ✅ Compute gradient stops
       const stops = computed(() => {
         const domain = props.scale.domain();
         const start = domain[0];
@@ -101,22 +91,16 @@
           z: props.scale(v),
         }));
       });
-  
-      // ✅ Render D3 Axis (Replaces Vue 2 v-axis directive)
       const renderAxis = () => {
         if (!axisRef.value) return;
   
         const axisType = props.orientation === Orientation.Horizontal ? axisBottom : axisRight;
         let axis = axisType(linearscale.value);
-  
-        // Dynamically calculate tick count
         const numTicks = calculateNumTicks();
         axis.ticks(numTicks.toFixed(0), props.tickformat);
   
         d3.select(axisRef.value).call(axis as any);
       };
-  
-      // ✅ Calculate optimal number of ticks
       const calculateNumTicks = () => {
         const tickFormat = linearscale.value.tickFormat(undefined, props.tickformat);
         const nodes = d3
@@ -135,8 +119,7 @@
   
         return Math.max(props.minticks, Math.min(numTicks, props.maxticks));
       };
-  
-      // ✅ Trigger rendering on mount
+
       onMounted(() => {
         nextTick(renderAxis);
       });

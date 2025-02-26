@@ -1,19 +1,16 @@
 import { ipcRenderer, IpcRendererEvent } from "electron";
 import Toastify from "toastify-js";
 
-// NOTE: Only call the update when we are reloaded at startup
+
 ipcRenderer.on("window-has-reloaded", (event: IpcRendererEvent) => {
-  // Defer update check for 30 seconds
   window.setTimeout(CheckUpdates, 30 * 1000);
 });
 
-/**
- * Displays a spinner toast for a long-running operation.
- */
+
 function createSpinnerToast(id: string, title: string, type: string, message: string) {
   Toastify({
     text: `${title}: ${message}`,
-    duration: -1, // Persist until manually hidden
+    duration: -1, 
     gravity: "bottom",
     position: "right",
     backgroundColor: type === "info" ? "blue" : "gray",
@@ -21,9 +18,7 @@ function createSpinnerToast(id: string, title: string, type: string, message: st
   }).showToast();
 }
 
-/**
- * Displays a simple toast for notifications.
- */
+
 function createToast(id: string, title: string, type: string, message: string) {
   Toastify({
     text: `${title}: ${message}`,
@@ -39,7 +34,7 @@ function createToast(id: string, title: string, type: string, message: string) {
  * Simulates pushing an event into a history log.
  */
 function pushHistory(variant: string, message: string) {
-  console.log(`[History] (${variant}): ${message}`); // Replace this with actual history storage logic if needed
+  console.log(`[History] (${variant}): ${message}`); 
 }
 
 /**
@@ -55,9 +50,8 @@ export function CheckUpdates() {
   createSpinnerToast("update-check-toast", "Searching for Updates", "info", "Checking for updates...");
 }
 
-// NOTE: Event from the main process saying update check was completed
 ipcRenderer.on("updater-finish-update-check", (event: IpcRendererEvent, version: string) => {
-  Toastify({ className: "update-check-toast" }).hideToast(); // Hide spinner toast
+  Toastify({ className: "update-check-toast" }).hideToast();
 
   if (version === "") {
     createToast("update-error", "No Update Available", "success", "No new versions are available.");
@@ -77,17 +71,15 @@ ipcRenderer.on("updater-finish-update-check", (event: IpcRendererEvent, version:
 function createUpdateToast(version: string, message: string) {
   Toastify({
     text: `${message} [Download | Skip]`,
-    duration: -1, // Persist until action is taken
+    duration: -1,
     gravity: "bottom",
     position: "right",
     backgroundColor: "orange",
     className: "update-available-toast",
     callback: () => {
-      console.log(`Toast clicked for version ${version}.`); // Add click handling logic
+      console.log(`Toast clicked for version ${version}.`); 
     },
   }).showToast();
-
-  // Example logic for handling the download button (adjust as needed)
   const downloadButton = document.querySelector(".update-available-toast .download");
   const skipButton = document.querySelector(".update-available-toast .skip");
 
@@ -105,9 +97,8 @@ function createUpdateToast(version: string, message: string) {
   }
 }
 
-// NOTE: Event from the main process when the update download is complete
 ipcRenderer.on("updater-finish-update-download", (event: IpcRendererEvent, result: string) => {
-  Toastify({ className: "download-toast" }).hideToast(); // Hide spinner toast
+  Toastify({ className: "download-toast" }).hideToast(); 
 
   if (result === "success") {
     createToast("download-succeeded", "Update Downloaded", "success", "The update was downloaded successfully.");
@@ -118,14 +109,12 @@ ipcRenderer.on("updater-finish-update-download", (event: IpcRendererEvent, resul
   }
 });
 
-/**
- * Creates a toast to prompt the user to install the downloaded update.
- */
+
 function createInstallUpdateToast() {
   const installMessage = "Would you like to install the update now, or on the next launch?";
   Toastify({
     text: `${installMessage} [Now | Next Launch]`,
-    duration: -1, // Persist until action is taken
+    duration: -1, 
     gravity: "bottom",
     position: "right",
     backgroundColor: "green",

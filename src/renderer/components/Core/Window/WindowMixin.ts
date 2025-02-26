@@ -7,7 +7,6 @@ import { DataviewState } from "@render/store/dataview.types";
 
 export function useWindowMixin(id: string) {
   const store = useStore();
-  // Computed Properties
   const subid = computed(() =>  id.replace("datawindows/", "") );
   const $wstate = computed(() => store.state.datawindows[subid.value] || {} as DataWindowState);
   const spec = computed(() => store.getters[`${id}/spec`] || {} as ComponentRegistration);
@@ -49,9 +48,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    // Use the mixin function
     const mixin = useWindowMixin(props.id);
-
     return {
       ...mixin,
     };

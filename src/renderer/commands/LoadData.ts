@@ -6,7 +6,6 @@ import { LoadDefaultLayout } from './LoadLayout';
 import { EventEmitter } from "@render/util/EventEmitter";
 import axios from "axios";
 
-// NOTE: Event for loading file for file association sent by the main proc
 ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent, data: string) => {
   if (data == null || data === "" || data === undefined) {
     return;
@@ -15,9 +14,6 @@ ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent, data: string) => 
 
 export const DataFileExt = 'msq';
 
-/**
- * Allows the user to pick a .MSQ file and loads it.
- */
 export default function () {
   const filenames = dialog.showOpenDialogSync({
     properties: ['openFile'],
@@ -36,7 +32,6 @@ export function IsDataLoaded() {
 }
 
 export function LoadDataFile(filename: string) {
-  // Show a toast message indicating that data loading is starting
   showStartLoadingToast();
   nextTick().then(() => beginLoadingProcess(filename));
 }
@@ -56,8 +51,8 @@ async function beginLoadingProcess(filename: string) {
   nextTick()
     .then(() => {
       //console.log("Starting data load process...");
-      EventEmitter.emit("begin-dataset-load"); // Emit the event
-      store.commit("datasets/Unload"); // Unload previous data if necessary
+      EventEmitter.emit("begin-dataset-load"); 
+      store.commit("datasets/Unload"); 
     })
     //.then(() => readDataBundle(filename))
     //.then((data) => {

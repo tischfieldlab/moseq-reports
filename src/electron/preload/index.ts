@@ -1,8 +1,6 @@
-// Import necessary modules
 import { TitlebarColor, Titlebar } from "custom-electron-titlebar";
 import { createMainMenu } from "./MenuStrip";
 
-// DOM ready function
 function domReady(condition: DocumentReadyState[] = ["complete", "interactive"]) {
   return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {
@@ -17,7 +15,6 @@ function domReady(condition: DocumentReadyState[] = ["complete", "interactive"])
   });
 }
 
-// Safe DOM manipulation
 const safeDOM = {
   append(parent: HTMLElement, child: HTMLElement) {
     if (!Array.from(parent.children).find((e) => e === child)) {
@@ -31,7 +28,6 @@ const safeDOM = {
   },
 };
 
-// Loading spinner setup
 function useLoading() {
   const className = `loaders-css__square-spin`;
   const styleContent = `
@@ -81,8 +77,6 @@ function useLoading() {
   };
 }
 
-// ----------------------------------------------------------------------
-
 const { appendLoading, removeLoading } = useLoading();
 domReady().then(appendLoading);
 
@@ -93,7 +87,7 @@ window.onmessage = (ev) => {
 setTimeout(removeLoading, 4999);
 
 window.addEventListener("DOMContentLoaded", () => {
-  // Title bar implementation
+
   const menu = createMainMenu();
   new Titlebar({
     shadow: false,

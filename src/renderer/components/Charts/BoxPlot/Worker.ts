@@ -2,7 +2,7 @@ import { groupby } from "@render/util/Array";
 import { scaleLinear } from "d3-scale";
 import { mean, quantile, extent } from "d3-array";
 import type { GroupStats, DataPoint, DataPointQueueNode } from "@render/components/Charts/BoxPlot/BoxPlot.types";
-import * as d3 from "d3"; // ✅ Ensuring `d3` is imported
+import * as d3 from "d3"; 
 
 interface LinearScale {
   domain: [number, number] | number[];
@@ -32,7 +32,6 @@ self.onmessage = (event: MessageEvent) => {
   }
 };
 
-// ✅ Fix: Restored sorting and extent calculations
 function prepareData({
   points,
   height,
@@ -74,7 +73,6 @@ function prepareData({
   };
 }
 
-// ✅ Fix: Corrected IQR Calculation (q1 - q3)
 function computeGroupStats(
   data: number[],
   group: string,
@@ -112,7 +110,6 @@ function epanechnikovKernel(scale: number): (u: number) => number {
     Math.abs((u /= scale)) <= 1 ? (0.75 * (1 - u * u)) / scale : 0;
 }
 
-// ✅ Fix: Restored `intersects()` logic
 function swarm_points(data: DataPoint[], groupLabels: string[], scaleDefY: LinearScale, pointSize: number) {
   const scaleY = scaleLinear().domain(scaleDefY.domain).range(scaleDefY.range);
 
@@ -128,7 +125,6 @@ function swarm_points(data: DataPoint[], groupLabels: string[], scaleDefY: Linea
         return ui;
       }) as DataPointQueueNode[];
 
-    // ✅ Restored intersects function
     function intersects(x, y) {
       const epsilon = 1e-5;
       let item = head;

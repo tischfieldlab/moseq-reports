@@ -199,7 +199,6 @@ export function jsonParseZipEntryContainingNaN(data: string) {
 export function readFileContents(path: string) {
   const match = path.match(/(.*\.msq)(.*)/);
   if (match) {
-    // entry name should not have leading slash
     const entryname = match[2].replace(/^[\\\/]+/, "").replace(/\\/, "/");
     return new Promise<Buffer>((resolve, reject) => {
       const zip = new StreamZip({
@@ -245,7 +244,6 @@ export function getParser(filename) {
   }
 }
 
-/* This should be imported from d3-dsv, but isnt present in types! */
 function autoType(object) {
   const pattern = /^([-+]\d{2})?\d{4}(-\d{2}(-\d{2})?)?(T\d{2}:\d{2}(:\d{2}(\.\d{3})?)?(Z|[-+]\d{2}:\d{2})?)?$/;
   for (const key of Object.keys(object)) {

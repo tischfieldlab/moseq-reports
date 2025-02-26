@@ -31,8 +31,6 @@
   },
     setup(props) {
       const store = useStore();
-  
-      // Reactive states
       const isAddingSource = ref(false);
       //const subid = computed(() => id.replace("datawindows/", ""));
       //const $wstate = computed(() => store.state.datawindows[subid.value] as DataWindowState);
@@ -56,11 +54,11 @@
         })
       );
   
-      // Methods
+      
       const addDatasource = () => {
         isAddingSource.value = true;
         store
-          .dispatch("filters/addFilter") // Update with the actual Vuex action path
+          .dispatch("filters/addFilter") 
           .finally(() => {
             isAddingSource.value = false;
           });
