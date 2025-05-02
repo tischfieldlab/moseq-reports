@@ -60,6 +60,7 @@
     "express": "^4.21.1",
     "file-type": "^19.6.0",
     "html-to-image": "^1.11.11",
+    "lodash-es": "^4.17.21",
     "mitt": "^3.0.1",
     "node-stream-zip": "^1.15.0",
     "object-sizeof": "^2.6.5",

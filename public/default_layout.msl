@@ -1,4 +1,15 @@
-[{
+[{"type": "DataQuery",
+    "title": "Data Query",
+    "layout": {
+        "width": 400,
+        "height": 500,
+        "position": {
+            "x": 60,
+            "y": 5
+        }
+    },
+    "settings": {}
+},{
     "type": "Spinogram",
     "title": "Spinogram",
     "layout": {

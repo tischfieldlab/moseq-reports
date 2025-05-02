@@ -15,6 +15,7 @@ import NoDataPresent from "@render/components/NoDataPresent.vue";
 import FileDropAcceptor from "@render/components/FileDropAcceptor.vue";
 import WindowContainer from "@render/components/Core/Window/WindowContainer.vue";
 import { SidebarPosition } from "@render/store/root.types";
+import { ipcRenderer } from "electron";
 export default defineComponent({
   name: "homepage",
   components: {
@@ -41,6 +42,9 @@ export default defineComponent({
       handler(newName) {
         console.log("Dataset name changed:", newName);
         //window.api.updateTitle(this.title); // Call the exposed API function
+        if(newName){
+          ipcRenderer.send("dataset-loaded-state", true);
+        }
       },
       immediate: true,
     },

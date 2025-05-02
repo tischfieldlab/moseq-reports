@@ -1,92 +1,78 @@
-import { Menu } from "@electron/remote";
+import { Menu, MenuItem } from "@electron/remote";
 import { ipcRenderer } from "electron";
 import { MenuEvents } from "../shared/Events";
-//import showAboutWindow from "../../renderer/commands/ShowAbout";
+import showAboutWindow from "../../renderer/commands/ShowAbout";
+// Future: import { CheckUpdates } from "../../renderer/commands/LoadUpdates";
+// Future: import { documentation } from "../../../package.json";
+/**
+ * Creates the main menu strip for the electron app
+ * in the renderer process. This will also populate
+ * the menu with widgets that are registered to the
+ * application.
+ *
+ * @export
+ * @returns {Menu}      The menu object to be used as
+ *                      the main menu strip for the app.
+ */
+let localMenu: Electron.Menu | undefined;
 
-export function createMainMenu(): Electron.Menu {
-  "use strict";
-  const menu = Menu.buildFromTemplate([
+export function createMainMenu(forceRebuild = false): Electron.Menu {
+  if (localMenu === undefined || forceRebuild) {
+    localMenu = Menu.buildFromTemplate(createMainMenuStripOptions());
+    Menu.setApplicationMenu(localMenu);
+  }
+
+  return localMenu;
+}
+createMainMenu();
+
+/**
+ * Creates the main menu constructor options
+ *
+ * @export
+ * @returns {Electron.MenuItemConstructorOptions[]}      Electron menu to be made the main
+ *                      menu strip for the app.
+ */
+function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
+  return [
     {
       label: "File",
       submenu: [
         {
-          label: "&Open data...",
-          type: "normal",
+          label: "Open Data...",
           accelerator: "CmdOrCtrl+O",
-          // click: loadDataCommand,
+          type: "normal",
           click: () => {
             ipcRenderer.send(MenuEvents.OPEN_DATA);
           },
         },
-        {
-          type: "separator",
-        },
+        { type: "separator" },
         {
           label: "Exit",
-          type: "normal",
           accelerator: "Alt+F4",
-          click: (_item, win, _event) => {
+          type: "normal",
+          click: (_item, win) => {
             win?.close();
           },
         },
       ],
     },
-    // ********************** EDIT MENU **********************
     {
       label: "Edit",
       submenu: [
-        {
-          label: "Undo",
-          type: "normal",
-          accelerator: "CmdOrCtrl+Z",
-          role: "undo",
-        },
-        {
-          label: "Redo",
-          type: "normal",
-          accelerator: "CmdOrCtrl+Y",
-          role: "redo",
-        },
-        {
-          type: "separator",
-        },
-        {
-          label: "Cut",
-          type: "normal",
-          accelerator: "CmdOrCtrl+X",
-          role: "cut",
-        },
-        {
-          label: "Copy",
-          type: "normal",
-          accelerator: "CmdOrCtrl+C",
-          role: "copy",
-        },
-        {
-          label: "Paste",
-          type: "normal",
-          accelerator: "CmdOrCtrl+V",
-          role: "paste",
-        },
+        { label: "Undo", role: "undo", accelerator: "CmdOrCtrl+Z" },
+        { label: "Redo", role: "redo", accelerator: "CmdOrCtrl+Y" },
+        { type: "separator" },
+        { label: "Cut", role: "cut", accelerator: "CmdOrCtrl+X" },
+        { label: "Copy", role: "copy", accelerator: "CmdOrCtrl+C" },
+        { label: "Paste", role: "paste", accelerator: "CmdOrCtrl+V" },
       ],
     },
-    // ********************** TOOLS MENU **********************
     {
       id: "menu-tools",
       label: "Tools",
-      // submenu: AvailableComponents()
-      //     .sort((a, b) =>
-      //         a.friendly_name.localeCompare(b.friendly_name)
-      //     )
-      //     .map((cr) => {
-      //         return {
-      //             label: cr.friendly_name,
-      //             type: "normal",
-      //             // click: () => CreateComponent(cr),
-      //         } as Electron.MenuItemConstructorOptions;
-      //     }),
+      submenu: [],
     },
-    // ********************** VIEW MENU **********************
     {
       label: "View",
       submenu: [
@@ -94,19 +80,16 @@ export function createMainMenu(): Electron.Menu {
           id: "menu-view-snapshot-workspace",
           label: "Snapshot Workspace...",
           type: "normal",
-          // click: () => SnapshotWorkspace(),
-          click(_item, window, _event) {
-            window?.webContents.send(MenuEvents.SNAPSHOT_WORKSPACE);
+          click(_item, window) {
+            // window?.webContents.send(MenuEvents.SNAPSHOT_WORKSPACE);
           },
         },
         {
           label: "Sidebar Position...",
-          type: "submenu",
           submenu: [
             {
               label: "Left",
               type: "radio",
-              // checked: isSidebarLeft(),
               click: (mi) => {
                 // SetSidebarLeft();
                 mi.checked = true;
@@ -115,7 +98,6 @@ export function createMainMenu(): Electron.Menu {
             {
               label: "Right",
               type: "radio",
-              // checked: isSidebarRight(),
               click: (mi) => {
                 // SetSidebarRight();
                 mi.checked = true;
@@ -123,14 +105,12 @@ export function createMainMenu(): Electron.Menu {
             },
           ],
         },
-        {
-          type: "separator",
-        },
+        { type: "separator" },
         {
           id: "menu-view-save-layout",
           label: "Save Layout...",
           type: "normal",
-          click: (): void => {
+          click: () => {
             // SaveLayout();
           },
         },
@@ -138,13 +118,15 @@ export function createMainMenu(): Electron.Menu {
           id: "menu-view-load-layout",
           label: "Load Layout...",
           type: "normal",
-          // click: loadLayoutCommand,
+          click: () => {
+            // loadLayoutCommand();
+          },
         },
         {
           id: "menu-view-clear-layout",
           label: "Clear Layout",
           type: "normal",
-          click: (): void => {
+          click: () => {
             // ClearLayout();
           },
         },
@@ -152,56 +134,78 @@ export function createMainMenu(): Electron.Menu {
           id: "menu-view-default-layout",
           label: "Default Layout",
           type: "normal",
-          click: (): void => {
+          click: () => {
             // LoadDefaultLayout();
           },
         },
-        {
-          type: "separator",
-        },
-        {
-          label: "Reload",
-          type: "normal",
-          role: "reload",
-        },
-        {
-          label: "Force Reload",
-          type: "normal",
-          role: "forceReload",
-        },
-        {
-          label: "Toggle Dev Tools",
-          type: "normal",
-          role: "toggleDevTools",
-        },
+        { type: "separator" },
+        { label: "Reload", role: "reload" },
+        { label: "Force Reload", role: "forceReload" },
+        { label: "Toggle Dev Tools", role: "toggleDevTools" },
       ],
     },
-    // ********************** HELP MENU **********************
     {
       label: "Help",
       submenu: [
         {
           label: "Check for Updates...",
           type: "normal",
-          click: (): void => {
+          click: () => {
             // CheckUpdates();
           },
         },
-        {
-          type: "separator",
-        },
+        { type: "separator" },
         {
           label: "About",
           type: "normal",
-          click: (): void => {
-            //showAboutWindow();
-          },
+          click: () => showAboutWindow(),
         },
+        // {
+        //   label: "User Guide",
+        //   type: "normal",
+        //   click: () => shell.openExternal(documentation),
+        // },
       ],
     },
-  ]);
-
-  Menu.setApplicationMenu(menu);
-
-  return menu;
+  ];
 }
+
+
+
+ipcRenderer.on("available-components-response", (_event, components) => {
+  console.log("✅ Received components in menustrip:", components);
+  let toolsMenu = localMenu?.items.find(item => item.id === "menu-tools");
+
+  if (toolsMenu && toolsMenu.submenu) {
+    // clear existing tools (in case this is re-run)
+    
+    components
+      .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
+      .forEach((cr) => {
+        toolsMenu.submenu?.append(
+          new MenuItem({
+            label: cr.friendly_name,
+            type: "normal",
+            enabled: false, // initially disabled
+            click: () => ipcRenderer.send("create-component", cr),
+          })
+        );
+      });
+
+    // ✅ This is CRUCIAL!
+    Menu.setApplicationMenu(localMenu);
+  }
+});
+
+
+// ✅ Enable/disable tools on dataset load state
+ipcRenderer.on("dataset-loaded-state", (_event, isLoaded: boolean) => {
+  const toolsMenu = localMenu?.getMenuItemById("menu-tools");
+  if (!toolsMenu || !toolsMenu.submenu) return;
+
+  toolsMenu.submenu.items.forEach((item) => {
+    item.enabled = isLoaded;
+  });
+
+  Menu.setApplicationMenu(localMenu);
+});

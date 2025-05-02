@@ -4,7 +4,6 @@ import { join } from "path";
 import { installExtension,  VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import * as remoteMain from "@electron/remote/main";
 import "./events/Listeners";
-
 import {
   setupTitlebar,
   attachTitlebarToWindow,
@@ -174,3 +173,19 @@ ipcMain.handle("shutdown-data-server", async () => {
     return { success: false, error: error.message };
   }
 });
+
+// Receive component list from renderer and forward to menustrip
+ipcMain.on("available-components-response", (event, components) => {
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send("available-components-response", components);
+  });
+});
+
+// Receive dataset loaded status from renderer and notify menu
+ipcMain.on("dataset-loaded-state", (event, isLoaded: boolean) => {
+  console.log("datat loaded is triggered")
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send("dataset-loaded-state", isLoaded);
+  });
+});
+

@@ -24,12 +24,13 @@
   "include": [
     "src/**/*.d.ts",
     "@types/**/*.ts",
-    //"src/**/*.ts",
+    "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "src/**/*.json",
     "src/dataserver/**/*.ts" ,
-    "src/dataserver/*.ts"
+    "src/dataserver/*.ts",
+    "src/renderer/**/*.ts"
   ],
   "exclude": ["node_modules", "dist", "buildfiles"]
 }

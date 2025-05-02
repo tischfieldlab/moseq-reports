@@ -13,8 +13,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 import { DiscoverDataComponents } from "@render/components/Core";
-
-
+import '@render/commands/windows'
 const app = createApp(App);
 app.use(store);
 app.use(createBootstrap());
