@@ -10,7 +10,7 @@
       <div class="file-acceptor"></div>
       <BCard bg-variant="primary" text-variant="white" class="text-center">
         <BCardText>
-          Drop your <code>.{{ file_associations[0].ext }}</code> Data Bundle or
+          Drop your <code>{{ file_associations[0].ext }}</code> Data Bundle or
           <code>.{{ file_associations[1].ext }}</code> Layout files here!
         </BCardText>
       </BCard>
@@ -51,7 +51,7 @@ export default defineComponent({
 
     // Handles drag enter to show overlay
     const onFileDragEnter = (ev: DragEvent) => {
-      if (ev.dataTransfer) {
+      if (ev.dataTransfer && ev.dataTransfer.types.includes("Files")) {
         is_file_hover.value = true;
         ev.preventDefault();
       }
