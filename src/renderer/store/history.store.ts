@@ -1,40 +1,47 @@
-import { Module } from "vuex";
-import { RootState } from "@render/store/root.types";
-import { HistoryState, HistoryItem } from "@render/store/history.types";
+import { defineStore, acceptHMRUpdate } from 'pinia'
 
-const HistoryModule: Module<HistoryState, RootState> = {
-  namespaced: true,
-  state() {
-    return {
-      items: [] as HistoryItem[], // Array of history items
-    };
-  },
-  mutations: {
-    /**
-     * Add a new entry to the history.
-     * @param state - Current state of the module.
-     * @param payload - Partial history item to add.
-     */
-    addEntry(state, payload: Partial<HistoryItem>) {
-      state.items.push({
-        time: payload.time || new Date(),
-        message: payload.message || "",
-        variant: payload.variant || "default",
-        details: payload.details || null,
-      });
+
+export interface HistoryState {
+    items: HistoryItem[];
+}
+
+export interface HistoryItem {
+    time: Date;
+    message: string;
+    variant: string;
+    details: string | null;
+}
+
+export const useHistoryStore = defineStore('history', {
+    state: (): HistoryState => ({
+        items: [] as HistoryItem[], // Array of history items
+    }),
+    actions: {
+        /**
+         * Add a new entry to the history.
+         * @param payload - Partial history item to add.
+         */
+        addEntry(payload: Partial<HistoryItem>) {
+            this.items.push({
+                time: payload.time || new Date(),
+                message: payload.message || "",
+                variant: payload.variant || "default",
+                details: payload.details || null,
+            });
+        },
+
+        /**
+         * Remove an entry from the history by its index.
+         * @param idx - Index of the item to remove.
+         */
+        removeEntry(idx: number) {
+            if (idx >= 0 && idx < this.items.length) {
+                this.items.splice(idx, 1);
+            }
+        },
     },
+});
 
-    /**
-     * Remove an entry from the history by its index.
-     * @param state - Current state of the module.
-     * @param idx - Index of the item to remove.
-     */
-    removeEntry(state, idx: number) {
-      if (idx >= 0 && idx < state.items.length) {
-        state.items.splice(idx, 1);
-      }
-    },
-  },
-};
-
-export default HistoryModule;
+if (import.meta.hot) {
+    import.meta.hot.accept(acceptHMRUpdate(useHistoryStore, import.meta.hot))
+}

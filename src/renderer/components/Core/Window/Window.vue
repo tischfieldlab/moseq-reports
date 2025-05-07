@@ -82,161 +82,159 @@
 
 <script lang="ts">
 import { ref, computed, defineComponent, onMounted, onUnmounted,nextTick } from "vue";
-import { useStore } from "vuex";
 import BaseWindow from "@render/components/Core/Window/BaseWindow.vue";
 //import  { ensureDefaults } from "../SnapshotHelper";
 import TitlebarButton from "@render/components/Core/Window/Titlebar/TitlebarButton.vue";
 import WindowManager from "@render/components/Core/Window/WindowManager";
 import { Position, Size } from "@render/store/datawindow.types";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
+import {useWindowsStore} from "@render/store/windows.store";
 
 function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
-  return Math.min(Math.max(value, min), max);
+    return Math.min(Math.max(value, min), max);
 }
 
 export default defineComponent({
-  components: {
-    BaseWindow,
-    TitlebarButton,
-  },
-  props: {
-    id: {
-      type: String,
-      required: true,
+    components: {
+        BaseWindow,
+        TitlebarButton,
     },
-  },
-  setup(props) {
-  const store = useStore();
-  const show_settings_modal = ref(false);
-  const component_loading = ref(0);
-  const bodyRef = ref<HTMLElement | null>(null);
-  const {title,dataview,layout } = useWindowMixin(props.id);
-  const spec = computed(() => store.getters[`${props.id}/spec`]);
-  console.log(spec.value)
-  const settings_title = computed(() => `${title.value} Settings`);
-  const swatch_color = computed(() => dataview.value.color);
-  const is_loading = computed(() => component_loading.value > 0 || dataview.value.loading);
-  const swatch_title = computed(() => `Using ${dataview.value.name}`);
-  const z_index = computed(() => store.getters[`${props.id}/zIndex`]);
-  const aspect_ratio = computed(() => store.getters[`${props.id}/aspectRatio`]||1);
-  const window_width = computed(() => layout.value.width);
-  const window_height = computed(() => layout.value.height);
-  const window_position = computed(() => layout.value.position);
-  const is_hidden = computed(() => store.getters[`${props.id}/isHidden`]);
+    props: {
+        id: {
+            type: String,
+            required: true,
+        },
+    },
+    setup(props) {
+        const windowsStore = useWindowsStore(); // Access Vuex store
+        const {title,dataview,layout, spec, z_index, $wstate, aspect_ratio, is_hidden } = useWindowMixin(props.id);
 
-  const onResized = (event: any) => {
-    const size: Size = { width: event.width, height: event.height };
-    store.commit(`${props.id}/updateComponentLayout`, {
-      id: props.id,
-      width: size.width,
-      height: size.height,
-    });
-  };
+        const show_settings_modal = ref(false);
+        const component_loading = ref(0);
+        const bodyRef = ref<HTMLElement | null>(null);
+        
+        console.log(spec.value)
+        const settings_title = computed(() => `${title.value} Settings`);
+        const swatch_color = computed(() => dataview.value.color);
+        const is_loading = computed(() => component_loading.value > 0 || dataview.value.loading);
+        const swatch_title = computed(() => `Using ${dataview.value.name}`);
+        const window_width = computed(() => layout.value.width);
+        const window_height = computed(() => layout.value.height);
+        const window_position = computed(() => layout.value.position);
+        
 
-  const onSettingsClicked = () => {
-    show_settings_modal.value = true;
-  };
-  const onSnapshotClicked = (event:any) => {
-    snapshotContent(event);
-  }
-  const onMoved = (event: any) => {
-    const position: Position = { x: event.x, y: clamp(event.y, 0) };
-    store.commit(`${props.id}/updateComponentLayout`, {
-      id: props.id,
-      position_x: position.x,
-      position_y: position.y,
-    });
-  };
+        const onResized = (event: any) => {
+            const size: Size = { width: event.width, height: event.height };
+            $wstate.updateComponentLayout({
+                id: props.id,
+                width: size.width,
+                height: size.height,
+            });
+        };
 
-  const onClosed = (event: any) => {
-    store.dispatch("datawindows/removeWindow", props.id);
-  };
+        const onSettingsClicked = () => {
+            show_settings_modal.value = true;
+        };
+        const onSnapshotClicked = (event:any) => {
+            snapshotContent(event);
+        }
+        const onMoved = (event: any) => {
+            const position: Position = { x: event.x, y: clamp(event.y, 0) };
+            $wstate.updateComponentLayout({
+                id: props.id,
+                position_x: position.x,
+                position_y: position.y,
+            });
+        };
 
-  const onWindowFocused = () => {
-    const maxZ = store.getters["datawindows/windowsMaxZIndex"] + 1;
-    store.commit(`${props.id}/updateZIndex`, { z_index: maxZ });
-  };
+        const onClosed = (event: any) => {
+            windowsStore.removeWindow(props.id);
+        };
 
-  const onShowHideToggle = (event: any) => {
-    store.commit(`${props.id}/toggleWindowShowHide`, {
-      id: props.id,
-      isHidden: event.isHidden,
-    });
-  };
-  const snapshotContent = async (event: MouseEvent) => {
-      if (bodyRef.value) {
-        //await Snapshot(bodyRef.value, title.value, dataview.value.snapshot);
-      }
-    };
+        const onWindowFocused = () => {
+            const maxZ = windowsStore.windowsMaxZIndex + 1;
+            $wstate.updateZIndex({ z_index: maxZ });
+        };
 
-  onMounted(() => {
-    if (bodyRef.value) {
-      WindowManager.addWindow(props.id, bodyRef.value);
-      // Ensure defaults
-      nextTick(() => {
-          //ensureDefaults(bodyRef.value, {});
+        const onShowHideToggle = (event: any) => {
+            $wstate.toggleWindowShowHide({
+                id: props.id,
+                isHidden: event.isHidden,
+            });
+        };
+        const snapshotContent = async (event: MouseEvent) => {
+            if (bodyRef.value) {
+                //await Snapshot(bodyRef.value, title.value, dataview.value.snapshot);
+            }
+        };
+
+        onMounted(() => {
+            if (bodyRef.value) {
+                WindowManager.addWindow(props.id, bodyRef.value);
+                // Ensure defaults
+                nextTick(() => {
+                    //ensureDefaults(bodyRef.value, {});
+                });
+
+                bodyRef.value.addEventListener("start-loading", () => {
+                    component_loading.value++;
+                });
+
+                bodyRef.value.addEventListener("finish-loading", () => {
+                    component_loading.value = clamp(component_loading.value - 1, 0);
+                });
+            }
         });
 
-      bodyRef.value.addEventListener("start-loading", () => {
-        component_loading.value++;
-      });
+        onUnmounted(() => {
+            WindowManager.removeWindow(props.id);
+        });
 
-      bodyRef.value.addEventListener("finish-loading", () => {
-        component_loading.value = clamp(component_loading.value - 1, 0);
-      });
+        return {
+            show_settings_modal,
+            component_loading,
+            bodyRef,
+            title,
+            spec,
+            dataview,
+            settings_title,
+            swatch_color,
+            is_loading,
+            swatch_title,
+            z_index,
+            aspect_ratio,
+            window_width,
+            window_height,
+            window_position,
+            is_hidden,
+            onResized,
+            onSettingsClicked,
+            onSnapshotClicked,
+            onMoved,
+            onClosed,
+            onWindowFocused,
+            onShowHideToggle,
+        };
     }
-  });
-
-  onUnmounted(() => {
-    WindowManager.removeWindow(props.id);
-  });
-
-  return {
-    show_settings_modal,
-    component_loading,
-    bodyRef,
-    title,
-    spec,
-    dataview,
-    settings_title,
-    swatch_color,
-    is_loading,
-    swatch_title,
-    z_index,
-    aspect_ratio,
-    window_width,
-    window_height,
-    window_position,
-    is_hidden,
-    onResized,
-    onSettingsClicked,
-    onSnapshotClicked,
-    onMoved,
-    onClosed,
-    onWindowFocused,
-    onShowHideToggle,
-  };
-}
-
 });
 </script>
 
 <style scoped>
 .titlebar-button {
-  padding: 0.01rem; 
-  font-size: 1.2rem; 
-  margin: 0 0.2rem; 
-  color: #495057;
+    padding: 0.01rem; 
+    font-size: 1.2rem; 
+    margin: 0 0.2rem; 
+    color: #495057;
 }
 
 .titlebar-button:hover {
-  color: #0056b3;
+    color: #0056b3;
 }
 .overlay-container {
-  width: inherit;
-  height: inherit;
+    width: inherit;
+    height: inherit;
 }
 .BModal .header-close-label{
-  color: white;
+    color: white;
 }
 </style>

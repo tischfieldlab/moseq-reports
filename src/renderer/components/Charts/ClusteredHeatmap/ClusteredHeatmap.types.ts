@@ -5,30 +5,30 @@ export enum OrderingType {
     KCluster = "kcluster",
     Dataset = "dataset",
     Computed = "computed",
-  }
-  export enum SortOrderDirection {
+}
+export enum SortOrderDirection {
     Asc = "asc",
     Dec = "dec",
-  }
-  export enum HClusterDistance {
+}
+export enum HClusterDistance {
     Euclidean = "euclidean",
     Angular = "angular",
-  }
-  export enum HClusterLinkage {
+}
+export enum HClusterLinkage {
     Avg = "avg",
     Max = "max",
     Min = "min",
-  }
-  
-  export type ClusterOptions = HClusterOptions | KClusterOptions;
-  
-  export interface HClusterOptions {
+}
+
+export type ClusterOptions = HClusterOptions | KClusterOptions;
+
+export interface HClusterOptions {
     type: OrderingType.HCluster;
     distance: HClusterDistance;
     linkage: HClusterLinkage;
-  }
-  
-  export interface KClusterOptions {
+}
+
+export interface KClusterOptions {
     type: OrderingType.KCluster;
     k: number;
-  }
+}

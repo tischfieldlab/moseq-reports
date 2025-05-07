@@ -1,14 +1,14 @@
 export interface DataObject {
     columns: string[];
     data: any[];
-  }
-  export const SortDirection = {
+}
+export const SortDirection = {
     Asc: "asc",
     Desc: "desc",
-  } as const;
-  export type SortDirection = typeof SortDirection[keyof typeof SortDirection];
-  
-  export type Operation =
+} as const;
+export type SortDirection = typeof SortDirection[keyof typeof SortDirection];
+
+export type Operation =
     | KeysOperation
     | ValuesOperation
     | PluckOperation
@@ -16,35 +16,35 @@ export interface DataObject {
     | FilterOperation
     | MapOperation
     | AggregateOperation;
-  
-  export interface PluckOperation {
+
+export interface PluckOperation {
     type: "pluck";
     column: string;
-  }
-  export interface KeysOperation {
+}
+export interface KeysOperation {
     type: "keys";
-  }
-  export interface ValuesOperation {
+}
+export interface ValuesOperation {
     type: "values";
-  }
-  export interface SortOperation {
+}
+export interface SortOperation {
     type: "sort";
     columns: [string, SortDirection][];
-  }
-  export interface FilterOperation {
+}
+export interface FilterOperation {
     type: "filter";
     filters: { [key: string]: any[] };
-  }
-  export interface MapOperation {
+}
+export interface MapOperation {
     type: "map";
     columns?: ([string, string] | string)[];
-  }
-  export interface AggregateOperation {
+}
+export interface AggregateOperation {
     type: "aggregate";
     groupby: string[];
     aggregate: { [key: string]: Statistic | Statistic[] };
-  }
-  export type Statistic =
+}
+export type Statistic =
     | "mean"
     | "median"
     |'mode'
@@ -56,4 +56,3 @@ export interface DataObject {
     | "variance"
     | "deviation"
     | "count";
-  

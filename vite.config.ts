@@ -6,8 +6,8 @@ import pkg from './package.json'
 import { join } from "path";
 import Components from 'unplugin-vue-components/vite'
 import {BootstrapVueNextResolver} from 'bootstrap-vue-next'
-import vueDevTools from 'vite-plugin-vue-devtools'
 import electronRenderer from "vite-plugin-electron-renderer";
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -18,6 +18,7 @@ export default defineConfig(({ command }) => {
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
   return {
     plugins: [
+      vueDevTools(),
       vue({
         template: {
           compilerOptions: {

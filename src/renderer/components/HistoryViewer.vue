@@ -1,28 +1,28 @@
 <template>
-  <div class="sidebar-container">
-    <h3>Notification History</h3>
-    <template v-if="items.length > 0">
-      <div v-for="(itm, idx) in items" :key="idx" class="toast show mb-3" role="alert" :class="`bg-${itm.variant}`">
-        <div class="toast-header">
-          <!--strong class="me-auto">Notification</strong-->
-          <small>{{ formatTime(itm.time) }}</small>
-          <button class="btn-close" aria-label="Close" @click="removeNotification(idx)"></button>
+    <div class="sidebar-container">
+        <h3>Notification History</h3>
+        <template v-if="items.length > 0">
+            <div v-for="(itm, idx) in items" :key="idx" class="toast show mb-3" role="alert" :class="`bg-${itm.variant}`">
+                <div class="toast-header">
+                    <!--strong class="me-auto">Notification</strong-->
+                    <small>{{ formatTime(itm.time) }}</small>
+                    <button class="btn-close" aria-label="Close" @click="removeNotification(idx)"></button>
+                </div>
+                <div class="toast-body">
+                    {{ itm.message }}
+                    <BLink v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link">
+                        {{ itm.showDetails ? "Hide Details" : "Show Details" }}
+                    </BLink>
+                    <div v-if="itm.showDetails" class="details mt-2">
+                        <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <div v-else>
+            <p class="no-items">There doesn't seem to be anything here.</p>
         </div>
-        <div class="toast-body">
-          {{ itm.message }}
-          <BLink v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link">
-            {{ itm.showDetails ? "Hide Details" : "Show Details" }}
-          </BLink>
-          <div v-if="itm.showDetails" class="details mt-2">
-            <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
-          </div>
-        </div>
-      </div>
-    </template>
-    <div v-else>
-      <p class="no-items">There doesn't seem to be anything here.</p>
     </div>
-  </div>
 </template>
 
 
@@ -30,38 +30,38 @@
 <script lang="ts">
 import { defineComponent, computed, reactive } from "vue";
 import { formatDistanceToNow } from "date-fns";
-import { useStore } from "vuex";
+import {useHistoryStore} from "@render/store/history.store";
 
 export default defineComponent({
-  setup() {
-    const store = useStore();
+    setup() {
+        const historyStore = useHistoryStore();
 
-    const items = computed(() =>
-      store.state.history.items.map((item) => ({
-        ...item,
-        showDetails: false, 
-      }))
-    );
+        const items = computed(() =>
+            historyStore.items.map((item) => ({
+                ...item,
+                showDetails: false,
+            }))
+        );
 
-    const formatTime = (datetime) => {
-      return formatDistanceToNow(new Date(datetime), { addSuffix: true });
-    };
+        const formatTime = (datetime) => {
+            return formatDistanceToNow(new Date(datetime), { addSuffix: true });
+        };
 
-    const toggleDetails = (idx) => {
-      items.value[idx].showDetails = !items.value[idx].showDetails;
-    };
+        const toggleDetails = (idx) => {
+            items.value[idx].showDetails = !items.value[idx].showDetails;
+        };
 
-    const removeNotification = (idx) => {
-      store.commit("history/removeEntry", idx); 
-    };
+        const removeNotification = (idx) => {
+            historyStore.removeEntry(idx); 
+        };
 
-    return {
-      items,
-      formatTime,
-      toggleDetails,
-      removeNotification,
-    };
-  },
+        return {
+            items,
+            formatTime,
+            toggleDetails,
+            removeNotification,
+        };
+    },
 });
 </script>
 <style scoped>

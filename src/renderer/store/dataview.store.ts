@@ -1,9 +1,5 @@
-import { RootState } from "@render/store/root.types";
-import { Module } from "vuex";
 import { schemeDark2, schemePastel1 } from "d3-scale-chromatic";
 import { scaleOrdinal } from "d3-scale";
-import store from "@render/store/root.store";
-import { getModuleNamespace } from "@render/util/Vuex";
 import {
   DataviewState,
   CountMethod,
@@ -12,202 +8,205 @@ import {
   PublishDatasetPayload,
   UnpublishDatasetPayload,
 } from "@render/store/dataview.types";
-import { DatasetsState } from "@render/store/datasets.types";
+
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import {useDatasetsStore} from './datasets.store'
 
 const FilterColorGenerator = scaleOrdinal(schemePastel1);
 
-const DataviewModule: Module<DataviewState, RootState> = {
-  namespaced: true,
-  state() {
-    return {
-      name: "",
-      color: "",
-      loading: false,
-      countMethod: CountMethod.Usage,
-      selectedGroups: [],
-      groupColors: [],
-      moduleIdFilter: [],
-      selectedSyllable: 0,
-      views: {},
-    };
-  },
-  getters: {
-    selectedSyllableAs: (state, _, rootState) => (countMethod: CountMethod) => {
-      const lm = ((rootState as any).datasets as DatasetsState).label_map;
-      const from = state.countMethod.toLowerCase();
-      const to = countMethod.toLowerCase();
-      const result = lm.find((row) => row[from] === state.selectedSyllable);
-      if (result !== undefined) {
-        return result[to];
-      } else {
-        return -5;
-      }
-    },
-    selectedSyllableMap: (state, _, rootState) => {
-      const lm = ((rootState as any).datasets as DatasetsState).label_map;
-      const from = state.countMethod.toLowerCase();
-      const result = lm.find((row) => row[from] === state.selectedSyllable);
-      if (result !== undefined) {
-        return {
-          [CountMethod.Frames.toLowerCase()]: result[CountMethod.Frames.toLowerCase()],
-          [CountMethod.Usage.toLowerCase()]: result[CountMethod.Usage.toLowerCase()],
-          [CountMethod.Raw.toLowerCase()]: result[CountMethod.Raw.toLowerCase()],
-        };
-      } else {
-        return undefined;
-      }
-    },
-    selectedSyllables: (state, getters) => {
-      let syllables;
-      if (state.moduleIdFilter.length === 0) {
-        syllables = getters.availableModuleIds;
-      } else {
-        syllables = state.moduleIdFilter;
-      }
-      return syllables;
-    },
-    availableModuleIds: (state, getters, rootState, rootGetters) => {
-      if (state.countMethod === CountMethod.Usage) {
-        return rootGetters["datasets/availableUsageModuleIds"];
-      } else if (state.countMethod === CountMethod.Frames) {
-        return rootGetters["datasets/availableFramesModuleIds"];
-      }
-      return [];
-    },
-    availableGroups: (state, getters, rootState) => {
-      return (rootState as any).datasets.groups;
-    },
-  },
-  mutations: {
-    setName(state, name: string) {
-      state.name = name;
-    },
-    setColor(state, color: string) {
-      state.color = color;
-    },
-    setLoading(state, loading: boolean) {
-      state.loading = loading;
-    },
-    setGroupColors(state, groupColors: string[]) {
-      state.groupColors = groupColors;
-    },
-    setView(state, payload: DataviewPayload) {
-      if (payload.countMethod) {
-        state.countMethod = payload.countMethod;
-      }
-      if (payload.selectedGroups) {
-        state.selectedGroups = payload.selectedGroups;
-      }
-      if (payload.groupColors) {
-        state.groupColors = payload.groupColors;
-      }
-      if (payload.moduleIdFilter) {
-        state.moduleIdFilter = payload.moduleIdFilter;
-      }
-    },
-    setSelectedSyllable(state, selectedSyllable: number) {
-      state.selectedSyllable = selectedSyllable;
-    },
-    publishDataset(state, payload: PublishDatasetPayload) {
-      state.views[`${payload.owner}/${payload.name}`] = payload; // Direct assignment
-    },
-    unpublishDataset(state, payload: UnpublishDatasetPayload) {
-      delete state.views[`${payload.owner}/${payload.name}`]; // Use `delete` keyword
-    },
-  },
-  actions: {
-    serialize(context): any {
-      return {
-        color: context.state.color,
-        name: context.state.name,
-        countMethod: context.state.countMethod,
-        selectedGroups: context.state.selectedGroups,
-        groupColors: context.state.groupColors,
-        moduleIdFilter: context.state.moduleIdFilter,
-        selectedSyllable: context.state.selectedSyllable,
-      };
-    },
-    async load(context, payload) {
-      await context.dispatch("updateView", payload);
-      context.commit("setSelectedSyllable", payload.selectedSyllable);
-    },
-    switchCountMethod(context, payload: CountMethod) {
-      const newSelectedSyllable = context.getters.selectedSyllableAs(payload);
 
-      const lm = ((context.rootState as any).datasets as DatasetsState).label_map;
-      const from = context.state.countMethod.toLowerCase();
-      const filterSyllables = context.state.moduleIdFilter.map((id) => {
-        const result = lm.find((row) => row[from] === id);
-        if (result !== undefined) {
-          return result[payload.toLocaleLowerCase()];
-        }
-      });
 
-      context.dispatch("updateView", {
-        countMethod: payload,
-        moduleIdFilter: filterSyllables,
-      } as DataviewPayload);
-      context.commit("setSelectedSyllable", newSelectedSyllable);
+export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
+    state: (): DataviewState => ({
+        name: "",
+        color: "",
+        loading: false,
+        countMethod: CountMethod.Usage,
+        selectedGroups: [],
+        groupColors: [],
+        moduleIdFilter: [],
+        selectedSyllable: 0,
+        views: {},
+    }),
+    getters: {
+        selectedSyllableAs: (state) => (countMethod: CountMethod) => {
+            const datasetStore = useDatasetsStore();
+            const lm = datasetStore.label_map;
+            const from = state.countMethod.toLowerCase();
+            const to = countMethod.toLowerCase();
+            const result = lm.find((row) => row[from] === state.selectedSyllable);
+            if (result !== undefined) {
+                return result[to];
+            } else {
+                return -5;
+            }
+        },
+        selectedSyllableMap(state) {
+            const datasetStore = useDatasetsStore();
+            const lm = datasetStore.label_map;
+            const from = state.countMethod.toLowerCase();
+            const result = lm.find((row) => row[from] === state.selectedSyllable);
+            if (result !== undefined) {
+                return {
+                    [CountMethod.Frames.toLowerCase()]: result[CountMethod.Frames.toLowerCase()],
+                    [CountMethod.Usage.toLowerCase()]: result[CountMethod.Usage.toLowerCase()],
+                    [CountMethod.Raw.toLowerCase()]: result[CountMethod.Raw.toLowerCase()],
+                };
+            } else {
+                return undefined;
+            }
+        },
+        selectedSyllables(state) {
+            let syllables;
+            if (state.moduleIdFilter.length === 0) {
+                syllables = this.availableModuleIds;
+            } else {
+                syllables = state.moduleIdFilter;
+            }
+            return syllables;
+        },
+        availableModuleIds(state) {
+            const datasetStore = useDatasetsStore();
+            if (state.countMethod === CountMethod.Usage) {
+                return datasetStore.availableUsageModuleIds
+            } else if (state.countMethod === CountMethod.Frames) {
+                return datasetStore.availableFramesModuleIds
+            }
+            return [];
+        },
+        availableGroups(state) {
+            const datasetStore = useDatasetsStore();
+            return datasetStore.groups
+        },
     },
-    async updateModuleIdFilters(context, payload: number[]) {
-      await context.dispatch("updateView", {
-        moduleIdFilter: payload,
-      } as DataviewPayload);
+    actions: {
+        setName(name: string) {
+            this.name = name;
+        },
+        setColor(color: string) {
+            this.color = color;
+        },
+        setLoading(loading: boolean) {
+            this.loading = loading;
+        },
+        setGroupColors(groupColors: string[]) {
+            this.groupColors = groupColors;
+        },
+        setView(payload: DataviewPayload) {
+            if (payload.countMethod) {
+                this.countMethod = payload.countMethod;
+            }
+            if (payload.selectedGroups) {
+                this.selectedGroups = payload.selectedGroups;
+            }
+            if (payload.groupColors) {
+                this.groupColors = payload.groupColors;
+            }
+            if (payload.moduleIdFilter) {
+                this.moduleIdFilter = payload.moduleIdFilter;
+            }
+        },
+        setSelectedSyllable(selectedSyllable: number) {
+            this.selectedSyllable = selectedSyllable;
+        },
+        publishDataset(payload: PublishDatasetPayload) {
+            this.views[`${payload.owner}/${payload.name}`] = payload; // Direct assignment
+        },
+        unpublishDataset(payload: UnpublishDatasetPayload) {
+            delete this.views[`${payload.owner}/${payload.name}`]; // Use `delete` keyword
+        },
+        serialize(): any {
+            return {
+                color: this.color,
+                name: this.name,
+                countMethod: this.countMethod,
+                selectedGroups: this.selectedGroups,
+                groupColors: this.groupColors,
+                moduleIdFilter: this.moduleIdFilter,
+                selectedSyllable: this.selectedSyllable,
+            };
+        },
+        async load(payload) {
+            await this.updateView(payload);
+            this.setSelectedSyllable(payload.selectedSyllable);
+        },
+        switchCountMethod(payload: CountMethod) {
+            const datasetStore = useDatasetsStore();
+            const newSelectedSyllable = this.selectedSyllableAs(payload);
+        
+            const lm = datasetStore.label_map;
+            const from = this.countMethod.toLowerCase();
+            const filterSyllables = this.moduleIdFilter.map((id) => {
+                const result = lm.find((row) => row[from] === id);
+                if (result !== undefined) {
+                return result[payload.toLocaleLowerCase()];
+                }
+            });
+        
+            this.updateView({
+                countMethod: payload,
+                moduleIdFilter: filterSyllables,
+            } as DataviewPayload);
+            this.setSelectedSyllable(newSelectedSyllable);
+        },
+        async updateModuleIdFilters(payload: number[]) {
+            await this.updateView({
+                moduleIdFilter: payload,
+            } as DataviewPayload);
+        
+            if (
+                this.moduleIdFilter.length > 0 &&
+                !this.moduleIdFilter.includes(this.selectedSyllable)
+            ) {
+                this.setSelectedSyllable(this.moduleIdFilter[0]);
+            }
+        },
+        updateSelectedGroups(payload: SelectedGroupsPayload) {
+            if (payload.groups === undefined && payload.colors !== undefined) {
+                this.setGroupColors(payload.colors);
+            } else {
+                this.updateView({
+                    selectedGroups: payload.groups,
+                    groupColors: payload.colors,
+                } as DataviewPayload);
+            }
+        },
+        async updateView(payload: DataviewPayload) {
+            this.setLoading(true);
+            try {
+                payload.countMethod = payload.countMethod || this.countMethod;
+                payload.selectedGroups = payload.selectedGroups || this.selectedGroups;
+                payload.moduleIdFilter = payload.moduleIdFilter || this.moduleIdFilter;
+                this.setView(payload);
+            } catch (e) {
+                console.warn(e);
+            } finally {
+                this.setLoading(false);
+            }
+        },
+        async initialize() {
+            console.log("Initializing dataview store", this.$id);
+            const datasetStore = useDatasetsStore();
+            const namespace = this.$id;
+            const name = "filter" + namespace?.split("-")[1];
+            this.setName(name);
+            const groups = this.availableGroups;
+            const colorScale = scaleOrdinal(schemeDark2);
+            this.setColor(FilterColorGenerator(name));
+            await this.updateView({
+                selectedGroups: groups,
+                groupColors: groups.map((g: string) => colorScale(g)),
+            } as DataviewPayload)
+            .then(() => {
+                datasetStore.$onAction(({name, after}) => {
+                    after((result) => {
+                        if (name === "setData") {
+                            this.updateView({});
+                        }
+                    });
+                });
+            });
+        },
+    },
+})();
 
-      if (
-        context.state.moduleIdFilter.length > 0 &&
-        !context.state.moduleIdFilter.includes(context.state.selectedSyllable)
-      ) {
-        context.commit("setSelectedSyllable", context.state.moduleIdFilter[0]);
-      }
-    },
-    updateSelectedGroups(context, payload: SelectedGroupsPayload) {
-      if (payload.groups === undefined && payload.colors !== undefined) {
-        context.commit("setGroupColors", payload.colors);
-      } else {
-        context.dispatch("updateView", {
-          selectedGroups: payload.groups,
-          groupColors: payload.colors,
-        } as DataviewPayload);
-      }
-    },
-    async updateView(context, payload: DataviewPayload) {
-      context.commit("setLoading", true);
-      try {
-        payload.countMethod = payload.countMethod || context.state.countMethod;
-        payload.selectedGroups = payload.selectedGroups || context.state.selectedGroups;
-        payload.moduleIdFilter = payload.moduleIdFilter || context.state.moduleIdFilter;
-        context.commit("setView", payload);
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        context.commit("setLoading", false);
-      }
-    },
-    async initialize(context) {
-      const namespace = getModuleNamespace(store, context.state);
-      const name = "filter" + namespace?.split("/")[1].split("-")[1];
-      context.commit("setName", name);
-      const groups = context.getters.availableGroups;
-      const colorScale = scaleOrdinal(schemeDark2);
-      context.commit("setColor", FilterColorGenerator(name));
-      await context
-        .dispatch("updateView", {
-          selectedGroups: groups,
-          groupColors: groups.map((g: string) => colorScale(g)),
-        } as DataviewPayload)
-        .then(() => bindStore(namespace));
-    },
-  },
-};
-export default DataviewModule;
-
-function bindStore(name) {
-  store.subscribeAction({
-    after: (action, state) => {
-      if (action.type === "datasets/setData") {
-        store.dispatch(`${name}/updateView`, {});
-      }
-    },
-  });
-}

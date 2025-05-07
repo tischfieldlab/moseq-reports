@@ -1,36 +1,37 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "jsx": "preserve",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "allowJs": true,
-    "baseUrl": "./",
-    "strict": true,
-    "paths": {
-      "@render/*": ["./src/renderer/*"],
-      "@main/*": ["./src/electron/*"]
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "jsx": "preserve",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "sourceMap": true,
+        "allowJs": true,
+        "baseUrl": ".",
+        "strict": true,
+        "paths": {
+            "@render/*": ["src/renderer/*"],
+            "@main/*": ["src/electron/*"]
+        },
+        "typeRoots": ["./src/renderer/@types"],
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "noImplicitAny": false,
+        "downlevelIteration": true,
     },
-    "typeRoots": ["./src/renderer/@types"],
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "noImplicitAny": false
-  },
-  "references": [{ "path": "./tsconfig.node.json" }],
-  "include": [
-    "src/**/*.d.ts",
-    "@types/**/*.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/**/*.json",
-    "src/dataserver/**/*.ts" ,
-    "src/dataserver/*.ts",
-    "src/renderer/**/*.ts"
-  ],
-  "exclude": ["node_modules", "dist", "buildfiles"]
+    "references": [{ "path": "./tsconfig.node.json" }],
+    "include": [
+        "src/**/*.d.ts",
+        "@types/**/*.ts",
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.vue",
+        "src/**/*.json",
+        "src/dataserver/**/*.ts" ,
+        "src/dataserver/*.ts",
+        "src/renderer/**/*.ts"
+    ],
+    "exclude": ["node_modules", "dist", "buildfiles"]
 }

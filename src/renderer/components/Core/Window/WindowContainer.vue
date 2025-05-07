@@ -1,30 +1,30 @@
 <template>
-  <div>
-    <template v-for="wid in windows" :key="wid">
-      <UiCard :id="wid" />
-    </template>
-  </div>
+    <div>
+        <template v-for="wid in windows" :key="wid">
+            <UiCard :id="wid" />
+        </template>
+    </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-import { useStore } from "vuex"; 
 import UiCard from "@render/components/Core/Window/Window.vue";
+import { useWindowsStore } from "@render/store/windows.store";
 
 export default defineComponent({
-  components: {
-    UiCard,
-  },
-  setup() {
-    const store = useStore(); 
-    const windows = computed(() => {
-      console.log("State items:", store.state.datawindows.items);
-      return store.state.datawindows.items;
-    });
+    components: {
+        UiCard,
+    },
+    setup() {
+        const windowsStore = useWindowsStore(); 
+        const windows = computed(() => {
+            console.log("State items:", windowsStore.items);
+            return windowsStore.items;
+        });
 
-    return {
-      windows,
-    };
-  },
+        return {
+            windows,
+        };
+    },
 });
 </script>

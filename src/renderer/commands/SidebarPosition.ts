@@ -1,19 +1,24 @@
-import store from '@render/store/root.store';
-import {SidebarPosition} from '@render/store/root.types';
+import {useSidebarStore, SidebarPosition} from '@render/store/sidebar.store';
+
 
 
 export function SetSidebarRight() {
-    store.commit('setSidebarPosition', SidebarPosition.Right);
+    const sidebarStore = useSidebarStore();
+    sidebarStore.setSidebarPosition(SidebarPosition.Right);
 }
 export function SetSidebarLeft() {
-    store.commit('setSidebarPosition', SidebarPosition.Left);
+    const sidebarStore = useSidebarStore();
+    sidebarStore.setSidebarPosition(SidebarPosition.Left);
 }
 export function CurrentSidebarPosition() {
-    return store.state.sidebarPosition;
+    const sidebarStore = useSidebarStore();
+    return sidebarStore.sidebarPosition;
 }
 export function isSidebarLeft() {
-    return store.state.sidebarPosition === SidebarPosition.Left;
+    const sidebarStore = useSidebarStore();
+    return sidebarStore.sidebarPosition === SidebarPosition.Left;
 }
 export function isSidebarRight() {
-    return store.state.sidebarPosition === SidebarPosition.Right;
+    const sidebarStore = useSidebarStore();
+    return sidebarStore.sidebarPosition === SidebarPosition.Right;
 }

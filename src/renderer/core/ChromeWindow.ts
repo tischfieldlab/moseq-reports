@@ -4,26 +4,26 @@
 let titlebar: any;
 
 export function CreateTitleBar() {
-  DisposeTitlebar();
+    DisposeTitlebar();
 }
 
 export function DisposeTitlebar() {
-  if (titlebar !== undefined) {
-    titlebar.dispose();
-    titlebar = undefined;
-  }
+    if (titlebar !== undefined) {
+        titlebar.dispose();
+        titlebar = undefined;
+    }
 }
 
 export function GetTitlebar() {
-  return titlebar;
+    return titlebar;
 }
 
 export function UpdateTitle(title: string) {
-  if (titlebar !== undefined) {
-    titlebar.updateTitle(title);
-  }
+    if (titlebar !== undefined) {
+        titlebar.updateTitle(title);
+    }
 }
 
 //if (import.meta.hot) {
- // import.meta.hot.dispose(() => DisposeTitlebar());
+//  import.meta.hot.dispose(() => DisposeTitlebar());
 //}

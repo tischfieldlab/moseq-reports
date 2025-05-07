@@ -2,32 +2,32 @@
   <BCard no-body class="group_selection filter-item">
     <div class="input-group-text">Group Selection</div>
     <BListGroup flush>
-      <!--draggable v-model="groups" @change="updateGroups()"--->
-        <BListGroupItem v-for="option in groups" :key="option.name" >
-          <div :class="{ 'group-wrap': true, [option.style]: true }">
-            <BFormCheckbox switch @input="updateGroups()" v-model="option.selected" :name="option.name">
-            </BFormCheckbox>
-            <div
-              class="swatch"
-              :id="generateId(option.id)"
-              :style="{ 'background-color': option.color }"
-              title="Click to select color"
-            >
-              <span class="group-count" :style="{ color: getContrast(option.color) }">{{
-                group_counts[option.name]
-              }}</span>
+      <draggable v-model="groups" item-key="name">
+        <template #item="{ element }">
+          <BListGroupItem :key="element.name" class="group-item" :class="element.style">
+            <div :class="{ 'group-wrap': true, [element.style]: true }">
+              <BFormCheckbox switch v-model="element.selected" :name="element.name" />
+              <div
+                class="swatch"
+                :id="generateId(element.id)"
+                :style="{ 'background-color': element.color }"
+                title="Click to select color"
+              >
+                <span class="group-count" :style="{ color: getContrast(element.color) }">{{ group_counts[element.name] }}</span>
+              </div>
+              <BPopover :target="generateId(element.id)" triggers="click blur" placement="end" :click="true" offset="35">
+                <template #title>Group Color ({{ element.name }})</template>
+                <chrome-picker
+                  :modelValue="element.color"
+                  @update:modelValue="(value) => colorChangeHandler(element, value.hex)"
+                  :disableAlpha="true"
+                />
+              </BPopover>
+              <span class="group_name" :title="element.name">{{ element.name }}</span>
             </div>
-            <BPopover :target="generateId(option.id)" triggers="click blur" placement="end" :click="true" offset="35">
-              <template #title>Group Color ({{ option.name }})</template>
-              <chrome-picker
-                :modelValue="option.color"
-                @update:modelValue="(value) => colorChangeHandler(option, value)"
-                :disableAlpha="true"
-              />
-            </BPopover>
-            <span class="group_name" :title="option.name">{{ option.name }}</span>
-          </div>
-        </BListGroupItem>
+          </BListGroupItem>
+        </template>
+      </draggable>
     </BListGroup>
   </BCard>
 </template>
@@ -41,6 +41,8 @@ import { getContrastingColor } from "@render/components/Charts/Colors/D3ColorPro
 import axios from "axios";
 import { useStore } from "vuex";
 import { unnest } from "@render/util/Vuex";
+
+
 class SelectableGroupItem {
   public name: string;
   public selected: boolean;
@@ -75,43 +77,40 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore(); // Access Vuex store
-    const groups = ref<SelectableGroupItem[]>([]);
+    
     const group_counts = ref<Record<string, number>>({});
     const serverAddress = computed(() => store.getters["server/getServerAddress"]);
     const watchers: (() => void)[] = [];
-    const colorChangeHandler = ref<(option: SelectableGroupItem, value: string) => void>(() => {});
     const dataview = computed(() =>  unnest(store.state, props.datasource));
     //onst dataview = computed(() => store.state[props.datasource]);
     console.log("dataview value",dataview.value)
-    
-    const buildGroups = async () => {
-      const availableGroups =
-        store.getters[`${props.datasource}/availableGroups`] || [];
-      const selectedGroups = dataview.value?.selectedGroups || [];
-      const colorScale = dataview.value?.groupColors || [];
-      groups.value = availableGroups.map((g: string, i: number) => {
-        const groupItem = new SelectableGroupItem(g, selectedGroups.includes(g));
-        groupItem.color = colorScale[i] || "#000000";
-        return groupItem;
-      });
-    };
 
-    const updateGroups = () => {
-      const selectedGroups = groups.value
-        .filter((g) => g.selected)
-        .map((g) => g.name);
-      const selectedColors = groups.value
-        .filter((g) => g.selected)
-        .map((g) => g.color);
 
-      if (!deepEqual(selectedGroups, dataview.value?.selectedGroups)) {
-        store.dispatch(`${props.datasource}/updateSelectedGroups`, {
-          groups: selectedGroups,
-          colors: selectedColors,
+    const groups = computed<SelectableGroupItem[]>({
+      get: () => {
+        const availableGroups = store.getters[`${props.datasource}/availableGroups`] || [];
+        const selectedGroups = dataview.value?.selectedGroups || [];
+        const colorScale = dataview.value?.groupColors || [];
+        return availableGroups.map((g: string, i: number) => {
+          const groupItem = new SelectableGroupItem(g, selectedGroups.includes(g));
+          groupItem.color = colorScale[i] || "#000000";
+          return groupItem;
         });
-      }
-      console.log("Update grouops:",selectedGroups)
-    };
+      },
+      set: (newValue) => {
+        console.log("Setting groups:", groups, newValue);
+        const selectedGroups = newValue.filter((g) => g.selected).map((g) => g.name);
+        const selectedColors = newValue.filter((g) => g.selected).map((g) => g.color);
+
+        if (!deepEqual(selectedGroups, dataview.value?.selectedGroups)) {
+          store.dispatch(`${props.datasource}/updateSelectedGroups`, {
+            groups: selectedGroups,
+            colors: selectedColors,
+          });
+        }
+        console.log("Update groups:",selectedGroups)
+      },
+    });
 
     const updateColors = () => {
       const selectedColors = groups.value
@@ -125,6 +124,11 @@ export default defineComponent({
       }
     };
 
+    const colorChangeHandler = debounce((option, event) => {
+        option.color = event.hex;
+        updateColors();
+      }, 100);
+
     const updateGroupCounts = async () => {
       try {
         const response = await axios.get(`${serverAddress.value}/fetch-samples`, {
@@ -132,7 +136,7 @@ export default defineComponent({
             path: store.getters[`datasets/resolve`]("samples"),
             operations: JSON.stringify([{ type: "map" }]),
             debug: false,
-            },
+          },
         });
         const resolvedData = response.data;
         console.log(resolvedData)
@@ -157,12 +161,9 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      const colorChangeHandler = debounce((option, event) => {
-        option.color = event.hex;
-        updateColors();
-      }, 100);
+      
 
-      watchers.push(
+      /*watchers.push(
         store.watch(
           (state, getters) => getters[`${props.datasource}/availableGroups`],
           () => {
@@ -171,7 +172,7 @@ export default defineComponent({
           },
           { immediate: true }
         )
-      );
+      );*/
 
       watchers.push(
         store.watch(
@@ -206,8 +207,8 @@ export default defineComponent({
     return {
       groups,
       group_counts,
-      buildGroups,
-      updateGroups,
+      //buildGroups,
+      //updateGroups,
       updateColors,
       updateGroupCounts,
       getContrast,
@@ -217,9 +218,9 @@ export default defineComponent({
   },
   methods:{
     generateId(suffix: string): string {
-        return `${this.datasource}-${suffix}`;
-      },
-  }
+      return `${this.datasource}-${suffix}`;
+    },
+  },
 });
 </script>
 
