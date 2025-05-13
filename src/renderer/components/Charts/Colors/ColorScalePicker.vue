@@ -59,7 +59,7 @@
             title="Click to select starting color"
             class="text-dark text-decoration-none color-button"
           >
-            <BIcon icon="droplet-half" :style="{ color: getContrast(custom1) }" />
+            <B-Icon icon="droplet-half" :style="{ color: getContrast(custom1) }" />
           </BButton>
         </div>
         <BPopover :target="colorOneId" triggers="click blur" placement="top">
@@ -75,7 +75,7 @@
             title="Click to select ending color"
             class="text-dark text-decoration-none color-button"
           >
-            <BIcon icon="droplet-half" :style="{ color: getContrast(custom2) }" />
+            <B-Icon icon="droplet-half" :style="{ color: getContrast(custom2) }" />
           </BButton>
         </div>
         <BPopover :target="colorTwoId" triggers="click blur" placement="top">
@@ -89,9 +89,9 @@
   <script lang="ts">
   import { defineComponent, ref, computed, watch } from "vue";
   import { Chrome } from "vue-color";
-  import { GetInterpolatedScaleOptions, getContrastingColor } from "@/components/Charts/Colors/D3ColorProvider";
+  import { GetInterpolatedScaleOptions, getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
   import ColorScaleBar from "./ColorScaleBar.vue";
-  import { BDropdown, BDropdownItem, BDropdownHeader, BFormRow, BCol, BButton, BIcon, BPopover } from "bootstrap-vue-next";
+  import { BDropdown, BDropdownItem, BDropdownHeader, BFormRow, BCol, BButton, BPopover } from "bootstrap-vue-next";
   
   export default defineComponent({
     name: "ColorScalePicker",
@@ -104,7 +104,6 @@
       BFormRow,
       BCol,
       BButton,
-      BIcon,
       BPopover,
     },
     props: {
@@ -204,7 +203,7 @@
     max-height: 400px;
     overflow-y: auto;
   }
-  ::v-deep(.b-dropdown .btn) {
+  ::v-deep(.BDropdown .btn) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-color: rgb(206, 212, 218);

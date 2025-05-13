@@ -1,27 +1,27 @@
 <template>
   <div>
-    <b-dropdown text="Add Filter" class="float-right add-filter-button" size="sm">
-      <b-dropdown-item
+    <BDropdown text="Add Filter" class="float-right add-filter-button" size="sm">
+      <BDropdownItem
         v-for="col in columnOptions"
         :key="col"
         v-if="!columnAlreadyInFilter(col)"
         @click="addFilter(col)"
       >
         {{ col }}
-      </b-dropdown-item>
-    </b-dropdown>
+      </BDropdownItem>
+    </BDropdown>
 
     <template v-for="(values, key, i) in localFilters" :key="`${key}-${i}`">
-      <b-input-group size="sm">
-        <b-input-group-prepend
+      <BInputGroup size="sm">
+        <BInputGroup-prepend
           is-text
           :title="`${inferDataTypeForColumn(String(key))} datatype`"
           v-b-tooltip.hover
         >
           {{ String(key) }}
-        </b-input-group-prepend>
+        </BInputGroup-prepend>
 
-        <b-form-tags
+        <BFormTags
           v-model="localFilters[String(key)]"
           placeholder="Add value..."
           duplicate-tag-text="Duplicate value(s)"
@@ -29,14 +29,16 @@
           tag-remove-label="Remove value"
         />
 
-        <b-input-group-append is-text>
-          <b-button-close
+        <BInputGroup-append is-text>
+          <BButton
             @click="removeFilter(String(key))"
             title="Remove this filter"
+            class="btn-close ms-auto"
+            aria-label="Close"
             v-b-tooltip.hover
           />
-        </b-input-group-append>
-      </b-input-group>
+        </BInputGroup-append>
+      </BInputGroup>
     </template>
 
     <div class="special-token-container">

@@ -1,55 +1,55 @@
 <template>
-  <b-container fluid>
-    <b-row>
-      <b-col>
+  <BContainer fluid>
+    <BRow>
+      <BCol>
         <BInputGroup>
           <template #prepend>Group Ordering</template>
           <BFormSelect v-model="group_order_type" :options="group_order_options"></BFormSelect>
         </BInputGroup>
-      </b-col>
-    </b-row>
+      </BCol>
+    </BRow>
 
-    <b-row v-show="group_order_type === 'dataset'">
-      <b-col cols="1"></b-col>
-      <b-col>
+    <BRow v-show="group_order_type === 'dataset'">
+      <BCol cols="1"></BCol>
+      <BCol>
         <BInputGroup>
           <template #prepend>Dataset</template>
           <DatasetPicker v-model="group_order_dataset" :dataview="dataview" :owner="subid" />
         </BInputGroup>
-      </b-col>
-    </b-row>
+      </BCol>
+    </BRow>
 
-    <b-row>
-      <b-col>
+    <BRow>
+      <BCol>
         <BInputGroup>
           <template #prepend>Point Size</template>
           <BFormInput type="number" v-model="point_size" :disabled="!show_points" min="1" max="10"></BFormInput>
           <BFormCheckbox v-model="show_points" switch class="ms-2">Show</BFormCheckbox>
         </BInputGroup>
-      </b-col>
-    </b-row>
+      </BCol>
+    </BRow>
 
-    <b-row>
-      <b-col>
+    <BRow>
+      <BCol>
         <BInputGroup>
           <template #prepend>Boxplot Whiskers</template>
           <BFormSelect v-model="boxplot_whiskers" :options="whisker_options" :disabled="!show_boxplot"></BFormSelect>
           <BFormCheckbox v-model="show_boxplot" switch class="ms-2">Show</BFormCheckbox>
         </BInputGroup>
         <div class="figure-caption" v-html="boxplot_whisker_description"></div>
-      </b-col>
-    </b-row>
+      </BCol>
+    </BRow>
 
-    <b-row>
-      <b-col>
+    <BRow>
+      <BCol>
         <BInputGroup>
           <template #prepend>Violin Scale</template>
           <BFormInput type="number" v-model="violin_kde_scale" :disabled="!show_violinplot" min="0" max="1.0" step="0.001"></BFormInput>
           <BFormCheckbox v-model="show_violinplot" switch class="ms-2">Show</BFormCheckbox>
         </BInputGroup>
-      </b-col>
-    </b-row>
-  </b-container>
+      </BCol>
+    </BRow>
+  </BContainer>
 </template>
 
 <script lang="ts">

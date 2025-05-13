@@ -1,56 +1,56 @@
 <template>
-    <b-container fluid>
-      <b-row>
-        <b-col cols="2" align-self="center">
+    <BContainer fluid>
+      <BRow>
+        <BCol cols="2" align-self="center">
           <label class="font-weight-bold pt-0">Title</label>
-        </b-col>
-        <b-col>
+        </BCol>
+        <BCol>
           <BFormInput type="text" v-model.trim="title" />
-        </b-col>
-        <b-col cols="1" class="p-0"> &nbsp; </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="2" align-self="center">
+        </BCol>
+        <BCol cols="1" class="p-0"> &nbsp; </BCol>
+      </BRow>
+      <BRow>
+        <BCol cols="2" align-self="center">
           <label class="font-weight-bold pt-0">Size</label>
-        </b-col>
-        <b-col>
+        </BCol>
+        <BCol>
           <BInputGroup prepend="W">
             <BFormInput type="number" debounce="500" v-model.number="width" />
           </BInputGroup>
-        </b-col>
-        <b-col>
+        </BCol>
+        <BCol>
           <BInputGroup prepend="H">
             <BFormInput type="number" debounce="500" v-model.number="height" />
           </BInputGroup>
-        </b-col>
-        <b-col cols="1" class="p-0">
+        </BCol>
+        <BCol cols="1" class="p-0">
           <BButton variant="link" @click="resetSize" title="Reset size to default">
             <i class="bi bi-arrow-counterclockwise fs-3 fw-bold"></i>
           </BButton>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="2" align-self="center">
+        </BCol>
+      </BRow>
+      <BRow>
+        <BCol cols="2" align-self="center">
           <label class="font-weight-bold pt-0">Position</label>
-        </b-col>
-        <b-col>
+        </BCol>
+        <BCol>
           <BInputGroup prepend="X">
             <BFormInput type="number" debounce="500" min="0" v-model.number="positionX" />
           </BInputGroup>
-        </b-col>
-        <b-col>
+        </BCol>
+        <BCol>
           <BInputGroup prepend="Y">
             <BFormInput type="number" debounce="500" min="0" v-model.number="positionY" />
           </BInputGroup>
-        </b-col>
-        <b-col cols="1" class="p-0"> &nbsp; </b-col>
-      </b-row>
-      <b-row>
+        </BCol>
+        <BCol cols="1" class="p-0"> &nbsp; </BCol>
+      </BRow>
+      <BRow>
         <BButton variant="link" @click="duplicateComponent" title="Duplicate this component">
           <i class="bi bi-files" > Duplicate this component</i>
         </BButton>
-      </b-row>
-    </b-container>
+      </BRow>
+    </BContainer>
   </template>
 <script lang="ts">
 import { defineComponent, computed } from "vue";

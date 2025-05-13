@@ -12,7 +12,7 @@ export function useWindowMixin(id: string) {
 
     const spec = computed(() => $wstate.spec);
     const datasource = computed(() => $wstate.datasource);
-    const dataview = computed(() => useDataViewStore($wstate.datasource) as DataviewState);
+    const dataview = useDataViewStore($wstate.datasource) as DataviewState;
     const settings = computed(() => $wstate.settings);
     const layout = computed(() => ({
         height: $wstate.height,

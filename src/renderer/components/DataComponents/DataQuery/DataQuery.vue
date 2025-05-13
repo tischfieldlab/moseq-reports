@@ -1,52 +1,54 @@
 <template>
     <div class="wrapper">
-      <b-card no-body>
+      <BCard no-body>
         <template #header>
-          <b-dropdown text="Add Operation" class="float-right add-op-button" size="sm">
-            <b-dropdown-item
+          <BDropdown text="Add Operation" class="float-right add-op-button" size="sm">
+            <BDropdownItem
               v-for="op in operationTypes"
               :key="op"
               @click="addOperation(op)"
             >
               {{ op }}
-            </b-dropdown-item>
-          </b-dropdown>
+            </BDropdownItem>
+          </BDropdown>
           <h6 class="mb-0">Data Source</h6>
         </template>
   
-        <b-form-select v-model="selectedDataset" :options="availableDataSources">
+        <BFormSelect v-model="selectedDataset" :options="availableDataSources">
           <template #first>
-            <b-form-select-option :value="null" disabled>
+            <BFormSelect-option :value="null" disabled>
               -- Please select a dataset --
-            </b-form-select-option>
+            </BFormSelect-option>
           </template>
-        </b-form-select>
-      </b-card>
+        </BFormSelect>
+      </BCard>
   
       <DataView :Dataset="intermediateResults[0]" :Collapsed="true" />
   
       <template v-for="(op, idx) in operations" :key="idx">
-        <b-card no-body>
+        <BCard no-body>
           <template #header>
-            <b-button-close
+            <BButton
               @click="removeOperation(idx)"
               title="Remove this operation"
+              class="btn-close ms-auto"
+              aria-label="Close"
               v-b-tooltip.hover
             />
-            <b-button
+            <BButton
               @click="toggleOperationVisibility(idx)"
               :title="operationVisibilities[idx] ? 'Collapse' : 'Expand'"
               variant="link"
               class="text-dark collapse-button text-decoration-none"
             >
               <b-icon :icon="operationVisibilities[idx] ? 'chevron-up' : 'chevron-down'" />
-            </b-button>
+            </BButton>
             <h6 class="mb-0" :title="helpStrings[op.type]" v-b-tooltip.hover>
               {{ capitalizeFirst(op.type) }}
             </h6>
           </template>
   
-          <b-collapse :visible="operationVisibilities[idx]">
+          <BCollapse :visible="operationVisibilities[idx]">
             <div class="operation-wrapper">
               <component
                 v-if="cardHasBody(op.type)"
@@ -58,8 +60,8 @@
               />
               <div v-else class="no-operation-settings">No settings for this operation</div>
             </div>
-          </b-collapse>
-        </b-card>
+          </BCollapse>
+        </BCard>
   
         <DataView :Dataset="intermediateResults[idx + 1]" :Collapsed="true" />
       </template>

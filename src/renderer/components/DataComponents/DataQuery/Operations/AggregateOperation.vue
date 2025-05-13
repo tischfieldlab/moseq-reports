@@ -1,32 +1,32 @@
 <template>
   <div>
-    <b-input-group prepend="Group By" size="sm">
+    <BInputGroup prepend="Group By" size="sm">
       <ColumnSelector v-model="operation.groupby" :options="columnOptions" />
-    </b-input-group>
+    </BInputGroup>
 
-    <b-dropdown text="Add Aggregation" class="add-agg-button mx-auto" size="sm">
+    <BDropdown text="Add Aggregation" class="add-agg-button mx-auto" size="sm">
       <template v-for="col in columnOptions" :key="col">
-        <b-dropdown-item
+        <BDropdownItem
           v-if="!columnAlreadyIncluded(col)"
           @click="addAggregate(col)"
         >
           {{ col }}
-        </b-dropdown-item>
+        </BDropdownItem>
       </template>
-    </b-dropdown>
+    </BDropdown>
 
     <template v-for="(value, key) in localAggs" :key="key">
-      <b-input-group :prepend="key" size="sm">
+      <BInputGroup :prepend="key" size="sm">
         <ColumnSelector
           v-model="localAggs[key]"
           icon="calculator"
           noun="Statistic"
           :options="statOptions"
         />
-        <b-input-group-append is-text>
-          <b-button-close @click="removeAggregate(key)" />
-        </b-input-group-append>
-      </b-input-group>
+        <BInputGroup-append is-text>
+          <BButton @click="removeAggregate(key)"  class="btn-close ms-auto" aria-label="Close" />
+        </BInputGroup-append>
+      </BInputGroup>
     </template>
   </div>
 </template>

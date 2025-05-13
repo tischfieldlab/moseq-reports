@@ -1,7 +1,7 @@
 <template>
-    <b-card no-body>
+    <BCard no-body>
       <template #header>
-        <b-button
+        <BButton
           @click="downloadData"
           title="Download Result"
           v-b-tooltip.hover
@@ -9,7 +9,7 @@
           class="float-right download-button"
         >
           <b-icon icon="cloud-download" />
-        </b-button>
+        </BButton>
         <h6
           class="mb-0"
           title="Publish this dataset to the filter store, or download for processing elsewhere"
@@ -19,24 +19,24 @@
         </h6>
       </template>
       <div class="operation-wrapper">
-        <b-input-group prepend="Dataset Name" size="sm">
-          <b-form-input
+        <BInputGroup prepend="Dataset Name" size="sm">
+          <BFormInput
             type="text"
             v-model="publishName"
             :disabled="!publishDataset"
             :debounce="300"
           />
-          <b-input-group-append is-text>
-            <b-form-checkbox
+          <BInputGroup-append is-text>
+            <BFormCheckbox
               switch
               v-model="publishDataset"
               title="Publish this dataset to the filter store"
               v-b-tooltip.hover
             />
-          </b-input-group-append>
-        </b-input-group>
+          </BInputGroup-append>
+        </BInputGroup>
       </div>
-    </b-card>
+    </BCard>
   </template>
   
 <script>

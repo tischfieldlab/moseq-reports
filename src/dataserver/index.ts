@@ -53,7 +53,7 @@ export class DataServer {
                 res.status(500).json({ message: "Failed to receive dataset." });
             }
         });
-        this.app.get("*/crowd_movies/*", async (req: Request, res: Response) =>{
+        this.app.get("*.mp4", async (req: Request, res: Response) =>{
             try{
                 //console.log("request got",req)
                 const url = decodeURI(req.url as string);

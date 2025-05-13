@@ -1,14 +1,14 @@
 <template>
-    <b-input-group prepend="Columns" size="sm">
+    <BInputGroup prepend="Columns" size="sm">
       <ColumnSelector
         v-model="localSelectedColumns"
         :options="columnOptions"
         :disabled="!isColumnsEnabled"
       />
-      <b-input-group-append is-text title="Automatic mapping" v-b-tooltip.hover>
-        <b-form-checkbox switch v-model="isColumnsEnabled" />
-      </b-input-group-append>
-    </b-input-group>
+      <BInputGroup-append is-text title="Automatic mapping" v-b-tooltip.hover>
+        <BFormCheckbox switch v-model="isColumnsEnabled" />
+      </BInputGroup-append>
+    </BInputGroup>
   </template>
   
   <script setup lang="ts">

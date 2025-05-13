@@ -1,7 +1,7 @@
 <template>
-    <b-input-group prepend="Column" size="sm">
+    <BInputGroup prepend="Column" size="sm">
       <b-select v-model="operation.column" :options="columnOptions" />
-    </b-input-group>
+    </BInputGroup>
   </template>
   
   <script setup lang="ts">

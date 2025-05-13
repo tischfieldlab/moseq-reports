@@ -1,14 +1,14 @@
 <template>
-    <b-container fluid>
-        <b-row>
+    <BContainer fluid>
+        <BRow>
             <!-- Loop Playback -->
             <BInputGroup prepend="Loop playback">
                 <BInputGroupText>
                     <BFormCheckbox v-model="loop" switch class="me-n2"></BFormCheckbox>
                 </BInputGroupText>
             </BInputGroup>
-        </b-row>
-        <b-row>
+        </BRow>
+        <BRow>
             <!-- Playback Rate -->
             <BInputGroup prepend="Playback rate">
                 <BFormInput
@@ -26,8 +26,8 @@
                     Playback rate limits: Minimum 0.0165, Maximum 16.
                 </div>
             </BInputGroup>
-        </b-row>
-    </b-container>
+        </BRow>
+    </BContainer>
 </template>
 
 <script lang="ts">
