@@ -77,7 +77,7 @@
   import { line } from "d3-shape";
   import { rgb } from "d3-color";
   import RegisterDataComponent from "@render/components/Core";
-  import { RenderMode } from "@render/store/datawindow.types";
+  import { RenderMode } from "@store/datawindow.types";
   import { DirectiveBinding } from "vue";
 
   interface Spinogram {

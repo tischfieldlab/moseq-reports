@@ -1,10 +1,11 @@
 import { createApp, h } from "vue";
 // @ts-ignore
 import App from "@render/App.vue";
-import VueDraggableResizable from 'vue-draggable-resizable'
+//import VueDraggableResizable from 'vue-draggable-resizable'
 import VueForceNextTick from "vue-force-next-tick";
 import uniqueIdPlugin from '@render/@types/uniqueIdPlugin';
-import VueTimeago from "vue3-timeago";
+import timeago from "vue-timeago3";
+import {enUS} from 'date-fns/locale';
 //import {CreateServer, ShutdownServer} from '@render/components/Core/DataLoader/DataServer';
 import {createBootstrap} from 'bootstrap-vue-next'
 import Icons  from 'unplugin-icons/vite'
@@ -21,14 +22,13 @@ const app = createApp(App);
 app.use(pinia);
 app.use(createBootstrap());
 //app.use(Icons);
-app.use(VueDraggableResizable);
-console.log("VueDraggableResizable", VueDraggableResizable);
+//app.use(VueDraggableResizable);
+//console.log("VueDraggableResizable", VueDraggableResizable);
 app.use(VueForceNextTick);
 app.use(uniqueIdPlugin);
-app.use(VueTimeago, {
+app.use(timeago, {
     name: 'Timeago',
-    enLocale: "en", 
-    autoUpdate: 60, 
+    locale: enUS,
 });
 
 app.mount("#app").$nextTick(() => {

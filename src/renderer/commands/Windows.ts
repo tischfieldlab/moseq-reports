@@ -1,8 +1,8 @@
 import { ipcRenderer } from "electron";
 import { watch } from "vue"; 
 
-import {componentRegistry, ComponentRegistration} from '@render/store/component_registry.store'
-import {useWindowsStore} from '@render/store/windows.store'
+import {componentRegistry, ComponentRegistration} from '@store/component_registry.store'
+import {useWindowsStore} from '@store/windows.store'
 
 
 

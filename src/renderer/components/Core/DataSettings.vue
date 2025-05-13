@@ -18,13 +18,11 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
-import { useStore } from "vuex";
-import { unnest } from "@render/util/Vuex";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 
-import {useDataWindowStore} from "@render/store/datawindow.store"
-import { useFiltersStore } from "@render/store/filters.store";
-import {useDataViewStore} from "@render/store/dataview.store";
+import { useDataWindowStore } from "@store/datawindow.store"
+import { useFiltersStore } from "@store/filters.store";
+import { useDataViewStore } from "@store/dataview.store";
 
 
 export default defineComponent({
@@ -36,12 +34,11 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const store = useStore();
         const isAddingSource = ref(false);
         const {$wstate} = useWindowMixin(props.id);
         const datasource = computed({
             get() {
-                return $wstate.value.datasource;
+                return $wstate.datasource;
             },
             set(value: string) {
                 useDataWindowStore(props.id).updateComponentDataSource({
@@ -50,7 +47,7 @@ export default defineComponent({
                 });
             },
         });
-  
+
         const filtersStore = useFiltersStore();
         const available_sources = computed(() =>
             filtersStore.items.map((sourceId: string) => {

@@ -22,6 +22,7 @@ export const useHistoryStore = defineStore('history', {
          * @param payload - Partial history item to add.
          */
         addEntry(payload: Partial<HistoryItem>) {
+            console.log("Adding history entry:", payload);
             this.items.push({
                 time: payload.time || new Date(),
                 message: payload.message || "",

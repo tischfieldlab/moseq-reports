@@ -10,7 +10,7 @@ import {
     UpdateComponentAspectRatio,
     UpdateComponentAspectRatioByWidthAndHeight,
     ShowHidePayload,
-} from "@render/store/datawindow.types";
+} from "@store/datawindow.types";
 import stateMerge from "vue-object-merge";
 // import {
 //   applyAspectRatio,
@@ -141,7 +141,7 @@ export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`
         },
     },
 })()
-
+/*
 if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useDataWindowStore, import.meta.hot))
-}
+}*/

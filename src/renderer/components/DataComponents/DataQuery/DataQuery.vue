@@ -70,13 +70,15 @@
   
   <script lang="ts">
   import { ref, computed, watch, defineComponent } from 'vue';
-  import { useStore } from 'vuex';
   import { cloneDeep as clone } from 'lodash-es';
   import axios from 'axios';
   
   import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
   import RegisterDataComponent from '@render/components/Core';
-  import { RenderMode } from '@render/store/datawindow.types';
+  import { RenderMode } from '@store/datawindow.types';
+
+  import { useDatasetsStore } from '@store/datasets.store';
+  import {useServerStore} from '@store/server.store';
   
   import {
     MapOperation,
@@ -124,9 +126,11 @@
       },
     },
     setup(props) {
-      const store = useStore();
-      const { layout, dataview, settings } = useWindowMixin(props.id);
-      const serverAddress = computed(() => store.getters['server/getServerAddress']);
+      //const store = useStore();
+      const { layout, dataview, settings, $wstate } = useWindowMixin(props.id);
+
+      const serverStore = useServerStore();
+      const datasetsStore = useDatasetsStore()
   
       const selectedDataset = ref(settings.value?.dataset || '');
       const operations = ref(clone(settings.value?.operations || []));
@@ -147,14 +151,14 @@
       };
   
       const availableDataSources = computed(() =>
-        getDataSourceItems(store.state.datasets.manifest)
+        getDataSourceItems(datasetsStore.manifest)
       );
   
       const finalDataset = computed(() => intermediateResults.value.at(-1));
   
       const specialTokens = computed(() => ({
         $SelectedSyllable: dataview.value.selectedSyllable,
-        $AvailableSyllables: store.getters[`${props.datasource}/selectedSyllables`],
+        $AvailableSyllables: dataview.value.selectedSyllables,
         $SelectedGroups: dataview.value.selectedGroups,
       }));
   
@@ -249,7 +253,7 @@
   
       async function prepareData() {
         if (!selectedDataset.value) return;
-        const dset = store.getters['datasets/resolve'](selectedDataset.value);
+        const dset = datasetsStore.resolve(selectedDataset.value);
         if (!dset) {
           console.warn('No dataset found for', selectedDataset.value);
           return;
@@ -258,7 +262,7 @@
         for (let i = 0; i < operations.value.length + 1; i++) {
           const ops = prepareOperations(operations.value.slice(0, i));
           try {
-            const res = await axios.get(`${serverAddress.value}/load-data`, {
+            const res = await axios.get(`${serverStore.serverAddress}/load-data`, {
               params: { path: dset, operations: ops },
             });
             intermediateResults.value[i] = res.data;
@@ -269,14 +273,14 @@
       }
   
       watch(selectedDataset, val => {
-        store.commit(`${props.id}/updateComponentSettings`, {
+        $wstate.updateComponentSettings({
           id: props.id,
           settings: { dataset: val },
         });
       });
   
       watch(operations, val => {
-        store.commit(`${props.id}/updateComponentSettings`, {
+        $wstate.updateComponentSettings({
           id: props.id,
           settings: { operations: clone(val) },
         });

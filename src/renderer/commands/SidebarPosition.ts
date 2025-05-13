@@ -1,4 +1,4 @@
-import {useSidebarStore, SidebarPosition} from '@render/store/sidebar.store';
+import {useSidebarStore, SidebarPosition} from '@store/sidebar.store';
 
 
 

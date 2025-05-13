@@ -22,7 +22,6 @@ export default defineComponent({
             required: false,
             default: () => {},
         },
-
         icon: { type: String, required: true },
         title: { type: String, required: false },
         disabled: { type: Boolean, required: false, default: false },

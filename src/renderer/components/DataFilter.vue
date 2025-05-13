@@ -1,332 +1,315 @@
-  <template>
+<template>
     <BCard class="shadow datafilter">
-<template v-slot:header>
-  <div :style="headerStyles" class="d-flex align-items-center px-2">
-    <!-- Collapse Button -->
-    <button
-      @click="toggleCollapse"
-      :title="is_expanded ? 'Collapse Filters' : 'Expand Filters'"
-      class="btn btn-link text-decoration-none collapse-button me-2"
-      :style="{ color: headerStyles.color }"
-    >
-      <i
-        v-if="is_expanded"
-        class="bi-chevron-up when-opened"
-        :style="{ color: headerStyles.color }"
-      ></i>
-      <i
-        v-else
-        class="bi-chevron-down when-closed"
-        :style="{ color: headerStyles.color }"
-      ></i>
-    </button>
+        <template v-slot:header>
+            <div :style="headerStyles" class="d-flex align-items-center px-2">
+                <!-- Collapse Button -->
+                <button
+                    @click="toggleCollapse"
+                    :title="is_expanded ? 'Collapse Filters' : 'Expand Filters'"
+                    class="btn btn-link text-decoration-none collapse-button me-2"
+                    :style="{ color: headerStyles.color }"
+                >
+                    <i
+                        v-if="is_expanded"
+                        class="bi-chevron-up when-opened"
+                        :style="{ color: headerStyles.color }"
+                    ></i>
+                    <i
+                        v-else
+                        class="bi-chevron-down when-closed"
+                        :style="{ color: headerStyles.color }"
+                    ></i>
+                </button>
 
-    <!-- Editable Text -->
-    <EditableText
-      class="editable-text flex-grow-1"
-      v-model="filter_name"
-      size="sm"
-      :style="{ color: headerStyles.color }"
-    />
+                <!-- Editable Text -->
+                <EditableText
+                    class="editable-text flex-grow-1"
+                    v-model="filter_name"
+                    size="sm"
+                    :style="{ color: headerStyles.color }"
+                />
 
-    <!-- Color Picker Button -->
-    <button
-      :id="generateId(datasource)"
-      title="Click to select color"
-      class="btn btn-link text-decoration-none color-button"
-    >
-      <i class="bi-droplet-half" :style="{ color: headerStyles.color }"></i>
-    </button>
-    <BPopover :target="generateId(datasource)" :click="true" placement="top">
-      <template v-slot:title>Dataview `{{ filter_name }}` Color </template>
-      <chrome-picker v-model="color" :disableAlpha="true" />
-    </BPopover>
+                <!-- Color Picker Button -->
+                <button
+                    :id="generateId(datasource)"
+                    title="Click to select color"
+                    class="btn btn-link text-decoration-none color-button"
+                >
+                    <i class="bi-droplet-half" :style="{ color: headerStyles.color }"></i>
+                </button>
+                <BPopover :target="generateId(datasource)" :click="true" placement="top">
+                    <template v-slot:title>Dataview `{{ filter_name }}` Color </template>
+                    <chrome-picker 
+                        v-model="color"
+                        :disableAlpha="true" 
+                        @update:modelValue="(value) => colorChangeHandler(element, value.hex)"
+                    />
+                </BPopover>
 
-    <!-- Close Button -->
-    <BButton
-      type="button"
-      @click="confirmRemoveFilter"
-      title="Remove this filter"
-      class="btn-close ms-auto"
-      aria-label="Close"
-      :disabled="isDefaultFilter"
-      :style="{ color: headerStyles.color }"
-    ></BButton>
-  </div>
+                <!-- Close Button -->
+                <BButton
+                    type="button"
+                    @click="confirmRemoveFilter"
+                    title="Remove this filter"
+                    class="btn-close ms-auto"
+                    aria-label="Close"
+                    :disabled="isDefaultFilter"
+                    :style="{ color: headerStyles.color }"
+                ></BButton>
+            </div>
+        </template>
+
+
+        <BCollapse v-model="is_expanded" :id="generateId('filter-collapse')">
+            <BOverlay :show="is_loading" no-fade>
+                <div class="container">
+                    <GroupBox :datasource="datasource" />
+                    <BInputGroup prepend="Count Method" class="filter-item count-method mb-3">
+                        <BFormSelect v-model="selectedCountMethod" :options="countMethods" />
+                    </BInputGroup>
+
+                    <BInputGroup prepend="Selected Syllable" class="filter-item selected-syllable mb-3">
+                        <button
+                            class="prev btn btn-outline-info btn-sm"
+                            @click="previousSyllable"
+                            :disabled="!canPreviousSyllable"
+                        >
+                            <i class="bi-caret-left-fill"></i>
+                        </button>
+                        <BFormSelect
+                            class="syllable-number"
+                            v-model="syllable"
+                            :options="syllableIdOptions"
+                        />
+                        <button
+                            class="next btn btn-outline-info btn-sm"
+                            @click="nextSyllable"
+                            :disabled="!canNextSyllable"
+                        >
+                            <i class="bi-caret-right-fill"></i>
+                        </button>
+                    </BInputGroup>
+
+                    <syllable-id-filter :datasource="datasource" />
+                </div>
+            </BOverlay>
+        </BCollapse>
+
+        <BModal ref="confirmModal" title="Confirmation" ok-title="Yes" cancel-title="No" @ok="removeFilter">
+            Are you sure you want to remove this data filter?
+        </BModal>
+    </BCard>
 </template>
 
+<script lang="ts">
+import { defineComponent, ref, computed } from "vue";
+import { CountMethod, DataviewState } from "@store/dataview.types";
+import GroupBox from '@render/components/GroupBox.vue';
+import SyllableIdFilter from "@render/components/SyllableIdFilter.vue";
+import EditableText from "@render/components/EditableText.vue";
+import { Chrome } from "@ckpack/vue-color";
+import { getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
+import { BModal } from "bootstrap-vue-next";
 
-      <BCollapse v-model="is_expanded" :id="generateId('filter-collapse')">
-        <BOverlay :show="is_loading" no-fade>
-          <div class="container">
-            <GroupBox :datasource="datasource" />
-            <BInputGroup prepend="Count Method" class="filter-item count-method mb-3">
-              <BFormSelect v-model="selectedCountMethod" :options="countMethods" />
-            </BInputGroup>
+import { useFiltersStore } from "@store/filters.store";
+import { useDataViewStore } from "@store/dataview.store";
+import { debounce } from "@render/util/Events";
 
-            <BInputGroup prepend="Selected Syllable" class="filter-item selected-syllable mb-3">
-              <button
-                class="prev btn btn-outline-info btn-sm"
-                @click="previousSyllable"
-                :disabled="!canPreviousSyllable"
-              >
-                <i class="bi-caret-left-fill"></i>
-              </button>
-              <BFormSelect
-                class="syllable-number"
-                v-model="syllable"
-                :options="syllableIdOptions"
-              />
-              <button
-                class="next btn btn-outline-info btn-sm"
-                @click="nextSyllable"
-                :disabled="!canNextSyllable"
-              >
-                <i class="bi-caret-right-fill"></i>
-              </button>
-            </BInputGroup>
-
-            <div class="filter-module-id mb-2">
-              <label for="filter-module-id" class="d-flex justify-content-between align-items-center">
-                <span>Filter Module ID</span>
-                <button
-                  v-if="tags.length > 0"
-                  class="btn btn-link p-0 text"
-                  @click="clearAllTags"
-                  title="Clear all IDs"
-                >
-                  <i class="bi-x-circle-fill"></i>
-                </button>
-              </label>
-              <BFormTags
-                id="filter-module-id"
-                v-model="tags"
-                class="mb-2"
-                separator=" ,;"
-                placeholder="Add ID(s)..."
-                :tag-validator="tagValidator"
-              ></BFormTags>
-            </div>
-          </div>
-        </BOverlay>
-      </BCollapse>
-
-      <BModal ref="confirmModal" title="Confirmation" ok-title="Yes" cancel-title="No" @ok="removeFilter">
-        Are you sure you want to remove this data filter?
-      </BModal>
-    </BCard>
-  </template>
-
-  <script lang="ts">
-  import { defineComponent } from "vue";
-  import { CountMethod, DataviewState } from "@render/store/dataview.types";
-  import GroupBox from '@render/components/GroupBox.vue';
-  import EditableText from "@render/components/EditableText.vue";
-  import { Chrome } from "@ckpack/vue-color";
-  import parsePart from "parse-numeric-range";
-  import { unnest } from "@render/util/Vuex";
-  import { getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
-  import { BModal } from "bootstrap-vue-next";
-  export default defineComponent({
+export default defineComponent({
     components: {
-      GroupBox,
-      EditableText,
-      ChromePicker: Chrome,
+        GroupBox,
+        EditableText,
+        ChromePicker: Chrome,
+        SyllableIdFilter
     },
     props: {
-      datasource: {
-        type: String,
-        required: true,
-      },
+        datasource: {
+            type: String,
+            required: true,
+        },
     },
-    data() {
-      return {
-        is_expanded: true,
-        tags: [],
-        countMethods: [
-          { text: "Usage", value: CountMethod.Usage },
-          { text: "Frames", value: CountMethod.Frames },
-        ],confirmModal: null as InstanceType<typeof BModal> | null,
-      };
-    },
-    computed: {
-      filter_name: {
-        get(): string {
-          return this.dataview?.name || "";
-        },
-        set(value: string) {
-          this.$store.commit(`${this.datasource}/setName`, value);
-        },
-      },
-      color: {
-        get(): string {
-          return this.dataview?.color || "#000000" ;
-        },
-        set(value: { hex: string }) {
-          this.$store.commit(`${this.datasource}/setColor`, value.hex);
-        },
-      },
-      headerStyles() {
-        const bgColor = this.color;
-    return {
-      background: bgColor,
-      color: getContrastingColor(bgColor) === "dark" ? "black" : "white",
-    };
-  },
+    setup(props) {
+        const filtersStore = useFiltersStore();
+        const dataviewStore = useDataViewStore(props.datasource);
 
-      dataview(): DataviewState {
-        return unnest(this.$store.state, this.datasource);
-      },
-      is_loading(): boolean {
-        return this.dataview?.loading || false;
-      },
-      selectedCountMethod: {
-        get(): CountMethod {
-          return this.dataview?.countMethod || CountMethod.Usage;
-        },
-        set(value: CountMethod) {
-          this.$store.dispatch(`${this.datasource}/switchCountMethod`, value);
-        },
-      },
-      syllable: {
-        get(): number {
-          return this.dataview?.selectedSyllable || 0;
-        },
-        set(value: number) {
-          this.$store.commit(`${this.datasource}/setSelectedSyllable`, value);
-        },
-      },
-      syllableIdOptions(): { value: number; text: string }[] {
-        const filterIds = this.tagsAsIds;
-        const availableIds =
-          this.$store.getters[`${this.datasource}/availableModuleIds`] || [];
+        const is_expanded = ref<boolean>(true);
+        const countMethods = ref([
+            { text: "Usage", value: CountMethod.Usage },
+            { text: "Frames", value: CountMethod.Frames },
+        ]);
+        const confirmModal = ref<InstanceType<typeof BModal> | null>(null);
 
-        const filteredIds = filterIds.length > 0
-          ? availableIds.filter((id) => filterIds.includes(id))
-          : availableIds;
+        const filter_name = computed({
+            get(): string {
+                return dataviewStore.name;
+            },
+            set(value: string) {
+                dataviewStore.name = value;
+            },
+        })
+        const color = computed({
+            get(): string {
+                return dataviewStore.color || "#000000" ;
+            },
+            set(value: { hex: string }) {
+                dataviewStore.color = value.hex;
+            },
+        });
+        const colorChangeHandler = debounce((newColor) => {
+            dataviewStore.color = newColor.hex;
+        }, 100);
+        const headerStyles = computed(() => {
+            return {
+                background: color.value,
+                color: getContrastingColor(color.value) === "dark" ? "black" : "white",
+            };
+        });
+        const is_loading = computed((): boolean => {
+            return dataviewStore.loading || false;
+        });
+        const selectedCountMethod = computed({
+            get(): CountMethod {
+                return dataviewStore.countMethod;
+            },
+            set(value: CountMethod) {
+                dataviewStore.switchCountMethod(value);
+            },
+        });
+        const syllable = computed({
+            get(): number {
+                return dataviewStore.selectedSyllable;
+            },
+            set(value: number) {
+                dataviewStore.selectedSyllable = value;
+            },
+        });
+        const syllableIdOptions = computed((): { value: number; text: string }[] => {
+            const filterIds = dataviewStore.moduleIdFilter;
+            const availableIds = dataviewStore.availableModuleIds;
 
-        return filteredIds.map((id) => ({
-          value: id,
-          text: id.toString(),
-        }));
-      },
-      tagsAsIds(): number[] {
-        try {
-          return parsePart(this.tags.join(",")) || [];
-        } catch {
-          return [];
-        }
-      },
-      canPreviousSyllable(): boolean {
-        return this.syllable > Math.min(...this.syllableIdOptions.map((opt) => opt.value));
-      },
-      canNextSyllable(): boolean {
-        return this.syllable < Math.max(...this.syllableIdOptions.map((opt) => opt.value));
-      },
-      isDefaultFilter(): boolean {
-        return this.$store.state.filters?.items?.length === 1;
-      },
-    },
-    watch: {
-      tagsAsIds: {
-        handler(newIds: number[], oldIds: number[]) {
-          if (newIds.length > 0 && JSON.stringify(newIds) !== JSON.stringify(oldIds)) {
-            const newSelected = Math.min(...newIds); 
-            this.updateSelectedSyllable(newSelected);
-          }
-        },
-        deep: true,
-      },
-    },
+            const filteredIds = filterIds.length > 0
+                ? availableIds.filter((id) => filterIds.includes(id))
+                : availableIds;
 
-    methods: {
-      generateId(suffix: string): string {
-        return `${this.datasource}-${suffix}`;
-      },
-      toggleCollapse() {
-        this.is_expanded = !this.is_expanded;
-      },
-      getContrast(hexcolor: string): string {
-      const c = getContrastingColor(hexcolor);
-      if (c === "dark") {
-        return "black";
-      } else {
-        return "white";
-      }
-    },
-      confirmRemoveFilter() {
-        if (!this.isDefaultFilter && this.confirmModal) {
-          this.confirmModal.show();
+            console.log("Filtered IDs:", filteredIds);
+
+            return filteredIds.map((id) => ({
+                value: id,
+                text: id.toString(),
+            }));
+        });
+        
+        const canPreviousSyllable = computed((): boolean => {
+            return syllable.value > Math.min(...syllableIdOptions.value.map((opt) => opt.value));
+        });
+        const canNextSyllable = computed((): boolean  =>{
+            return syllable.value < Math.max(...syllableIdOptions.value.map((opt) => opt.value));
+        });
+        const isDefaultFilter = computed((): boolean => {
+            return filtersStore.items.length === 1;
+        });
+
+
+
+        function generateId(suffix: string): string {
+            return `${props.datasource}-${suffix}`;
         }
-      },
-      removeFilter() {
-        this.$store.dispatch("filters/removeFilter", this.datasource);
-      },
-      previousSyllable() {
-        if (this.canPreviousSyllable) {
-          this.syllable--;
+        function toggleCollapse() {
+            is_expanded.value = !is_expanded.value;
         }
-      },
-      nextSyllable() {
-        if (this.canNextSyllable) {
-          this.syllable++;
+        function getContrast(hexcolor: string): string {
+            const c = getContrastingColor(hexcolor);
+            if (c === "dark") {
+                return "black";
+            } else {
+                return "white";
+            }
         }
-      },
-      clearAllTags() {
-        this.tags = [];
-      },
-      tagValidator(tag: string) { 
-        const ids = parsePart(tag) as number[];
-        const availableIds =
-        this.$store.getters[`${this.datasource}/availableModuleIds`] || [];
-        if (!ids || ids.length === 0) {
-          return false;
+        function confirmRemoveFilter() {
+            if (!isDefaultFilter.value && confirmModal.value) {
+                confirmModal.value.show();
+            }
         }
-         
-          return ids.every((id) =>
-          availableIds.includes(id));
-      },
-      updateSelectedSyllable(syllableId: number) {
-      this.$store.commit(`${this.datasource}/setSelectedSyllable`, syllableId);
-    },
+        function removeFilter() {
+            filtersStore.removeFilter(props.datasource);
+        }
+        function previousSyllable() {
+            if (canPreviousSyllable.value) {
+                syllable.value--;
+            }
+        }
+        function nextSyllable() {
+            if (canNextSyllable.value) {
+                syllable.value++;
+            }
+        }
+        function updateSelectedSyllable(syllableId: number) {
+            dataviewStore.selectedSyllable = syllableId;
+        }
+
+        return {
+            is_expanded,
+            countMethods,
+            confirmModal,
+            filter_name,
+            color,
+            headerStyles,
+            is_loading,
+            selectedCountMethod,
+            syllable,
+            syllableIdOptions,
+            canPreviousSyllable,
+            canNextSyllable,
+            isDefaultFilter,
+            generateId,
+            toggleCollapse,
+            getContrast,
+            confirmRemoveFilter,
+            removeFilter,
+            previousSyllable,
+            nextSyllable,
+            updateSelectedSyllable,
+        };
     },
     mounted() {
-  this.confirmModal = this.$refs.confirmModal as InstanceType<typeof BModal>;
-},
+        this.confirmModal = this.$refs.confirmModal as InstanceType<typeof BModal>;
+    },
+});
+</script>
 
-  });
-  </script>
-
-  <style scoped>
-  .collapse-button {
+<style scoped>
+.collapse-button {
     padding: 0;
-  }
-  .datafilter {
+}
+.datafilter {
     margin-left: 7px;
     margin-bottom: 4px;
-  }
-  .container {
+}
+.container {
     padding: 0;
-  }
-  .filter-item {
+}
+.filter-item {
     margin-bottom: 0.5rem;
-  }
-  .filter-module-id {
+}
+.filter-module-id {
     padding: 0.5rem;
     background-color: #f8f9fa;
     border-radius: 4px;
-  }
-  .filter-module-id label {
+}
+.filter-module-id label {
     display: block;
     margin-bottom: 0.25rem;
-  }
-  .filter-module-id .BFormTags {
+}
+.filter-module-id .BFormTags {
     margin: 0;
-  }
-  .card-body {
+}
+.card-body {
     padding: 0;
-  }
-  .btn-close {
+}
+.datafilter > .card-header {
+    padding: 0;
+}
+.btn-close {
     margin-left: auto;
-  }
-  </style>
+}
+</style>

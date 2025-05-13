@@ -7,13 +7,4 @@ export function getModuleNamespace(store: any, state) {
     }
 }
 
-export function unnest(theObject: object, path: string, separator: string = "/", ignoreBracket = false): any {
-    try {
-        if (!ignoreBracket) {
-            path = path.replace("[", separator).replace("]", "");
-        }
-        return path.split(separator).reduce((obj, property) => obj[property], theObject);
-    } catch (err) {
-        return undefined;
-    }
-}
+

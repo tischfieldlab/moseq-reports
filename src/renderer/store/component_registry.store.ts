@@ -1,5 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { RenderMode } from "@render/store/datawindow.types";
+import { RenderMode } from "@store/datawindow.types";
 
 export interface ComponentRegistryState {
     registry: ComponentRegistration[];

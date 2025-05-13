@@ -54,9 +54,9 @@
   </template>
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-import { useStore } from "vuex";
-import { UpdateComponentLayoutPayload, UpdateComponentTitlePayload } from "@render/store/datawindow.types";
+import { UpdateComponentLayoutPayload, UpdateComponentTitlePayload } from "@store/datawindow.types";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin"; 
+import { useWindowsStore } from "@store/windows.store";
 
 export default defineComponent({
     name: "ComponentName",
@@ -67,12 +67,11 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const store = useStore();
         const { layout, $wstate } = useWindowMixin(props.id);
         const title = computed({
-            get: () => $wstate.value.title,
+            get: () => $wstate.title,
             set: (value: string) => {
-                store.commit(`${props.id}/updateComponentTitle`, {
+                $wstate.updateComponentTitle({
                     id: props.id,
                     title: value,
                 } as UpdateComponentTitlePayload);
@@ -82,7 +81,7 @@ export default defineComponent({
         const width = computed({
             get: () => layout.value.width,
             set: (value: number) => {
-                store.commit(`${props.id}/updateComponentLayout`, {
+                $wstate.updateComponentLayout({
                     id: props.id,
                     width: value,
                 } as UpdateComponentLayoutPayload);
@@ -92,7 +91,7 @@ export default defineComponent({
         const height = computed({
             get: () => layout.value.height,
             set: (value: number) => {
-                store.commit(`${props.id}/updateComponentLayout`, {
+                $wstate.updateComponentLayout({
                     id: props.id,
                     height: value,
                 } as UpdateComponentLayoutPayload);
@@ -102,7 +101,7 @@ export default defineComponent({
         const positionX = computed({
             get: () => layout.value.position.x,
             set: (value: number) => {
-                store.commit(`${props.id}/updateComponentLayout`, {
+                $wstate.updateComponentLayout({
                     id: props.id,
                     position_x: value,
                 } as UpdateComponentLayoutPayload);
@@ -112,7 +111,7 @@ export default defineComponent({
         const positionY = computed({
             get: () => layout.value.position.y,
             set: (value: number) => {
-                store.commit(`${props.id}/updateComponentLayout`, {
+                $wstate.updateComponentLayout({
                     id: props.id,
                     position_y: value,
                 } as UpdateComponentLayoutPayload);
@@ -120,11 +119,12 @@ export default defineComponent({
         });
 
         const resetSize = () => {
-            store.dispatch(`${props.id}/resetSize`);
+            $wstate.resetSize();
         };
 
+        const windowsStore = useWindowsStore();
         const duplicateComponent = () => {
-            store.dispatch("datawindows/duplicateWindow", props.id);
+            windowsStore.duplicateWindow(props.id);
         };
 
         return {

@@ -9,7 +9,7 @@
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 import UiCard from "@render/components/Core/Window/Window.vue";
-import { useWindowsStore } from "@render/store/windows.store";
+import { useWindowsStore } from "@store/windows.store";
 
 export default defineComponent({
     components: {

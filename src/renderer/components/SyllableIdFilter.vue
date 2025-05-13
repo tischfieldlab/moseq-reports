@@ -6,8 +6,8 @@
                 v-if="tags.length > 0"
                 class="btn btn-link p-0 text"
                 @click="clearAllTags"
-                title="Clear all IDs"
-            >
+                title="Clear all IDs">
+
                 <i class="bi-x-circle-fill"></i>
             </button>
         </label>
@@ -22,8 +22,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref, watch } from "vue";
 import parsePart from "parse-numeric-range";
+import { useDataViewStore } from "@store/dataview.store";
+
 
 export default defineComponent({
     name: "SyllableIdFilter",
@@ -33,48 +35,42 @@ export default defineComponent({
             required: true,
         },
     },
-    data() {
-        return {
-            tags: [],
-        };
-    },
-    computed: {
-        availableIds(): number[] {
-            return (
-                this.$store.getters[`${this.datasource}/availableModuleIds`] || []
-            );
-        },
-        tagsAsIds(): number[] {
-            try {
-                return parsePart(this.tags.join(",")) || [];
-            } catch {
-                return [];
-            }
-        },
-    },
-    watch: {
-        tagsAsIds: {
-            handler(newIds: number[], oldIds: number[]) {
-                if (newIds.length > 0 && JSON.stringify(newIds) !== JSON.stringify(oldIds)) {
-                    const newSelected = Math.min(...newIds); // Automatically select the lowest ID in the new filter
-                    this.$store.commit(`${this.datasource}/setSelectedSyllable`, newSelected);
-                }
-            },
-            deep: true,
-        },
-    },
-    methods: {
-        clearAllTags() {
-            this.tags = [];
-        },
-        tagValidator(tag: string) {
+    setup(props) {
+        const dataviewStore = useDataViewStore(props.datasource);
+
+        const tags = ref<string[]>([]);
+
+        const tagsAsIds = computed((): number[] => {
+            return parsePart(tags.value.join(","));
+        });
+
+        function clearAllTags() {
+            tags.value.splice(0, tags.value.length); // Clear all tags
+        }
+        function tagValidator(tag: string) {
             const ids = parsePart(tag) as number[];
             if (!ids || ids.length === 0) {
                 return false; // Invalid if the tag cannot be parsed into IDs
             }
             // Check if every ID is in the available syllable options
-            return ids.every((id) => this.availableIds.includes(id));
-        },
+            return ids.every((id) => dataviewStore.availableModuleIds.includes(id));
+        }
+
+        watch(tagsAsIds, (newIds: number[], oldIds: number[]) => {
+            console.log("Syllable ID filter changed:", newIds, oldIds);
+            if (JSON.stringify(newIds) !== JSON.stringify(oldIds)) {
+                dataviewStore.updateModuleIdFilters(newIds); // Update the filter in the store
+            }
+        }, {
+            deep: true,
+        });
+
+        return {
+            tags,
+            tagsAsIds,
+            clearAllTags,
+            tagValidator,
+        };
     },
 });
 </script>

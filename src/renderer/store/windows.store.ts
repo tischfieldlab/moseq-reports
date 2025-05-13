@@ -1,4 +1,4 @@
-import { DehydratedDataWindow, DataWindowState } from "@render/store/datawindow.types";
+import { DehydratedDataWindow, DataWindowState } from "@store/datawindow.types";
 import { clone } from "@render/util/Object";
 import { defineStore, acceptHMRUpdate } from 'pinia'
 

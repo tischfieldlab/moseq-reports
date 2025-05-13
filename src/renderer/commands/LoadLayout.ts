@@ -1,9 +1,9 @@
 import fs from "fs";
 import { dialog, shell } from "@electron/remote";
 import Toastify from "toastify-js";
-import { DehydratedDataWindow } from "@render/store/datawindow.types";
-import {useWindowsStore} from "@render/store/windows.store"
-import {useFiltersStore} from "@render/store/filters.store";
+import { DehydratedDataWindow } from "@store/datawindow.types";
+import {useWindowsStore} from "@store/windows.store"
+import {useFiltersStore} from "@store/filters.store";
 
 
 export const LayoutFileExt = "msl";

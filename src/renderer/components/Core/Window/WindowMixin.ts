@@ -1,12 +1,9 @@
 import { defineComponent, computed } from "vue";
-//import { useStore } from "vuex";
-//import { ComponentRegistration } from "@render/store/root.types";
-import { DataWindowState, Layout } from "@render/store/datawindow.types";
-import { unnest } from "@render/util/Vuex";
-import { DataviewState } from "@render/store/dataview.types";
+import { DataWindowState, Layout } from "@store/datawindow.types";
+import { DataviewState } from "@store/dataview.types";
 
-import {useDataWindowStore} from "@render/store/datawindow.store";
-import {useDataViewStore} from "@render/store/dataview.store";
+import {useDataWindowStore} from "@store/datawindow.store";
+import {useDataViewStore} from "@store/dataview.store";
 
 export function useWindowMixin(id: string) {
     const $wstate = useDataWindowStore(id);
@@ -14,12 +11,9 @@ export function useWindowMixin(id: string) {
     const subid = computed(() =>  id.replace("datawindows/", "") );
 
     const spec = computed(() => $wstate.spec);
-    const datasource = computed(() => $wstate.datasource || "");
-    const dataview = computed(() => {
-        if (!datasource.value) return {} as DataviewState;
-        return useDataViewStore(datasource.value) as DataviewState;
-    });
-    const settings = computed(() => $wstate.settings || {});
+    const datasource = computed(() => $wstate.datasource);
+    const dataview = computed(() => useDataViewStore($wstate.datasource) as DataviewState);
+    const settings = computed(() => $wstate.settings);
     const layout = computed(() => ({
         height: $wstate.height,
         width: $wstate.width,
@@ -28,7 +22,7 @@ export function useWindowMixin(id: string) {
             y: $wstate.pos_y,
         },
     }) as Layout);
-    const title = computed(() => $wstate.title || "");
+    const title = computed(() => $wstate.title);
     const is_hidden = computed(() => $wstate.isHidden);
     const aspect_ratio = computed(() => $wstate.aspectRatio);
     const z_index = computed(() => $wstate.z_index);

@@ -86,9 +86,9 @@ import BaseWindow from "@render/components/Core/Window/BaseWindow.vue";
 //import  { ensureDefaults } from "../SnapshotHelper";
 import TitlebarButton from "@render/components/Core/Window/Titlebar/TitlebarButton.vue";
 import WindowManager from "@render/components/Core/Window/WindowManager";
-import { Position, Size } from "@render/store/datawindow.types";
+import { Position, Size } from "@store/datawindow.types";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
-import {useWindowsStore} from "@render/store/windows.store";
+import {useWindowsStore} from "@store/windows.store";
 
 function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
     return Math.min(Math.max(value, min), max);
@@ -106,7 +106,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const windowsStore = useWindowsStore(); // Access Vuex store
+        const windowsStore = useWindowsStore();
         const {title,dataview,layout, spec, z_index, $wstate, aspect_ratio, is_hidden } = useWindowMixin(props.id);
 
         const show_settings_modal = ref(false);

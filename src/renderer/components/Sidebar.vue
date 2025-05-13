@@ -24,11 +24,11 @@
             aria-labelledby="sidebarLabel"
         >
             <div class="offcanvas-header">
-                <BButton type="button" class="btn-close" @click="close" aria-label="Close"></BButton>
+                <!--<BButton type="button" class="btn-close" @click="close" aria-label="Close"></BButton>-->
             </div>
             <div class="offcanvas-body">
                 <keep-alive>
-                <component :is="current ?.component || null" />
+                    <component :is="current?.component" />
                 </keep-alive>
             </div>
         </div>
@@ -38,7 +38,7 @@
 import { defineComponent } from "vue";
 import DataFilterContainer from "@render/components/DataFilterContainer.vue";
 import HistoryViewer from "@render/components/HistoryViewer.vue";
-import {useDatasetsStore} from "@render/store/datasets.store"
+import {useDatasetsStore} from "@store/datasets.store"
 
 
 
@@ -66,23 +66,21 @@ export default defineComponent({
         const datasetsStore = useDatasetsStore();
         return {
             is_open: false,
-            current: undefined as SidebarItem | undefined,
-            items: [
-                {
-                    name: "Data Filters",
-                    icon: ["bi bi-funnel-fill", "bi bi-funnel"],
-                    component: "DataFilterContainer",
-                    align: "flex-start",
-                    isVisible: () => datasetsStore.name !== "",
-                } as SidebarItem,
-                {
-                    name: "History",
-                    icon: ["bi bi-clock-fill", "bi bi-clock-history"],
-                    component: "HistoryViewer",
-                    align: "flex-end",
-                    isVisible: () => true,
-                } as SidebarItem,
-            ],
+            current: undefined as SidebarItem|undefined,
+            items:  [{
+                name: "Data Filters",
+                icon: ["bi bi-funnel-fill", "bi bi-funnel"],
+                component: "DataFilterContainer",
+                align: "flex-start",
+                isVisible: () => datasetsStore.name !== "",
+            } as SidebarItem,
+            {
+                name: "History",
+                icon: ["bi bi-clock-fill", "bi bi-clock-history"],
+                component: "HistoryViewer",
+                align: "flex-end",
+                isVisible: () => true,
+            } as SidebarItem,],
         };
     },
     computed: {
@@ -92,7 +90,7 @@ export default defineComponent({
     },
     methods: {
         openItem(name: string) {
-            this.current = this.items.find((i) => i.name === name);
+            this.current = this.items.find((itm) => itm.name === name);
             this.is_open = this.current !== undefined;
         },
         toggleItem(item: SidebarItem) {

@@ -5,8 +5,8 @@
             <div v-for="(itm, idx) in items" :key="idx" class="toast show mb-3" role="alert" :class="`bg-${itm.variant}`">
                 <div class="toast-header">
                     <!--strong class="me-auto">Notification</strong-->
-                    <small>{{ formatTime(itm.time) }}</small>
-                    <button class="btn-close" aria-label="Close" @click="removeNotification(idx)"></button>
+                    <small><timeago :datetime="itm.time" /></small>
+                    <button class="btn-close" aria-label="Close" @click="removeNotification(idx)" v-b-tooltip="'dismiss'"></button>
                 </div>
                 <div class="toast-body">
                     {{ itm.message }}
@@ -28,9 +28,8 @@
 
 
 <script lang="ts">
-import { defineComponent, computed, reactive } from "vue";
-import { formatDistanceToNow } from "date-fns";
-import {useHistoryStore} from "@render/store/history.store";
+import { defineComponent, computed } from "vue";
+import { useHistoryStore } from "@store/history.store";
 
 export default defineComponent({
     setup() {
@@ -43,10 +42,6 @@ export default defineComponent({
             }))
         );
 
-        const formatTime = (datetime) => {
-            return formatDistanceToNow(new Date(datetime), { addSuffix: true });
-        };
-
         const toggleDetails = (idx) => {
             items.value[idx].showDetails = !items.value[idx].showDetails;
         };
@@ -57,7 +52,6 @@ export default defineComponent({
 
         return {
             items,
-            formatTime,
             toggleDetails,
             removeNotification,
         };
@@ -66,61 +60,61 @@ export default defineComponent({
 </script>
 <style scoped>
 .toast {
-  margin: 6px;
-  border: 1px solid #dee2e6;
-  border-radius: 0.25rem;
-  padding: 12px; 
-  word-wrap: break-word; 
+    margin: 6px;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    word-wrap: break-word;
 }
 
 .toast-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -1px;
 }
 
 .toast-body {
-  margin-top: 6px;
+    margin-top: 6px;
 }
 
 .notification-item {
-  margin-left: 16px; 
-  margin-right: 16px; 
+    margin-left: 16px; 
+    margin-right: 16px; 
 }
 
 h3 {
-  text-align: center;
-  margin-top: 12px;
+    text-align: center;
+    margin-top: 12px;
 }
 
 .no-items {
-  text-align: center;
-  font-size: 14px;
-  color: #a5a5a5;
-  margin: 24px auto; 
-  padding: 12px;
+    text-align: center;
+    font-size: 14px;
+    color: #a5a5a5;
+    margin: 24px auto; 
+    padding: 12px;
 }
 
 .details-link {
-  margin-left: 10px;
-  cursor: pointer;
-  color: #0d6efd;
+    margin-left: 10px;
+    cursor: pointer;
+    color: #0d6efd;
 }
 
 .details {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 textarea {
-  font-family: "Courier New", Courier, monospace;
-  font-size: 12px;
-  white-space: pre;
-  width: 100%;
-  box-sizing: border-box; 
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    white-space: pre;
+    width: 100%;
+    box-sizing: border-box; 
 }
 
 .sidebar-container {
-  padding: 16px; 
-  overflow-x: hidden; 
+    padding: 16px; 
+    overflow-x: hidden; 
 }
 </style>

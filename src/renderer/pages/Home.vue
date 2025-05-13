@@ -14,8 +14,8 @@ import Sidebar from "@render/components/Sidebar.vue";
 import NoDataPresent from "@render/components/NoDataPresent.vue";
 import FileDropAcceptor from "@render/components/FileDropAcceptor.vue";
 import WindowContainer from "@render/components/Core/Window/WindowContainer.vue";
-import { useSidebarStore, SidebarPosition } from "@render/store/sidebar.store";
-import { useDatasetsStore } from "@render/store/datasets.store";
+import { useSidebarStore, SidebarPosition } from "@store/sidebar.store";
+import { useDatasetsStore } from "@store/datasets.store";
 import { ipcRenderer } from "electron";
 
 

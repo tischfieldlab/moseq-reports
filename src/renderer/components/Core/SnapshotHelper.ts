@@ -1,12 +1,12 @@
 import { toPng, toSvg } from "html-to-image";
 import { svgAsDataUri, svgAsPngUri } from "save-svg-as-png";
-import { Store } from "vuex";
+//import { Store } from "vuex";
 import { unnest } from "@render/util/Vuex";
 import app from "@render/index";
 import { dialog } from "@electron/remote";
 import fs from "fs";
 import mime from "mime-types";
-import { DataWindowState } from "@render/store/datawindow.types";
+import { DataWindowState } from "@store/datawindow.types";
 //import { SaveCancelledError } from "@render/components/Core/IO/types";
 //import { showSaveErrorToast, showSaveSuccessToast } from "@render/components/Core/IO/Toasts";
 import WindowManager from "@render/components/Core/Window/WindowManager";

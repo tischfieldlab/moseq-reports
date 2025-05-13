@@ -1,5 +1,5 @@
 import { App } from "vue";
-import { componentRegistry, ComponentRegistration } from "@render/store/component_registry.store";
+import { componentRegistry, ComponentRegistration } from "@store/component_registry.store";
 
 
 export function DiscoverDataComponents(app: App) {

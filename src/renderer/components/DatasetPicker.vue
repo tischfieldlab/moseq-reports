@@ -3,7 +3,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { useWindowsStore } from "@render/store/windows.store";
+import { defineComponent, computed } from "vue";
 
 export default defineComponent({
     props: {
@@ -24,13 +25,15 @@ export default defineComponent({
             default: "",
         },
     },
-    computed: {
-        options(): { text: string; value: string }[] {
-            return Object.entries(this.dataview.views)
+    setup(props) {
+        const windowsStore = useWindowsStore();
+
+        const options = computed((): { text: string; value: string }[] => {
+            return Object.entries(props.dataview.views)
                 .map(([key, dset]) => {
                     const parts = key.split("/");
                     const win = this.$store.state.datawindows[parts[1]];
-                    if (win && this.owner && this.owner !== parts[1]) {
+                    if (win && props.owner && props.owner !== parts[1]) {
                         return {
                             window: win,
                             text: `${win.title}: ${parts[2]}`,
@@ -40,8 +43,12 @@ export default defineComponent({
                     return undefined;
                 })
                 .filter((item) => item !== undefined) 
-                .filter(this.filters as (item: any) => boolean); 
-        },
+                .filter(props.filters as (item: any) => boolean); 
+        });
+
+        return {
+            options,
+        };
     },
     methods: {
         onInput(newValue: string) {

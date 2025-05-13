@@ -5,25 +5,22 @@ import { LoadDefaultLayout } from './LoadLayout';
 import { EventEmitter } from "@render/util/EventEmitter";
 import axios from "axios";
 
-import {useDatasetsStore} from '@render/store/datasets.store'
-import {useServerStore} from '@render/store/server.store'
-import {useHistoryStore} from '@render/store/history.store'
-import {useFiltersStore} from "@render/store/filters.store";
-import {useDataViewStore} from "@render/store/dataview.store";
-import {useWindowsStore} from "@render/store/windows.store";
+import {useDatasetsStore} from '@store/datasets.store'
+import {useServerStore} from '@store/server.store'
+import {useHistoryStore} from '@store/history.store'
+import {useFiltersStore} from "@store/filters.store";
+import {useDataViewStore} from "@store/dataview.store";
+import {useWindowsStore} from "@store/windows.store";
 
 
 
-ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent, data: string) => {
-    if (data == null || data === "" || data === undefined) {
-        return;
-    }
-    LoadDataFile(data);
+ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent) => {
+    LoadData();
 });
 
 export const DataFileExt = 'msq';
 
-export default function () {
+export default function LoadData() {
     const filenames = dialog.showOpenDialogSync({
         properties: ['openFile'],
         filters: [

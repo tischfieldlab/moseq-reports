@@ -91,6 +91,7 @@ export default defineConfig(({ command }) => {
     resolve: {
       alias: [
         { find: "@render", replacement: join(__dirname, "src/renderer") },
+        { find: "@store", replacement: join(__dirname, "src/renderer/store") },
         { find: "@main", replacement: join(__dirname, "src/electron") },
         { find: "@dataserver", replacement: join(__dirname, "src/dataserver") },
         //{ find: "vue", replacement: "@vue/compat" },

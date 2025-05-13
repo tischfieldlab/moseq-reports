@@ -66,7 +66,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch, reactive ,onMounted} from "vue";
-import { Position } from "@render/store/datawindow.types";
+import { Position } from "@store/datawindow.types";
 import TitlebarButton from "@render/components/Core/Window/Titlebar/TitlebarButton.vue";
 import CloseButton from "@render/components/Core/Window/Titlebar/CloseButton.vue";
 import { applyAspectRatio, isValidHeight, isValidWidth } from "@render/components/Core/Window/util";

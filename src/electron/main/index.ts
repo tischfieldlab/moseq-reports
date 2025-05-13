@@ -53,139 +53,139 @@ const url = process.env["VITE_DEV_SERVER_URL"] || "localhost";
 const indexHtml = join(ROOT_PATH.dist, "index.html");
 
 async function createWindow() {
-  win = new BrowserWindow({
-    icon: join(ROOT_PATH.public, "img", "msq.ico"),
-    frame: false,
-    titleBarStyle: "hidden",
-    titleBarOverlay: true,
-    backgroundColor: "#FFFFFF",
-    webPreferences: {
-      preload,
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-    width: 1280,
-    height: 720,
-  });
+    win = new BrowserWindow({
+        icon: join(ROOT_PATH.public, "img", "msq.ico"),
+        frame: false,
+        titleBarStyle: "hidden",
+        titleBarOverlay: true,
+        backgroundColor: "#FFFFFF",
+        webPreferences: {
+            preload,
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
+        width: 1280,
+        height: 720,
+    });
 
-  remoteMain.enable(win.webContents);
+    remoteMain.enable(win.webContents);
 
-  if (app.isPackaged) {
-    win.loadFile(indexHtml);
-  } else {
-    win.loadURL(url);
-    win.webContents.openDevTools({ mode: "right" });
-  }
-  win.webContents.on("did-finish-load", () => {
-    win?.webContents.send("main-process-message", new Date().toLocaleString());
-  });
+    if (app.isPackaged) {
+        win.loadFile(indexHtml);
+    } else {
+        win.loadURL(url);
+        win.webContents.openDevTools({ mode: "right" });
+    }
+    win.webContents.on("did-finish-load", () => {
+        win?.webContents.send("main-process-message", new Date().toLocaleString());
+    });
 
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("https:")) shell.openExternal(url);
-    return { action: "deny" };
-  });
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        if (url.startsWith("https:")) shell.openExternal(url);
+        return { action: "deny" };
+    });
 
-  attachTitlebarToWindow(win);
+    attachTitlebarToWindow(win);
 }
 
-app
-  .whenReady()
-  .then(async () => {
-    // console.log(process.env.NODE_ENV)
-    if (isDevelopment && !process.env.IS_TEST) {
-      await installExtension(VUEJS_DEVTOOLS)
-        .then((name) => console.log(`Added Extension2: ${name.name}`)) // tslint:disable-line:no-console
-        .catch((err) => console.error(`Failed to install extension:`, err.toString())); // tslint:disable-line:no-console
-    }
-    try {
-      console.log("Initializing DataServer...");
-      console.log(url)
-      dataServer = new DataServer();
-      await dataServer.start();
-      console.log(`DataServer started at ${dataServer.getAddress()}`);
-    } catch (error) {
-      console.error("Failed to start DataServer:", error);
-    }
-  })
-  .then(createWindow);
+app.whenReady()
+    .then(async () => {
+        // console.log(process.env.NODE_ENV)
+        if (isDevelopment && !process.env.IS_TEST) {
+        await installExtension(VUEJS_DEVTOOLS)
+            .then((name) => console.log(`Added Extension2: ${name.name}`)) // tslint:disable-line:no-console
+            .catch((err) => console.error(`Failed to install extension:`, err.toString())); // tslint:disable-line:no-console
+        }
+        try {
+            console.log("Initializing DataServer...");
+            console.log(url)
+            dataServer = new DataServer();
+            await dataServer.start();
+            console.log(`DataServer started at ${dataServer.getAddress()}`);
+        } catch (error) {
+            console.error("Failed to start DataServer:", error);
+        }
+    })
+    .then(createWindow);
 
-  app.on("window-all-closed", async () => {
+app.on("window-all-closed", async () => {
     win = null;
     if (dataServer) {
-      await dataServer.shutdown();
+        await dataServer.shutdown();
     }
     app.quit();
-  });
-  
+});
+
 
 app.on("second-instance", () => {
-  if (win) {
-    if (win.isMinimized()) win.restore();
-    win.focus();
-  }
+    if (win) {
+        if (win.isMinimized())
+            win.restore();
+        win.focus();
+    }
 });
 
 app.on("activate", async () => {
-  if (BrowserWindow.getAllWindows().length) {
-    BrowserWindow.getAllWindows()[0].focus();
-  } else {
-    createWindow();
-    if (dataServer && !dataServer.isServerRunning()) {
-      await dataServer.start();
+    if (BrowserWindow.getAllWindows().length) {
+        BrowserWindow.getAllWindows()[0].focus();
+    } else {
+        createWindow();
+        if (dataServer && !dataServer.isServerRunning()) {
+            await dataServer.start();
+        }
     }
-  }
 });
 
 
 ipcMain.handle("is-data-server-running", () => {
-  return dataServer ? dataServer.isServerRunning() : false;
+    return dataServer ? dataServer.isServerRunning() : false;
 });
 
 ipcMain.handle("get-data-server-address", () => {
-  return dataServer ? dataServer.getAddress() : "Server not running.";
+    return dataServer ? dataServer.getAddress() : "Server not running.";
 });
 
 
 ipcMain.handle("start-data-server", async () => {
-  try {
-    if (dataServer && !dataServer.isServerRunning()) {
-      await dataServer.start();
-      return { success: true, address: dataServer.getAddress() };
-    } else {
-      return { success: true, message: "DataServer is already running." };
+    try {
+        if (dataServer && !dataServer.isServerRunning()) {
+            await dataServer.start();
+            return { success: true, address: dataServer.getAddress() };
+        } else {
+            return { success: true, message: "DataServer is already running." };
+        }
+    } catch (error) {
+        console.error("Error starting DataServer:", error);
+        return { success: false, error: error.message };
     }
-  } catch (error) {
-    console.error("Error starting DataServer:", error);
-    return { success: false, error: error.message };
-  }
 });
 
 ipcMain.handle("shutdown-data-server", async () => {
-  try {
-    if (dataServer) {
-      await dataServer.shutdown();
-      return { success: true };
-    } else {
-      return { success: false, message: "DataServer is not running." };
+    try {
+        if (dataServer) {
+            await dataServer.shutdown();
+            return { success: true };
+        } else {
+            return { success: false, message: "DataServer is not running." };
+        }
+    } catch (error) {
+        console.error("Error shutting down DataServer:", error);
+        return { success: false, error: error.message };
     }
-  } catch (error) {
-    console.error("Error shutting down DataServer:", error);
-    return { success: false, error: error.message };
-  }
 });
 
 // Receive component list from renderer and forward to menustrip
 ipcMain.on("available-components-response", (event, components) => {
-  BrowserWindow.getAllWindows().forEach((win) => {
-    win.webContents.send("available-components-response", components);
-  });
+    BrowserWindow.getAllWindows().forEach((win) => {
+        win.webContents.send("available-components-response", components);
+    });
 });
 
 // Receive dataset loaded status from renderer and notify menu
 ipcMain.on("dataset-loaded-state", (event, isLoaded: boolean) => {
-  console.log("datat loaded is triggered")
-  BrowserWindow.getAllWindows().forEach((win) => {
-    win.webContents.send("dataset-loaded-state", isLoaded);
-  });
+    console.log("datat loaded is triggered")
+    BrowserWindow.getAllWindows().forEach((win) => {
+        win.webContents.send("dataset-loaded-state", isLoaded);
+    });
 });
 

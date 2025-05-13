@@ -7,26 +7,29 @@ import {
   SelectedGroupsPayload,
   PublishDatasetPayload,
   UnpublishDatasetPayload,
-} from "@render/store/dataview.types";
+} from "@store/dataview.types";
 
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import {useDatasetsStore} from './datasets.store'
 
 const FilterColorGenerator = scaleOrdinal(schemePastel1);
 
-
+interface GroupItem {
+    name: string;
+    color: string;
+    selected: boolean;
+}
 
 export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
     state: (): DataviewState => ({
         name: "",
         color: "",
         loading: false,
-        countMethod: CountMethod.Usage,
-        selectedGroups: [],
-        groupColors: [],
-        moduleIdFilter: [],
         selectedSyllable: 0,
+        countMethod: CountMethod.Usage,
+        moduleIdFilter: [] as number[],
         views: {},
+        groups: [] as GroupItem[],
     }),
     getters: {
         selectedSyllableAs: (state) => (countMethod: CountMethod) => {
@@ -56,7 +59,7 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
                 return undefined;
             }
         },
-        selectedSyllables(state) {
+        selectedSyllables(state): number[] {
             let syllables;
             if (state.moduleIdFilter.length === 0) {
                 syllables = this.availableModuleIds;
@@ -65,7 +68,13 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
             }
             return syllables;
         },
-        availableModuleIds(state) {
+        selectedGroups(state): string[] {
+            return state.groups.filter((group) => group.selected).map((group) => group.name);
+        },
+        selectedGroupColors(state): string[] {
+            return state.groups.filter((group) => group.selected).map((group) => group.color);
+        },
+        availableModuleIds(state): number[] {
             const datasetStore = useDatasetsStore();
             if (state.countMethod === CountMethod.Usage) {
                 return datasetStore.availableUsageModuleIds
@@ -74,25 +83,13 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
             }
             return [];
         },
-        availableGroups(state) {
-            const datasetStore = useDatasetsStore();
-            return datasetStore.groups
+        availableGroupNames(state): string[] {
+            return useDatasetsStore().groups
         },
     },
     actions: {
-        setName(name: string) {
-            this.name = name;
-        },
-        setColor(color: string) {
-            this.color = color;
-        },
-        setLoading(loading: boolean) {
-            this.loading = loading;
-        },
-        setGroupColors(groupColors: string[]) {
-            this.groupColors = groupColors;
-        },
         setView(payload: DataviewPayload) {
+            this.loading = true;
             if (payload.countMethod) {
                 this.countMethod = payload.countMethod;
             }
@@ -105,9 +102,7 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
             if (payload.moduleIdFilter) {
                 this.moduleIdFilter = payload.moduleIdFilter;
             }
-        },
-        setSelectedSyllable(selectedSyllable: number) {
-            this.selectedSyllable = selectedSyllable;
+            this.loading = false;
         },
         publishDataset(payload: PublishDatasetPayload) {
             this.views[`${payload.owner}/${payload.name}`] = payload; // Direct assignment
@@ -120,20 +115,32 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
                 color: this.color,
                 name: this.name,
                 countMethod: this.countMethod,
-                selectedGroups: this.selectedGroups,
-                groupColors: this.groupColors,
+                groups: this.groups,
                 moduleIdFilter: this.moduleIdFilter,
                 selectedSyllable: this.selectedSyllable,
             };
         },
         async load(payload) {
-            await this.updateView(payload);
-            this.setSelectedSyllable(payload.selectedSyllable);
+            this.loading = true;
+            if (payload.countMethod) {
+                this.countMethod = payload.countMethod;
+            }
+            if (payload.selectedGroups) {
+                this.selectedGroups = payload.selectedGroups;
+            }
+            if (payload.groupColors) {
+                this.groupColors = payload.groupColors;
+            }
+            if (payload.moduleIdFilter) {
+                this.moduleIdFilter = payload.moduleIdFilter;
+            }
+            this.selectedSyllable = payload.selectedSyllable;
+            this.loading = false;
         },
         switchCountMethod(payload: CountMethod) {
             const datasetStore = useDatasetsStore();
             const newSelectedSyllable = this.selectedSyllableAs(payload);
-        
+
             const lm = datasetStore.label_map;
             const from = this.countMethod.toLowerCase();
             const filterSyllables = this.moduleIdFilter.map((id) => {
@@ -142,46 +149,18 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
                 return result[payload.toLocaleLowerCase()];
                 }
             });
-        
-            this.updateView({
-                countMethod: payload,
-                moduleIdFilter: filterSyllables,
-            } as DataviewPayload);
-            this.setSelectedSyllable(newSelectedSyllable);
+
+            this.countMethod = payload;
+            this.moduleIdFilter.splice(0, this.moduleIdFilter.length, ...filterSyllables);
+            this.selectedSyllable = newSelectedSyllable;
         },
         async updateModuleIdFilters(payload: number[]) {
-            await this.updateView({
-                moduleIdFilter: payload,
-            } as DataviewPayload);
-        
-            if (
-                this.moduleIdFilter.length > 0 &&
-                !this.moduleIdFilter.includes(this.selectedSyllable)
+            this.moduleIdFilter.splice(0, this.moduleIdFilter.length, ...payload);
+
+            if (this.moduleIdFilter.length > 0 &&
+               !this.moduleIdFilter.includes(this.selectedSyllable)
             ) {
-                this.setSelectedSyllable(this.moduleIdFilter[0]);
-            }
-        },
-        updateSelectedGroups(payload: SelectedGroupsPayload) {
-            if (payload.groups === undefined && payload.colors !== undefined) {
-                this.setGroupColors(payload.colors);
-            } else {
-                this.updateView({
-                    selectedGroups: payload.groups,
-                    groupColors: payload.colors,
-                } as DataviewPayload);
-            }
-        },
-        async updateView(payload: DataviewPayload) {
-            this.setLoading(true);
-            try {
-                payload.countMethod = payload.countMethod || this.countMethod;
-                payload.selectedGroups = payload.selectedGroups || this.selectedGroups;
-                payload.moduleIdFilter = payload.moduleIdFilter || this.moduleIdFilter;
-                this.setView(payload);
-            } catch (e) {
-                console.warn(e);
-            } finally {
-                this.setLoading(false);
+                this.selectedSyllable = this.moduleIdFilter[0];
             }
         },
         async initialize() {
@@ -189,21 +168,25 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
             const datasetStore = useDatasetsStore();
             const namespace = this.$id;
             const name = "filter" + namespace?.split("-")[1];
-            this.setName(name);
-            const groups = this.availableGroups;
+            this.name = name;
+            this.color = FilterColorGenerator(name);
+
             const colorScale = scaleOrdinal(schemeDark2);
-            this.setColor(FilterColorGenerator(name));
-            await this.updateView({
-                selectedGroups: groups,
-                groupColors: groups.map((g: string) => colorScale(g)),
-            } as DataviewPayload)
-            .then(() => {
-                datasetStore.$onAction(({name, after}) => {
-                    after((result) => {
-                        if (name === "setData") {
-                            this.updateView({});
-                        }
-                    });
+            this.groups.length = 0; // Clear the groups array before populating it
+            for (const group of this.availableGroupNames) {
+                this.groups.push({
+                    name: group,
+                    color: colorScale(group),
+                    selected: true,
+                    count: 0,
+                });
+            }
+
+            datasetStore.$onAction(({name, after}) => {
+                after((result) => {
+                    if (name === "setData") {
+                        this.initialize();
+                    }
                 });
             });
         },
