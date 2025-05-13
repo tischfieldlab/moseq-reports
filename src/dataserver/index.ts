@@ -53,7 +53,7 @@ export class DataServer {
         res.status(500).json({ message: "Failed to receive dataset." });
       }
   });
-  this.app.get("*/crowd_movies/*", async (req: Request, res: Response) =>{
+  this.app.get("*.mp4", async (req: Request, res: Response) =>{
     try{
     //console.log("request got",req)
     const url = decodeURI(req.url as string);
@@ -119,11 +119,12 @@ export class DataServer {
   this.app.get("/load-usagedata/", async (req, res) => {
     try {
       const { path, operations, debug } = req.query;
-  
+      console.log(path , operations);
       if (!path || !operations) {
         return res.status(400).json({ error: "Missing required query parameters" });
       }
       const decodedPath = decodeURIComponent(path as string); 
+      console.log(decodedPath)
       const parsedOperations = typeof operations === "string" ? JSON.parse(decodeURIComponent(operations)) : operations;
       const data = await LoadData(decodedPath, parsedOperations, debug === true);
       res.json(data);

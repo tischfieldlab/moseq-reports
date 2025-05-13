@@ -1,5 +1,6 @@
-[{"type": "DataQuery",
-    "title": "Data Query",
+[{
+    "type": "SyllableFlow",
+    "title": "Syllable Flow",
     "layout": {
         "width": 400,
         "height": 500,

@@ -1,10 +1,10 @@
 <template>
-    <b-form-group
+    <BFormGroup
       :label="label"
       :label-for="formId"
       class="container-form-group"
     >
-      <b-form-tags
+      <BFormTags
         :id="formId"
         v-model="localValue"
         :disabled="disabled"
@@ -12,7 +12,7 @@
         class="mb-2"
       >
         <template #default="{ tags, disabled, addTag, removeTag }">
-          <b-dropdown
+          <BDropdown
             size="sm"
             variant="outline-secondary"
             block
@@ -23,12 +23,12 @@
               <b-icon :icon="icon" />
             </template>
   
-            <b-dropdown-form @submit.stop.prevent>
-              <b-input-group size="sm" class="mb-2" :disabled="disabled">
-                <b-input-group-prepend is-text>
+            <BDropdownForm @submit.stop.prevent>
+              <BInputGroup size="sm" class="mb-2" :disabled="disabled">
+                <BInputGroup-prepend is-text>
                   <b-icon icon="search" />
-                </b-input-group-prepend>
-                <b-form-input
+                </BInputGroup-prepend>
+                <BFormInput
                   v-model="search"
                   id="tag-search-input"
                   type="search"
@@ -36,23 +36,23 @@
                   autocomplete="off"
                   placeholder="Search"
                 />
-              </b-input-group>
-            </b-dropdown-form>
+              </BInputGroup>
+            </BDropdownForm>
   
-            <b-dropdown-divider />
+            <BDropdownForm />
   
-            <b-dropdown-item-button
+            <BDropdownItemButton
               v-for="option in availableOptions"
               :key="option"
               @click="onOptionClick(option, addTag)"
             >
               {{ option }}
-            </b-dropdown-item-button>
+            </BDropdownItemButton>
   
-            <b-dropdown-text v-if="availableOptions.length === 0">
+            <BDropdownText v-if="availableOptions.length === 0">
               There are no {{ noun }}s available to select
-            </b-dropdown-text>
-          </b-dropdown>
+            </BDropdownText>
+          </BDropdown>
   
           <ul
             v-if="tags.length > 0"
@@ -60,19 +60,19 @@
             style="display: inline !important;"
           >
             <li v-for="tag in tags" :key="tag" class="list-inline-item">
-              <b-form-tag
+              <BFormTag
                 @remove="removeTag(tag)"
                 :title="tag"
                 :disabled="disabled"
                 variant="info"
               >
                 {{ tag }}
-              </b-form-tag>
+              </BFormTag>
             </li>
           </ul>
         </template>
-      </b-form-tags>
-    </b-form-group>
+      </BFormTags>
+    </BFormGroup>
   </template>
   
   <script setup lang="ts">
@@ -128,18 +128,18 @@
     min-width: 0;
     width: 1%;
   }
-  .b-form-tags {
+  .BFormTags {
     margin-bottom: 0 !important;
     border-radius: 0;
   }
-  .b-dropdown {
+  .BDropdown {
     display: inline-block;
     margin-right: 0.5rem;
   }
-  .b-dropdown-form {
+  .BDropdownForm {
     padding: 0.25rem 0.5rem;
   }
-  .b-dropdown-form > .input-group {
+  .BDropdownForm > .input-group {
     margin-bottom: 0 !important;
   }
   </style>

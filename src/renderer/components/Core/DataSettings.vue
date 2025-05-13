@@ -1,19 +1,19 @@
 <template>
-    <b-container>
-      <b-row>
-        <b-col cols="10">
+    <BContainer>
+      <BRow>
+        <BCol cols="10">
           <BInputGroup prepend="Data Source">
             <BFormSelect v-model="datasource" :options="available_sources" />
           </BInputGroup>
-        </b-col>
-        <b-col cols="1">
+        </BCol>
+        <BCol cols="1">
           <BButton @click="addDatasource">
             <BSpinner v-show="isAddingSource" small type="grow"></BSpinner>
             <span v-show="!isAddingSource">Add</span>
           </BButton>
-        </b-col>
-      </b-row>
-    </b-container>
+        </BCol>
+      </BRow>
+    </BContainer>
   </template>
   
   <script lang="ts">
