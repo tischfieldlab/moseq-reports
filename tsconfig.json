@@ -13,7 +13,7 @@
         "strict": true,
         "paths": {
             "@render/*": ["src/renderer/*"],
-            "@stpre/*": ["src/renderer/store/*"],
+            "@store/*": ["src/renderer/store/*"],
             "@main/*": ["src/electron/*"]
         },
         "typeRoots": ["./src/renderer/@types"],
