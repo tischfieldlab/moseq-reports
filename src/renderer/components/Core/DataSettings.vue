@@ -43,7 +43,6 @@ export default defineComponent({
             set(value: string) {
                 useDataWindowStore(props.id).updateComponentDataSource({
                     source: value,
-                    id: props.id,
                 });
             },
         });

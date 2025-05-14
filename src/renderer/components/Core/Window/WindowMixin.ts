@@ -5,15 +5,15 @@ import { DataviewState } from "@store/dataview.types";
 import {useDataWindowStore} from "@store/datawindow.store";
 import {useDataViewStore} from "@store/dataview.store";
 
-export function useWindowMixin(id: string) {
+export function useWindowMixin<TSettings>(id: string) {
     const $wstate = useDataWindowStore(id);
 
     const subid = computed(() =>  id.replace("datawindows/", "") );
 
     const spec = computed(() => $wstate.spec);
     const datasource = computed(() => $wstate.datasource);
-    const dataview = useDataViewStore($wstate.datasource) as DataviewState;
-    const settings = computed(() => $wstate.settings);
+    const dataview = useDataViewStore($wstate.datasource);
+    const settings = computed(() => $wstate.settings as TSettings);
     const layout = computed(() => ({
         height: $wstate.height,
         width: $wstate.width,
@@ -23,8 +23,8 @@ export function useWindowMixin(id: string) {
         },
     }) as Layout);
     const title = computed(() => $wstate.title);
-    const is_hidden = computed(() => $wstate.isHidden);
-    const aspect_ratio = computed(() => $wstate.aspectRatio);
+    const is_hidden = computed(() => $wstate.is_hidden);
+    const aspect_ratio = computed(() => $wstate.aspect_ratio);
     const z_index = computed(() => $wstate.z_index);
 
     return {

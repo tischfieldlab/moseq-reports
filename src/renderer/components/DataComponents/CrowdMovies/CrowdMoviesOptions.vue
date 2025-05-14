@@ -12,7 +12,7 @@
             <!-- Playback Rate -->
             <BInputGroup prepend="Playback rate">
                 <BFormInput
-                    v-model="playbackRateInput"
+                    v-model="playback_rate"
                     type="number"
                     min="0.0"
                     max="16"
@@ -43,53 +43,31 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const id = props.id; // Replace with dynamic ID if necessary
-        const { datasource, dataview, $wstate } = useWindowMixin(props.id);
-
-        // Get settings from mixin or provide defaults
-        const settings = computed(() =>
-            $wstate.settings as { playback_rate: number; loop: boolean } || {
-                playback_rate: 1.0,
-                loop: true,
-            }
-        );
+        const { $wstate, settings } = useWindowMixin<CrowdMoviesOptions>(props.id);
 
         // Computed property for loop
         const loop = computed({
-            get: () => settings.value?.loop ?? true, // Default to true if not defined
+            get: () => settings.value.loop, // Default to true if not defined
             set: (value: boolean) => {
                 $wstate.updateComponentSettings({
-                    id: props.id,
-                    settings: { ...settings.value, loop: value }, // Merge existing settings with the new loop value
+                    settings: { loop: value }, // Merge existing settings with the new loop value
                 });
             },
         });
 
-        // Local reactive reference for playback rate input
-        const playbackRateInput = ref<number | null>(settings.value?.playback_rate ?? 1.0);
-
-        // Watch for changes in playbackRateInput and enforce limits
-        watch(playbackRateInput, (newRate) => {
-            if (newRate === null || newRate === undefined) {
-                // Allow blank during editing
-                return;
-            }
-
-            const clampedRate = Math.min(16, Math.max(0.01, newRate)); // Enforce limits
-            if (clampedRate !== newRate) {
-                playbackRateInput.value = clampedRate; // Reset to limit if outside range
-            }
-
-            // Update store with the validated value
-            $wstate.updateComponentSettings({
-                id: props.id,
-                settings: { ...settings.value, playback_rate: clampedRate },
-            });
+        const playback_rate = computed({
+            get: () => settings.value.playback_rate, // Default to true if not defined
+            set: (value: number) => {
+                const clampedRate = Math.min(16, Math.max(0.01, value)); // Enforce limits
+                $wstate.updateComponentSettings({
+                    settings: { playback_rate: clampedRate }, // Merge existing settings with the new loop value
+                });
+            },
         });
 
         return {
             loop,
-            playbackRateInput,
+            playback_rate,
         };
     },
 });

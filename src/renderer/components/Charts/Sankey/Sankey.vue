@@ -83,23 +83,23 @@ import { GetScale } from '@render/components/Charts/Colors/D3ColorProvider';
 import { Node, Link, NodeAlignment, ColoringMode } from './Sankey.types';
 
 interface Props {
-  data: { nodes: Node[]; links: Link[] };
-  width: number;
-  height: number;
-  colorLegendTitle?: string;
-  title?: string;
-  tooltipFormatter?: (item: Node | Link | undefined, context: any) => string;
-  nodeIdSuperset?: string[];
-  nodeAlignment?: NodeAlignment;
-  nodeWidth?: number;
-  nodePadding?: number;
-  nodeColorMode?: ColoringMode;
-  nodeColorProperty?: string;
-  linkColorMode?: ColoringMode;
-  linkColorProperty?: string;
-  categoricalColormap?: string;
-  quantitativeColormap?: string;
-  noDataMessage?: string;
+    data: { nodes: Node[]; links: Link[] };
+    width: number;
+    height: number;
+    colorLegendTitle: string;
+    title?: string;
+    tooltipFormatter?: (item: Node | Link | undefined, context: any) => string;
+    nodeIdSuperset?: string[];
+    nodeAlignment?: NodeAlignment;
+    nodeWidth?: number;
+    nodePadding?: number;
+    nodeColorMode?: ColoringMode;
+    nodeColorProperty?: string;
+    linkColorMode?: ColoringMode;
+    linkColorProperty?: string;
+    categoricalColormap?: string;
+    quantitativeColormap?: string;
+    noDataMessage?: string;
 }
 
 const props = defineProps<Props>();
@@ -247,7 +247,7 @@ function default_tooltip_formatter(hoverItem: Node | Link | undefined, that: any
     if ('type' in hoverItem && hoverItem.type === 'node') {
       return `Node ${hoverItem.id}`;
     } else if ('type' in hoverItem && hoverItem.type === 'edge') {
-      return `Link ${hoverItem.id}<br />value = ${hoverItem.value.toExponential(3)}`;
+      return `Link ${hoverItem.id}<br />value = ${(hoverItem as Link).value.toExponential(3)}`;
     }
   }
   return '';

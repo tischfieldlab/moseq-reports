@@ -1,24 +1,20 @@
 import { schemeDark2, schemePastel1 } from "d3-scale-chromatic";
 import { scaleOrdinal } from "d3-scale";
 import {
-  DataviewState,
-  CountMethod,
-  DataviewPayload,
-  SelectedGroupsPayload,
-  PublishDatasetPayload,
-  UnpublishDatasetPayload,
+    DataviewState,
+    CountMethod,
+    DataviewPayload,
+    PublishDatasetPayload,
+    UnpublishDatasetPayload,
+    SyllableMap,
 } from "@store/dataview.types";
 
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import {useDatasetsStore} from './datasets.store'
+import { useDatasetsStore } from './datasets.store'
 
 const FilterColorGenerator = scaleOrdinal(schemePastel1);
 
-interface GroupItem {
-    name: string;
-    color: string;
-    selected: boolean;
-}
+
 
 export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
     state: (): DataviewState => ({
@@ -27,9 +23,9 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
         loading: false,
         selectedSyllable: 0,
         countMethod: CountMethod.Usage,
-        moduleIdFilter: [] as number[],
+        moduleIdFilter: [],
         views: {},
-        groups: [] as GroupItem[],
+        groups: [],
     }),
     getters: {
         selectedSyllableAs: (state) => (countMethod: CountMethod) => {
@@ -44,23 +40,23 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
                 return -5;
             }
         },
-        selectedSyllableMap(state) {
+        selectedSyllableMap(state): SyllableMap {
             const datasetStore = useDatasetsStore();
             const lm = datasetStore.label_map;
             const from = state.countMethod.toLowerCase();
             const result = lm.find((row) => row[from] === state.selectedSyllable);
             if (result !== undefined) {
                 return {
-                    [CountMethod.Frames.toLowerCase()]: result[CountMethod.Frames.toLowerCase()],
-                    [CountMethod.Usage.toLowerCase()]: result[CountMethod.Usage.toLowerCase()],
-                    [CountMethod.Raw.toLowerCase()]: result[CountMethod.Raw.toLowerCase()],
+                    frames: result[CountMethod.Frames.toLowerCase()],
+                    usage: result[CountMethod.Usage.toLowerCase()],
+                    raw: result[CountMethod.Raw.toLowerCase()],
                 };
             } else {
-                return undefined;
+                throw new Error(`Syllable ${state.selectedSyllable} not found in label map`);
             }
         },
         selectedSyllables(state): number[] {
-            let syllables;
+            let syllables: number[];
             if (state.moduleIdFilter.length === 0) {
                 syllables = this.availableModuleIds;
             } else {
@@ -84,7 +80,8 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
             return [];
         },
         availableGroupNames(state): string[] {
-            return useDatasetsStore().groups
+            const datasetStore = useDatasetsStore();
+            return datasetStore.groups
         },
     },
     actions: {
@@ -93,11 +90,8 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
             if (payload.countMethod) {
                 this.countMethod = payload.countMethod;
             }
-            if (payload.selectedGroups) {
-                this.selectedGroups = payload.selectedGroups;
-            }
-            if (payload.groupColors) {
-                this.groupColors = payload.groupColors;
+            if (payload.groups) {
+                this.groups.splice(0, this.groups.length, ...payload.groups);
             }
             if (payload.moduleIdFilter) {
                 this.moduleIdFilter = payload.moduleIdFilter;
@@ -120,21 +114,20 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
                 selectedSyllable: this.selectedSyllable,
             };
         },
-        async load(payload) {
+        async load(payload: DataviewPayload) {
             this.loading = true;
             if (payload.countMethod) {
                 this.countMethod = payload.countMethod;
             }
-            if (payload.selectedGroups) {
-                this.selectedGroups = payload.selectedGroups;
-            }
-            if (payload.groupColors) {
-                this.groupColors = payload.groupColors;
+            if (payload.groups) {
+                this.groups.splice(0, this.groups.length, ...payload.groups);
             }
             if (payload.moduleIdFilter) {
                 this.moduleIdFilter = payload.moduleIdFilter;
             }
-            this.selectedSyllable = payload.selectedSyllable;
+            if (payload.selectedSyllable) {
+                this.selectedSyllable = payload.selectedSyllable;
+            }
             this.loading = false;
         },
         switchCountMethod(payload: CountMethod) {
@@ -146,7 +139,9 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
             const filterSyllables = this.moduleIdFilter.map((id) => {
                 const result = lm.find((row) => row[from] === id);
                 if (result !== undefined) {
-                return result[payload.toLocaleLowerCase()];
+                    return result[payload.toLocaleLowerCase()];
+                } else {
+                    throw new Error(`Syllable ${id} not found in label map`);
                 }
             });
 
@@ -158,7 +153,7 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
             this.moduleIdFilter.splice(0, this.moduleIdFilter.length, ...payload);
 
             if (this.moduleIdFilter.length > 0 &&
-               !this.moduleIdFilter.includes(this.selectedSyllable)
+                !this.moduleIdFilter.includes(this.selectedSyllable)
             ) {
                 this.selectedSyllable = this.moduleIdFilter[0];
             }
@@ -178,11 +173,10 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
                     name: group,
                     color: colorScale(group),
                     selected: true,
-                    count: 0,
                 });
             }
 
-            datasetStore.$onAction(({name, after}) => {
+            datasetStore.$onAction(({ name, after }) => {
                 after((result) => {
                     if (name === "setData") {
                         this.initialize();

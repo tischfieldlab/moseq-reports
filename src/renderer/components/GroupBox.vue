@@ -36,12 +36,11 @@ import { defineComponent, ref, computed, onMounted, onUnmounted } from "vue";
 import draggable from "vuedraggable";
 import { Chrome } from "@ckpack/vue-color";
 import { getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
-import axios from "axios";
 
-import {useServerStore} from "@store/server.store"
 import { useDataViewStore } from "@store/dataview.store";
 import {useDatasetsStore} from "@store/datasets.store";
 import { debounce } from "@render/util/Events";
+import DataService from "@api";
 
 
 export default defineComponent({
@@ -57,37 +56,29 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const serverStore = useServerStore();
         const datasetsStore = useDatasetsStore();
         const dataviewStore = useDataViewStore(props.datasource);
 
-        const serverAddress = computed(() => serverStore.serverAddress);
         const watchers: (() => void)[] = [];
 
         const group_counts = ref<Record<string, number>>({});
         const updateGroupCounts = async () => {
-            try {
-                const response = await axios.get(`${serverAddress.value}/fetch-samples`, {
-                    params: {
-                        path: datasetsStore.resolve("samples"),
-                        operations: JSON.stringify([{ type: "map" }]),
-                        debug: false,
-                    },
+            DataService.fetchData("samples", [{ type: "map" }])
+                .catch((err) => {
+                    console.error("Error fetching samples:", err);
+                })
+                .then((data) => {
+                    if (Array.isArray(data)) {
+                        group_counts.value = data.reduce((acc, curr) => {
+                            if (curr.default_group !== undefined) {
+                                acc[curr.default_group] = (acc[curr.default_group] || 0) + 1;
+                            }
+                            return acc;
+                        }, {});
+                    } else {
+                        console.error("Resolved data is not an array:", data);
+                    }
                 });
-                const resolvedData = response.data;
-                if (Array.isArray(resolvedData)) {
-                    group_counts.value = resolvedData.reduce((acc, curr) => {
-                        if (curr.default_group !== undefined) {
-                            acc[curr.default_group] = (acc[curr.default_group] || 0) + 1;
-                        }
-                        return acc;
-                    }, {});
-                } else {
-                    console.error("Resolved data is not an array:", resolvedData);
-                }
-            } catch (err) {
-                console.error("Error updating group counts:", err);
-            }
         };
         updateGroupCounts();
 

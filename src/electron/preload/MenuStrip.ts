@@ -14,16 +14,14 @@ import showAboutWindow from "../../renderer/commands/ShowAbout";
  * @returns {Menu}      The menu object to be used as
  *                      the main menu strip for the app.
  */
-let localMenu: Electron.Menu | undefined;
+let localMenu: Electron.Menu = createMainMenu();
 
 export function createMainMenu(forceRebuild = false): Electron.Menu {
-    if (localMenu === undefined || forceRebuild) {
-        localMenu = Menu.buildFromTemplate(createMainMenuStripOptions());
-        Menu.setApplicationMenu(localMenu);
-    }
-    return localMenu;
+    const menu = Menu.buildFromTemplate(createMainMenuStripOptions());
+    Menu.setApplicationMenu(menu);
+    return menu;
 }
-createMainMenu();
+
 
 /**
  * Creates the main menu constructor options
@@ -36,62 +34,62 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
     return [{
         label: "File",
         submenu: [{
-                label: "Open Data...",
-                accelerator: "CmdOrCtrl+O",
-                type: "normal",
-                click: () => {
-                    ipcRenderer.send(MenuEvents.OPEN_DATA);
-                },
-            }, {
-                type: "separator"
-            }, {
-                label: "Exit",
-                accelerator: "Alt+F4",
-                type: "normal",
-                click: (_item, win) => {
-                    win?.close();
-                },
-            }],
+            label: "Open Data...",
+            accelerator: "CmdOrCtrl+O",
+            type: "normal",
+            click: () => {
+                ipcRenderer.send(MenuEvents.OPEN_DATA);
+            },
         }, {
-            label: "Edit",
-            submenu: [
-                { label: "Undo", role: "undo", accelerator: "CmdOrCtrl+Z" },
-                { label: "Redo", role: "redo", accelerator: "CmdOrCtrl+Y" },
-                { type: "separator" },
-                { label: "Cut", role: "cut", accelerator: "CmdOrCtrl+X" },
-                { label: "Copy", role: "copy", accelerator: "CmdOrCtrl+C" },
-                { label: "Paste", role: "paste", accelerator: "CmdOrCtrl+V" },
-            ],
+            type: "separator"
         }, {
-            id: "menu-tools",
-            label: "Tools",
-            submenu: [],
+            label: "Exit",
+            accelerator: "Alt+F4",
+            type: "normal",
+            click: (_item, win) => {
+                win?.close();
+            },
+        }],
+    }, {
+        label: "Edit",
+        submenu: [
+            { label: "Undo", role: "undo", accelerator: "CmdOrCtrl+Z" },
+            { label: "Redo", role: "redo", accelerator: "CmdOrCtrl+Y" },
+            { type: "separator" },
+            { label: "Cut", role: "cut", accelerator: "CmdOrCtrl+X" },
+            { label: "Copy", role: "copy", accelerator: "CmdOrCtrl+C" },
+            { label: "Paste", role: "paste", accelerator: "CmdOrCtrl+V" },
+        ],
+    }, {
+        id: "menu-tools",
+        label: "Tools",
+        submenu: [],
+    }, {
+        label: "View",
+        submenu: [{
+            id: "menu-view-snapshot-workspace",
+            label: "Snapshot Workspace...",
+            type: "normal",
+            click(_item, window) {
+                // window?.webContents.send(MenuEvents.SNAPSHOT_WORKSPACE);
+            },
         }, {
-            label: "View",
+            label: "Sidebar Position...",
             submenu: [{
-                id: "menu-view-snapshot-workspace",
-                label: "Snapshot Workspace...",
-                type: "normal",
-                click(_item, window) {
-                    // window?.webContents.send(MenuEvents.SNAPSHOT_WORKSPACE);
+                label: "Left",
+                type: "radio",
+                click: (mi) => {
+                    // SetSidebarLeft();
+                    mi.checked = true;
                 },
-            },{
-                label: "Sidebar Position...",
-                submenu: [{
-                    label: "Left",
-                    type: "radio",
-                    click: (mi) => {
-                        // SetSidebarLeft();
-                        mi.checked = true;
-                    },
-                }, {
-                    label: "Right",
-                    type: "radio",
-                    click: (mi) => {
-                        // SetSidebarRight();
-                        mi.checked = true;
-                    },
-                },],
+            }, {
+                label: "Right",
+                type: "radio",
+                click: (mi) => {
+                    // SetSidebarRight();
+                    mi.checked = true;
+                },
+            },],
         }, {
             type: "separator"
         }, {
@@ -128,55 +126,55 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
         { label: "Reload", role: "reload" },
         { label: "Force Reload", role: "forceReload" },
         { label: "Toggle Dev Tools", role: "toggleDevTools" },
-      ],
+        ],
     },
     {
-      label: "Help",
-      submenu: [
-        {
-          label: "Check for Updates...",
-          type: "normal",
-          click: () => {
-            // CheckUpdates();
-          },
-        },
-        { type: "separator" },
-        {
-          label: "About",
-          type: "normal",
-          click: () => showAboutWindow(),
-        },
-        // {
-        //   label: "User Guide",
-        //   type: "normal",
-        //   click: () => shell.openExternal(documentation),
-        // },
-      ],
+        label: "Help",
+        submenu: [
+            {
+                label: "Check for Updates...",
+                type: "normal",
+                click: () => {
+                    // CheckUpdates();
+                },
+            },
+            { type: "separator" },
+            {
+                label: "About",
+                type: "normal",
+                click: () => showAboutWindow(),
+            },
+            // {
+            //   label: "User Guide",
+            //   type: "normal",
+            //   click: () => shell.openExternal(documentation),
+            // },
+        ],
     },
-  ];
+    ];
 }
 
 
 
 ipcRenderer.on("available-components-response", (_event, components) => {
-    console.log("✅ Received components in menustrip:", components);
+    console.log("✅ Received components in menu-strip:", components);
     let toolsMenu = localMenu?.items.find(item => item.id === "menu-tools");
 
     if (toolsMenu && toolsMenu.submenu) {
         // clear existing tools (in case this is re-run)
-        
+
         components
-        .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
-        .forEach((cr) => {
-            toolsMenu.submenu?.append(
-                new MenuItem({
-                    label: cr.friendly_name,
-                    type: "normal",
-                    enabled: false, // initially disabled
-                    click: () => ipcRenderer.send("create-component", cr),
-                })
-            );
-        });
+            .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
+            .forEach((cr) => {
+                toolsMenu.submenu?.append(
+                    new MenuItem({
+                        label: cr.friendly_name,
+                        type: "normal",
+                        enabled: false, // initially disabled
+                        click: () => ipcRenderer.send("create-component", cr),
+                    })
+                );
+            });
 
         // ✅ This is CRUCIAL!
         Menu.setApplicationMenu(localMenu);

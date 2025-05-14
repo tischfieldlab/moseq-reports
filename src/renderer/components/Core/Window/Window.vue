@@ -1,83 +1,83 @@
 <template>
-  <BaseWindow
-    ref="window"
-    :id="id"
-    :swatch_color="swatch_color"
-    :title="title"
-    :width="window_width"
-    :height="window_height"
-    :pos="window_position"
-    :swatch_title="swatch_title"
-    :isHidden="is_hidden"
-    @onClosed="onClosed"
-    @onMoved="onMoved"
-    @onResized="onResized"
-    @onWindowFocused="onWindowFocused"
-    @onShowHideToggle="onShowHideToggle"
-    :zIndex="z_index"
-    :aspectRatio="aspect_ratio"
-  >
-  <template v-slot:titlebarButtons>
-  <BButton
-    v-if="!is_hidden"
-    @click="onSnapshotClicked"
-    title="Take snapshot"
-    class="titlebar-button"
-    variant="link"
-  >
-    <i class="bi bi-camera-fill" aria-hidden="true"></i>
-  </BButton>
-
-  <BButton
-    v-else
-    :disabled="true"
-    title="Snapshot disabled while contents are hidden"
-    class="titlebar-button"
-    variant="link"
-  >
-    <i class="bi bi-camera-fill" aria-hidden="true"></i>
-  </BButton>
-  <BButton
-    @click="onSettingsClicked"
-    title="Adjust settings"
-    class="titlebar-button"
-    variant="link"
-  >
-    <i class="bi bi-gear-fill" aria-hidden="true"></i>
-  </BButton>
-</template>
-
-    <BOverlay :show="is_loading" no-fade class="overlay-container">
-      <component ref="body" :id="id" :is="spec.component_type" />
-    </BOverlay>
-
-    <BModal
-      :title="settings_title"
-      v-model="show_settings_modal"
-      header-close-class = "light"
-      header-bg-variant="dark"
-      header-text-variant="light"
-      body-bg-variant="light"
-      body-text-variant="dark"
-      no-footer 
+    <BaseWindow
+        ref="window"
+        :id="id"
+        :swatch_color="swatch_color"
+        :title="title"
+        :width="window_width"
+        :height="window_height"
+        :pos="window_position"
+        :swatch_title="swatch_title"
+        :isHidden="is_hidden"
+        @onClosed="onClosed"
+        @onMoved="onMoved"
+        @onResized="onResized"
+        @onWindowFocused="onWindowFocused"
+        @onShowHideToggle="onShowHideToggle"
+        :zIndex="z_index"
+        :aspectRatio="aspect_ratio"
     >
-      <BTabs>
-        <BTab title="Layout">
-          <LayoutSettings :id="id" />
-        </BTab>
-        <BTab title="Data">
-          <DataSettings :id="id" />
-        </BTab>
-        <BTab title="Component">
-          <component v-if="spec.settings_type" ref="modal_component" :id="id" :is="spec.settings_type" />
-          <p v-else class="no-settings text-muted">No settings available for this component</p>
-        </BTab>
-        <BTab title="Snapshots" :disabled="is_hidden">
-          <SnapshotSettings :id="id" />
-        </BTab>
-      </BTabs>
-    </BModal>
-  </BaseWindow>
+        <template v-slot:titlebarButtons>
+            <BButton
+                v-if="!is_hidden"
+                @click="onSnapshotClicked"
+                title="Take snapshot"
+                class="titlebar-button"
+                variant="link"
+            >
+                <i class="bi bi-camera-fill" aria-hidden="true"></i>
+            </BButton>
+
+            <BButton
+                v-else
+                :disabled="true"
+                title="Snapshot disabled while contents are hidden"
+                class="titlebar-button"
+                variant="link"
+            >
+                <i class="bi bi-camera-fill" aria-hidden="true"></i>
+            </BButton>
+            <BButton
+                @click="onSettingsClicked"
+                title="Adjust settings"
+                class="titlebar-button"
+                variant="link"
+            >
+                <i class="bi bi-gear-fill" aria-hidden="true"></i>
+            </BButton>
+        </template>
+
+        <BOverlay :show="is_loading" no-fade class="overlay-container">
+            <component ref="body" :id="id" :is="spec.component_type" />
+        </BOverlay>
+
+        <BModal
+            :title="settings_title"
+            v-model="show_settings_modal"
+            header-close-class = "light"
+            header-bg-variant="dark"
+            header-text-variant="light"
+            body-bg-variant="light"
+            body-text-variant="dark"
+            no-footer 
+        >
+            <BTabs>
+                <BTab title="Layout">
+                    <LayoutSettings :id="id" />
+                </BTab>
+                <BTab title="Data">
+                    <DataSettings :id="id" />
+                </BTab>
+                <BTab title="Component">
+                    <component v-if="spec.settings_type" ref="modal_component" :id="id" :is="spec.settings_type" />
+                <p v-else class="no-settings text-muted">No settings available for this component</p>
+                </BTab>
+                <BTab title="Snapshots" :disabled="is_hidden">
+                    <SnapshotSettings :id="id" />
+                </BTab>
+            </BTabs>
+        </BModal>
+    </BaseWindow>
 </template>
 
 <script lang="ts">
@@ -107,7 +107,7 @@ export default defineComponent({
     },
     setup(props) {
         const windowsStore = useWindowsStore();
-        const {title,dataview,layout, spec, z_index, $wstate, aspect_ratio, is_hidden } = useWindowMixin(props.id);
+        const {title, dataview, layout, spec, z_index, $wstate, aspect_ratio, is_hidden } = useWindowMixin(props.id);
 
         const show_settings_modal = ref(false);
         const component_loading = ref(0);
@@ -115,18 +115,17 @@ export default defineComponent({
         
         console.log(spec.value)
         const settings_title = computed(() => `${title.value} Settings`);
-        const swatch_color = computed(() => dataview.value.color);
-        const is_loading = computed(() => component_loading.value > 0 || dataview.value.loading);
-        const swatch_title = computed(() => `Using ${dataview.value.name}`);
+        const swatch_color = computed(() => dataview.color);
+        const is_loading = computed(() => component_loading.value > 0 || dataview.loading);
+        const swatch_title = computed(() => `Using ${dataview.name}`);
         const window_width = computed(() => layout.value.width);
         const window_height = computed(() => layout.value.height);
         const window_position = computed(() => layout.value.position);
-        
+
 
         const onResized = (event: any) => {
             const size: Size = { width: event.width, height: event.height };
             $wstate.updateComponentLayout({
-                id: props.id,
                 width: size.width,
                 height: size.height,
             });
@@ -135,13 +134,14 @@ export default defineComponent({
         const onSettingsClicked = () => {
             show_settings_modal.value = true;
         };
+
         const onSnapshotClicked = (event:any) => {
             snapshotContent(event);
-        }
+        };
+
         const onMoved = (event: any) => {
             const position: Position = { x: event.x, y: clamp(event.y, 0) };
             $wstate.updateComponentLayout({
-                id: props.id,
                 position_x: position.x,
                 position_y: position.y,
             });
@@ -158,13 +158,13 @@ export default defineComponent({
 
         const onShowHideToggle = (event: any) => {
             $wstate.toggleWindowShowHide({
-                id: props.id,
                 isHidden: event.isHidden,
             });
         };
+
         const snapshotContent = async (event: MouseEvent) => {
             if (bodyRef.value) {
-                //await Snapshot(bodyRef.value, title.value, dataview.value.snapshot);
+                //await Snapshot(bodyRef.value, title.value, dataview.snapshot);
             }
         };
 
@@ -221,9 +221,9 @@ export default defineComponent({
 
 <style scoped>
 .titlebar-button {
-    padding: 0.01rem; 
-    font-size: 1.2rem; 
-    margin: 0 0.2rem; 
+    padding: 0.01rem;
+    font-size: 1.2rem;
+    margin: 0 0.2rem;
     color: #495057;
 }
 
@@ -234,7 +234,7 @@ export default defineComponent({
     width: inherit;
     height: inherit;
 }
-.BModal .header-close-label{
+.BModal .header-close-label {
     color: white;
 }
 </style>

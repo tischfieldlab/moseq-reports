@@ -7,7 +7,7 @@ export interface DataWindowState {
     pos_y: number;
     datasource: string;
     render_mode: RenderMode;
-    settings: object;
+    settings: Record<string, unknown>;
     z_index: number;
     is_hidden: boolean;
     aspect_ratio?: number;

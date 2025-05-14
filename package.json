@@ -25,6 +25,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "@types/date-fns": "^2.6.3",
     "@vitejs/plugin-vue": "^5.0.4",
     "electron": "^33.2.1",

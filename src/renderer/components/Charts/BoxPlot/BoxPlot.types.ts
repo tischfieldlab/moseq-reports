@@ -3,6 +3,11 @@ export enum WhiskerType {
     MIN_MAX = "min_max",
 }
 
+export enum OrderingType {
+    Natural = "natural",
+    Dataset = "dataset",
+}
+
 export interface DataPoint {
     id: string;
     value: number;

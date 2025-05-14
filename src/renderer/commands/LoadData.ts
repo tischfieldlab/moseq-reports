@@ -6,12 +6,11 @@ import { EventEmitter } from "@render/util/EventEmitter";
 import axios from "axios";
 
 import {useDatasetsStore} from '@store/datasets.store'
-import {useServerStore} from '@store/server.store'
 import {useHistoryStore} from '@store/history.store'
 import {useFiltersStore} from "@store/filters.store";
 import {useDataViewStore} from "@store/dataview.store";
 import {useWindowsStore} from "@store/windows.store";
-
+import DataService from "@api";
 
 
 ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent) => {
@@ -45,22 +44,11 @@ export function LoadDataFile(filename: string) {
 
 async function beginLoadingProcess(filename: string) {
     const datasetStore = useDatasetsStore();
-    const serverStore = useServerStore();
     const historyStore = useHistoryStore();
     const filtersStore = useFiltersStore();
     const windowsStore = useWindowsStore();
 
     try {
-        const serverAddress = await ipcRenderer.invoke("get-data-server-address");
-
-        if (!serverAddress) {
-            console.error("DataServer is not running. Cannot send data.");
-            hideLoadingToast();
-            return;
-        }
-        console.log("Server address fetched:", serverAddress);
-        serverStore.setServerAddress(serverAddress);
-  
         nextTick()
         .then(() => {
             //console.log("Starting data load process...");
@@ -74,13 +62,7 @@ async function beginLoadingProcess(filename: string) {
         //})
         .then(async (data) => {
             // Send the dataset to the DataServer
-            try {
-                const response = await axios.post(`${serverAddress}/api/load-file`, {filename});
-                return response.data;
-            } catch (error) {
-                console.error("Failed to send filename to DataServer:", error);
-                throw error;
-            }
+            return DataService.loadFile(filename);
         })
         .then((data) => {
             console.log("Processed data received from DataServer:", data);

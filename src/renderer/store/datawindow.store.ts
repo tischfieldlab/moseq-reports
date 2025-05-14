@@ -12,11 +12,7 @@ import {
     ShowHidePayload,
 } from "@store/datawindow.types";
 import stateMerge from "vue-object-merge";
-// import {
-//   applyAspectRatio,
-//   isValidHeight,
-//   isValidWidth,
-// } from "@render/components/Core/Window/util";
+import { applyAspectRatio, isValidHeight, isValidWidth } from "@render/components/Core/Window/util";
 
 import {componentRegistry, ComponentRegistration} from './component_registry.store'
 import { defineStore, acceptHMRUpdate } from 'pinia'
@@ -42,15 +38,6 @@ export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`
     getters: {
         spec(state) {
             return componentRegistry.getSpecification(state.type);
-        },
-        zIndex(state) {
-            return state.z_index;
-        },
-        aspectRatio(state) {
-            return state.aspect_ratio;
-        },
-        isHidden(state) {
-            return state.is_hidden;
         },
     },
     actions: {
@@ -78,22 +65,14 @@ export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`
             const clientRect = document.getElementsByClassName("home")[0];
             const maxX = clientRect.clientWidth;
             const maxY = clientRect.clientHeight;
-      
-            //   // In the event that this is a resize, we apply the aspect ratio constraints if there is an aspect ratio
-            //   const apsectRatioDims = applyAspectRatio(
-            //     deltaX,
-            //     deltaY,
-            //     state.aspect_ratio
-            //   );
-      
-            //   if (
-            //     (payload.width || payload.height) &&
-            //     isValidWidth(apsectRatioDims.width) &&
-            //     isValidHeight(apsectRatioDims.height)
-            //   ) {
-            //     state.width = apsectRatioDims.width;
-            //     state.height = apsectRatioDims.height;
-            //   }
+
+            // In the event that this is a resize, we apply the aspect ratio constraints if there is an aspect ratio
+            const apsectRatioDims = applyAspectRatio(deltaX, deltaY, this.aspect_ratio);
+
+            if ((payload.width || payload.height) && (isValidWidth(apsectRatioDims.width) && isValidHeight(apsectRatioDims.height))) {
+                this.width = apsectRatioDims.width;
+                this.height = apsectRatioDims.height;
+            }
       
             if (payload.position_x !== undefined) {
                 if (payload.position_x < 0) payload.position_x = 0;
@@ -124,12 +103,11 @@ export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`
         updateZIndex(payload: UpdateComponentZIndexPayload) {
             this.z_index = payload.z_index;
         },
-        updateAspectRatio(payload: UpdateComponentAspectRatio & UpdateComponentAspectRatioByWidthAndHeight) {
-            if (payload.aspect_ratio) {
-                this.aspect_ratio = payload.aspect_ratio;
-            } else {
-                this.aspect_ratio = payload.width / payload.height;
-            }
+        updateAspectRatio(payload: UpdateComponentAspectRatio) {
+            this.aspect_ratio = payload.aspect_ratio;
+        },
+        updateAspectRatioByWidthHeight(payload: UpdateComponentAspectRatioByWidthAndHeight) {
+            this.aspect_ratio = payload.width / payload.height;
         },
         resetSize() {
             const spec = componentRegistry.getSpecification(this.type) as ComponentRegistration;

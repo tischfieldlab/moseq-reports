@@ -40,12 +40,12 @@ export const useFiltersStore = defineStore("filters", {
         },
         async loadFilters(filters: any) {
             try {
-                const existing = [this.items];
+                const existing = this.items;
                 const imported: string[] = [];
-        
+
                 for (const [name, filter] of Object.entries(filters)) {
                     imported.push(name);
-        
+
                     if (existing.includes(name)) {
                         await useDataViewStore(name).load(filter);
                     } else {
@@ -55,7 +55,7 @@ export const useFiltersStore = defineStore("filters", {
                         this.addFilter(name);
                     }
                 }
-      
+
                 existing
                     .filter((ns) => !imported.includes(ns))
                     .forEach((id) => this.removeFilter(id));

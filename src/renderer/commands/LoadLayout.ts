@@ -2,14 +2,17 @@ import fs from "fs";
 import { dialog, shell } from "@electron/remote";
 import Toastify from "toastify-js";
 import { DehydratedDataWindow } from "@store/datawindow.types";
-import {useWindowsStore} from "@store/windows.store"
-import {useFiltersStore} from "@store/filters.store";
+import { useWindowsStore } from "@store/windows.store"
+import { useFiltersStore } from "@store/filters.store";
+
+
+
 
 
 export const LayoutFileExt = "msl";
 const LayoutFileFilters = [
-  { name: "MoSeq Layout Files", extensions: [LayoutFileExt] },
-  { name: "All Files", extensions: ["*"] },
+    { name: "MoSeq Layout Files", extensions: [LayoutFileExt] },
+    { name: "All Files", extensions: ["*"] },
 ];
 const toastId = "msl-loading-toast";
 
@@ -57,8 +60,8 @@ export async function LoadDefaultLayout(showNotifications = true) {
  * @param showNotifications - Whether to show notifications for the operation.
  */
 export async function LoadLayoutFile(filename: string, showNotifications = true) {
-    const filtersStore = useFiltersStore();
     const windowsStore = useWindowsStore();
+    const filtersStore = useFiltersStore();
     if (showNotifications) {
         showStartLoadingToast();
     }
@@ -98,8 +101,8 @@ export async function LoadLayoutFile(filename: string, showNotifications = true)
 }
 
 export async function SaveLayout() {
-    const filtersStore = useFiltersStore();
     const windowsStore = useWindowsStore();
+    const filtersStore = useFiltersStore();
     const dest = dialog.showSaveDialogSync({
         title: "Save Layout",
         defaultPath: `layout.${LayoutFileExt}`,
@@ -126,6 +129,7 @@ export async function SaveLayout() {
  * Clears the current layout.
  */
 export function ClearLayout() {
+    const windowsStore = useWindowsStore();
     windowsStore.clearLayout();
 }
 

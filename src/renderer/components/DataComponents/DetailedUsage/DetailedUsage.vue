@@ -26,10 +26,12 @@ import { OrderingType } from "@render/components/Charts/ClusteredHeatmap/Cluster
 //import { Operation } from "@render/components/Core/DataLoader/DataLoader.types";
 import { RenderMode } from "@store/datawindow.types";
 import { useWindowMixin }  from "@render/components/Core/Window/WindowMixin";
-import axios from "axios";
 
-import {useServerStore} from "@store/server.store";
 import { useDatasetsStore } from "@store/datasets.store";
+import DataService from "@api";
+import { DetailedUsageSettings } from "./DetailedUsage.types";
+import { Operation } from "@render/api/DataLoader.types";
+
 
 RegisterDataComponent({
     friendly_name: "Usage Details",
@@ -63,34 +65,32 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const serverStore = useServerStore();
         const datasetsStore = useDatasetsStore();
 
         const individualUsageData = ref([]);
-        const { layout, dataview, settings,$wstate} = useWindowMixin(props.id);
-        const selectedSyllable = computed(() => dataview.value.selectedSyllable);
-        const countMethod = computed(() => dataview.value.countMethod.toLowerCase());
-        const dataset = computed(() => [
-            datasetsStore.resolve("usage"),
+        const { layout, dataview, settings, $wstate} = useWindowMixin<DetailedUsageSettings>(props.id);
+        const selectedSyllable = computed(() => dataview.selectedSyllable);
+        const countMethod = computed(() => dataview.countMethod.toLowerCase());
+        const dataset = computed((): Operation[] =>
             [{
                 type: "map",
                 columns: [
-                [`usage_${countMethod.value.toLowerCase()}`, "value"],
-                ["group", "group"],
-                [`id_${countMethod.value.toLowerCase()}`, "syllable"],
-                ["uuid", "id"],
+                    [`usage_${countMethod.value.toLowerCase()}`, "value"],
+                    ["group", "group"],
+                    [`id_${countMethod.value.toLowerCase()}`, "syllable"],
+                    ["uuid", "id"],
                 ],
             }, {
                 type: "filter",
                 filters: {
                     syllable: [selectedSyllable.value],
-                    group: dataview.value.selectedGroups,
+                    group: dataview.selectedGroups,
                 },
             }, {
                 type: "sort",
                 columns: [["value", "asc"]],
-            }],
-        ]);
+            }]
+        );
 
         const renderMode = computed(() => {
             const mode = $wstate.render_mode;
@@ -108,9 +108,9 @@ export default defineComponent({
 
         const groupNames = computed(() => {
             if (settings.value.group_order_type === OrderingType.Natural) {
-                return dataview.value.selectedGroups;
+                return dataview.selectedGroups;
             } else if (settings.value.group_order_type === OrderingType.Dataset) {
-                const datasetGroups = dataview.value.views[settings.value.group_order_dataset];
+                const datasetGroups = dataview.views[settings.value.group_order_dataset];
                 if (datasetGroups !== undefined) {
                     return datasetGroups.data;
                 }
@@ -119,11 +119,10 @@ export default defineComponent({
             }
             return [];
         });
-        const groupColors = computed(() =>
-            groupNames.value.map((gn) =>
-                dataview.value.groupColors[dataview.value.selectedGroups.indexOf(gn)]
-            )
-        );
+        const groupColors = computed(() => {
+            const colors = Object.fromEntries(dataview.groups.map((g) => [g.name, g.color]));
+            groupNames.value.map((gn) => colors[gn] = colors[gn]);
+        });
 
         const formatTooltip = (itm: any): string => {
             console.log(itm.value)
@@ -143,21 +142,14 @@ export default defineComponent({
             //console.log(formatTooltip({ value: "datawindows/datawindow-0" })),
             dataset,
             async () => {
-                console.log("dataset",dataset)
-                const response = await axios.get(`${serverStore.serverAddress}/load-usagedata`, {
-                    params: {
-                        path: dataset.value[0],
-                        operations: dataset.value[1],
-                        debug: false,
-                    },
-                })
-                .then((response) => {
-                    individualUsageData.value = response.data;
-                })
-                .catch((error) => {
-                    console.error("Error loading Detailed Usage data:", error);
-                });
-                //individualUsageData.value = await LoadData(dataset.value[0], dataset.value[1]);
+                console.log("dataset", dataset)
+                DataService.fetchData<any>("usage", dataset.value)
+                    .then((response) => {
+                        individualUsageData.value = response.data;
+                    })
+                    .catch((error) => {
+                        console.error("Error loading Detailed Usage data:", error);
+                    });
             },
             { immediate: true }
         );

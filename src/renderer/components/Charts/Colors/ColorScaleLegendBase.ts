@@ -11,7 +11,7 @@ export default defineComponent({
     name: "ColorScaleLegend",
     props: {
         scale: {
-            type: [Function, Object],
+            type: scaleLinear,
             required: true,
         },
         width: {

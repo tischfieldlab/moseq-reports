@@ -3,7 +3,8 @@
 </template>
 
 <script lang="ts">
-import { useWindowsStore } from "@render/store/windows.store";
+import { useWindowsStore } from "@store/windows.store";
+import { useDataWindowStore } from "@store/datawindow.store";
 import { defineComponent, computed } from "vue";
 
 export default defineComponent({
@@ -32,7 +33,7 @@ export default defineComponent({
             return Object.entries(props.dataview.views)
                 .map(([key, dset]) => {
                     const parts = key.split("/");
-                    const win = this.$store.state.datawindows[parts[1]];
+                    const win = useDataWindowStore(parts[1]);
                     if (win && props.owner && props.owner !== parts[1]) {
                         return {
                             window: win,

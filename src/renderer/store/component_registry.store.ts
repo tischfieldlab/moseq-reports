@@ -58,8 +58,12 @@ class ComponentRegistry {
         }
     }
 
-    getSpecification(componentType: string): ComponentRegistration | undefined {
-        return this.registry.find((r) => r.component_type === componentType);
+    getSpecification(componentType: string): ComponentRegistration {
+        const reg =  this.registry.find((r) => r.component_type === componentType);
+        if (!reg) {
+            throw new Error(`Component ${componentType} not found in registry`);
+        }
+        return reg;
     }
 }
 

@@ -1,26 +1,25 @@
 <template>
     <BInputGroup prepend="Column" size="sm">
-      <b-select v-model="operation.column" :options="columnOptions" />
+        <b-select v-model="operation.column" :options="columnOptions" />
     </BInputGroup>
-  </template>
-  
-  <script setup lang="ts">
-  import { computed } from 'vue';
-  import type { PluckOperation } from '@render/components/Core/DataTypes';
-  
-  const props = defineProps<{
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+import type { PluckOperation } from '@api';
+
+const props = defineProps<{
     operation: PluckOperation;
     previousResult: any;
     owner: string;
-  }>();
-  
-  const columnOptions = computed(() => {
+}>();
+
+const columnOptions = computed(() => {
     const obj = props.previousResult;
     if (!obj) return [];
     if (Array.isArray(obj)) {
-      return obj.length > 0 ? Object.keys(obj[0]) : [];
+        return obj.length > 0 ? Object.keys(obj[0]) : [];
     }
     return Object.keys(obj);
-  });
-  </script>
-  
+});
+</script>

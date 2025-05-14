@@ -7,7 +7,7 @@
             :per-page="1"
             :limit="numExamples"
             align="fill"
-            :aria-controls="videoID"
+            :aria-controls="videoId"
             :hide-goto-end-buttons="true"
             size="sm"
         />
@@ -36,13 +36,13 @@
 
 <script lang="ts">
 import { defineComponent, computed, ref } from "vue";
-//import { useStore } from "vuex";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import RegisterDataComponent from "@render/components/Core";
 import VideoClips from "@render/components/Charts/VideoPlayer/VideoPlayer.vue";
 import { RenderMode } from "@render/store/datawindow.types";
-import { CountMethod } from "@render/store/dataview.types";
 import {useDatasetsStore} from "@store/datasets.store";
+import { ModuleClipsSettings } from "./ModuleClips.types";
+import DataService from "@api";
 
 RegisterDataComponent({
     friendly_name: "Module Clips",
@@ -74,14 +74,14 @@ export default defineComponent({
     setup(props) {
         //const store = useStore();
         const datasetsStore = useDatasetsStore();
-        const { $wstate, layout, dataview, settings } = useWindowMixin(props.id);
+        const { $wstate, layout, dataview, settings } = useWindowMixin<ModuleClipsSettings>(props.id);
         const exampleNum = ref(1);
         const videoId = ref(`video-${Math.random().toString(36).substr(2, 9)}`);
-        const selectedSyllable = computed(() => dataview.value.selectedSyllable);
-        const countMethod = computed(() => dataview.value.countMethod);
+        const selectedSyllable = computed(() => dataview.selectedSyllable);
+        const countMethod = computed(() => dataview.countMethod);
         const items = computed(() => {
             const ids = dataview.selectedSyllableMap;
-            const clips = datasetsStore.manifest?.syllable_clips?.manifest || [];
+            const clips = (datasetsStore.manifest?.syllable_clips as any).manifest || [];
             return clips.filter((row: any) => row.sid_raw === ids.raw);
         });
 
@@ -90,7 +90,7 @@ export default defineComponent({
 
         const timeToSeconds = (time: string): number => time.split(":").reduce((acc, t) => 60 * acc + parseFloat(t), 0);
 
-        const subclip = computed(() => {
+        const subclip = computed((): [number, number] => {
             const item = currentItem.value;
             if (!item) return [0, 0];
             const cStart = timeToSeconds(item.start_time);
@@ -99,12 +99,11 @@ export default defineComponent({
             return [sStart - cStart, sStop - cStart];
         });
 
-        const serverAddress = computed(() => store.getters["server/getServerAddress"]);
         const moviePath = computed(() => {
             const item = currentItem.value;
-            if (!item || !serverAddress.value) return "";
+            if (!item) return "";
             const base = item.base_name.replace("\\", "/");
-            return `${serverAddress.value}/${base}.${settings.value.stream}.mp4`;
+            return DataService.resolve(`/${base}.${settings.value.stream}.mp4`)
         });
 
         const sizeCalculated = (payload: { width: number; height: number }) => {
@@ -122,6 +121,7 @@ export default defineComponent({
             subclip,
             moviePath,
             settings,
+            videoId,
             sizeCalculated,
         };
     },

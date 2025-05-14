@@ -14,7 +14,7 @@
       <BCol>
         <BInputGroup>
           <template #prepend>Dataset</template>
-          <DatasetPicker v-model="group_order_dataset" :dataview="dataview" :owner="subid" />
+          <DatasetPicker v-model="group_order_dataset" :dataview="dataview" :owner="id" />
         </BInputGroup>
       </BCol>
     </BRow>
@@ -53,67 +53,109 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import { WhiskerType } from "@render/components/Charts/BoxPlot";
 import { OrderingType } from "@render/components/Charts/ClusteredHeatmap/ClusteredHeatmap.types";
-import { debounce } from "lodash"; 
+import { DetailedUsageSettings } from "./DetailedUsage.types";
 
 export default defineComponent({
     name: "DetailedUsageOptions",
     props: {
-        id: { type: String, required: true },
+        id: {
+            type: String,
+            required: true
+        },
     },
     setup(props) {
-        const { settings, dataview, $wstate } = useWindowMixin(props.id);
-        const safeSettings = computed(() => ({
-            group_order_type: settings.value?.group_order_type || OrderingType.Natural,
-            group_order_dataset: settings.value?.group_order_dataset || "",
-            show_points: settings.value?.show_points ?? true,
-            point_size: settings.value?.point_size ?? 2,
-            show_boxplot: settings.value?.show_boxplot ?? true,
-            boxplot_whiskers: settings.value?.boxplot_whiskers || WhiskerType.TUKEY,
-            show_violinplot: settings.value?.show_violinplot ?? false,
-            violin_kde_scale: settings.value?.violin_kde_scale ?? 0.01,
-        }));
+        const { settings, dataview, $wstate } = useWindowMixin<DetailedUsageSettings>(props.id);
 
         const group_order_type = computed({
-            get: () => safeSettings.value.group_order_type,
+            get: () => settings.value.group_order_type,
             set: (value) => {
-                if (value !== safeSettings.value.group_order_type) {
+                if (value !== settings.value.group_order_type) {
                     $wstate.updateComponentSettings({
-                        id: props.id,
-                        settings: { ...safeSettings.value, group_order_type: value },
+                        settings: { group_order_type: value },
                     });
                 }
             },
         });
 
         const group_order_dataset = computed({
-            get: () => safeSettings.value.group_order_dataset,
+            get: () => settings.value.group_order_dataset,
             set: (value) => {
-                if (value !== safeSettings.value.group_order_dataset) {
+                if (value !== settings.value.group_order_dataset) {
                     $wstate.updateComponentSettings({
-                        id: props.id,
-                        settings: { ...safeSettings.value, group_order_dataset: value },
+                        settings: { group_order_dataset: value },
                     });
                 }
             },
         });
 
-        const point_size = ref<number>(safeSettings.value.point_size);
-
-        watch(
-            point_size,
-            debounce((newSize) => {
-                if (newSize !== safeSettings.value.point_size) {
+        const show_points = computed({
+            get: () => settings.value.show_points,
+            set: (value) => {
+                if (value !== settings.value.show_points) {
                     $wstate.updateComponentSettings({
-                        id: props.id,
-                        settings: { ...safeSettings.value, point_size: newSize },
+                        settings: { show_points: value },
                     });
                 }
-            }, 300)
-        );
+            },
+        });
+        const point_size = computed({
+            get: () => settings.value.point_size,
+            set: (value) => {
+                if (value !== settings.value.point_size) {
+                    $wstate.updateComponentSettings({
+                        settings: { point_size: value },
+                    });
+                }
+            },
+        });
+
+        const show_boxplot = computed({
+            get: () => settings.value.show_boxplot,
+            set: (value) => {
+                if (value !== settings.value.show_boxplot) {
+                    $wstate.updateComponentSettings({
+                        settings: { show_boxplot: value },
+                    });
+                }
+            },
+        });
+
+        const boxplot_whiskers = computed({
+            get: () => settings.value.boxplot_whiskers,
+            set: (value) => {
+                if (value !== settings.value.boxplot_whiskers) {
+                    $wstate.updateComponentSettings({
+                        settings: { boxplot_whiskers: value },
+                    });
+                }
+            },
+        });
+
+        const show_violinplot = computed({
+            get: () => settings.value.show_violinplot,
+            set: (value) => {
+                if (value !== settings.value.show_violinplot) {
+                    $wstate.updateComponentSettings({
+                        settings: { show_violinplot: value },
+                    });
+                }
+            },
+        });
+
+        const violin_kde_scale = computed({
+            get: () => settings.value.violin_kde_scale,
+            set: (value) => {
+                if (value !== settings.value.violin_kde_scale) {
+                    $wstate.updateComponentSettings({
+                        settings: { violin_kde_scale: value },
+                    });
+                }
+            },
+        });
 
         const whisker_options = ref([
             { value: WhiskerType.TUKEY, text: "Tukey", description: "Whiskers extend up to 1.5 * IQR from 25<sup>th</sup> and 75<sup>th</sup> percentile" },
@@ -126,18 +168,18 @@ export default defineComponent({
         ]);
 
         const boxplot_whisker_description = computed(() => {
-            return whisker_options.value.find((wo) => wo.value === safeSettings.value.boxplot_whiskers)?.description || "";
+            return whisker_options.value.find((wo) => wo.value === settings.value.boxplot_whiskers)?.description || "";
         });
 
         return {
             group_order_type,
             group_order_dataset,
             point_size,
-            show_boxplot: computed(() => safeSettings.value.show_boxplot),
-            show_points: computed(() => safeSettings.value.show_points),
-            show_violinplot: computed(() => safeSettings.value.show_violinplot),
-            violin_kde_scale: computed(() => safeSettings.value.violin_kde_scale),
-            boxplot_whiskers: computed(() => safeSettings.value.boxplot_whiskers),
+            show_boxplot,
+            show_points,
+            show_violinplot,
+            violin_kde_scale,
+            boxplot_whiskers,
             boxplot_whisker_description,
             whisker_options,
             group_order_options,

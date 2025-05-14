@@ -16,16 +16,10 @@
 
         <BRow>
             <BInputGroup prepend="Playback rate">
-                <BFormInput
-                    v-model="playbackRate"
-                    type="number"
-                    :number="true"
-                    min="0"
-                    max="10"
-                    step="0.1"
-                />
+                <BFormInput v-model="playbackRate" type="number" :number="true" min="0" max="10" step="0.1" />
                 <div class="figure-caption">
-                    A value of 1.0 results in normal playback speed. Values &gt; 1.0 result in faster playback, and values &gt; 0 and &lt; 1.0 result in slower playback.
+                    A value of 1.0 results in normal playback speed. Values &gt; 1.0 result in faster playback, and
+                    values &gt; 0 and &lt; 1.0 result in slower playback.
                 </div>
             </BInputGroup>
         </BRow>
@@ -35,9 +29,10 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
+import { ModuleClipsSettings } from "./ModuleClips.types";
 
 const props = defineProps<{ id: string }>();
-const { settings, dataview } = useWindowMixin(props.id);
+const { settings, $wstate } = useWindowMixin<ModuleClipsSettings>(props.id);
 
 const streamOptions = ref([
     { text: "RGB", value: "rgb" },
@@ -46,8 +41,7 @@ const streamOptions = ref([
 ]);
 
 const updateSetting = (key: string, value: any) => {
-    dataview.value.updateComponentSettings({
-        id: props.id,
+    $wstate.updateComponentSettings({
         settings: { [key]: value },
     });
 };
@@ -75,6 +69,6 @@ const playbackRate = computed({
 
 <style scoped>
 .row {
-  margin: 10px 0;
+    margin: 10px 0;
 }
 </style>

@@ -155,8 +155,13 @@ ipcMain.handle("start-data-server", async () => {
             return { success: true, message: "DataServer is already running." };
         }
     } catch (error) {
-        console.error("Error starting DataServer:", error);
-        return { success: false, error: error.message };
+        if (error instanceof Error) {
+            console.error("Error starting DataServer:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unknown error occurred starting DataServer:", error);
+            return { success: false, error: "Unknown error occurred: " + error };
+        }
     }
 });
 
@@ -169,12 +174,17 @@ ipcMain.handle("shutdown-data-server", async () => {
             return { success: false, message: "DataServer is not running." };
         }
     } catch (error) {
-        console.error("Error shutting down DataServer:", error);
-        return { success: false, error: error.message };
+        if (error instanceof Error) {
+            console.error("Error shutting down DataServer:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unknown error occurred shutting down DataServer:", error);
+            return { success: false, error: "Unknown error occurred: " + error };
+        }
     }
 });
 
-// Receive component list from renderer and forward to menustrip
+// Receive component list from renderer and forward to menu strip
 ipcMain.on("available-components-response", (event, components) => {
     BrowserWindow.getAllWindows().forEach((win) => {
         win.webContents.send("available-components-response", components);
@@ -183,7 +193,7 @@ ipcMain.on("available-components-response", (event, components) => {
 
 // Receive dataset loaded status from renderer and notify menu
 ipcMain.on("dataset-loaded-state", (event, isLoaded: boolean) => {
-    console.log("datat loaded is triggered")
+    console.log("data loaded is triggered")
     BrowserWindow.getAllWindows().forEach((win) => {
         win.webContents.send("dataset-loaded-state", isLoaded);
     });

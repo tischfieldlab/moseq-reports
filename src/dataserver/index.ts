@@ -105,17 +105,7 @@ export class DataServer {
                 res.status(500).json({ error: "Internal Server Error" });
             }
         });
-        this.app.get('*/fetch-samples', async (req, res) => {
-            try {
-                const { path, operations, debug } = req.query;
-                const data = await LoadData(path as string, JSON.parse(operations as string), debug === 'true');
-                res.json(data);
-            } catch (error) {
-                console.error('Error in /fetch-data:', error);
-                res.status(500).json({ error: 'Failed to fetch data' });
-            }
-        });
-        this.app.get("/load-usagedata/", async (req, res) => {
+        this.app.get("/load-data", async (req, res) => {
             try {
                 const { path, operations, debug } = req.query;
             
@@ -127,7 +117,7 @@ export class DataServer {
                 const data = await LoadData(decodedPath, parsedOperations, debug === true);
                 res.json(data);
             } catch (error) {
-                console.error("Error handling /load-usagedata request:", error);
+                console.error("Error handling /load-data request:", error);
                 res.status(500).json({ error: "An error occurred while processing the request" });
             }
         });

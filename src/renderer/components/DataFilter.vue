@@ -42,7 +42,7 @@
                     <chrome-picker 
                         v-model="color"
                         :disableAlpha="true" 
-                        @update:modelValue="(value) => colorChangeHandler(element, value.hex)"
+                        @update:modelValue="(value) => colorChangeHandler(value.hex)"
                     />
                 </BPopover>
 
@@ -269,6 +269,7 @@ export default defineComponent({
             previousSyllable,
             nextSyllable,
             updateSelectedSyllable,
+            colorChangeHandler,
         };
     },
     mounted() {

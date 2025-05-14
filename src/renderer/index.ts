@@ -31,9 +31,11 @@ app.use(timeago, {
     locale: enUS,
 });
 
-app.mount("#app").$nextTick(() => {
+const app_root = await app.mount("#app")
+app_root.$nextTick(() => {
     postMessage({ payload: "removeLoading" }, "*");
 });
 DiscoverDataComponents(app);
 
 export default app;
+export {app_root}

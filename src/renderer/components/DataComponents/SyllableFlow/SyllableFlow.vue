@@ -23,7 +23,6 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch, onMounted } from 'vue';
-import { useStore } from 'vuex';
 import RegisterDataComponent from '@render/components/Core';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import Sankey from '@render/components/Charts/Sankey/Sankey.vue';
@@ -72,16 +71,16 @@ export default defineComponent({
     const rawData = ref<{ group: string; row_id: number; col_id: number; raw: number }[]>([]);
     const isLoading = ref(false);
     const selectedSyllable = computed({
-      get: () => dataview.value.selectedSyllable,
+      get: () => dataview.selectedSyllable,
       set: (val: number) => {
         store.commit(`${datasource.value}/setSelectedSyllable`, val);
       },
     });
 
     const activeSyllables = computed(() => {
-      return dataview.value.moduleIdFilter.length === 0
+      return dataview.moduleIdFilter.length === 0
         ? store.getters[`${datasource.value}/availableModuleIds`]
-        : dataview.value.moduleIdFilter;
+        : dataview.moduleIdFilter;
     });
 
     const sourceData = computed(() => {
@@ -97,8 +96,8 @@ export default defineComponent({
           type: 'map',
           columns: [
             ['default_group', 'group'],
-            [`row_id_${dataview.value.countMethod.toLowerCase()}`, 'row_id'],
-            [`col_id_${dataview.value.countMethod.toLowerCase()}`, 'col_id'],
+            [`row_id_${dataview.countMethod.toLowerCase()}`, 'row_id'],
+            [`col_id_${dataview.countMethod.toLowerCase()}`, 'col_id'],
             'raw',
           ],
         },
@@ -160,7 +159,7 @@ export default defineComponent({
         store.commit(`${props.id}/updateComponentSettings`, {
           id: props.id,
           settings: {
-            plot_group: dataview.value.selectedGroups[0],
+            plot_group: dataview.selectedGroups[0],
           },
         });
       }
@@ -168,7 +167,7 @@ export default defineComponent({
         store.commit(`${props.id}/updateComponentSettings`, {
           id: props.id,
           settings: {
-            relative_diff_group: dataview.value.selectedGroups[1],
+            relative_diff_group: dataview.selectedGroups[1],
           },
         });
       }
@@ -278,7 +277,7 @@ export default defineComponent({
     });
 
     const noDataMessage = computed(() => {
-      return `No transitions for group ${settings.value.plot_group} Module ${selectedSyllable.value} (${dataview.value.countMethod})`;
+      return `No transitions for group ${settings.value.plot_group} Module ${selectedSyllable.value} (${dataview.countMethod})`;
     });
 
     const colorLegendTitle = computed(() => {
@@ -294,7 +293,7 @@ export default defineComponent({
       if (settings.value.show_relative_diff) {
         title += ` vs ${settings.value.relative_diff_group}`;
       }
-      return `${title} Module ${selectedSyllable.value} (${dataview.value.countMethod})`;
+      return `${title} Module ${selectedSyllable.value} (${dataview.countMethod})`;
     });
 
     const tooltipFormatter = (hoverItem: Node | Link) => {

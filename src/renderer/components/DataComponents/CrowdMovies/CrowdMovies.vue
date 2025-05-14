@@ -25,8 +25,7 @@ import { CountMethod } from "@store/dataview.types";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import VideoClips from "@render/components/Charts/VideoPlayer/VideoPlayer.vue";
 import { RenderMode } from "@store/datawindow.types";
-
-import {useServerStore} from "@store/server.store";
+import DataService from "@api";
 
 export default defineComponent({
     name: "CrowdMovies",
@@ -40,8 +39,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const serverStore = useServerStore();
-        const { datasource, dataview, $wstate} = useWindowMixin(props.id);
+        const { datasource, dataview, $wstate, settings} = useWindowMixin<CrowdMoviesOptions>(props.id);
 
         // Reactive references
         const crowdMoviePath = ref<string>("");
@@ -49,32 +47,22 @@ export default defineComponent({
         const aspectRatio = ref<number>(0);
         const uID = computed(() => {
             if (!datasource.value) return null;
-            return dataview.value.selectedSyllableAs(CountMethod.Usage);
+            return dataview.selectedSyllableAs(CountMethod.Usage);
         });
 
         const rID = computed(() => {
             if (!datasource.value) return null;
-            return dataview.value.selectedSyllableAs(CountMethod.Raw);
+            return dataview.selectedSyllableAs(CountMethod.Raw);
         });
 
         const fname = computed(() => {
             return `syllable_sorted-id-${uID.value} (usage)_original-id-${rID.value}.mp4`;
         });
 
-        const selected_syllable = computed(() => dataview.value.selectedSyllable);
-        const count_method = computed(() => dataview.value.countMethod);
-        const settings = computed(() => $wstate.value.settings as { playback_rate: number; loop: boolean }|| { playback_rate: 1.0, loop: true });
+        const selected_syllable = computed(() => dataview.selectedSyllable);
+        const count_method = computed(() => dataview.countMethod);
         const fetchMoviePath = async () => {
-            try {
-                if (!serverStore.serverAddress) {
-                    throw new Error("Server address is not available.");
-                }
-                crowdMoviePath.value = `${serverStore.serverAddress}/crowd_movies/${encodeURIComponent(fname.value)}`;
-                console.log("Crowd movie path set to:", crowdMoviePath.value);
-            } catch (error) {
-                console.error("Error fetching movie path:", error);
-                errorMessage.value = "Unable to fetch the movie path.";
-            }
+            crowdMoviePath.value = DataService.resolve(`/crowd_movies/${encodeURIComponent(fname.value)}`)
         };
 
         const sizeCalculated = (payload: { width: number; height: number }) => {
@@ -90,7 +78,7 @@ export default defineComponent({
             fetchMoviePath();
         });
 
-        watch([uID, rID, serverStore.serverAddress], fetchMoviePath, { immediate: true });
+        watch([uID, rID], fetchMoviePath, { immediate: true });
 
         return {
             crowdMoviePath,
@@ -106,6 +94,7 @@ export default defineComponent({
         };
     },
 });
+
 
 RegisterDataComponent({
     friendly_name: "Crowd Movies",
