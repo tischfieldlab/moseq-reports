@@ -2,9 +2,8 @@
     <div>
         <template v-if="edit">
             <b-input
-                :modelValue="local_value"
+                v-model="local_value"
                 :size="size"
-                @update:modelValue="onInput"
                 @blur="onBlur"
                 @keyup.enter="onBlur"
                 ref="input"
@@ -51,10 +50,6 @@ export default defineComponent({
             nextTick(() => inputRef.value?.focus());
         };
 
-        const onInput = (newValue: string) => {
-            local_value.value = newValue;
-        };
-
         const onBlur = () => {
             edit.value = false;
             emit("update:modelValue", local_value.value);
@@ -64,7 +59,6 @@ export default defineComponent({
             edit,
             local_value,
             startEdit,
-            onInput,
             onBlur,
             inputRef,
         };

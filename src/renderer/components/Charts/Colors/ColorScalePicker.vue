@@ -1,6 +1,6 @@
 <template>
     <div class="picker-container">
-        <BDropdown variant="white" :class="{ custom: isCustom }" :no-flip="true">
+        <BDropdown variant="light" :class="{ custom: isCustom }" :no-flip="true">
             <template #button-content>
                 <BFormRow v-if="selected" class="selected-value">
                     <BCol>
@@ -18,7 +18,7 @@
             <template v-for="(scales, cat) in options" :key="cat">
                 <template v-if="categoryEnabled(cat)">
                     <BDropdownHeader>{{ cat }}</BDropdownHeader>
-                    <BDropdownItem v-for="option in scales" :key="option.value" :disabled="option.disabled"
+                    <BDropdownItem v-for="option in scales" :key="option.value"
                         @click="select(option)">
                         <BFormRow>
                             <BCol>

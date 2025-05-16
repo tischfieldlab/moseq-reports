@@ -16,15 +16,18 @@ export interface GroupItem {
     selected: boolean;
 }
 
-export interface DataviewState {
+export interface DataViewRecord {
     name: string;
     color: string;
-    loading: boolean;
     selectedSyllable: number;
     countMethod: CountMethod;
     moduleIdFilter: number[];
-    views: {};
     groups: GroupItem[];
+}
+
+export interface DataviewState extends DataViewRecord {
+    loading: boolean;
+    views: {};
 }
 
 export interface DataviewPayload {

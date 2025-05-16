@@ -5,6 +5,8 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import {useDataWindowStore} from './datawindow.store'
 import { useFiltersStore } from './filters.store'
 import { componentRegistry, ComponentRegistration } from "./component_registry.store";
+import { ipcRenderer } from "electron";
+import { MenuEvents } from "@main/shared/menuAPI";
 
 export interface WindowsState {
     basename: string;
@@ -26,7 +28,7 @@ export const useWindowsStore = defineStore('windows', {
         windowsMaxZIndex: (state): number => {
             let maxZIndex: number = 0;
             state.items.forEach((item: string) => {
-                const winState: DataWindowState = useDataWindowStore(item.split("/")[1]);
+                const winState: DataWindowState = useDataWindowStore(item);
                 if (winState.z_index > maxZIndex) {
                     maxZIndex = winState.z_index;
                 }
@@ -57,7 +59,6 @@ export const useWindowsStore = defineStore('windows', {
         },
         hydrateWindow(data: DehydratedDataWindow) {
             const ws = hydrateWindow(data);
-            console.log("Payload for hydrateWindow:", data);
             this.commitWindow(ws);
         },
         commitWindow(windowState: DataWindowState) {
@@ -111,8 +112,15 @@ if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useWindowsStore, import.meta.hot))
 }
 
+// Handle create-component
+ipcRenderer.on(MenuEvents.CREATE_COMPONENT, (_event, component: ComponentRegistration) => {
+    //console.log("✅ Received create-component event:", component);
+    const spec = componentRegistry.getSpecification(component.component_type);
+    const windowsStore = useWindowsStore();
+    windowsStore.createWindow(spec);
+});
+
 function createDataWindow(component: ComponentRegistration): DataWindowState {
-    console.log("Creating data window for component:", component);
     if (!component) {
         throw new Error("Component is undefined in createDataWindow");
     }
@@ -157,7 +165,6 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
 function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     const spec = componentRegistry.getSpecification(data.type) as ComponentRegistration;
     const windowStore = useWindowsStore();
-    console.log("Specification found:", spec);
     if (!spec) {
         console.warn(`Specification for type "${data.type}" not found. Skipping this entry.`);
     }

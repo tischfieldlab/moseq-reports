@@ -35,7 +35,7 @@ const DataService = {
     async fetchData<TData>(dataset_name: string, operations: Operation[]): Promise<TData> {
         const datasetsStore = useDatasetsStore();
         try {
-            const response = await api.get('/load-usagedata', {
+            const response = await api.get('/load-data', {
                 params: { 
                     path: datasetsStore.resolve(dataset_name),
                     operations: operations,

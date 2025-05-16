@@ -4,7 +4,7 @@
     <NoDataPresent />
     <WindowContainer />
     <FileDropAcceptor />
-    <p>hello</p>
+    <BToastOrchestrator />
   </div>
 </template>
 
@@ -17,6 +17,7 @@ import WindowContainer from "@render/components/Core/Window/WindowContainer.vue"
 import { useSidebarStore, SidebarPosition } from "@store/sidebar.store";
 import { useDatasetsStore } from "@store/datasets.store";
 import { ipcRenderer } from "electron";
+
 
 
 
@@ -42,18 +43,6 @@ export default defineComponent({
         isSidebarRight(): boolean {
             const sidebarStore = useSidebarStore();
             return sidebarStore.sidebarPosition === SidebarPosition.Right;
-        },
-    },
-    watch: {
-        "$store.state.datasets.name": {
-            handler(newName) {
-                console.log("Dataset name changed:", newName);
-                //window.api.updateTitle(this.title); // Call the exposed API function
-                if(newName){
-                    ipcRenderer.send("dataset-loaded-state", true);
-                }
-            },
-            immediate: true,
         },
     },
 });

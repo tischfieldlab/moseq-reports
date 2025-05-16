@@ -1,26 +1,13 @@
-import { Menu, MenuItem } from "@electron/remote";
+import { Menu } from "@electron/remote";
 import { ipcRenderer } from "electron";
-import { MenuEvents } from "../shared/Events";
+import { MenuEvents, ComponentRegistration, IMenuAPI } from "../shared/menuAPI";
 import showAboutWindow from "../../renderer/commands/ShowAbout";
+import { Titlebar, TitlebarColor } from "custom-electron-titlebar";
 // Future: import { CheckUpdates } from "../../renderer/commands/LoadUpdates";
 // Future: import { documentation } from "../../../package.json";
-/**
- * Creates the main menu strip for the electron app
- * in the renderer process. This will also populate
- * the menu with widgets that are registered to the
- * application.
- *
- * @export
- * @returns {Menu}      The menu object to be used as
- *                      the main menu strip for the app.
- */
-let localMenu: Electron.Menu = createMainMenu();
 
-export function createMainMenu(forceRebuild = false): Electron.Menu {
-    const menu = Menu.buildFromTemplate(createMainMenuStripOptions());
-    Menu.setApplicationMenu(menu);
-    return menu;
-}
+
+
 
 
 /**
@@ -30,7 +17,7 @@ export function createMainMenu(forceRebuild = false): Electron.Menu {
  * @returns {Electron.MenuItemConstructorOptions[]}      Electron menu to be made the main
  *                      menu strip for the app.
  */
-function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
+function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.MenuItemConstructorOptions[] {
     return [{
         label: "File",
         submenu: [{
@@ -63,7 +50,17 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
     }, {
         id: "menu-tools",
         label: "Tools",
-        submenu: [],
+        submenu: menuBarManager.getRegisteredComponents().map((cr) => {
+            return {
+                label: cr.friendly_name,
+                type: "normal",
+                enabled: menuBarManager.isDataLoaded,
+                click: (event, focusedWindow) => {
+                    //console.log("✅ Creating component menu:", cr);
+                    ipcRenderer.send(MenuEvents.CREATE_COMPONENT, cr);
+                },
+            }
+        }),
     }, {
         label: "View",
         submenu: [{
@@ -156,40 +153,78 @@ function createMainMenuStripOptions(): Electron.MenuItemConstructorOptions[] {
 
 
 
-ipcRenderer.on("available-components-response", (_event, components) => {
-    console.log("✅ Received components in menu-strip:", components);
-    let toolsMenu = localMenu?.items.find(item => item.id === "menu-tools");
+export class MenuBarManager {
+    private static _instance: MenuBarManager;
+    private _titlebar: Titlebar;
+    private _base_title: string = "Moseq Reports";
+    private _is_data_loaded: boolean = false;
+    private _loaded_filename: string | undefined = undefined;
+    private _component_registry: ComponentRegistration[] = [];
 
-    if (toolsMenu && toolsMenu.submenu) {
-        // clear existing tools (in case this is re-run)
-
-        components
-            .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
-            .forEach((cr) => {
-                toolsMenu.submenu?.append(
-                    new MenuItem({
-                        label: cr.friendly_name,
-                        type: "normal",
-                        enabled: false, // initially disabled
-                        click: () => ipcRenderer.send("create-component", cr),
-                    })
-                );
-            });
-
-        // ✅ This is CRUCIAL!
-        Menu.setApplicationMenu(localMenu);
+    private constructor() {
+        this.refreshMenu();
+        this._titlebar = new Titlebar({
+            shadow: false,
+            backgroundColor: TitlebarColor.fromHex("#FFFFFF"),
+        });
     }
-});
+
+    static getInstance(): MenuBarManager {
+        if (!MenuBarManager._instance) {
+            MenuBarManager._instance = new MenuBarManager();
+        }
+        return MenuBarManager._instance;
+    }
+
+    get isDataLoaded(): boolean {
+        return this._is_data_loaded;
+    }
+    setBaseTitle(title: string) {
+        this._base_title = title;
+        this.refreshTitle();
+    }
+    setLoadedFilename(filename: string) {
+        this._loaded_filename = filename;
+        if (!this._is_data_loaded) {
+            this._is_data_loaded = true;
+            this.refreshMenu();
+        }
+        this.refreshTitle();
+    }
+    addComponentRegistration(component: ComponentRegistration) {
+        const loc = this._component_registry.findIndex((r) => r.component_type === component.component_type);
+        if (loc === -1) {
+            this._component_registry.push(component);
+        } else {
+            console.warn(`${component.component_type} has already been registered! Merging...`);
+            this._component_registry.splice(loc, 1, component);
+        }
+        this.refreshMenu();
+    }
+    getRegisteredComponents(): ComponentRegistration[] {
+        return this._component_registry;
+    }
+    private refreshTitle() {
+        if (this._is_data_loaded && this._loaded_filename) {
+            this._titlebar.updateTitle(`${this._base_title} - ${this._loaded_filename}`);
+        } else {
+            this._titlebar.updateTitle(`${this._base_title}`);
+        }
+    }
+    private refreshMenu() {
+        const menu = Menu.buildFromTemplate(createMainMenuStripOptions(this));
+        Menu.setApplicationMenu(menu);
+        if (this._titlebar) {
+            this._titlebar.refreshMenu();
+        }
+    }
+}
 
 
-// ✅ Enable/disable tools on dataset load state
-ipcRenderer.on("dataset-loaded-state", (_event, isLoaded: boolean) => {
-    const toolsMenu = localMenu?.getMenuItemById("menu-tools");
-    if (!toolsMenu || !toolsMenu.submenu) return;
 
-    toolsMenu.submenu.items.forEach((item) => {
-        item.enabled = isLoaded;
-    });
-
-    Menu.setApplicationMenu(localMenu);
-});
+const MenuBridge: IMenuAPI = {
+    setBaseTitle: (title: string) => MenuBarManager.getInstance().setBaseTitle(title),
+    setLoadedFilename: (filename: string) => MenuBarManager.getInstance().setLoadedFilename(filename),
+    addComponentRegistration: (component: ComponentRegistration) => MenuBarManager.getInstance().addComponentRegistration(component),
+}
+window.menuAPI = MenuBridge;

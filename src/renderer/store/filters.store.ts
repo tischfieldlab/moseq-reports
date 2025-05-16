@@ -8,6 +8,7 @@ interface FiltersState {
   items: string[];
 }
 import { useWindowsStore } from './windows.store'
+import { DataviewPayload, DataViewRecord } from './dataview.types';
 
 
 
@@ -24,13 +25,13 @@ export const useFiltersStore = defineStore("filters", {
         },
     },
     actions: {
-        async serializeFilters(): Promise<any> {
+        async serializeFilters() {
             try {
                 const dehydrated = this.items.map(async (id) => {
                     return [
                         id.split("/")[1],
                         await useDataViewStore(id).serialize()
-                    ] as [string, Promise<any>];
+                    ] as [string, DataViewRecord];
                 });
                 return Object.fromEntries(await Promise.all(dehydrated));
             } catch (error) {
@@ -38,7 +39,7 @@ export const useFiltersStore = defineStore("filters", {
                 throw error;
             }
         },
-        async loadFilters(filters: any) {
+        async loadFilters(filters: Record<string, DataViewRecord>) {
             try {
                 const existing = this.items;
                 const imported: string[] = [];
@@ -47,12 +48,12 @@ export const useFiltersStore = defineStore("filters", {
                     imported.push(name);
 
                     if (existing.includes(name)) {
-                        await useDataViewStore(name).load(filter);
+                        await useDataViewStore(name).load(filter as DataViewRecord);
                     } else {
                         const store = useDataViewStore(name);
                         await store.initialize();
-                        await store.load(filter);
-                        this.addFilter(name);
+                        await store.load(filter as DataViewRecord);
+                        this.items.push(name);
                     }
                 }
 

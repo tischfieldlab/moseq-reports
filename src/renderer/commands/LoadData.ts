@@ -1,16 +1,18 @@
-import { nextTick } from 'vue';
+import { nextTick, h } from 'vue';
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import { dialog } from '@electron/remote';
 import { LoadDefaultLayout } from './LoadLayout';
 import { EventEmitter } from "@render/util/EventEmitter";
-import axios from "axios";
 
-import {useDatasetsStore} from '@store/datasets.store'
-import {useHistoryStore} from '@store/history.store'
-import {useFiltersStore} from "@store/filters.store";
-import {useDataViewStore} from "@store/dataview.store";
-import {useWindowsStore} from "@store/windows.store";
+import { useDatasetsStore } from '@store/datasets.store'
+import { useHistoryStore } from '@store/history.store'
+import { useFiltersStore } from "@store/filters.store";
+import { useDataViewStore } from "@store/dataview.store";
+import { useWindowsStore } from "@store/windows.store";
 import DataService from "@api";
+import { app_root } from '..';
+import { BSpinner } from 'bootstrap-vue-next';
+
 
 
 ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent) => {
@@ -38,7 +40,6 @@ export function IsDataLoaded() {
 }
 
 export function LoadDataFile(filename: string) {
-    showStartLoadingToast();
     nextTick().then(() => beginLoadingProcess(filename));
 }
 
@@ -48,24 +49,23 @@ async function beginLoadingProcess(filename: string) {
     const filtersStore = useFiltersStore();
     const windowsStore = useWindowsStore();
 
-    try {
-        nextTick()
+    const loading_toast = showStartLoadingToast();
+
+    nextTick()
         .then(() => {
             //console.log("Starting data load process...");
-            EventEmitter.emit("begin-dataset-load"); 
+            EventEmitter.emit("begin-dataset-load");
             datasetStore.Unload();
         })
-        //.then(() => readDataBundle(filename))
-        //.then((data) => {
-        //   console.log("Data loaded from bundle:", data);
-        //    return store.dispatch("datasets/setData", data).then(() => data);
-        //})
         .then(async (data) => {
             // Send the dataset to the DataServer
             return DataService.loadFile(filename);
         })
         .then((data) => {
-            console.log("Processed data received from DataServer:", data);
+            // let preload know that the dataset is loaded, and the new name of the dataset
+            window.menuAPI.setLoadedFilename(data.name);
+
+            //console.log("Processed data received from DataServer:", data);
             datasetStore.setData(data)
             return data;
         })
@@ -85,91 +85,78 @@ async function beginLoadingProcess(filename: string) {
             );
         })
         .then(async () => {
-            if (windowsStore.items.length  === 0) {
+            if (windowsStore.items.length === 0) {
                 await nextTick();
                 return LoadDefaultLayout(false);
             }
         })
         .then(() => {
-            hideLoadingToast();
-            const message = 'File "'+ datasetStore.name +'" was loaded successfully.';
-            showSuccessToast(message);
+            // destroy the loading toast
+            loading_toast.hide();
+
+            // message to show in the toast and in the history
+            const message = 'File "' + datasetStore.name + '" was loaded successfully.';
+
+            // show success toast
+            app_root.$showToast({
+                title: 'Data loaded successfully!',
+                variant: 'success',
+                isStatus: true,
+                position: 'bottom-end',
+                body: message,
+                modelValue: 5000,
+            });
+
+            // add an entry to the history store
             historyStore.addEntry({ message, variant: "success" });
-            EventEmitter.emit("finish-dataset-load"); // Emit the event
+
+            // emit an event to notify that the dataset has been loaded
+            EventEmitter.emit("finish-dataset-load");
         })
         .catch((reason) => {
             console.error("Error during data load process:", reason);
-            hideLoadingToast();
-            showErrorToast(reason.toString());
-            historyStore.addEntry({ message: reason, variant: "danger" });
-            EventEmitter.emit("fail-dataset-load"); // Emit the event
+
+            // destroy the loading toast
+            loading_toast.destroy();
+
+            // show error toast
+            app_root.$showToast({
+                title: 'Error loading data!',
+                variant: 'danger',
+                isStatus: true,
+                position: 'bottom-end',
+                body: reason.toString(),
+                modelValue: 5000,
+            });
+
+            // add an entry to the history store
+            historyStore.addEntry({ message: reason.toString(), variant: "danger" });
+
+            // emit an event to notify that the dataset failed to load
+            EventEmitter.emit("fail-dataset-load");
         });
-    }catch (error) {
-        console.error("Error fetching server address:", error);
-        hideLoadingToast();
-    }
 }
+
 
 
 function showStartLoadingToast() {
-    console.log('Showing loading toast...');
-    // Implement your own toast logic or use a library like Vue Toastification
-}
-
-function hideLoadingToast() {
-    console.log('Hiding loading toast...');
-    // Implement your own toast logic or use a library like Vue Toastification
-}
-
-function showSuccessToast(message: string) {
-    console.log('Showing success toast:', message);
-    // Implement your own toast logic or use a library like Vue Toastification
-}
-
-function showErrorToast(message: string) {
-    console.log('Showing error toast:', message);
-    // Implement your own toast logic or use a library like Vue Toastification
-}
-
-/*function readDataBundle(filename: string): Promise<Partial<DatasetsState>> {
-  return new Promise((resolve, reject) => {
-    let zip;
-    try {
-      zip = new StreamZip({ file: filename, storeEntries: true });
-      zip.on('error', reject);
-      zip.on('ready', async () => {
-        try {
-          const dataset: Partial<DatasetsState> = {
-            bundle: filename,
-            name: path.basename(filename, `.${DataFileExt}`),
-            ...await LoadMetadataData(zip),
-          };
-          resolve(dataset);
-        } catch (e) {
-          reject(e);
-        } finally {
-          zip.close();
+    return app_root.$showToast({
+        id: 'loading-toast',
+        title: 'Loading Data',
+        variant: 'info',
+        isStatus: true,
+        position: 'bottom-end',
+        modelValue: true,
+        slots: {
+            default: () => h('div', {}, [
+                h(BSpinner, {
+                    type: 'grow',
+                    small: true,
+                    style: { 'margin-right': '1em' }
+                }),
+                'Hang tight... We\'re getting your data ready.',
+            ]),
         }
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
+    });
 }
 
-async function LoadMetadataData(zip: StreamZip) {
-  return {
-    manifest: await jsonParseZipEntry(zip, 'manifest.json'),
-    groups: await jsonParseZipEntry(zip, 'groups.json'),
-    label_map: await jsonParseZipEntry(zip, 'label_map.json'),
-  };
-}
-
-async function jsonParseZipEntry(zip: StreamZip, entryName: string) {
-  try {
-    const entry = zip.entryDataSync(entryName);
-    return JSON.parse(entry.toString());
-  } catch {
-    throw new Error(`Entry ${entryName} is missing from data file!`);
-  }
-}*/

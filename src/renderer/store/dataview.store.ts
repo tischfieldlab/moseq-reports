@@ -7,6 +7,7 @@ import {
     PublishDatasetPayload,
     UnpublishDatasetPayload,
     SyllableMap,
+    DataViewRecord,
 } from "@store/dataview.types";
 
 import { defineStore, acceptHMRUpdate } from 'pinia'
@@ -88,7 +89,10 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
         setView(payload: DataviewPayload) {
             this.loading = true;
             if (payload.countMethod) {
-                this.countMethod = payload.countMethod;
+                this.switchCountMethod(payload.countMethod);
+            }
+            if (payload.selectedSyllable) {
+                this.selectedSyllable = payload.selectedSyllable;
             }
             if (payload.groups) {
                 this.groups.splice(0, this.groups.length, ...payload.groups);
@@ -104,7 +108,7 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
         unpublishDataset(payload: UnpublishDatasetPayload) {
             delete this.views[`${payload.owner}/${payload.name}`]; // Use `delete` keyword
         },
-        serialize(): any {
+        serialize(): DataViewRecord {
             return {
                 color: this.color,
                 name: this.name,
@@ -114,20 +118,14 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
                 selectedSyllable: this.selectedSyllable,
             };
         },
-        async load(payload: DataviewPayload) {
+        async load(payload: DataViewRecord) {
             this.loading = true;
-            if (payload.countMethod) {
-                this.countMethod = payload.countMethod;
-            }
-            if (payload.groups) {
-                this.groups.splice(0, this.groups.length, ...payload.groups);
-            }
-            if (payload.moduleIdFilter) {
-                this.moduleIdFilter = payload.moduleIdFilter;
-            }
-            if (payload.selectedSyllable) {
-                this.selectedSyllable = payload.selectedSyllable;
-            }
+            this.name = payload.name;
+            this.color = payload.color;
+            this.countMethod = payload.countMethod;
+            this.selectedSyllable = payload.selectedSyllable;
+            this.moduleIdFilter = payload.moduleIdFilter;
+            this.groups.splice(0, this.groups.length, ...payload.groups);
             this.loading = false;
         },
         switchCountMethod(payload: CountMethod) {
@@ -159,7 +157,6 @@ export const useDataViewStore = (id: string) => defineStore(`dataview-${id}`, {
             }
         },
         async initialize() {
-            console.log("Initializing dataview store", this.$id);
             const datasetStore = useDatasetsStore();
             const namespace = this.$id;
             const name = "filter" + namespace?.split("-")[1];

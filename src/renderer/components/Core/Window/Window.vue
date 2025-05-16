@@ -112,8 +112,7 @@ export default defineComponent({
         const show_settings_modal = ref(false);
         const component_loading = ref(0);
         const bodyRef = ref<HTMLElement | null>(null);
-        
-        console.log(spec.value)
+
         const settings_title = computed(() => `${title.value} Settings`);
         const swatch_color = computed(() => dataview.color);
         const is_loading = computed(() => component_loading.value > 0 || dataview.loading);

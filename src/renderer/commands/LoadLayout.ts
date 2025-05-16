@@ -4,6 +4,7 @@ import Toastify from "toastify-js";
 import { DehydratedDataWindow } from "@store/datawindow.types";
 import { useWindowsStore } from "@store/windows.store"
 import { useFiltersStore } from "@store/filters.store";
+import { DataViewRecord } from "@render/store/dataview.types";
 
 
 
@@ -80,7 +81,7 @@ export async function LoadLayoutFile(filename: string, showNotifications = true)
         if (Array.isArray(content)) {
             await windowsStore.loadLayout(content);
         } else if (typeof content === "object" && content !== null) {
-            const layoutContent = content as { filters?: unknown; layout?: DehydratedDataWindow[] };
+            const layoutContent = content as { filters?: Record<string, DataViewRecord>; layout?: DehydratedDataWindow[] };
             if (layoutContent.filters) {
                 await filtersStore.loadFilters(layoutContent.filters);
             }

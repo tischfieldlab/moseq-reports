@@ -65,7 +65,12 @@ function GetCategoryForScale(scaleName: string): string {
     return "Unknown";
 }
 
-export function GetInterpolatedScaleOptions() {
+interface InterpolatorOption {
+    text: string;
+    category: string;
+    value: string;
+}
+export function GetInterpolatedScaleOptions(): Record<string, InterpolatorOption[]> {
     return Object.fromEntries(
         Object.entries(ScaleCategories).map(([cat, catScales]) => {
             return [

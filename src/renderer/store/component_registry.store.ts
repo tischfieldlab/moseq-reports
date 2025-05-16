@@ -1,5 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { RenderMode } from "@store/datawindow.types";
+import { ipcRenderer } from 'electron';
 
 export interface ComponentRegistryState {
     registry: ComponentRegistration[];
@@ -56,6 +57,11 @@ class ComponentRegistry {
             console.warn(`${component.component_type} has already been registered! Merging...`);
             this.registry.splice(loc, 1, component);
         }
+
+        window.menuAPI.addComponentRegistration({
+            component_type: component.component_type,
+            friendly_name: component.friendly_name
+        });
     }
 
     getSpecification(componentType: string): ComponentRegistration {

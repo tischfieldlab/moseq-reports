@@ -3,14 +3,20 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import {defineComponent, PropType} from "vue";
 
 export default defineComponent({
     name: "CloseButton",
     props: {
-        /* tslint:disable-next-line */
-        clicked: { type: Function, required: false, default: () => {} },
-        title: { type: String, required: false },
+        clicked: {
+            type: Function as PropType<(e: MouseEvent) => any>,
+            required: false,
+            default: () => {}
+        },
+        title: {
+            type: String,
+            required: false
+        },
     },
 });
 </script>

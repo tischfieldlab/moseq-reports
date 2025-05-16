@@ -2,14 +2,16 @@
     <Home />
 </template>
 
-<script>
+<script lang="ts">
 import Home from "@render/pages/Home.vue";
+import { defineComponent } from "vue";
 
-export default {
+
+export default defineComponent({
     components: {
         Home,
     },
-};
+});
 </script>
 
 <style lang="scss">

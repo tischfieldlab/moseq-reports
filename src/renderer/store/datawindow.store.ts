@@ -42,7 +42,6 @@ export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`
     },
     actions: {
         replaceState(payload: DataWindowState) {
-            console.log("Replacing state with payload:", payload);
             this.type = payload.type;
             this.width = payload.width;
             this.height = payload.height;
@@ -111,7 +110,6 @@ export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`
         },
         resetSize() {
             const spec = componentRegistry.getSpecification(this.type) as ComponentRegistration;
-            console.log("data window", spec);
             this.updateComponentLayout({
               width: spec.init_width,
               height: spec.init_height,

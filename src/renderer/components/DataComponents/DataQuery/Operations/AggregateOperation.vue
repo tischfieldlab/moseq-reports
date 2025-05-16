@@ -30,7 +30,7 @@ import type { AggregateOperation, Statistic } from '@api';
 const props = defineProps<{
     operation: {
         groupby: string[];
-        aggregate: { [key: string]: string[] };
+        aggregate: Record<string, string[]>;
     };
     previousResult: any;
     owner: string;

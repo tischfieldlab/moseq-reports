@@ -27,7 +27,6 @@ import { OrderingType } from "@render/components/Charts/ClusteredHeatmap/Cluster
 import { RenderMode } from "@store/datawindow.types";
 import { useWindowMixin }  from "@render/components/Core/Window/WindowMixin";
 
-import { useDatasetsStore } from "@store/datasets.store";
 import DataService from "@api";
 import { DetailedUsageSettings } from "./DetailedUsage.types";
 import { Operation } from "@render/api/DataLoader.types";
@@ -65,7 +64,6 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const datasetsStore = useDatasetsStore();
 
         const individualUsageData = ref([]);
         const { layout, dataview, settings, $wstate} = useWindowMixin<DetailedUsageSettings>(props.id);
@@ -94,15 +92,13 @@ export default defineComponent({
 
         const renderMode = computed(() => {
             const mode = $wstate.render_mode;
-            //const mode = 'canvas'
-            console.log(mode)
             if (mode === RenderMode.CANVAS) {
                 return "BoxPlotCanvas";
             } else if (mode === RenderMode.SVG) {
                 return "BoxPlotSVG";
             } else {
                 console.error("invalid render mode", mode);
-                return "BoxPlotCanvas";
+                return "BoxPlotSVG";
             }
         });
 
@@ -121,11 +117,10 @@ export default defineComponent({
         });
         const groupColors = computed(() => {
             const colors = Object.fromEntries(dataview.groups.map((g) => [g.name, g.color]));
-            groupNames.value.map((gn) => colors[gn] = colors[gn]);
+            return groupNames.value.map((gn) => colors[gn] = colors[gn]);
         });
 
         const formatTooltip = (itm: any): string => {
-            console.log(itm.value)
             if ("id" in itm) {
                 return `ID: ${itm.id.split("-").pop()}<br />
                         Usage: ${itm.value.toExponential(3)}`;
@@ -139,13 +134,11 @@ export default defineComponent({
         };
   
         watch(
-            //console.log(formatTooltip({ value: "datawindows/datawindow-0" })),
             dataset,
             async () => {
-                console.log("dataset", dataset)
                 DataService.fetchData<any>("usage", dataset.value)
-                    .then((response) => {
-                        individualUsageData.value = response.data;
+                    .then((data) => {
+                        individualUsageData.value = data;
                     })
                     .catch((error) => {
                         console.error("Error loading Detailed Usage data:", error);

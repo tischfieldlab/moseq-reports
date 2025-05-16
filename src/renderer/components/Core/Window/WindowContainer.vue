@@ -18,7 +18,6 @@ export default defineComponent({
     setup() {
         const windowsStore = useWindowsStore(); 
         const windows = computed(() => {
-            console.log("State items:", windowsStore.items);
             return windowsStore.items;
         });
 

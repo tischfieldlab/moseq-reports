@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
+    "@types/d3-sankey": "^0.12.4",
     "@types/date-fns": "^2.6.3",
     "@vitejs/plugin-vue": "^5.0.4",
     "electron": "^33.2.1",
@@ -54,7 +55,7 @@
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
-    "bootstrap-vue-next": "^0.26.16",
+    "bootstrap-vue-next": "^0.29.3",
     "custom-electron-titlebar": "^4.2.8",
     "d3": "^7.9.0",
     "d3-dsv": "^3.0.1",

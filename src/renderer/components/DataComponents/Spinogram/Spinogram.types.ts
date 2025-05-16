@@ -5,7 +5,7 @@ interface Spinogram {
 interface SpinogramTimepoint {
     x: number[];
     y: number[];
-    xy: number[][];
+    xy: [number, number][];
     a: number;
     t: number;
 }

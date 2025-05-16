@@ -11,7 +11,7 @@
                 </text>
 
                 <g :transform="`translate(${margin.left}, ${dims.y - dims.h - 10})`">
-                    <path v-for="(tp, idx) in spinogram_data" :key="idx" :d="lineGen(tp.xy)" :stroke="line_color"
+                    <path v-for="(tp, idx) in spinogram_data" :key="idx" :d="lineGen(tp.xy) as string" :stroke="line_color"
                         :stroke-width="line_weight" :style="{ opacity: tp.a }" :data-time="tp.t" />
                 </g>
 
@@ -48,7 +48,7 @@ import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import ColorScaleLegend from "@render/components/Charts/Colors/ColorScaleLegendSVG.vue";
 import { extent } from "d3-array";
 import * as d3 from "d3";
-import { scaleLinear, scaleSequential } from "d3-scale";
+import { scaleLinear, scaleSequential, ScaleContinuousNumeric } from "d3-scale";
 import { line } from "d3-shape";
 import { rgb } from "d3-color";
 import RegisterDataComponent from "@render/components/Core";
@@ -82,11 +82,11 @@ export default defineComponent({
     directives: {
         axis: {
             mounted(el: HTMLElement, binding: DirectiveBinding) {
-                const axis = binding.arg;
+                const axis = binding.arg as string;
                 if (axis) {
                     const axisMethod = { x: d3.axisBottom, y: d3.axisLeft }[axis];
                     if (axisMethod) {
-                        d3.select(el).call(axisMethod(binding.value[axis]));
+                        d3.select(el).call(axisMethod(binding.value[axis]) as any);
                     }
                 }
             },
@@ -134,7 +134,7 @@ export default defineComponent({
         });
         const scale = computed(() => {
             if (!spinogram_data.value.length) {
-                return { x: scaleLinear(), y: scaleLinear(), t: scaleSequential((n) => n) };
+                return { x: scaleLinear(), y: scaleLinear(), t: scaleSequential<string>() };
             }
             const x = scaleLinear().domain([0, 200]).rangeRound([0, dims.value.w]);
             const y = scaleLinear().domain([0, 100]).rangeRound([dims.value.h, 0]);

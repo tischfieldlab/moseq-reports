@@ -12,15 +12,16 @@
     </BButton>
 </template>
 <script lang="ts">
+import { PropType } from "vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({
     name: "TitlebarButton",
     props: {
         clicked: {
-            type: Function as () => void,
+            type: Function as PropType<(e: MouseEvent) => any>,
             required: false,
-            default: () => {},
+            default: (e: MouseEvent) => {},
         },
         icon: { type: String, required: true },
         title: { type: String, required: false },

@@ -1,16 +1,16 @@
-<script>
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
+<script lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import * as d3 from 'd3';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
-import { WhiskerType } from './BoxPlot.types';
+import { DataPoint, GroupStats, isDataPoint, isGroupStats, ToolTipPosition, WhiskerType } from './BoxPlot.types';
 import Worker from './Worker.ts?worker';
 
-function default_tooltip_formatter(value) {
+function default_tooltip_formatter(value: DataPoint | GroupStats): string {
     if (value) {
-        if (value.id !== undefined) {
+        if (isDataPoint(value)) {
             return `ID: ${value.id}<br /> Value: ${value.value.toExponential(3)}`;
-        } else if (value.count !== undefined) {
+        } else if (isGroupStats(value)) {
             return `Group: ${value.group}<br /> Count: ${value.count}<br /> Median: ${value.q2.toExponential(3)}`;
         } else {
             return JSON.stringify(value, null, "\t");
@@ -19,7 +19,38 @@ function default_tooltip_formatter(value) {
     return "";
 }
 
-export function useBoxPlotBase(props) {
+export const BoxPlotBasePropsDefaults = {
+    whisker_type: WhiskerType.TUKEY,
+    show_boxplot: true,
+    show_points: true,
+    show_violinplot: false,
+    kde_scale: 0.01,
+    point_size: 2,
+    xAxisTitle: 'Group',
+    yAxisTitle: 'Value',
+    tooltipFormatter: default_tooltip_formatter,
+    noDataMessage: 'Sorry, no data available!',
+}
+
+export interface BoxPlotBaseProps {
+    data: DataPoint[]
+    width: number,
+    height: number,
+    whisker_type: string,
+    show_boxplot: boolean
+    show_points: boolean
+    show_violinplot: boolean
+    kde_scale: number
+    point_size: number
+    groupLabels: string[],
+    groupColors: string[],
+    xAxisTitle: string
+    yAxisTitle: string
+    tooltipFormatter: (value: DataPoint | GroupStats) => string,
+    noDataMessage: string
+};
+
+export function useBoxPlotBase(props: BoxPlotBaseProps) {
     const worker = new Worker();
 
     worker.onmessage = (event) => {
@@ -34,32 +65,29 @@ export function useBoxPlotBase(props) {
         }
     };
 
-    const points = ref([]);
-    const groupedData = ref([]);
+    const points = ref<DataPoint[]>([]);
+    const groupedData = ref<GroupStats[]>([]);
     const margin = ref({ top: 20, right: 20, bottom: 50, left: 60 });
     const xAxisLabelYPos = ref(45);
     const rotate_labels = ref(false);
     const label_stats = ref({ count: 0, total: 0, longest: 0 });
     const domainY = ref([0, 0]);
     const domainKde = ref([0, 0]);
-    const tooltipPosition = ref(undefined);
-    const hoverItem = ref(undefined);
+    const tooltipPosition = ref<ToolTipPosition>({ x: 0, y: 0 });
+    const hoverItem = ref<DataPoint|GroupStats|undefined>(undefined);
 
     const has_data = computed(() => props.data?.length > 0);
     const scale = computed(() => {
         const orderedLabels = groupedData.value.map(gs => gs.group).sort((a, b) =>
             props.groupLabels.indexOf(a) - props.groupLabels.indexOf(b)
         );
-        const x = scaleBand()
-            .domain(orderedLabels)
-            .range([0, innerWidth.value])
-            .padding(0.2);
+        const x = scaleBand(orderedLabels, [0, innerWidth.value]).padding(0.2);
 
         return {
             x,
-            y: scaleLinear().domain(domainY.value).range([innerHeight.value, 0]),
-            w: scaleLinear().domain(domainKde.value).range([0, x.bandwidth()]),
-            c: scaleOrdinal().domain(props.groupLabels).range(props.groupColors),
+            y: scaleLinear(domainY.value, [innerHeight.value, 0]),
+            w: scaleLinear(domainKde.value, [0, x.bandwidth()]),
+            c: scaleOrdinal(props.groupLabels, props.groupColors),
         };
     });
 
@@ -102,7 +130,7 @@ export function useBoxPlotBase(props) {
 
     const violinArea = computed(() => area().x0(d => scale.value.w(d[1])).x1(d => scale.value.w(-d[1])).y(d => scale.value.y(d[0])));
     const violinLine = computed(() => line().x(d => scale.value.w(d[1])).y(d => scale.value.y(d[0])));
-    const diamond = computed(() => symbol().type(symbolDiamond).size(2 * Math.sqrt(2 * (Math.PI * props.point_size ** 2))));
+    const diamond = computed(() => symbol(symbolDiamond, 2 * Math.sqrt(2 * (Math.PI * props.point_size ** 2))));
     const actuallyShowPoints = computed(() => props.show_points && points.value.length <= 10000);
 
     const tooltip_text = computed(() =>

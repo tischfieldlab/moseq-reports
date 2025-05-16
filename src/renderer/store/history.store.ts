@@ -1,4 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
+import { VNode } from 'vue';
 
 
 export interface HistoryState {
@@ -7,7 +8,7 @@ export interface HistoryState {
 
 export interface HistoryItem {
     time: Date;
-    message: string;
+    message: string | (() => VNode);
     variant: string;
     details: string | null;
 }
@@ -22,7 +23,7 @@ export const useHistoryStore = defineStore('history', {
          * @param payload - Partial history item to add.
          */
         addEntry(payload: Partial<HistoryItem>) {
-            console.log("Adding history entry:", payload);
+            //console.log("Adding history entry:", payload);
             this.items.push({
                 time: payload.time || new Date(),
                 message: payload.message || "",
