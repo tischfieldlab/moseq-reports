@@ -1,55 +1,79 @@
 <template>
-  <BContainer fluid>
-    <BRow>
-      <BCol>
-        <BInputGroup>
-          <template #prepend>Group Ordering</template>
-          <BFormSelect v-model="group_order_type" :options="group_order_options"></BFormSelect>
-        </BInputGroup>
-      </BCol>
-    </BRow>
+    <BContainer fluid>
+        <BRow>
+            <BCol>
+                <BInputGroup>
+                    <template #prepend>
+                        <BInputGroupText>Group Ordering</BInputGroupText>
+                    </template>
+                    <BFormSelect v-model="group_order_type" :options="group_order_options"></BFormSelect>
+                </BInputGroup>
+            </BCol>
+        </BRow>
 
-    <BRow v-show="group_order_type === 'dataset'">
-      <BCol cols="1"></BCol>
-      <BCol>
-        <BInputGroup>
-          <template #prepend>Dataset</template>
-          <DatasetPicker v-model="group_order_dataset" :dataview="dataview" :owner="id" />
-        </BInputGroup>
-      </BCol>
-    </BRow>
+        <BRow v-show="group_order_type === 'dataset'">
+            <BCol cols="1"></BCol>
+            <BCol>
+                <BInputGroup>
+                    <template #prepend>
+                        <BInputGroupText>Dataset</BInputGroupText>
+                    </template>
+                    <DatasetPicker v-model="group_order_dataset" :dataview="dataview.$id" :owner="id" />
+                </BInputGroup>
+            </BCol>
+        </BRow>
 
-    <BRow>
-      <BCol>
-        <BInputGroup>
-          <template #prepend>Point Size</template>
-          <BFormInput type="number" v-model="point_size" :disabled="!show_points" min="1" max="10"></BFormInput>
-          <BFormCheckbox v-model="show_points" switch class="ms-2">Show</BFormCheckbox>
-        </BInputGroup>
-      </BCol>
-    </BRow>
+        <BRow>
+            <BCol>
+                <BInputGroup>
+                    <template #prepend>
+                        <BInputGroupText>Point Size</BInputGroupText>
+                    </template>
+                    <BFormInput type="number" v-model="point_size" :disabled="!show_points" min="1" max="10">
+                    </BFormInput>
+                    <template #append>
+                        <BInputGroupText>
+                            <BFormCheckbox v-model="show_points" switch class="ms-2" />
+                        </BInputGroupText>
+                    </template>
+                </BInputGroup>
+            </BCol>
+        </BRow>
 
-    <BRow>
-      <BCol>
-        <BInputGroup>
-          <template #prepend>Boxplot Whiskers</template>
-          <BFormSelect v-model="boxplot_whiskers" :options="whisker_options" :disabled="!show_boxplot"></BFormSelect>
-          <BFormCheckbox v-model="show_boxplot" switch class="ms-2">Show</BFormCheckbox>
-        </BInputGroup>
-        <div class="figure-caption" v-html="boxplot_whisker_description"></div>
-      </BCol>
-    </BRow>
+        <BRow>
+            <BCol>
+                <BInputGroup>
+                    <template #prepend>
+                        <BInputGroupText>Boxplot Whiskers</BInputGroupText>
+                    </template>
+                    <BFormSelect v-model="boxplot_whiskers" :options="whisker_options" :disabled="!show_boxplot" />
+                    <template #append>
+                        <BInputGroupText>
+                            <BFormCheckbox v-model="show_boxplot" switch class="ms-2" />
+                        </BInputGroupText>
+                    </template>
+                </BInputGroup>
+                <div class="figure-caption" v-html="boxplot_whisker_description"></div>
+            </BCol>
+        </BRow>
 
-    <BRow>
-      <BCol>
-        <BInputGroup>
-          <template #prepend>Violin Scale</template>
-          <BFormInput type="number" v-model="violin_kde_scale" :disabled="!show_violinplot" min="0" max="1.0" step="0.001"></BFormInput>
-          <BFormCheckbox v-model="show_violinplot" switch class="ms-2">Show</BFormCheckbox>
-        </BInputGroup>
-      </BCol>
-    </BRow>
-  </BContainer>
+        <BRow>
+            <BCol>
+                <BInputGroup>
+                    <template #prepend>
+                        <BInputGroupText>Violin Scale</BInputGroupText>
+                    </template>
+                    <BFormInput type="number" v-model="violin_kde_scale" :disabled="!show_violinplot" min="0" max="1.0"
+                        step="0.001"></BFormInput>
+                    <template #append>
+                        <BInputGroupText>
+                            <BFormCheckbox v-model="show_violinplot" switch class="ms-2" />
+                        </BInputGroupText>
+                    </template>
+                </BInputGroup>
+            </BCol>
+        </BRow>
+    </BContainer>
 </template>
 
 <script lang="ts">
@@ -58,9 +82,13 @@ import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import { WhiskerType } from "@render/components/Charts/BoxPlot";
 import { OrderingType } from "@render/components/Charts/ClusteredHeatmap/ClusteredHeatmap.types";
 import { DetailedUsageSettings } from "./DetailedUsage.types";
+import DatasetPicker from "@render/components/DatasetPicker.vue";
 
 export default defineComponent({
     name: "DetailedUsageOptions",
+    components: {
+        DatasetPicker,
+    },
     props: {
         id: {
             type: String,

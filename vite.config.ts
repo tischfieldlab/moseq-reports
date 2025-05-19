@@ -8,6 +8,8 @@ import Components from 'unplugin-vue-components/vite'
 import {BootstrapVueNextResolver} from 'bootstrap-vue-next'
 import electronRenderer from "vite-plugin-electron-renderer";
 import vueDevTools from 'vite-plugin-vue-devtools'
+import Icons from 'unplugin-icons/vite'
+import IconsResolve from 'unplugin-icons/resolver'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -30,7 +32,12 @@ export default defineConfig(({ command }) => {
         }
       }),
       Components({
-        resolvers: [BootstrapVueNextResolver()],
+        resolvers: [IconsResolve(), BootstrapVueNextResolver()],
+        dts: true,
+      }),
+      Icons({
+        compiler: 'vue3',
+        autoInstall: true,
       }),
       electron({
         main: {

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <svg ref="canvas" :width="width" :height="height" @mousemove="debouncedHover"
+        <svg ref="canvas" :width="width" :height="height" @mousemove="handleHover"
             @mouseleave="hoverItem = undefined">
             <g :transform="`translate(${margin.left}, ${margin.top})`">
                 <g v-if="show_boxplot">
@@ -121,8 +121,8 @@ const { points,
     xAxisLabelYPos,
     innerHeight,
     innerWidth,
-    rotate_labels,
-    noDataMessage } = useBoxPlotBase(props);
+    rotate_labels
+ } = useBoxPlotBase(props);
 
 const canvas = useTemplateRef('canvas');
 const labelStats = ref({ count: 0, total: 0, longest: 0 });

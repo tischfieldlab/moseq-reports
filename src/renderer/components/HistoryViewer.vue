@@ -2,9 +2,21 @@
     <div class="sidebar-container">
         <h3>Notification History</h3>
         <template v-if="items.length > 0">
-            <div v-for="(itm, idx) in items" :key="idx" class="toast show mb-3" role="alert" :class="`bg-${itm.variant}`">
+            <b-toast v-for="(itm, idx) in items" :key="idx" :show="true" :variant="itm.variant">
+                <template #title>
+                    <timeago :datetime="itm.time" />
+                </template>
+                {{ itm.message }}
+                <BLink v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link">
+                    {{ itm.showDetails ? "Hide Details" : "Show Details" }}
+                </BLink>
+                <div v-if="itm.showDetails" class="details mt-2">
+                    <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
+                </div>
+            </b-toast>
+            <!--<div v-for="(itm, idx) in items" :key="idx" class="toast show mb-3" role="alert" :class="`bg-${itm.variant}`">
                 <div class="toast-header">
-                    <!--strong class="me-auto">Notification</strong-->
+                    <!--strong class="me-auto">Notification</strong--><!--
                     <small><timeago :datetime="itm.time" /></small>
                     <button class="btn-close" aria-label="Close" @click="removeNotification(idx)" v-b-tooltip="'dismiss'"></button>
                 </div>
@@ -17,7 +29,7 @@
                         <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </template>
         <div v-else>
             <p class="no-items">There doesn't seem to be anything here.</p>
@@ -28,14 +40,31 @@
 
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import { useHistoryStore } from "@store/history.store";
 
 export default defineComponent({
     setup() {
         const historyStore = useHistoryStore();
 
-        const items = computed(() =>
+        historyStore.$onAction((action) => {
+            console.log("HistoryStore action triggered:", action.name);
+
+            if (action.name === "addEntry") {
+                console.log("HistoryStore action triggered:", action.name);
+                action.after(() => {
+                    items.value.push({
+                        ...historyStore.items[historyStore.items.length - 1],
+                        showDetails: false,
+                    });
+                });
+            } else if (action.name === "removeEntry") {
+                console.log("HistoryStore action triggered:", action.name);
+                items.value.splice(action.args[0], 1);
+            }
+        });
+
+        const items = ref(
             historyStore.items.map((item) => ({
                 ...item,
                 showDetails: false,
@@ -43,7 +72,9 @@ export default defineComponent({
         );
 
         const toggleDetails = (idx) => {
+            console.log("Toggling details for item at index:", idx, items.value[idx].showDetails, !items.value[idx].showDetails);
             items.value[idx].showDetails = !items.value[idx].showDetails;
+            console.log("New state:", items.value[idx].showDetails);
         };
 
         const removeNotification = (idx) => {

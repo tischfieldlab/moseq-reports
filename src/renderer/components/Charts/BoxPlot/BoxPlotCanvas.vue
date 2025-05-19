@@ -1,9 +1,9 @@
 <template>
     <div :style="{width:'100%', height:'100%', 'overflow': 'hidden'}">
         <canvas
-            v-dpiadapt="{width: width, height: height}"
+            v-dpi-adapt="{width: width, height: height}"
             v-show="has_data"
-            ref='canvas'
+            ref='canvasEl'
             @mousemove="handleHover"
             @mouseleave="hoverItem = undefined"></canvas>
 
@@ -17,16 +17,15 @@
 
 <script setup lang='ts'>
 import {BoxPlotBaseProps, BoxPlotBasePropsDefaults, useBoxPlotBase} from './BoxPlotBase.vue';
-import { GroupStats, DataPoint } from './BoxPlot.types';
+import { GroupStats, DataPoint, LabelStats } from './BoxPlot.types';
 import { sum } from 'd3-array';
 import { throttle, debounce } from '@render/util/Events';
 import {sample} from '@render/util/Array';
 import ToolTip from '@render/components/Charts/ToolTip.vue';
-import CanvasMixin from '@render/components/Charts/Canvas';
+import {useCanvas} from '@render/components/Charts/Canvas';
 import MessageBox from '@render/components/Charts/CenteredMessage.vue';
-import { defineComponent } from 'vue';
-import { onMounted } from 'vue';
-import { ref } from 'vue';
+import { onMounted, onUnmounted, nextTick, ref, watch, WatchHandle } from 'vue';
+
 
 
 
@@ -53,29 +52,78 @@ const { points,
     innerHeight,
     innerWidth,
     rotate_labels,
-    noDataMessage } = useBoxPlotBase(props);
+} = useBoxPlotBase(props);
 
 const emitLoadingOnUpdate = ref(false);
 
+const to_watch = [
+    points,
+    groupedData,
+    has_data,
+    scale,
+    fences,
+    diamond,
+    violinArea,
+    violinLine,
+    margin,
+    origin,
+    tooltip_text,
+    tooltipPosition,
+    hoverItem,
+    actuallyShowPoints,
+    halfBandwith,
+    quaterBandwith,
+    xAxisLabelYPos,
+    innerHeight,
+    innerWidth,
+    rotate_labels,
+];
+const watchers: WatchHandle[] = [];
+
 onMounted(() => {;
 
-    /*Object.keys(props).forEach((key) => {
-        watchers.push($watch(key, () => {
-            draw();
-        }));
-    });*/
-    /*Object.keys($data).forEach((key) => {
-        watchers.push($watch(key, () => {
-            draw();
-        }));
-    });*/
+    Object.keys(props).forEach((key) => {
+        watchers.push(
+            watch(
+                () => props[key],
+                () => {
+                    draw();
+                }
+            )
+        );
+    });
+    to_watch.forEach((item) => {
+        watchers.push(
+            watch(
+                () => item,
+                () => {
+                    draw();
+                }
+            )
+        );
+    });
     draw();
 });
 
+onUnmounted(() => {
+    watchers.forEach((w) => {
+        w();
+    });
+});
+
+const label_stats = ref<LabelStats>({
+    count: 0,
+    total: 0,
+    longest: 0,
+});
+
+const {canvas, vDpiAdapt} = useCanvas();
+
 const draw = debounce(() => {
+    console.log('draw');
     //emitStartLoading();
-    $forceNextTick().then(() => {
-        const ctx = canvas.cxt;
+    nextTick().then(() => {
+        const ctx = canvas.value.cxt;
         if (ctx === null) {
             //emitFinishLoading();
             return; // bail out
@@ -145,18 +193,14 @@ const drawBoxPlotNode = (ctx: CanvasRenderingContext2D, node: GroupStats) => {
 
     // Horizontal Median line
     ctx.beginPath();
-    ctx.moveTo(x,
-                scale.value.y(node.q2));
-    ctx.lineTo(x + (halfBandwith.value * 2),
-                scale.value.y(node.q2));
+    ctx.moveTo(x, scale.value.y(node.q2));
+    ctx.lineTo(x + (halfBandwith.value * 2), scale.value.y(node.q2));
     ctx.stroke();
 
     // Horizontal Maximum line
     ctx.beginPath();
-    ctx.moveTo(x + quaterBandwith.value,
-                scale.value.y(fences.value.upper(node)));
-    ctx.lineTo(x + (quaterBandwith.value * 3),
-                scale.value.y(fences.value.upper(node)));
+    ctx.moveTo(x + quaterBandwith.value, scale.value.y(fences.value.upper(node)));
+    ctx.lineTo(x + (quaterBandwith.value * 3), scale.value.y(fences.value.upper(node)));
     ctx.stroke();
 }
 const drawPointNode = (ctx: CanvasRenderingContext2D, node: DataPoint) => {
@@ -165,7 +209,7 @@ const drawPointNode = (ctx: CanvasRenderingContext2D, node: DataPoint) => {
             scale.value.y(node.value),
             props.point_size,
             0, 2 * Math.PI);
-    ctx.fillStyle = scale.c(node.group);
+    ctx.fillStyle = scale.value.c(node.group);
     ctx.fill();
     ctx.stroke();
 }
@@ -279,12 +323,12 @@ const drawAxisY = (ctx: CanvasRenderingContext2D) => {
     ctx.restore();
 }
 const compute_label_stats = (labels: string[]) => {
-    const ctx = canvas.cxt;
+    const ctx = canvas.value.cxt;
     if (ctx !== null) {
         const widths = labels.map((l) => {
             return ctx.measureText(l).width;
         });
-        label_stats = {
+        label_stats.value = {
             count: labels.length,
             total: sum(widths),
             longest: Math.max(...widths),
@@ -292,7 +336,7 @@ const compute_label_stats = (labels: string[]) => {
     } else {
         // if canvas is not available yet (i.e. before fully mounted)
         // then schedule the calculation for the next tick
-        $nextTick(() => compute_label_stats(labels));
+        nextTick(() => compute_label_stats(labels));
         return;
     }
 }
@@ -328,7 +372,7 @@ const handleHover = throttle((event: MouseEvent) => {
             return;
         }
     }
-    tooltipPosition.value = undefined;
+    tooltipPosition.value = {x: 0, y: 0};
     hoverItem.value = undefined;
 }, 10);
 

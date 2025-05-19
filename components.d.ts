@@ -42,7 +42,9 @@ declare module 'vue' {
     BSpinner: typeof import('bootstrap-vue-next/components/BSpinner')['BSpinner']
     BTab: typeof import('bootstrap-vue-next/components/BTabs')['BTab']
     BTabs: typeof import('bootstrap-vue-next/components/BTabs')['BTabs']
+    BToast: typeof import('bootstrap-vue-next/components/BToast')['BToast']
     BToastOrchestrator: typeof import('bootstrap-vue-next/components/BToast')['BToastOrchestrator']
+    IBiCameraFill: typeof import('~icons/bi/camera-fill')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

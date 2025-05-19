@@ -8,7 +8,6 @@ import timeago from "vue-timeago3";
 import {enUS} from 'date-fns/locale';
 //import {CreateServer, ShutdownServer} from '@render/components/Core/DataLoader/DataServer';
 import {createBootstrap} from 'bootstrap-vue-next'
-import Icons  from 'unplugin-icons/vite'
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
@@ -24,7 +23,6 @@ app.use(pinia);
 app.use(createBootstrap());
 app.use(ToastPlugin);
 app.use(D3AxisDirective);
-//app.use(Icons);
 //app.use(VueDraggableResizable);
 //console.log("VueDraggableResizable", VueDraggableResizable);
 app.use(VueForceNextTick);

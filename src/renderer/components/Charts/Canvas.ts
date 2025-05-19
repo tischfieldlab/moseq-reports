@@ -1,19 +1,71 @@
-import { defineComponent, ref, provide, onMounted, nextTick, Directive } from "vue";
+import { defineComponent, ref, provide, onMounted, nextTick, Directive, shallowRef } from "vue";
 import { throttle } from "@render/util/Events";
 
-export function getScaledContext2d(canvas: HTMLCanvasElement, width: number, height: number) {
-    const ctx = canvas.getContext("2d");
 
-    if (ctx !== null) {
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
 
-        const scale = window.devicePixelRatio;
-        canvas.width = Math.floor(width * scale);
-        canvas.height = Math.floor(height * scale);
-        ctx.scale(scale, scale);
+export interface CanvasContext {
+    cxt: CanvasRenderingContext2D | null;
+    scale: number;
+}
+
+export function useCanvas() {
+    const canvas = shallowRef<CanvasContext>({
+        cxt: null,
+        scale: window.devicePixelRatio || 1,
+    });
+    provide("canvas", canvas);
+
+    const last_width = ref(0);
+    const last_height = ref(0);
+
+    function getScaledContext2d(canvas: HTMLCanvasElement, width: number, height: number) {
+        const ctx = canvas.getContext("2d");
+        const scale = window.devicePixelRatio || 1;
+
+        if (ctx !== null) {
+            // Set display size (css pixels).
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+
+            // Set actual size in memory (scaled to account for extra pixel density).
+            canvas.width = Math.floor(width * scale);
+            canvas.height = Math.floor(height * scale);
+
+            // Scale the context to ensure correct rendering.
+            ctx.resetTransform();
+            ctx.scale(scale, scale);
+        }
+        return {ctx, scale};
     }
-    return ctx;
+
+    function run(el, binding){
+        const canvas_el = el as HTMLCanvasElement;
+        const { width, height } = binding.value;
+
+        if (width === last_width.value && height === last_height.value) {
+            return;
+        }
+
+        last_width.value = width;
+        last_height.value = height;
+
+        const {ctx, scale} = getScaledContext2d(canvas_el, width, height);
+
+        // important: set the ref context and scale
+        canvas.value.cxt = ctx;
+        canvas.value.scale = scale;
+    }
+
+    const vDpiAdapt: Directive = {
+        beforeUpdate: run,
+        mounted: run,
+    };
+
+    return {
+        canvas,
+        vDpiAdapt,
+        getScaledContext2d
+    };
 }
 
 const CanvasMixin = defineComponent({
@@ -92,30 +144,8 @@ const CanvasMixin = defineComponent({
     },
 });
 
-const dpiAdapt: Directive = {
-    mounted(el, binding) {
-        const canvas = el as HTMLCanvasElement;
-        const { width, height } = binding.value;
 
-        const scale = window.devicePixelRatio || 1;
-        const cssWidth = `${width}px`;
-        const cssHeight = `${height}px`;
-        const cnvWidth = Math.floor(width * scale);
-        const cnvHeight = Math.floor(height * scale);
-
-        canvas.style.width = cssWidth;
-        canvas.style.height = cssHeight;
-        canvas.width = cnvWidth;
-        canvas.height = cnvHeight;
-
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-            ctx.resetTransform();
-            ctx.scale(scale, scale);
-        }
-    },
-};
-
+/*
 export default {
     mixins: [CanvasMixin],
     directives: {
@@ -132,4 +162,4 @@ export default {
       ></canvas>
     </BCard>
   `,
-};
+};*/

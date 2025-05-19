@@ -16,15 +16,11 @@ export function showSaveSuccessToast(dest: string, noun: string, showOrOpen: 'op
     const body = () => h('div', {}, [
                 `Your ${noun} was saved successfully to `,
                 h('a', {
-                    attrs: {
-                        href: 'javascript:void(0);',
-                        title: `Click to ${showOrOpen}`,
-                    },
-                    on: {
-                        click: clickHandler,
-                    },
+                    href: 'javascript:void(0);',
+                    title: `Click to ${showOrOpen}`,
+                    click: clickHandler,
                 }, dest),
-            ])
+            ]);
 
     app_root.$showToast({
         title: `Success saving ${noun}!`,

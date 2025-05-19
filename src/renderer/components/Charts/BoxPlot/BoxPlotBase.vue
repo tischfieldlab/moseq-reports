@@ -5,6 +5,7 @@ import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { DataPoint, GroupStats, isDataPoint, isGroupStats, ToolTipPosition, WhiskerType } from './BoxPlot.types';
 import Worker from './Worker.ts?worker';
+import { DefinedArea, DefinedScaleBand, DefinedSymbol } from '../D3Scale';
 
 function default_tooltip_formatter(value: DataPoint | GroupStats): string {
     if (value) {
@@ -47,7 +48,7 @@ export interface BoxPlotBaseProps {
     xAxisTitle: string
     yAxisTitle: string
     tooltipFormatter: (value: DataPoint | GroupStats) => string,
-    noDataMessage: string
+    noDataMessage?: string
 };
 
 export function useBoxPlotBase(props: BoxPlotBaseProps) {
@@ -81,7 +82,7 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
         const orderedLabels = groupedData.value.map(gs => gs.group).sort((a, b) =>
             props.groupLabels.indexOf(a) - props.groupLabels.indexOf(b)
         );
-        const x = scaleBand(orderedLabels, [0, innerWidth.value]).padding(0.2);
+        const x = scaleBand(orderedLabels, [0, innerWidth.value]).padding(0.2) as DefinedScaleBand<string>;
 
         return {
             x,
@@ -128,9 +129,9 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
         }
     });
 
-    const violinArea = computed(() => area().x0(d => scale.value.w(d[1])).x1(d => scale.value.w(-d[1])).y(d => scale.value.y(d[0])));
+    const violinArea = computed(() => area().x0(d => scale.value.w(d[1])).x1(d => scale.value.w(-d[1])).y(d => scale.value.y(d[0])) as DefinedArea<[number, number]>);
     const violinLine = computed(() => line().x(d => scale.value.w(d[1])).y(d => scale.value.y(d[0])));
-    const diamond = computed(() => symbol(symbolDiamond, 2 * Math.sqrt(2 * (Math.PI * props.point_size ** 2))));
+    const diamond = computed(() => symbol(symbolDiamond, 2 * Math.sqrt(2 * (Math.PI * props.point_size ** 2))) as DefinedSymbol<any, any>);
     const actuallyShowPoints = computed(() => props.show_points && points.value.length <= 10000);
 
     const tooltip_text = computed(() =>
@@ -188,6 +189,6 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
     onUnmounted(() => { worker.terminate(); document.removeEventListener('mousemove', handleHover); });
     onMounted(() => { document.addEventListener('mousemove', handleHover); });
 
-    return { points, groupedData, has_data, scale, fences, diamond, violinArea, violinLine, margin, origin, tooltip_text, tooltipPosition, hoverItem, actuallyShowPoints, is_outlier, halfBandwith, quaterBandwith, xAxisLabelYPos, innerHeight, innerWidth, rotate_labels, noDataMessage: props.noDataMessage };
+    return { points, groupedData, has_data, scale, fences, diamond, violinArea, violinLine, margin, origin, tooltip_text, tooltipPosition, hoverItem, actuallyShowPoints, is_outlier, halfBandwith, quaterBandwith, xAxisLabelYPos, innerHeight, innerWidth, rotate_labels };
 }
 </script>

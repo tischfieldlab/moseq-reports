@@ -21,7 +21,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from "vue";
 import RegisterDataComponent from "@render/components/Core";
-import {  WhiskerType, BoxPlotSVG } from "@render/components/Charts/BoxPlot";
+import {  WhiskerType, BoxPlotSVG, BoxPlotCanvas } from "@render/components/Charts/BoxPlot";
 import { OrderingType } from "@render/components/Charts/ClusteredHeatmap/ClusteredHeatmap.types";
 //import { Operation } from "@render/components/Core/DataLoader/DataLoader.types";
 import { RenderMode } from "@store/datawindow.types";
@@ -54,7 +54,7 @@ RegisterDataComponent({
 export default defineComponent({
     name: "UsageDetails",
     components: {
-        //BoxPlotCanvas,
+        BoxPlotCanvas,
         BoxPlotSVG,
     },
     props: {

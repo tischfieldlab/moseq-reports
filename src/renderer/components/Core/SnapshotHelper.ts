@@ -6,12 +6,13 @@ import {app_root} from "@render/index";
 import { dialog } from "@electron/remote";
 import fs from "fs";
 import mime from "mime-types";
-import { DataWindowState } from "@store/datawindow.types";
+import { DataWindowState, RenderMode } from "@store/datawindow.types";
 import { SaveCancelledError } from "@render/components/Core/IO/types";
 import { showSaveErrorToast, showSaveSuccessToast } from "@render/components/Core/IO/Toasts";
 import WindowManager from "@render/components/Core/Window/WindowManager";
 import {ComponentPublicInstance, getCurrentInstance } from "vue";
 import {useDataWindowStore} from '@store/datawindow.store'
+import { ComponentRegistration } from "@render/store/component_registry.store";
 
 export interface SnapshotOptions {
     format: string;
@@ -24,6 +25,15 @@ export function defaultOptions(target: ComponentPublicInstance): SnapshotOptions
     const rtgt = resolveTarget(target);
     return {
         format: rtgt.type === "video" ? "video" : "png",
+        quality: 1,
+        scale: 4,
+        backgroundColor: "#FFFFFF00", // fully transparent white
+    };
+}
+
+export function defaultOptionsFromSpec(target: ComponentRegistration): SnapshotOptions {
+    return {
+        format: target.default_render_mode === RenderMode.VIDEO ? "video" : "png",
         quality: 1,
         scale: 4,
         backgroundColor: "#FFFFFF00", // fully transparent white
@@ -269,6 +279,7 @@ export function resolveTarget(target: ComponentPublicInstance): {
     type: "video" | "svg" | "html" | "callback";
     target: HTMLElement | ((options: SnapshotOptions) => Promise<string>);
 } {
+    console.log("resolveTarget", target);
     const eattr = "data-snapshot-target";
     const explicit = (
         target.$el.hasAttribute(eattr) ? target.$el : target.$el.querySelector(`[${eattr}]`)

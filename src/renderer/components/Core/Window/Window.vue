@@ -81,14 +81,15 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, defineComponent, onMounted, onUnmounted,nextTick } from "vue";
+import { ref, computed, defineComponent, onMounted, onUnmounted, useTemplateRef } from "vue";
 import BaseWindow from "@render/components/Core/Window/BaseWindow.vue";
-//import  { ensureDefaults } from "../SnapshotHelper";
+import  Snapshot from "../SnapshotHelper";
 import TitlebarButton from "@render/components/Core/Window/Titlebar/TitlebarButton.vue";
 import WindowManager from "@render/components/Core/Window/WindowManager";
 import { Position, Size } from "@store/datawindow.types";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import {useWindowsStore} from "@store/windows.store";
+import { ComponentPublicInstance } from "vue";
 
 function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
     return Math.min(Math.max(value, min), max);
@@ -111,15 +112,18 @@ export default defineComponent({
 
         const show_settings_modal = ref(false);
         const component_loading = ref(0);
-        const bodyRef = ref<HTMLElement | null>(null);
+        const bodyRef = useTemplateRef<ComponentPublicInstance>('window');
+        //console.log("bodyRef", bodyRef);
 
         const settings_title = computed(() => `${title.value} Settings`);
         const swatch_color = computed(() => dataview.color);
         const is_loading = computed(() => component_loading.value > 0 || dataview.loading);
         const swatch_title = computed(() => `Using ${dataview.name}`);
-        const window_width = computed(() => layout.value.width);
-        const window_height = computed(() => layout.value.height);
-        const window_position = computed(() => layout.value.position);
+        const window_width = computed(() => $wstate.width);
+        const window_height = computed(() => $wstate.height);
+        const window_position = computed(() => {
+            return {x: $wstate.pos_x, y: $wstate.pos_y};
+        });
 
 
         const onResized = (event: any) => {
@@ -163,23 +167,21 @@ export default defineComponent({
 
         const snapshotContent = async (event: MouseEvent) => {
             if (bodyRef.value) {
-                //await Snapshot(bodyRef.value, title.value, dataview.snapshot);
+                await Snapshot(bodyRef.value, title.value, $wstate.settings.snapshot);
             }
         };
 
         onMounted(() => {
-            if (bodyRef.value) {
+            if (bodyRef.value !== null) {
                 WindowManager.addWindow(props.id, bodyRef.value);
                 // Ensure defaults
-                nextTick(() => {
-                    //ensureDefaults(bodyRef.value, {});
-                });
+                //ensureDefaults(bodyRef.value);
 
-                bodyRef.value.addEventListener("start-loading", () => {
+                bodyRef.value.$el.addEventListener("start-loading", () => {
                     component_loading.value++;
                 });
 
-                bodyRef.value.addEventListener("finish-loading", () => {
+                bodyRef.value.$el.addEventListener("finish-loading", () => {
                     component_loading.value = clamp(component_loading.value - 1, 0);
                 });
             }

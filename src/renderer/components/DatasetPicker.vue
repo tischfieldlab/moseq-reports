@@ -1,62 +1,56 @@
 <template>
-    <BFormSelect :modelValue="value" @update:modelValue="onInput" :options="options"></BFormSelect>
+    <BFormSelect v-model="value" :options="options"></BFormSelect>
 </template>
 
-<script lang="ts">
-import { useWindowsStore } from "@store/windows.store";
+<script setup lang="ts">
+import { useDataViewStore } from "@render/store/dataview.store";
 import { useDataWindowStore } from "@store/datawindow.store";
-import { defineComponent, computed } from "vue";
+import { computed } from "vue";
 
-export default defineComponent({
-    props: {
-        value: {
-            type: String,
-            required: true,
-        },
-        dataview: {
-            type: Object, 
-            required: true,
-        },
-        filters: {
-            type: Function,
-            default: (item: any) => true, 
-        },
-        owner: {
-            type: String,
-            default: "",
-        },
+const props = defineProps({
+    dataview: {
+        type: String,
+        required: true,
     },
-    setup(props) {
-        const windowsStore = useWindowsStore();
-
-        const options = computed((): { text: string; value: string }[] => {
-            return Object.entries(props.dataview.views)
-                .map(([key, dset]) => {
-                    const parts = key.split("/");
-                    const win = useDataWindowStore(parts[1]);
-                    if (win && props.owner && props.owner !== parts[1]) {
-                        return {
-                            window: win,
-                            text: `${win.title}: ${parts[2]}`,
-                            value: key,
-                        };
-                    }
-                    return undefined;
-                })
-                .filter((item) => item !== undefined) 
-                .filter(props.filters as (item: any) => boolean); 
-        });
-
-        return {
-            options,
-        };
+    filters: {
+        type: Function,
+        default: (item: any) => true, 
     },
-    methods: {
-        onInput(newValue: string) {
-            this.$emit("update:value", newValue);
-        },
+    owner: {
+        type: String,
+        default: "",
     },
 });
+
+
+const value = defineModel({
+    type: String,
+});
+
+const options = computed((): { text: string; value: string }[] => {
+    console.log("dataview", props.dataview);
+    const dataviewStore = useDataViewStore(props.dataview.split("/")[1]);
+    console.log("dataviewStore", dataviewStore);
+    return Object.entries(dataviewStore.views)
+        .map(([key, dset]) => {
+            const parts = key.split("/");
+            const win = useDataWindowStore(parts[1]);
+            if (win && props.owner && props.owner !== parts[1]) {
+                return {
+                    window: win,
+                    text: `${win.title}: ${parts[2]}`,
+                    value: key,
+                };
+            }
+            return undefined;
+        })
+        .filter((item) => item !== undefined) 
+        .filter(props.filters as (item: any) => boolean); 
+});
+/*
+function onInput(newValue: string) {
+    emit("update:value", newValue);
+}*/
 </script>
 
 <style scoped></style>

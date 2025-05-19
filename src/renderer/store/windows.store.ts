@@ -7,6 +7,7 @@ import { useFiltersStore } from './filters.store'
 import { componentRegistry, ComponentRegistration } from "./component_registry.store";
 import { ipcRenderer } from "electron";
 import { MenuEvents } from "@main/shared/menuAPI";
+import { defaultOptionsFromSpec } from "@render/components/Core/SnapshotHelper";
 
 export interface WindowsState {
     basename: string;
@@ -124,7 +125,7 @@ function createDataWindow(component: ComponentRegistration): DataWindowState {
     if (!component) {
         throw new Error("Component is undefined in createDataWindow");
     }
-    return {
+    const state = {
         type: component.component_type,
         title: component.friendly_name,
         width: component.init_width || 200,
@@ -138,6 +139,10 @@ function createDataWindow(component: ComponentRegistration): DataWindowState {
         settings: clone(component.default_settings || {}), // deep clone
         is_hidden: component.is_hidden || false,
     } as DataWindowState;
+
+    state.settings.snapshot = defaultOptionsFromSpec(component);
+
+    return state;
 }
 
 function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
@@ -178,6 +183,7 @@ function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
     win.datasource = data.source || win.datasource;
     win.render_mode = data.render_mode || win.render_mode;
     win.settings = { ...win.settings, ...clone(data.settings) };
+    win.settings.snapshot = {...defaultOptionsFromSpec(spec), ...win.settings.snapshot};
     win.z_index = data.z_index || maxZ;
     win.aspect_ratio = data.aspect_ratio;
     win.is_hidden = data.is_hidden || false;

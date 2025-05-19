@@ -57,3 +57,9 @@ export interface ToolTipPosition {
     x: number;
     y: number;
 }
+
+export interface LabelStats {
+    count: number;
+    total: number;
+    longest: number;
+}
