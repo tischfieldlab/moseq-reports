@@ -24,7 +24,7 @@
                 </BInputGroup>
             </BCol>
             <BCol cols="1" class="p-0">
-                <BButton variant="link" @click="resetSize" title="Reset size to default">
+                <BButton variant="link" size="sm" @click="resetSize" title="Reset size to default" class=".reset-size">
                     <i class="bi bi-arrow-counterclockwise fs-3 fw-bold"></i>
                 </BButton>
             </BCol>
@@ -113,6 +113,7 @@ export default defineComponent({
         });
 
         const resetSize = () => {
+            console.log("Resetting size");
             $wstate.resetSize();
         };
 
@@ -141,5 +142,9 @@ export default defineComponent({
 .input-group-text {
     width: 40px;
     text-align: center;
+}
+.reset-size {
+    padding-top: 0;
+    padding-bottom: 0;
 }
 </style>

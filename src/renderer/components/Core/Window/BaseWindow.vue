@@ -237,6 +237,15 @@ export default defineComponent({
                 }
             }
         );
+        watch(
+            () => [props.pos.x, props.pos.y],
+            (newValue) => {
+                if (newValue) {
+                    windowPos.x = props.pos.x;
+                    windowPos.y = props.pos.y;
+                }
+            }
+        );
 
         return {
             isCollapsed,

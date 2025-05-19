@@ -88,7 +88,8 @@ onMounted(() => {;
                 () => props[key],
                 () => {
                     draw();
-                }
+                },
+                {deep: true}
             )
         );
     });
@@ -98,7 +99,8 @@ onMounted(() => {;
                 () => item,
                 () => {
                     draw();
-                }
+                },
+                {deep: true}
             )
         );
     });
