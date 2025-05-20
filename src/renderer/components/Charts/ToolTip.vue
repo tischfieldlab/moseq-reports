@@ -11,6 +11,8 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch, nextTick } from "vue";
 import { createPopper, Instance, VirtualElement } from "@popperjs/core";
+import { useTemplateRef } from "vue";
+import { shallowRef } from "vue";
 
 export default defineComponent({
     name: "Tooltip",
@@ -29,10 +31,10 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const tooltip = ref<HTMLElement | null>(null);
+        const tooltip = useTemplateRef<HTMLDivElement>("tooltip");
         const instance = ref<Instance | undefined>(undefined);
 
-        const virtualElement = ref<VirtualElement>({
+        const virtualElement = shallowRef<VirtualElement>({
             getBoundingClientRect: () =>
                 new DOMRect(props.position.x, props.position.y, 0, 0),
         });

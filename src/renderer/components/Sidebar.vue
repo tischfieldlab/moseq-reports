@@ -9,7 +9,7 @@
                 :style="{ 'justify-self': itm.align }"
                 :title="current === itm ? `Hide ${itm.name}` : `Show ${itm.name}`"
             >
-                <BButton class="btn-link" @click="toggleItem(itm)">
+                <BButton variant="link" size="lg" @click="toggleItem(itm)">
                     <i :class="current === itm ? itm.icon[0] : itm.icon[1]"></i>
                 </BButton>
             </div>

@@ -42,13 +42,14 @@
                     <chrome-picker 
                         v-model="color"
                         :disableAlpha="true" 
-                        @update:modelValue="(value) => colorChangeHandler(value.hex)"
+                        @update:modelValue="(value) => colorChangeHandler(value)"
                     />
                 </BPopover>
 
                 <!-- Close Button -->
                 <BButton
                     type="button"
+                    variant="link"
                     @click="confirmRemoveFilter"
                     title="Remove this filter"
                     class="btn-close ms-auto"
@@ -155,9 +156,9 @@ export default defineComponent({
                 dataviewStore.color = value.hex;
             },
         });
-        const colorChangeHandler = debounce((newColor) => {
+        const colorChangeHandler = (newColor) => {
             dataviewStore.color = newColor.hex;
-        }, 100);
+        };
         const headerStyles = computed(() => {
             return {
                 background: color.value,
@@ -304,11 +305,15 @@ export default defineComponent({
 .filter-module-id .BFormTags {
     margin: 0;
 }
-.card-body {
-    padding: 0;
+.datafilter .card-body {
+    padding: 0 !important;
 }
-.datafilter > .card-header {
-    padding: 0;
+.datafilter > .card-header > div {
+    margin-top: -8px;
+    margin-bottom: -8px;
+    margin-left: -16px;
+    margin-right: -16px;
+    border-radius: var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius) 0 0;
 }
 .btn-close {
     margin-left: auto;

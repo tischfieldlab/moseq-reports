@@ -107,7 +107,7 @@ function computeGroupStats(
 function kernelDensityEstimator(
     kernel: (u: number) => number,
     x: number[]
-): (sample: number[]) => number[][] {
+): (sample: number[]) => [number, number][] {
     return (sample: number[]) =>
         x.map((y) => [y, mean(sample, (v: number) => kernel(y - v)) || 0]);
 }

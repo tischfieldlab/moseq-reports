@@ -199,7 +199,7 @@ export default defineComponent({
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-width: 175px;
+    max-width: 200px;
     font-size: 13px;
     padding: 2.5px 0px;
 }

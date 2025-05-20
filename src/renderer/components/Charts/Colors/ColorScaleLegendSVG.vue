@@ -41,13 +41,14 @@ import * as d3 from "d3";
 import { scaleLinear } from "d3-scale";
 import { axisBottom, axisRight } from "d3-axis";
 import ColorScaleLegendBase, { Orientation } from "./ColorScaleLegendBase";
+import { useTemplateRef } from "vue";
 
 export default defineComponent({
     extends: ColorScaleLegendBase,
     name: "ColorScaleLegendSVG",
 
     setup(props) {
-        const axisRef = ref<SVGGElement | null>(null);
+        const axisRef = useTemplateRef<SVGGElement>('axisRef');
         const gradientId = computed(() => `color-gradient-${props.title.replace(/\s+/g, "-")}`);
 
         // ✅ Ensure scale stops are reactive and computed correctly

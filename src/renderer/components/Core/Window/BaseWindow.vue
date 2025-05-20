@@ -18,8 +18,8 @@
                     @click="collapseWindow">
                     <i :class="isCollapsed ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"></i>
                 </BButton>
-                <BButton variant="link" :title="'Close window'" @click="onClose">
-                    <i class="btn-close"></i>
+                <BButton variant="link" class="btn-close" :title="'Close window'" @click="onClose">
+                    <!--<i class="btn-close"></i>-->
                 </BButton>
             </div>
 
