@@ -74,7 +74,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from "vue";
-import { Chrome } from "vue-color";
+import { Chrome } from "@ckpack/vue-color";
 import { GetInterpolatedScaleOptions, getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
 import ColorScaleBar from "./ColorScaleBar.vue";
 import { BDropdown, BDropdownItem, BDropdownHeader, BFormRow, BCol, BButton, BPopover } from "bootstrap-vue-next";

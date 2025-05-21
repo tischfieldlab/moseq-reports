@@ -22,7 +22,7 @@
         />
 
         <!-- Axis -->
-        <g ref="axisRef" :transform="`translate(${axis_translate.x},${axis_translate.y})`" />
+        <g v-cbar-axis :transform="`translate(${axis_translate.x},${axis_translate.y})`" />
 
         <!-- Label -->
         <text class="label"
@@ -35,123 +35,53 @@
     </g>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed, onMounted, nextTick, watch } from "vue";
+<script setup lang="ts">
+import { ref, nextTick } from "vue";
 import * as d3 from "d3";
-import { scaleLinear } from "d3-scale";
 import { axisBottom, axisRight } from "d3-axis";
-import ColorScaleLegendBase, { Orientation } from "./ColorScaleLegendBase";
-import { useTemplateRef } from "vue";
+import { ColorScaleLegendProps, ColorScaleLegendPropsDefaults, useColorScaleLegendBase } from "./ColorScaleLegendBase";
+import { Orientation } from "./Colors.types";
+import { Directive } from "vue";
+import { v4 as uuidv4 } from 'uuid';
 
-export default defineComponent({
-    extends: ColorScaleLegendBase,
-    name: "ColorScaleLegendSVG",
+const props = withDefaults(defineProps<ColorScaleLegendProps>(), ColorScaleLegendPropsDefaults);
+const {axis_translate, label_translate, linearscale, offsets, stops} = useColorScaleLegendBase(props);
+const gradientId = ref(`color-gradient-${uuidv4()}`);
 
-    setup(props) {
-        const axisRef = useTemplateRef<SVGGElement>('axisRef');
-        const gradientId = computed(() => `color-gradient-${props.title.replace(/\s+/g, "-")}`);
 
-        // ✅ Ensure scale stops are reactive and computed correctly
-        const stops = computed(() => {
-            if (!props.scale || typeof props.scale !== "function")
-                return [];
-            const domain = props.scale.domain();
-            if (domain.length < 2)
-                return [];
+const calculateNumTicks = (el) => {
+    const nodes = d3
+        .select(el)
+        .selectAll("g.tick text")
+        .nodes()
+        .map((n) => (n as SVGTextElement).getBBox());
 
-            const start = domain[0];
-            const stop = domain[domain.length - 1];
+    const maxWidth = Math.max(...nodes.map((n) => n.width), 10);
+    const maxHeight = Math.max(...nodes.map((n) => n.height), 10);
 
-            return d3.range(start, stop, (stop - start) / 20).map((v) => ({
-                v: ((v - start) / (stop - start)) * 100,
-                z: props.scale(v),
-            }));
-        });
+    let numTicks =
+        props.orientation === Orientation.Horizontal
+        ? props.width / (maxWidth * 2)
+        : props.height / maxHeight;
 
-        const offsets = computed(() => {
-            return props.orientation === Orientation.Horizontal
-                ? { x1: "0%", x2: "100%", y1: "0%", y2: "0%" }
-                : { x1: "0%", x2: "0%", y1: "100%", y2: "0%" };
-        });
+    return Math.max(props.minticks, Math.min(numTicks, props.maxticks));
+};
 
-        const axis_translate = computed(() => {
-            return props.orientation === Orientation.Horizontal
-                ? { x: 0, y: props.height }
-                : { x: props.width / 2, y: props.height / 2 };
-        });
+const renderAxis = (el) => {
 
-        const label_translate = computed(() => {
-            return props.orientation === Orientation.Horizontal
-                ? { x: 0, y: props.height + 20, r: 0 }
-                : { x: -props.height / 2, y: props.width + 20, r: -90 };
-        });
+    const axisType = props.orientation === Orientation.Horizontal ? axisBottom : axisRight;
+    const axis = axisType(linearscale.value);
 
-        // ✅ Ensure linear scale matches props.scale
-        const linearscale = computed(() => {
-            if (!props.scale || typeof props.scale !== "function") return scaleLinear();
-            const domain = props.scale.domain();
-            const rangeValues =
-                props.orientation === Orientation.Horizontal
-                ? [-props.width / 2, props.width / 2]
-                : [props.height / 2, -props.height / 2];
+    const numTicks = calculateNumTicks(el);
+    axis.ticks(Math.round(numTicks), props.tickformat);
 
-            return scaleLinear().domain([domain[0], domain[domain.length - 1]]).range(rangeValues);
-        });
+    d3.select(el).call(axis as any);
+};
 
-        // ✅ Correct tick count calculation
-        const calculateNumTicks = () => {
-            if (!axisRef.value) return props.maxticks;
-
-            const nodes = d3
-                .select(axisRef.value)
-                .selectAll("g.tick text")
-                .nodes()
-                .map((n) => (n as SVGTextElement).getBBox());
-
-            const maxWidth = Math.max(...nodes.map((n) => n.width), 10);
-            const maxHeight = Math.max(...nodes.map((n) => n.height), 10);
-
-            let numTicks =
-                props.orientation === Orientation.Horizontal
-                ? props.width / (maxWidth * 2)
-                : props.height / maxHeight;
-
-            return Math.max(props.minticks, Math.min(numTicks, props.maxticks));
-        };
-
-        // ✅ Fix axis rendering issue
-        const renderAxis = () => {
-            if (!axisRef.value) return;
-
-            const axisType = props.orientation === Orientation.Horizontal ? axisBottom : axisRight;
-            const axis = axisType(linearscale.value);
-
-            const numTicks = calculateNumTicks();
-            axis.ticks(Math.round(numTicks), props.tickformat);
-
-            d3.select(axisRef.value).call(axis as any);
-        };
-
-        // ✅ Watch for scale changes
-        watch(() => props.scale, () => {
-            nextTick(renderAxis);
-        }, { deep: true, immediate: true });
-
-        onMounted(() => {
-            nextTick(renderAxis);
-        });
-
-        return {
-            axisRef,
-            gradientId,
-            offsets,
-            axis_translate,
-            label_translate,
-            linearscale,
-            stops,
-        };
-    },
-});
+const vCbarAxis: Directive = {
+    mounted: (el) => {renderAxis(el); nextTick().then(() => renderAxis(el));},
+    updated: renderAxis,
+}
 </script>
 
 <style>

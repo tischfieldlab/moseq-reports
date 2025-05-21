@@ -27,8 +27,8 @@
                     </text>
                 </g>
 
-                <!--<ColorScaleLegend title="Time (ms)" :scale="scale.t" :width="100" :height="10"
-                    :transform="`translate(${width}, 25)`" />-->
+                <ColorScaleLegend title="Time (ms)" :scale="scale.t" :width="100" :height="10"
+                    :transform="`translate(${width}, 25)`" />
             </svg>
         </template>
 

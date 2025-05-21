@@ -1,89 +1,80 @@
-import { defineComponent } from "vue";
-import { scaleLinear, ScaleContinuousNumeric, ScaleSequential } from "d3-scale";
+import { scaleLinear, ScaleSequential } from "d3-scale";
 import { range } from "d3-array";
-import { PropType } from "vue";
+import { Orientation } from "./Colors.types";
+import { computed } from "vue";
 
-export enum Orientation {
-    Horizontal = "horizontal",
-    Vertical = "vertical",
+
+
+export interface ColorScaleLegendProps {
+    scale: ScaleSequential<string>;
+    width?: number;
+    height?: number;
+    title?: string;
+    orientation?: Orientation;
+    maxticks?: number;
+    minticks?: number;
+    tickformat?: string | null;
 }
 
-export default defineComponent({
-    props: {
-        scale: {
-            // type: Object as PropType<ScaleSequential<string>>,
-            required: true,
-        },
-        width: {
-            type: Number,
-            required: true,
-        },
-        height: {
-            type: Number,
-            required: true,
-        },
-        title: {
-            type: String,
-            required: true,
-        },
-        orientation: {
-            type: String,
-            default: Orientation.Horizontal,
-        },
-        maxticks: {
-            type: Number,
-            default: 5,
-        },
-        minticks: {
-            type: Number,
-            default: 1,
-        },
-        tickformat: {
-            type: String,
-            default: null,
-        },
-    },
-    computed: {
-        offsets() {
-            return this.orientation === Orientation.Horizontal
-                ? { x1: "0%", x2: "100%", y1: "0%", y2: "0%" }
-                : { x1: "0%", x2: "0%", y1: "100%", y2: "0%" };
-        },
-        axis_translate() {
-            return this.orientation === Orientation.Horizontal
-                ? { x: 0, y: this.height }
-                : { x: this.width / 2, y: this.height / 2 };
-        },
-        label_translate() {
-            return this.orientation === Orientation.Horizontal
-                ? { x: 0, y: this.height + 38, r: 0 }
-                : { x: -this.height / 2, y: this.width + 38, r: -90 };
-        },
-        isHorizontal() {
-            return this.orientation === Orientation.Horizontal
-        },
-        linearscale() {
-            const rangeValues = this.isHorizontal
-                ? [-this.width / 2, this.width / 2]
-                : [this.height / 2, -this.height / 2];
+export const ColorScaleLegendPropsDefaults = {
+    width: 100,
+    height: 10,
+    title: "",
+    orientation: Orientation.Horizontal,
+    maxticks: 5,
+    minticks: 1,
+    tickformat: null,
+}
 
-            const domain = this.scale.domain();
-            return scaleLinear().domain([domain[0], domain[domain.length - 1]]).range(rangeValues);
-        },
-        stops() {
-            const domain = this.scale.domain();
-            const start = domain[0];
-            const stop = domain[domain.length - 1];
+export function useColorScaleLegendBase(props: Required<ColorScaleLegendProps>) {
+    const offsets = computed(() => {
+        return props.orientation === Orientation.Horizontal
+            ? { x1: "0%", x2: "100%", y1: "0%", y2: "0%" }
+            : { x1: "0%", x2: "0%", y1: "100%", y2: "0%" };
+    });
+    const axis_translate = computed(() => {
+        return props.orientation === Orientation.Horizontal
+            ? { x: 0, y: props.height }
+            : { x: props.width / 2, y: props.height / 2 };
+    });
+    const label_translate = computed(() => {
+        return props.orientation === Orientation.Horizontal
+            ? { x: 0, y: props.height + 38, r: 0 }
+            : { x: -props.height / 2, y: props.width + 38, r: -90 };
+    });
+    const isHorizontal = computed(() => {
+        return props.orientation === Orientation.Horizontal
+    });
+    const linearscale = computed(() => {
+        const rangeValues = isHorizontal
+            ? [-props.width / 2, props.width / 2]
+            : [props.height / 2, -props.height / 2];
 
-            return range(start, stop, (stop - start) / 20).map((v) => ({
-                v: this.percentRange(v, start, stop),
-                z: this.scale(v),
-            }));
-        },
-    },
-    methods: {
-        percentRange(value: number, start: number, stop: number): number {
-            return ((value - start) / (stop - start)) * 100;
-        },
-    },
-});
+        const domain = props.scale.domain();
+        return scaleLinear().domain([domain[0], domain[domain.length - 1]]).range(rangeValues);
+    });
+    const stops = computed(() => {
+        const domain = props.scale.domain();
+        const start = domain[0];
+        const stop = domain[domain.length - 1];
+
+        return range(start, stop, (stop - start) / 20).map((v) => ({
+            v: percentRange(v, start, stop),
+            z: props.scale(v),
+        }));
+    });
+
+    function percentRange(value: number, start: number, stop: number): number {
+        return ((value - start) / (stop - start)) * 100;
+    }
+
+    return {
+        offsets,
+        axis_translate,
+        label_translate,
+        isHorizontal,
+        linearscale,
+        stops,
+        percentRange,
+    };
+}
