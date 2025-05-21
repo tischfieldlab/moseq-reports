@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import IBiLayoutThreeColumns from '~icons/bi/layout-three-columns';
+import IBiLayoutThreeColumns from 'virtual:icons/bi/layout-three-columns';
 
 const modelValue = defineModel<string[]>({required: true});
 
@@ -62,16 +62,11 @@ const props = withDefaults(defineProps<ColumnSelectorProps>(), {
     noun: 'Column',
 });
 
-//const emit = defineEmits(['update:modelValue']);
 
 const search = ref('');
-//const localValue = ref<string[]>(props.modelValue || []);
 const formId = `tags-${Math.random().toString(36).substring(2, 10)}`;
 
-// Sync local changes back to parent
-//watch(localValue, (val) => {
-//    emit('update:modelValue', val);
-//});
+
 
 // Search-related computed
 const criteria = computed(() => search.value.trim().toLowerCase());

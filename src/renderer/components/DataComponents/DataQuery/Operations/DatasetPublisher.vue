@@ -80,7 +80,7 @@ const downloadData = async () => {
     }
     try {
         const { filePath } = await dialog.showSaveDialog({
-            title: 'Save Snapshot',
+            title: 'Save Dataset',
             defaultPath: `${publishName.value}.json`,
             filters: getAllowedFormatsForData(),
         });

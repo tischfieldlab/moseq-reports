@@ -101,7 +101,7 @@ RegisterDataComponent({
     available_render_modes: [RenderMode.HTML],
     default_render_mode: RenderMode.HTML,
     default_settings: {
-        dataset: '',
+        dataset: null,
         operations: [],
     },
 });
@@ -129,7 +129,7 @@ export default defineComponent({
 
         const datasetsStore = useDatasetsStore()
 
-        const selectedDataset = ref(settings.value?.dataset || '');
+        const selectedDataset = ref(settings.value?.dataset || null);
         const operations = ref(clone(settings.value?.operations || []));
         const intermediateResults = ref<any[]>([]);
         const operationVisibilities = ref<boolean[]>([]);
