@@ -51,6 +51,7 @@
   "dependencies": {
     "@ckpack/vue-color": "^1.6.0",
     "@electron/remote": "^2.1.2",
+    "@popperjs/core": "^2.11.8",
     "@vue/devtools": "^7.6.8",
     "about-window": "^1.15.2",
     "axios": "^1.7.9",
@@ -83,11 +84,9 @@
     "unplugin-icons": "^0.22.0",
     "unplugin-vue-components": "^0.28.0",
     "uuid": "^11.0.3",
-    "vue-color": "^2.8.1",
     "vue-draggable-resizable": "^3.0.0",
     "vue-force-next-tick": "^1.2.0",
     "vue-object-merge": "^1.0.0",
-    "vue3-color": "^0.0.1-alpha.9",
     "vuedraggable": "^4.1.0"
   }
 }

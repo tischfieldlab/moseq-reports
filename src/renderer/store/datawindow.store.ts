@@ -10,6 +10,7 @@ import {
     UpdateComponentAspectRatio,
     UpdateComponentAspectRatioByWidthAndHeight,
     ShowHidePayload,
+    SnapshotSettings,
 } from "@store/datawindow.types";
 import stateMerge from "vue-object-merge";
 import { applyAspectRatio, isValidHeight, isValidWidth } from "@render/components/Core/Window/util";
@@ -20,8 +21,8 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 
 
 
-export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`, {
-    state: (): DataWindowState => ({
+export const useDataWindowStore = <TSettings>(id: string) => defineStore(`datawindow-${id}`, {
+    state: (): DataWindowState<TSettings> => ({
         type: "",
         title: "",
         width: 0,
@@ -30,7 +31,7 @@ export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`
         pos_y: 0,
         datasource: "",
         render_mode: RenderMode.UNDEFINED,
-        settings: {},
+        settings: {} as TSettings & SnapshotSettings,
         z_index: 1000,
         aspect_ratio: undefined,
         is_hidden: false,
@@ -41,7 +42,7 @@ export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`
         },
     },
     actions: {
-        replaceState(payload: DataWindowState) {
+        replaceState(payload: DataWindowState<TSettings>) {
             this.type = payload.type;
             this.width = payload.width;
             this.height = payload.height;
@@ -96,7 +97,7 @@ export const useDataWindowStore = (id: string) => defineStore(`datawindow-${id}`
         updateComponentRenderMode(payload: UpdateComponentRenderModePayload) {
             this.render_mode = payload.render_mode;
         },
-        updateComponentSettings(payload: UpdateComponentSettingsPayload) {
+        updateComponentSettings(payload: UpdateComponentSettingsPayload<TSettings>) {
             stateMerge(this.settings, payload.settings);
         },
         updateZIndex(payload: UpdateComponentZIndexPayload) {

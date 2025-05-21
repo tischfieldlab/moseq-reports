@@ -1,6 +1,6 @@
 <template>
     <div>
-        <BDropdown text="Add Filter" class="float-right add-filter-button" size="sm">
+        <BDropdown text="Add Filter" class="float-end add-filter-button" size="sm">
             <template v-for="col in columnOptions" :key="col">
                 <BDropdownItem v-if="!columnAlreadyInFilter(col)"
                     @click="addFilter(col)">
@@ -9,45 +9,45 @@
             </template>
         </BDropdown>
 
-        <template v-for="(values, key, i) in localFilters" :key="`${key}-${i}`">
+        <template v-for="(values, key, i) in operation.filters" :key="`${key}-${i}`">
             <BInputGroup size="sm">
-                <BInputGroup-prepend is-text :title="`${inferDataTypeForColumn(String(key))} datatype`"
+                <BInputGroupText is-text :title="`${inferDataTypeForColumn(key as string)} datatype`"
                     v-b-tooltip.hover>
-                    {{ String(key) }}
-                </BInputGroup-prepend>
+                    {{ key }}
+                </BInputGroupText>
 
-                <BFormTags v-model="localFilters[String(key)]" placeholder="Add value..."
+                <BFormTags v-model="operation.filters[key]" placeholder="Add value..."
                     duplicate-tag-text="Duplicate value(s)" invalid-tag-text="Invalid value(s)"
                     tag-remove-label="Remove value" />
 
-                <BInputGroup-append is-text>
-                    <BButton @click="removeFilter(String(key))" title="Remove this filter" class="btn-close ms-auto"
+                <BInputGroupText is-text>
+                    <BButton @click="removeFilter(key as string)" title="Remove this filter" class="btn-close ms-auto"
                         aria-label="Close" v-b-tooltip.hover />
-                </BInputGroup-append>
+                </BInputGroupText>
             </BInputGroup>
         </template>
 
         <div class="special-token-container">
-            Special Tokens:
-            <b-tag v-for="(value, key) in specialTokens" :key="key" class="special-token" no-remove pill variant="info">
+            Special Tokens:<br />
+            <BFormTag v-for="(value, key) in specialTokens" :key="key" class="special-token" no-remove pill variant="info" size="sm">
                 <span :title="JSON.stringify(value)" v-b-tooltip.hover>{{ key }}</span>
-            </b-tag>
+            </BFormTag>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { toRef, computed, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import type { FilterOperation } from '@api';
 
+const operation = defineModel<FilterOperation>({required: true});
+
 const props = defineProps<{
-    operation: FilterOperation;
     previousResult: any;
     owner: string;
     specialTokens: Record<string, any>;
 }>();
 
-const localFilters = toRef(props.operation, 'filters');
 
 const columnOptions = computed((): string[] => {
     const obj = props.previousResult;
@@ -62,15 +62,15 @@ const columnOptions = computed((): string[] => {
 });
 
 function addFilter(colName: string) {
-    localFilters[colName] = [];
+    operation.value.filters[colName] = [];
 }
 
 function removeFilter(colName: string) {
-    delete localFilters[colName];
+    delete operation.value.filters[colName];
 }
 
 function columnAlreadyInFilter(colName: string): boolean {
-    return Object.prototype.hasOwnProperty.call(localFilters, colName);
+    return Object.prototype.hasOwnProperty.call(operation.value.filters, colName);
 }
 
 function inferDataTypeForColumn(colName: string): string {
@@ -86,7 +86,7 @@ function inferDataTypeForColumn(colName: string): string {
 
 <style scoped>
 .add-filter-button {
-    margin-top: -3rem;
+    margin-top: -55px;
     margin-right: 50px;
 }
 
@@ -97,6 +97,7 @@ function inferDataTypeForColumn(colName: string): string {
 }
 
 .special-token-container {
+    font-size:  small;
     margin-top: 0.5rem;
     color: #666;
 }

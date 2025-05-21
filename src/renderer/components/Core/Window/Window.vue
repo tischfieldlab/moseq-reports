@@ -59,7 +59,7 @@
             header-text-variant="light"
             body-bg-variant="light"
             body-text-variant="dark"
-            no-footer 
+            no-footer
         >
             <BTabs>
                 <BTab title="Layout">
@@ -70,7 +70,7 @@
                 </BTab>
                 <BTab title="Component">
                     <component v-if="spec.settings_type" ref="modal_component" :id="id" :is="spec.settings_type" />
-                <p v-else class="no-settings text-muted">No settings available for this component</p>
+                    <p v-else class="no-settings text-muted">No settings available for this component</p>
                 </BTab>
                 <BTab title="Snapshots" :disabled="is_hidden">
                     <SnapshotSettings :id="id" />

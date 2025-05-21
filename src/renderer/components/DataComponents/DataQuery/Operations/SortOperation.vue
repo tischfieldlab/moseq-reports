@@ -1,17 +1,19 @@
 <template>
     <div>
-        <BButton class="float-right add-sorting-button" size="sm" @click="addSorting">
+        <BButton class="float-end add-sorting-button" size="sm" @click="addSorting">
             Add Sorting
         </BButton>
 
         <template v-for="(column, idx) in operation.columns" :key="idx">
             <BInputGroup size="sm" class="mb-2">
-                <template #prepend>Column</template>
-                <BSelect v-model="column[0]" :options="columnOptions" />
-                <BSelect v-model="column[1]" :options="directionOptions" />
-                <template #append>
-                    <BButtonClose @click="removeSorting(idx)" title="Remove this sorting" v-b-tooltip.hover />
-                </template>
+                <BInputGroupText>
+                    Column
+                </BInputGroupText>
+                <BFormSelect v-model="column[0]" :options="columnOptions" />
+                <BFormSelect v-model="column[1]" :options="directionOptions" />
+                <BInputGroupText>
+                    <BButton @click="removeSorting(idx)" title="Remove this sorting" class="btn-close ms-auto" aria-label="Close" v-b-tooltip.hover />
+                </BInputGroupText>
             </BInputGroup>
         </template>
     </div>
@@ -21,13 +23,14 @@
 import { PropType, computed } from 'vue';
 import { SortOperation, SortDirection } from '@api';
 
+const operation = defineModel<SortOperation>({required: true});
+
+
 const props = defineProps<{
-    Operation: SortOperation;
-    PreviousResult: any;
-    Owner: string;
+    previousResult: any;
+    owner: string;
 }>();
 
-const operation = props.Operation;
 
 const directionOptions = [
     { text: 'Ascending', value: SortDirection.Asc },
@@ -35,7 +38,7 @@ const directionOptions = [
 ];
 
 const columnOptions = computed(() => {
-    const data = props.PreviousResult;
+    const data = props.previousResult;
     if (!data) return [];
 
     if (Array.isArray(data)) {
@@ -48,11 +51,11 @@ const columnOptions = computed(() => {
 });
 
 function addSorting() {
-    operation.columns.push(['', 'asc']);
+    operation.value.columns.push(['', 'asc']);
 }
 
 function removeSorting(idx: number) {
-    operation.columns.splice(idx, 1);
+    operation.value.columns.splice(idx, 1);
 }
 </script>
 

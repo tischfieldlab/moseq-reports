@@ -1,72 +1,73 @@
 <template>
     <div class="wrapper">
-      <BCard no-body>
-        <template #header>
-          <BDropdown text="Add Operation" class="float-right add-op-button" size="sm">
-            <BDropdownItem
-              v-for="op in operationTypes"
-              :key="op"
-              @click="addOperation(op)"
-            >
-              {{ op }}
-            </BDropdownItem>
-          </BDropdown>
-          <h6 class="mb-0">Data Source</h6>
-        </template>
-
-        <BFormSelect v-model="selectedDataset" :options="availableDataSources">
-          <template #first>
-            <BFormSelect-option :value="null" disabled>
-              -- Please select a dataset --
-            </BFormSelect-option>
-          </template>
-        </BFormSelect>
-      </BCard>
-
-      <DataView :Dataset="intermediateResults[0]" :Collapsed="true" />
-
-      <template v-for="(op, idx) in operations" :key="idx">
         <BCard no-body>
-          <template #header>
-            <BButton
-              @click="removeOperation(idx)"
-              title="Remove this operation"
-              class="btn-close ms-auto"
-              aria-label="Close"
-              v-b-tooltip.hover
-            />
-            <BButton
-              @click="toggleOperationVisibility(idx)"
-              :title="operationVisibilities[idx] ? 'Collapse' : 'Expand'"
-              variant="link"
-              class="text-dark collapse-button text-decoration-none"
-            >
-              <b-icon :icon="operationVisibilities[idx] ? 'chevron-up' : 'chevron-down'" />
-            </BButton>
-            <h6 class="mb-0" :title="helpStrings[op.type]" v-b-tooltip.hover>
-              {{ capitalizeFirst(op.type) }}
-            </h6>
-          </template>
+            <template #header>
+                <BDropdown text="Add Operation" class="float-end add-op-button" size="sm">
+                    <BDropdownItem
+                        v-for="op in operationTypes"
+                        :key="op"
+                        @click="addOperation(op)"
+                    >
+                        {{ op }}
+                    </BDropdownItem>
+                </BDropdown>
+                <h6 class="mb-0">Data Source</h6>
+            </template>
 
-          <BCollapse :visible="operationVisibilities[idx]">
-            <div class="operation-wrapper">
-              <component
-                v-if="cardHasBody(op.type)"
-                :is="operationToComponent(op.type)"
-                :Operation="op"
-                :PreviousResult="intermediateResults[idx]"
-                :Owner="id"
-                :SpecialTokens="specialTokens"
-              />
-              <div v-else class="no-operation-settings">No settings for this operation</div>
-            </div>
-          </BCollapse>
+            <BFormSelect v-model="selectedDataset" :options="availableDataSources">
+                <template #first>
+                    <BFormSelectOption :value="null" disabled>
+                        -- Please select a dataset --
+                    </BFormSelectOption>
+                </template>
+            </BFormSelect>
         </BCard>
 
-        <DataView :Dataset="intermediateResults[idx + 1]" :Collapsed="true" />
-      </template>
+        <DataView :Dataset="intermediateResults[0]" :Collapsed="true" />
 
-      <DatasetPublisher :Owner="id" :Source="datasource" :Dataset="finalDataset" />
+        <template v-for="(op, idx) in operations" :key="idx">
+            <BCard no-body>
+                <template #header>
+                    <BButton
+                        @click="removeOperation(idx)"
+                        title="Remove this operation"
+                        class="btn-close ms-auto float-end"
+                        aria-label="Close"
+                        v-b-tooltip.hover
+                    />
+                    <BButton
+                        @click="toggleOperationVisibility(idx)"
+                        :title="operationVisibilities[idx] ? 'Collapse' : 'Expand'"
+                        variant="link"
+                        class="text-dark collapse-button text-decoration-none"
+                    >
+                        <IBiChevronUp v-if="operationVisibilities[idx]"  title="Collapse" />
+                        <IBiChevronDown v-else title="Expand" />
+                    </BButton>
+                    <h6 class="mb-0" :title="helpStrings[op.type]" v-b-tooltip.hover>
+                        {{ capitalizeFirst(op.type) }}
+                    </h6>
+                </template>
+
+                <BCollapse :visible="operationVisibilities[idx]">
+                    <div class="operation-wrapper">
+                        <component
+                            v-if="cardHasBody(op.type)"
+                            :is="operationToComponent(op.type)"
+                            v-model="operations[idx]"
+                            :previousResult="intermediateResults[idx]"
+                            :owner="id"
+                            :specialTokens="specialTokens"
+                        />
+                        <div v-else class="no-operation-settings">No settings for this operation</div>
+                    </div>
+                </BCollapse>
+            </BCard>
+
+            <DataView :Dataset="intermediateResults[idx + 1]" :Collapsed="true" />
+        </template>
+
+        <DatasetPublisher :Owner="id" :Source="datasource" :Dataset="finalDataset" />
     </div>
 </template>
 
@@ -89,7 +90,7 @@ import {
     DatasetPublisher,
 } from './Operations';
 import { DataQuerySettings } from './DataQuery.types';
-import DataService from '@render/api';
+import DataService, { Operation } from '@render/api';
 
 RegisterDataComponent({
     friendly_name: 'Data Query',
@@ -121,14 +122,10 @@ export default defineComponent({
             type: String,
             required: true,
         },
-        datasource: {
-            type: String,
-            required: true,
-        },
     },
     setup(props) {
         //const store = useStore();
-        const { layout, dataview, settings, $wstate } = useWindowMixin<DataQuerySettings>(props.id);
+        const { layout, dataview, settings, $wstate, datasource } = useWindowMixin<DataQuerySettings>(props.id);
 
         const datasetsStore = useDatasetsStore()
 
@@ -240,7 +237,7 @@ export default defineComponent({
             );
         }
 
-        function prepareOperations(ops) {
+        function prepareOperations(ops: Operation[]): Operation[] {
             return ops.map((op, idx) => {
                 if (op.type === 'filter') {
                     const cln = clone(op);
@@ -252,21 +249,19 @@ export default defineComponent({
         }
 
         async function prepareData() {
-            if (!selectedDataset.value) return;
-            const dset = datasetsStore.resolve(selectedDataset.value);
-            if (!dset) {
-                console.warn('No dataset found for', selectedDataset.value);
+            if (!selectedDataset.value)
                 return;
-            }
 
             for (let i = 0; i < operations.value.length + 1; i++) {
                 const ops = prepareOperations(operations.value.slice(0, i));
-                DataService.fetchData(dset, ops)
+                console.log('Fetching data with operations:', i, ops);
+                DataService.fetchData(selectedDataset.value, ops)
                     .catch(err => {
                         console.error('Error fetching data:', err);
                         intermediateResults.value[i] = [];
                     })
                     .then(data => {
+                        console.log('Data fetched:', i, data);
                         intermediateResults.value[i] = data;
                     });
             }
@@ -279,7 +274,7 @@ export default defineComponent({
         });
 
         watch(operations, val => {
-                $wstate.updateComponentSettings({
+            $wstate.updateComponentSettings({
                 settings: { operations: clone(val) },
             });
         }, { deep: true });
@@ -305,8 +300,7 @@ export default defineComponent({
             cardHasBody,
             operationToComponent,
             layout,
-            id: props.id,
-            datasource: props.datasource,
+            datasource,
         };
     },
 });

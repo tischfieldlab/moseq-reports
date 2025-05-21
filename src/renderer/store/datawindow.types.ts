@@ -1,4 +1,6 @@
-export interface DataWindowState {
+import { SnapshotOptions } from "@render/components/Core/SnapshotHelper";
+
+export interface DataWindowState<TSettings> {
     type: string;
     title: string;
     width: number;
@@ -7,10 +9,14 @@ export interface DataWindowState {
     pos_y: number;
     datasource: string;
     render_mode: RenderMode;
-    settings: Record<string, any>;
+    settings: TSettings & SnapshotSettings
     z_index: number;
     is_hidden: boolean;
     aspect_ratio?: number;
+}
+
+export interface SnapshotSettings {
+    snapshot: SnapshotOptions;
 }
 
 export interface ShowHidePayload {
@@ -36,8 +42,8 @@ export interface UpdateComponentAspectRatioByWidthAndHeight {
 export interface UpdateComponentZIndexPayload {
     z_index: number;
 }
-export interface UpdateComponentSettingsPayload {
-    settings: any;
+export interface UpdateComponentSettingsPayload<TSettings> {
+    settings: Partial<TSettings>;
 }
 
 export interface UpdateComponentTitlePayload {

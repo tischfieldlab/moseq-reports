@@ -1,8 +1,8 @@
-interface Spinogram {
+export interface Spinogram {
     data: SpinogramTimepoint[];
 }
 
-interface SpinogramTimepoint {
+export interface SpinogramTimepoint {
     x: number[];
     y: number[];
     xy: [number, number][];
@@ -10,7 +10,7 @@ interface SpinogramTimepoint {
     t: number;
 }
 
-interface SpinogramSettings {
+export interface SpinogramSettings {
     line_color: string;
     line_weight: number;
 }

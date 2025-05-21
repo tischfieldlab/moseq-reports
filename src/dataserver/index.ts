@@ -109,16 +109,26 @@ export class DataServer {
             try {
                 const { path, operations, debug } = req.query;
             
-                if (!path || !operations) {
-                    return res.status(400).json({ error: "Missing required query parameters" });
+                if (!path) {
+                    return res.status(400).json({ error: "Missing required query parameter 'path'" });
                 }
-                const decodedPath = decodeURIComponent(path as string); 
-                const parsedOperations = typeof operations === "string" ? JSON.parse(decodeURIComponent(operations)) : operations;
-                const data = await LoadData(decodedPath, parsedOperations, debug === true);
+                const decodedPath = decodeURIComponent(path as string);
+
+                let parsedOperations: Operation[];
+                if (!operations) {
+                    parsedOperations = [];
+                } else {
+                    parsedOperations = typeof operations === "string" ? JSON.parse(decodeURIComponent(operations)) : operations;
+                }
+
+                const data = await LoadData(decodedPath, parsedOperations, JSON.parse(String(debug)));
                 res.json(data);
             } catch (error) {
                 console.error("Error handling /load-data request:", error);
-                res.status(500).json({ error: "An error occurred while processing the request" });
+                res.status(500).json({ 
+                    error: "An error occurred while processing the request",
+                    details: error
+                });
             }
         });
     }

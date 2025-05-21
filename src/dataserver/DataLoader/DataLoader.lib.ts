@@ -136,12 +136,8 @@ export function sortBy(data: object[], op: SortOperation): object[] {
 }
 
 export function filterBy(data: object[], op: FilterOperation) {
-  return data.filter((row) => Object.entries(op.filters).every(([col, criterum]) => {
-      if (!Array.isArray(criterum)) criterum = [criterum];
-      criterum = criterum.map(Number); 
-      return criterum.includes(Number(row[col]));
-    })
-  )
+  return data.filter((row) => Object.entries(op.filters)
+                               .every(([col, criterum]) => criterum.includes(row[col])));
 }
 
 const statops = {

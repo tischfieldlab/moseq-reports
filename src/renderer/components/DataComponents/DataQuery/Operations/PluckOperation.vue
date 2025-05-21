@@ -1,6 +1,6 @@
 <template>
     <BInputGroup prepend="Column" size="sm">
-        <b-select v-model="operation.column" :options="columnOptions" />
+        <BFormSelect v-model="operation.column" :options="columnOptions" />
     </BInputGroup>
 </template>
 
@@ -8,8 +8,9 @@
 import { computed } from 'vue';
 import type { PluckOperation } from '@api';
 
+const operation = defineModel<PluckOperation>({required: true});
+
 const props = defineProps<{
-    operation: PluckOperation;
     previousResult: any;
     owner: string;
 }>();

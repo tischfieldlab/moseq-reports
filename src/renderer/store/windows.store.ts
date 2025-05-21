@@ -29,7 +29,7 @@ export const useWindowsStore = defineStore('windows', {
         windowsMaxZIndex: (state): number => {
             let maxZIndex: number = 0;
             state.items.forEach((item: string) => {
-                const winState: DataWindowState = useDataWindowStore(item);
+                const winState = useDataWindowStore<any>(item);
                 if (winState.z_index > maxZIndex) {
                     maxZIndex = winState.z_index;
                 }
@@ -62,7 +62,7 @@ export const useWindowsStore = defineStore('windows', {
             const ws = hydrateWindow(data);
             this.commitWindow(ws);
         },
-        commitWindow(windowState: DataWindowState) {
+        commitWindow<TSettings>(windowState: DataWindowState<TSettings>) {
             let i = 0;
             while (true) {
                 const name = `${i}`;
@@ -121,7 +121,7 @@ ipcRenderer.on(MenuEvents.CREATE_COMPONENT, (_event, component: ComponentRegistr
     windowsStore.createWindow(spec);
 });
 
-function createDataWindow(component: ComponentRegistration): DataWindowState {
+function createDataWindow<TSettings>(component: ComponentRegistration): DataWindowState<TSettings> {
     if (!component) {
         throw new Error("Component is undefined in createDataWindow");
     }
@@ -138,14 +138,14 @@ function createDataWindow(component: ComponentRegistration): DataWindowState {
         aspect_ratio: component.aspect_ratio,
         settings: clone(component.default_settings || {}), // deep clone
         is_hidden: component.is_hidden || false,
-    } as DataWindowState;
+    } as DataWindowState<TSettings>;
 
     state.settings.snapshot = defaultOptionsFromSpec(component);
 
     return state;
 }
 
-function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
+function dehydrateWindow<TSettings>(window: DataWindowState<TSettings>): DehydratedDataWindow {
     const dehydrated = {
         type: window.type,
         title: window.title,
@@ -167,13 +167,13 @@ function dehydrateWindow(window: DataWindowState): DehydratedDataWindow {
     return dehydrated;
 }
 
-function hydrateWindow(data: DehydratedDataWindow): DataWindowState {
+function hydrateWindow<TSettings>(data: DehydratedDataWindow): DataWindowState<TSettings> {
     const spec = componentRegistry.getSpecification(data.type) as ComponentRegistration;
     const windowStore = useWindowsStore();
     if (!spec) {
         console.warn(`Specification for type "${data.type}" not found. Skipping this entry.`);
     }
-    const win = createDataWindow(spec);
+    const win = createDataWindow<TSettings>(spec);
     const maxZ: number = windowStore.windowsMaxZIndex + 1;
     win.title = clone(data.title || spec.friendly_name);
     win.width = data.layout.width || win.width;

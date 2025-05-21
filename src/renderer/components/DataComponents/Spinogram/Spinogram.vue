@@ -2,7 +2,7 @@
     <div style="overflow: hidden;">
         <template v-if="has_data">
             <BPagination v-if="num_examples > 0" v-model="example_num" :total-rows="num_examples" :per-page="1"
-                :limit="num_examples" align="fill" :hide-goto-end-buttons="true" size="sm"></BPagination>
+                :limit="num_examples+1" :align="'fill'" :no-goto-end-buttons="true" size="sm"></BPagination>
 
 
             <svg :width="outsideWidth" :height="outsideHeight">
@@ -11,7 +11,7 @@
                 </text>
 
                 <g :transform="`translate(${margin.left}, ${dims.y - dims.h - 10})`">
-                    <path v-for="(tp, idx) in spinogram_data" :key="idx" :d="lineGen(tp.xy) as string" :stroke="line_color"
+                    <path v-for="(tp, idx) in spinogram_data" :key="idx" :d="(lineGen(tp.xy) as string)" :stroke="line_color"
                         :stroke-width="line_weight" :style="{ opacity: tp.a }" :data-time="tp.t" />
                 </g>
 
@@ -27,8 +27,8 @@
                     </text>
                 </g>
 
-                <ColorScaleLegend title="Time (ms)" :scale="scale.t" :width="100" :height="10"
-                    :transform="`translate(${width}, 25)`" />
+                <!--<ColorScaleLegend title="Time (ms)" :scale="scale.t" :width="100" :height="10"
+                    :transform="`translate(${width}, 25)`" />-->
             </svg>
         </template>
 
@@ -53,9 +53,9 @@ import { line } from "d3-shape";
 import { rgb } from "d3-color";
 import RegisterDataComponent from "@render/components/Core";
 import { RenderMode } from "@store/datawindow.types";
-import { DirectiveBinding } from "vue";
 import DataService from "@api";
 import { Operation } from "@render/api/DataLoader.types";
+import { Spinogram, SpinogramSettings } from "./Spinogram.types";
 
 
 
@@ -78,7 +78,7 @@ export default defineComponent({
     name: "Spinogram",
     components: {
         ColorScaleLegend,
-    },
+    },/*
     directives: {
         axis: {
             mounted(el: HTMLElement, binding: DirectiveBinding) {
@@ -91,7 +91,7 @@ export default defineComponent({
                 }
             },
         },
-    },
+    },*/
     props: {
         id: {
             type: String,
@@ -111,15 +111,15 @@ export default defineComponent({
         };
 
         const num_examples = computed(() => items.value.length);
-        const selectedSyllable = computed(() => dataview.selectedSyllable);
-        const countMethod = computed(() => dataview.countMethod);
         const has_data = computed(() => items.value.length > 0);
-        const line_color = computed(() => settings.value.line_color);
-        const line_weight = computed(() => settings.value.line_weight);
         const outsideWidth = computed(() => layout.value.width);
         const outsideHeight = computed(() => layout.value.height - 31);
         const width = computed(() => outsideWidth.value - margin.left - margin.right);
         const height = computed(() => outsideHeight.value - margin.top - margin.bottom);
+        const selectedSyllable = computed(() => dataview.selectedSyllable);
+        const countMethod = computed(() => dataview.countMethod.toLowerCase());
+        const line_color = computed(() => settings.value.line_color);
+        const line_weight = computed(() => settings.value.line_weight);
 
         const dims = computed(() => ({
             w: width.value,
@@ -142,6 +142,8 @@ export default defineComponent({
             const c = rgb(settings.value.line_color || "#FF0000");
             const ae = extent(spinogram_data.value.map((tp) => tp.a)) as [number, number];
             const te = extent(spinogram_data.value.map((tp) => tp.t)) as [number, number];
+            console.log("ae", ae);
+            console.log("te", te);
 
             const t = scaleSequential(d3.interpolateRgb(rgb(c.r, c.g, c.b, ae[0]).toString(), rgb(c.r, c.g, c.b, ae[1]).toString())).domain(te);
 
@@ -150,22 +152,27 @@ export default defineComponent({
 
         const lineGen = computed(() => line().x((d) => scale.value.x(d[0])).y((d) => scale.value.y(d[1])));
 
-        const fetchSpinogramData = async () => {
+        const operations = computed(() => {
             const datasetOps: Operation[] = [
                 { type: "map" },
                 {
                     type: "filter",
                     filters: {
-                        [`sid_${countMethod.value.toLowerCase()}`]: [selectedSyllable.value]
+                        [`sid_${dataview.countMethod.toLowerCase()}`]: [dataview.selectedSyllable]
                     }
                 }
             ];
-            DataService.fetchData("spinograms", datasetOps)
+            return datasetOps;
+        });
+
+        const fetchSpinogramData = async () => {
+            DataService.fetchData("spinograms", operations.value)
                 .catch((error) => {
                     console.error("Error fetching Spinogram data:", error);
                     items.value = [];
                 })
                 .then((data: any) => {
+                    console.log("Spinogram data:", data);
                     items.value = data.map((itm) => ({
                         ...itm,
                         data: itm.data.map((stp) => ({ ...stp, xy: stp.x.map((tpx, jdx) => [tpx, stp.y[jdx]]) })),
@@ -173,7 +180,7 @@ export default defineComponent({
                 });
         };
 
-        watch(selectedSyllable, fetchSpinogramData, { immediate: true });
+        watch(operations, fetchSpinogramData, { immediate: true });
 
         return {
             example_num,

@@ -89,14 +89,13 @@
 
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import { ref, nextTick, useTemplateRef } from "vue";
 import * as d3 from "d3";
 import { useBoxPlotBase, BoxPlotBaseProps, BoxPlotBasePropsDefaults } from "@render/components/Charts/BoxPlot/BoxPlotBase.vue";
 import ToolTip from "@render/components/Charts/ToolTip.vue";
 import MessageBox from "@render/components/Charts/CenteredMessage.vue";
 import { throttle } from "@render/util/Events";
 import { sum } from "d3-array";
-import { useTemplateRef } from "vue";
 
 
 const props = withDefaults(defineProps<BoxPlotBaseProps>(), BoxPlotBasePropsDefaults);

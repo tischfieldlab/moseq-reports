@@ -1,40 +1,44 @@
 <template>
-    <BInputGroup prepend="Columns" size="sm">
-        <ColumnSelector v-model="localSelectedColumns" :options="columnOptions" :disabled="!isColumnsEnabled" />
-        <BInputGroup-append is-text title="Automatic mapping" v-b-tooltip.hover>
-            <BFormCheckbox switch v-model="isColumnsEnabled" />
-        </BInputGroup-append>
+    <BInputGroup size="sm">
+        <BInputGroupText>
+            Columns
+        </BInputGroupText>
+        <ColumnSelector v-model="localSelectedColumns" :options="columnOptions" :disabled="isAutoMapping" />
+        <BInputGroupText is-text title="Automatic mapping" v-b-tooltip.hover>
+            <BFormCheckbox switch v-model="isAutoMapping" />
+        </BInputGroupText>
     </BInputGroup>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed, toRef } from 'vue';
-import type { MapOperation } from '@api';
 import ColumnSelector from './ColumnSelector.vue';
 
+const operation = defineModel<{columns: string[] | undefined }>({required: true});
+
 const props = defineProps<{
-    operation: {
-        columns: string[];
-    };
     previousResult: any;
     owner: string;
 }>();
 
-const isColumnsEnabled = ref(props.operation.columns !== undefined);
-const localSelectedColumns = toRef(props.operation, 'columns');
 
-watch(isColumnsEnabled, (enabled) => {
-    props.operation.columns = enabled ? localSelectedColumns.value : [];
+
+const isAutoMapping = ref(true);//computed(() => operation.value.columns !== undefined);
+const localSelectedColumns = ref(operation.value.columns !== undefined ? [...operation.value.columns] : []);
+
+watch(isAutoMapping, (enabled) => {
+    operation.value.columns = enabled ? undefined : localSelectedColumns.value;
 });
 
 watch(localSelectedColumns, (cols) => {
-    if (isColumnsEnabled.value) {
-        props.operation.columns = cols;
+    if (!isAutoMapping.value) {
+        operation.value.columns = cols;
     }
 });
 
 const columnOptions = computed((): string[] => {
     const obj = props.previousResult;
+    console.log('columnOptions', obj);
     if (!obj) return [];
     if (Array.isArray(obj)) {
         return obj.length > 0 ? Object.keys(obj[0]) : [];

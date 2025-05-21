@@ -1,17 +1,17 @@
 <template>
     <BFormGroup :label="label" :label-for="formId" class="container-form-group">
-        <BFormTags :id="formId" v-model="localValue" :disabled="disabled" no-outer-focus class="mb-2">
+        <BFormTags :id="formId" v-model="modelValue" :disabled="disabled" no-outer-focus class="mb-2">
             <template #default="{ tags, disabled, addTag, removeTag }">
                 <BDropdown size="sm" variant="outline-secondary" block menu-class="w-100" :disabled="disabled">
                     <template #button-content>
-                        <b-icon :icon="icon" />
+                        <component :is="icon" />
                     </template>
 
                     <BDropdownForm @submit.stop.prevent>
                         <BInputGroup size="sm" class="mb-2" :disabled="disabled">
-                            <BInputGroup-prepend is-text>
-                                <b-icon icon="search" />
-                            </BInputGroup-prepend>
+                            <BInputGroupText is-text>
+                                <IBiSearch />
+                            </BInputGroupText>
                             <BFormInput v-model="search" id="tag-search-input" type="search" size="sm"
                                 autocomplete="off" placeholder="Search" />
                         </BInputGroup>
@@ -43,40 +43,46 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import IBiLayoutThreeColumns from '~icons/bi/layout-three-columns';
 
-const props = defineProps<{
-    modelValue: string[];
+const modelValue = defineModel<string[]>({required: true});
+
+interface ColumnSelectorProps {
     options: string[];
     label?: string;
     disabled?: boolean;
-    icon?: string;
+    icon?: Object;
     noun?: string;
-}>();
+}
 
-const emit = defineEmits(['update:modelValue']);
+const props = withDefaults(defineProps<ColumnSelectorProps>(), {
+    label: '',
+    disabled: false,
+    icon: IBiLayoutThreeColumns,
+    noun: 'Column',
+});
+
+//const emit = defineEmits(['update:modelValue']);
 
 const search = ref('');
-const localValue = ref<string[]>(props.modelValue || []);
+//const localValue = ref<string[]>(props.modelValue || []);
 const formId = `tags-${Math.random().toString(36).substring(2, 10)}`;
 
 // Sync local changes back to parent
-watch(localValue, (val) => {
-    emit('update:modelValue', val);
-});
+//watch(localValue, (val) => {
+//    emit('update:modelValue', val);
+//});
 
 // Search-related computed
 const criteria = computed(() => search.value.trim().toLowerCase());
 
 const availableOptions = computed(() => {
-    const filtered = props.options.filter((opt) => !localValue.value.includes(opt));
+    const filtered = props.options.filter((opt) => !modelValue.value.includes(opt));
     return criteria.value
         ? filtered.filter((opt) => opt.toLowerCase().includes(criteria.value))
         : filtered;
 });
 
-// Default props
-const icon = props.icon || 'layout-three-columns';
-const noun = props.noun || 'Column';
 
 // Tag selection handler
 function onOptionClick(option: string, addTag: (t: string) => void) {
@@ -93,21 +99,21 @@ function onOptionClick(option: string, addTag: (t: string) => void) {
     width: 1%;
 }
 
-.BFormTags {
+.b-form-tags {
     margin-bottom: 0 !important;
     border-radius: 0;
 }
 
-.BDropdown {
+.b-dropdown {
     display: inline-block;
     margin-right: 0.5rem;
 }
 
-.BDropdownForm {
+.dropdown-item-text {
     padding: 0.25rem 0.5rem;
 }
 
-.BDropdownForm>.input-group {
+.dropdown-item-text>.input-group-text {
     margin-bottom: 0 !important;
 }
 </style>

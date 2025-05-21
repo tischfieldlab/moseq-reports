@@ -6,7 +6,7 @@ import {useDataWindowStore} from "@store/datawindow.store";
 import {useDataViewStore} from "@store/dataview.store";
 
 export function useWindowMixin<TSettings>(id: string) {
-    const $wstate = useDataWindowStore(id);
+    const $wstate = useDataWindowStore<TSettings>(id);
 
     const subid = computed(() =>  id.replace("datawindows/", "") );
 

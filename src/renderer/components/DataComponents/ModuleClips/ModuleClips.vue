@@ -5,10 +5,10 @@
             v-model="exampleNum"
             :total-rows="numExamples"
             :per-page="1"
-            :limit="numExamples"
+            :limit="numExamples+1"
             align="fill"
             :aria-controls="videoId"
-            :hide-goto-end-buttons="true"
+            :no-goto-end-buttons="true"
             size="sm"
         />
 
@@ -132,7 +132,7 @@ export default defineComponent({
 .video-container {
     height: calc(100% - 10px);
 }
-.b-pagination {
+.pagination {
     margin-bottom: 0;
 }
 </style>

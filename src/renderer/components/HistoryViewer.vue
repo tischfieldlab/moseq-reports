@@ -14,22 +14,6 @@
                     <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
                 </div>
             </b-toast>
-            <!--<div v-for="(itm, idx) in items" :key="idx" class="toast show mb-3" role="alert" :class="`bg-${itm.variant}`">
-                <div class="toast-header">
-                    <!--strong class="me-auto">Notification</strong--><!--
-                    <small><timeago :datetime="itm.time" /></small>
-                    <button class="btn-close" aria-label="Close" @click="removeNotification(idx)" v-b-tooltip="'dismiss'"></button>
-                </div>
-                <div class="toast-body">
-                    {{ itm.message }}
-                    <BLink v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link">
-                        {{ itm.showDetails ? "Hide Details" : "Show Details" }}
-                    </BLink>
-                    <div v-if="itm.showDetails" class="details mt-2">
-                        <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
-                    </div>
-                </div>
-            </div>-->
         </template>
         <div v-else>
             <p class="no-items">There doesn't seem to be anything here.</p>

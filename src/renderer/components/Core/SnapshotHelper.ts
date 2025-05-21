@@ -110,7 +110,7 @@ export async function SnapshotWorkspace() {
 
     Promise.all(
         toSnapshot.map(async (item) => {
-            const wstate = (item as any).$wstate as DataWindowState;
+            const wstate = (item as any).$wstate as DataWindowState<any>;
             return {
                 dataURI: await targetToDataURI(item, opts),
                 pos_x: wstate.pos_x,

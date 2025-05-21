@@ -45,6 +45,10 @@ declare module 'vue' {
     BToast: typeof import('bootstrap-vue-next/components/BToast')['BToast']
     BToastOrchestrator: typeof import('bootstrap-vue-next/components/BToast')['BToastOrchestrator']
     IBiCameraFill: typeof import('~icons/bi/camera-fill')['default']
+    IBiChevronDown: typeof import('~icons/bi/chevron-down')['default']
+    IBiChevronUp: typeof import('~icons/bi/chevron-up')['default']
+    IBiCloudDownload: typeof import('~icons/bi/cloud-download')['default']
+    IBiSearch: typeof import('~icons/bi/search')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

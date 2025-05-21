@@ -15,9 +15,9 @@
         <template v-for="(value, key) in localAggs" :key="key">
             <BInputGroup :prepend="key" size="sm">
                 <ColumnSelector v-model="localAggs[key]" icon="calculator" noun="Statistic" :options="statOptions" />
-                <BInputGroup-append is-text>
+                <BInputGroupText is-text>
                     <BButton @click="removeAggregate(key)" class="btn-close ms-auto" aria-label="Close" />
-                </BInputGroup-append>
+                </BInputGroupText>
             </BInputGroup>
         </template>
     </div>

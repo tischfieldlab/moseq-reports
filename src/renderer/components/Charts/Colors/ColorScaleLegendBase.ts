@@ -11,7 +11,7 @@ export enum Orientation {
 export default defineComponent({
     props: {
         scale: {
-            type: Object as PropType<ScaleSequential<string>>,
+            // type: Object as PropType<ScaleSequential<string>>,
             required: true,
         },
         width: {
