@@ -6,7 +6,13 @@
                 <template #title>
                     <timeago :datetime="itm.time" />
                 </template>
-                {{ itm.message }}
+                <component
+                :is="resolveMessage(itm.message)"
+                v-if="isVNode(itm.message)"
+                />
+                <div v-else>
+                    {{ itm.message }}
+                </div>
                 <BLink v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link">
                     {{ itm.showDetails ? "Hide Details" : "Show Details" }}
                 </BLink>
@@ -26,6 +32,7 @@
 <script lang="ts">
 import { defineComponent, computed, ref } from "vue";
 import { useHistoryStore } from "@store/history.store";
+import { h } from 'vue';
 
 export default defineComponent({
     setup() {
@@ -60,13 +67,25 @@ export default defineComponent({
             items.value[idx].showDetails = !items.value[idx].showDetails;
             console.log("New state:", items.value[idx].showDetails);
         };
-
+        
+        const isVNode = (msg) => typeof msg === 'function';
+        
+        const resolveMessage = (msgFn) => {
+            try {
+                return { render: msgFn };
+            } catch (e) {
+                return { render: () => h('span', 'Error rendering message') };
+            }
+        };
+        
         const removeNotification = (idx) => {
             historyStore.removeEntry(idx); 
         };
 
         return {
             items,
+            isVNode,
+            resolveMessage,
             toggleDetails,
             removeNotification,
         };
