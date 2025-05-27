@@ -32,11 +32,11 @@ const options = computed((): { text: string; value: string }[] => {
     return Object.entries(dataviewStore.views)
         .map(([key, dset]) => {
             const parts = key.split("/");
-            const win = useDataWindowStore(parts[1]);
-            if (win && props.owner && props.owner !== parts[1]) {
+            const win = useDataWindowStore(parts[0]);
+            if (win && props.owner && props.owner !== parts[0]) {
                 return {
                     window: win,
-                    text: `${win.title}: ${parts[2]}`,
+                    text: `${win.title}: ${parts[1]}`,
                     value: key,
                 };
             }

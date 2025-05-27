@@ -176,8 +176,8 @@ const row_order_dataset = computed({
 });
 
 watch(() => props.column_options, (newValue) => {
-    if (row_order_column_value.value === undefined && props.column_options.length > 0) {
-        row_order_column_value.value = props.column_options[0].value;
+    if ((row_order_column_value.value === undefined || row_order_column_value.value === "") && props.column_options.length > 0) {
+        row_order_column_value.value = newValue[0].value;
     }
 }, { immediate: true, deep: true });
 

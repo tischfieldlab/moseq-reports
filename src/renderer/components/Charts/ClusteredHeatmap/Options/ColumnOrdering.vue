@@ -177,7 +177,7 @@ const column_order_dataset = computed({
 });
 
 watch(() => props.row_options, (newValue) => {
-    if (column_order_row_value.value === undefined && newValue.length > 0) {
+    if ((column_order_row_value.value === undefined || column_order_row_value.value === "") && newValue.length > 0) {
         column_order_row_value.value = newValue[0].value;
     }
 }, { immediate: true, deep: true });

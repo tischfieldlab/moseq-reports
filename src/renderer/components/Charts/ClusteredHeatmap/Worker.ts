@@ -15,7 +15,6 @@ interface ClusterInputData {
 }
 
 export function hCluster(df: object[], idKey: string, valKey: string, options: HClusterOptions): HClusterResult {
-    console.log('in worker2 hCluster');
     const grouped = groupby(df, (item) => item[idKey].toString());
     const toCluster = Object.entries(grouped).map(([id, vals]) => {
         return {
@@ -47,7 +46,6 @@ export interface KClusterResult {
     centroids: number[][];
 }
 export function kCluster(df: object[], idKey: string, valKey: string, options: KClusterOptions) {
-    console.log('in worker2 kCluster');
     const grouped = groupby(df, (item) => item[idKey].toString());
     const toCluster = Object.entries(grouped).map(([column, vals]) => {
         return {

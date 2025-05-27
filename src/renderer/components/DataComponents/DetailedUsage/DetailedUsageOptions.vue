@@ -18,7 +18,7 @@
                     <template #prepend>
                         <BInputGroupText>Dataset</BInputGroupText>
                     </template>
-                    <DatasetPicker v-model="group_order_dataset" :dataview="dataview.$id" :owner="id" />
+                    <DatasetPicker v-model="group_order_dataset" :dataview="datasource" :owner="id" />
                 </BInputGroup>
             </BCol>
         </BRow>
@@ -96,7 +96,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const { settings, dataview, $wstate } = useWindowMixin<DetailedUsageSettings>(props.id);
+        const { settings, datasource, $wstate } = useWindowMixin<DetailedUsageSettings>(props.id);
 
         const group_order_type = computed({
             get: () => settings.value.group_order_type,
@@ -211,7 +211,7 @@ export default defineComponent({
             boxplot_whisker_description,
             whisker_options,
             group_order_options,
-            dataview,
+            datasource,
         };
     },
 });

@@ -73,15 +73,19 @@ export interface ClusteredHeatmapBaseEmits {
     (e: 'heatmap-click', data: {e: Event, row: string, col: string, value: string}): void
 }
 
-export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: ClusteredHeatmapBaseEmits) {
+export interface ClusteredHeatmapBaseOverrides {
+    compute_label_stats: (labels: string[]) => void;
+    showSelectedRow: (id: number) => void;
+    showSelectedCol: (id: number) => void;
+}
+
+export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: ClusteredHeatmapBaseEmits, overrides: ClusteredHeatmapBaseOverrides) {
     const instance = new ComlinkWorker<typeof import("./Worker")>(
         new URL("./Worker", import.meta.url),
         {
           /* normal Worker options*/
         }
     );
-    console.log('instance', instance);
-
 
     const clusteredColumnOrder = ref<string[]>([]);
     const columnHierarchy = ref<HierarchyNode<any>|undefined>(undefined);
@@ -289,7 +293,7 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         if (props.data !== null) {
             //clusterColumns();
             //clusterRows();
-            compute_label_stats(props.groupLabels as string[]);
+            overrides.compute_label_stats(props.groupLabels as string[]);
         }
     }
     
@@ -363,32 +367,13 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
                 Row: ${item[props.rowKey]}<br />
                 Value: ${item[props.valueKey].toExponential(3)}`;
     }
-    function handleHeatmapClick(event: Event) {
-        // Fired when heatmap is clicked
-        // @arg An event, the row, col, and value of the heatmap
-        emit('heatmap-click', {
-            e: event,
-            row: (event.target as SVGRectElement).dataset.row as string,
-            col: (event.target as SVGRectElement).dataset.col as string,
-            value: (event.target as SVGRectElement).dataset.val as string,
-        });
-    }
-    function compute_label_stats(labels: string[]) {
-        // abstract
-    }
-    function showSelectedRow(id: number) {
-        // abstract
-    }
-    function showSelectedCol(id: number) {
-        // abstract
-    }
 
     const watchers: (() => void)[] = [];
     //watchers.push(watchSyncEffect(prep_data));
     watchers.push(watchSyncEffect(async () => await clusterColumns()));
     watchers.push(watchSyncEffect(async () => await clusterRows()));
-    watchers.push(watch(() => props.selectedRow, (newValue) => { if (newValue) showSelectedRow(newValue)}, {immediate: true }));
-    watchers.push(watch(() => props.selectedCol, (newValue) => {if (newValue) showSelectedCol(newValue)}, {immediate: true }));
+    watchers.push(watch(() => props.selectedRow, (newValue) => { if (newValue) overrides.showSelectedRow(newValue)}, {immediate: true }));
+    watchers.push(watch(() => props.selectedCol, (newValue) => {if (newValue) overrides.showSelectedCol(newValue)}, {immediate: true }));
     watchers.push(watch(() => rowOrder, (newValue) => emit('row-order-changed', newValue.value), {immediate: true }));
     watchers.push(watch(() => columnOrder, (newValue) =>  emit('col-order-changed', newValue.value), {immediate: true }));
     

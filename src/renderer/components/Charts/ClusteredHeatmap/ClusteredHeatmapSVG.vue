@@ -50,37 +50,66 @@
 
 <script setup lang="ts">
 import { sum, axisBottom, axisRight, select, selectAll } from 'd3';
+import {useClusteredHeatmapBase, ClusteredHeatmapBaseProps, ClusteredHeatmapBaseEmits, ClusteredHeatmapBasePropsDefaults, ClusteredHeatmapBaseOverrides} from './ClusteredHeatmapBase';
 import ColorScaleLegend from '@render/components/Charts/Colors/ColorScaleLegendSVG.vue';
-import {useClusteredHeatmapBase, ClusteredHeatmapBaseProps, ClusteredHeatmapBaseEmits, ClusteredHeatmapBasePropsDefaults} from './ClusteredHeatmapBase';
 import ToolTip from '@render/components/Charts/ToolTip.vue';
-import { throttle } from '@render/util/Events';
 import MessageBox from '@render/components/Charts/CenteredMessage.vue';
+import { throttle } from '@render/util/Events';
 import { useTemplateRef, Directive } from 'vue';
+
+const overrides: ClusteredHeatmapBaseOverrides = {
+    showSelectedRow: (id: number) => {
+        if (!canvas.value) {
+            return;
+        }
+        const labels = [...canvas.value.querySelectorAll('g.y-axis .tick')] as SVGTextElement[];
+        for (const l of labels) {
+            if (l.getAttribute('data-row') === id.toString()) {
+                l.classList.add('selected');
+            } else {
+                l.classList.remove('selected');
+            }
+        }
+    },
+    showSelectedCol: (id: number) => {
+        if (!canvas.value) {
+            return;
+        }
+        const labels = [...canvas.value.querySelectorAll('g.x-axis .tick')] as SVGTextElement[];
+        for (const l of labels) {
+            if (l.getAttribute('data-col') === id.toString()) {
+                l.classList.add('selected');
+            } else {
+                l.classList.remove('selected');
+            }
+        }
+    },
+    compute_label_stats: (labels: string[]) => {
+        const widths = [] as number[];
+        if (!canvas.value) { return; }
+        const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
+        tag.classList.add('tick-measurement');
+        canvas.value.appendChild(tag);
+        for (const label of labels) {
+            tag.textContent = label;
+            widths.push(tag.getBBox().width);
+        }
+        canvas.value.removeChild(tag);
+        label_stats.value = {
+            count: widths.length,
+            total: sum(widths),
+            longest: Math.max(...widths),
+        };
+    },
+};
+
 
 
 const props = withDefaults(defineProps<ClusteredHeatmapBaseProps>(), ClusteredHeatmapBasePropsDefaults());
 const emit = defineEmits<ClusteredHeatmapBaseEmits>();
-const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, rotate_labels, elbowH, elbowV, shouldHideLabel } = useClusteredHeatmapBase(props, emit);
+const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, rotate_labels, elbowH, elbowV, shouldHideLabel } = useClusteredHeatmapBase(props, emit, overrides);
 
 const canvas = useTemplateRef('canvas');
-
-function compute_label_stats(labels: string[]) {
-    const widths = [] as number[];
-    if (!canvas.value) { return; }
-    const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
-    tag.classList.add('tick-measurement');
-    canvas.value.appendChild(tag);
-    for (const label of labels) {
-        tag.textContent = label;
-        widths.push(tag.getBBox().width);
-    }
-    canvas.value.removeChild(tag);
-    label_stats.value = {
-        count: widths.length,
-        total: sum(widths),
-        longest: Math.max(...widths),
-    };
-}
 
 function handleHeatmapClick(event: Event) {
     // Fire when heatmap is clicked
@@ -110,32 +139,7 @@ const handleHeatmapHover = throttle((event: MouseEvent) => {
     tooltipPosition.value = undefined;
     hoverItem.value = undefined;
 }, 100);
-function showSelectedRow(id: number) {
-    if (!canvas.value) {
-        return;
-    }
-    const labels = [...canvas.value.querySelectorAll('g.y-axis .tick')] as SVGTextElement[];
-    for (const l of labels) {
-        if (l.getAttribute('data-row') === id.toString()) {
-            l.classList.add('selected');
-        } else {
-            l.classList.remove('selected');
-        }
-    }
-}
-function showSelectedCol(id: number) {
-    if (!canvas.value) {
-        return;
-    }
-    const labels = [...canvas.value.querySelectorAll('g.x-axis .tick')] as SVGTextElement[];
-    for (const l of labels) {
-        if (l.getAttribute('data-col') === id.toString()) {
-            l.classList.add('selected');
-        } else {
-            l.classList.remove('selected');
-        }
-    }
-}
+
 
 function draw_axis(el, binding) {
     const axis = binding.arg;

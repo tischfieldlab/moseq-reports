@@ -25,9 +25,40 @@
 import {onMounted, onUnmounted, useTemplateRef, watch, nextTick} from 'vue';
 import { sum } from 'd3-array';
 import ColorScaleLegend from '@render/components/Charts/Colors/ColorScaleLegendCanvas.vue';
-import { ClusteredHeatmapBaseEmits, ClusteredHeatmapBaseProps, ClusteredHeatmapBasePropsDefaults, useClusteredHeatmapBase } from './ClusteredHeatmapBase';
+import ToolTip from '@render/components/Charts/ToolTip.vue';
+import MessageBox from '@render/components/Charts/CenteredMessage.vue';
+import { ClusteredHeatmapBaseEmits, ClusteredHeatmapBaseOverrides, ClusteredHeatmapBaseProps, ClusteredHeatmapBasePropsDefaults, useClusteredHeatmapBase } from './ClusteredHeatmapBase';
 import { debounce, throttle } from '@render/util/Events';
 import { useCanvas } from '../Canvas';
+import { watchEffect } from 'vue';
+
+
+const overrides: ClusteredHeatmapBaseOverrides = {
+    showSelectedRow: (id: number) => {
+        // do nothing?
+    },
+    showSelectedCol: (id: number) => {
+        // do nothing?
+    },
+    compute_label_stats: (labels: string[]) => {
+        const cxt = canvas.value.cxt;
+        if (cxt !== null) {
+            const widths = labels.map((l) => {
+                return cxt.measureText(l).width;
+            });
+            label_stats.value = {
+                count: labels.length,
+                total: sum(widths),
+                longest: Math.max(...widths),
+            };
+            return;
+        }
+        // if canvas is not available yet (i.e. before fully mounted)
+        // then schedule the calculation for the next tick
+        nextTick(() => overrides.compute_label_stats(labels));
+        return;
+    }
+};
 
 
 const {canvas, vDpiAdapt} = useCanvas();
@@ -36,10 +67,11 @@ const root = useTemplateRef('root');
 
 const props = withDefaults(defineProps<ClusteredHeatmapBaseProps>(), ClusteredHeatmapBasePropsDefaults());
 const emit = defineEmits<ClusteredHeatmapBaseEmits>();
-const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, elbowH, elbowV, rotate_labels, shouldHideLabel } = useClusteredHeatmapBase(props, emit);
+const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, elbowH, elbowV, rotate_labels, shouldHideLabel } = useClusteredHeatmapBase(props, emit, overrides);
 
 const watchers: (() => void)[] = [];
 
+/*
 onMounted(() => {
 
     Object.keys(props).forEach((key) => {
@@ -51,16 +83,21 @@ onMounted(() => {
         watchers.push(watch(() => key, () => {
             draw();
         }));
-    });*/
+    });*//*
     draw();
 });
 
 onUnmounted(() => {
     watchers.forEach((unwatch) => unwatch());
+});*/
+
+onMounted(() => {
+    watchEffect(draw);
 });
 
 
 const draw = debounce(() => {
+    console.debug('Drawing clustered heatmap canvas');
     const cxt = canvas.value.cxt;
     if (cxt === null) {
         return;
@@ -243,24 +280,7 @@ function drawAxisY(ctx: CanvasRenderingContext2D) {
 
     ctx.restore();
 }
-function compute_label_stats(labels: string[]) {
-    const cxt = canvas.value.cxt;
-    if (cxt !== null) {
-        const widths = labels.map((l) => {
-            return cxt.measureText(l).width;
-        });
-        label_stats.value = {
-            count: labels.length,
-            total: sum(widths),
-            longest: Math.max(...widths),
-        };
-        return;
-    }
-    // if canvas is not available yet (i.e. before fully mounted)
-    // then schedule the calculation for the next tick
-    nextTick(() => compute_label_stats(labels));
-    return;
-}
+
 function handleHeatmapClick(event: MouseEvent) {
     for (const node of props.data as object[]) {
         const x1 = dims.value.heatmap.x + scale.value.x(node[props.columnKey].toString());
