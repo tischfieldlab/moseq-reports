@@ -67,7 +67,7 @@ const root = useTemplateRef('root');
 
 const props = withDefaults(defineProps<ClusteredHeatmapBaseProps>(), ClusteredHeatmapBasePropsDefaults());
 const emit = defineEmits<ClusteredHeatmapBaseEmits>();
-const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, elbowH, elbowV, rotate_labels, shouldHideLabel } = useClusteredHeatmapBase(props, emit, overrides);
+const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, elbowH, elbowV, shouldHideLabel } = useClusteredHeatmapBase(props, emit, overrides);
 
 const watchers: (() => void)[] = [];
 
@@ -97,7 +97,6 @@ onMounted(() => {
 
 
 const draw = debounce(() => {
-    console.debug('Drawing clustered heatmap canvas');
     const cxt = canvas.value.cxt;
     if (cxt === null) {
         return;
@@ -205,7 +204,7 @@ function drawAxisX(ctx: CanvasRenderingContext2D) {
             }
             ctx.translate(scale.value.x(d) + (scale.value.x.bandwidth() / 2), yTickOffset + 2);
 
-            if (rotate_labels.value) {
+            if (dims.value.rotate_labels) {
                 ctx.textAlign = 'right';
                 ctx.rotate(-Math.PI / 4);
             } else {

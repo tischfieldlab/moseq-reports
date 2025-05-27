@@ -107,7 +107,7 @@ const overrides: ClusteredHeatmapBaseOverrides = {
 
 const props = withDefaults(defineProps<ClusteredHeatmapBaseProps>(), ClusteredHeatmapBasePropsDefaults());
 const emit = defineEmits<ClusteredHeatmapBaseEmits>();
-const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, rotate_labels, elbowH, elbowV, shouldHideLabel } = useClusteredHeatmapBase(props, emit, overrides);
+const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, elbowH, elbowV, shouldHideLabel } = useClusteredHeatmapBase(props, emit, overrides);
 
 const canvas = useTemplateRef('canvas');
 
@@ -129,16 +129,18 @@ const handleHeatmapHover = throttle((event: MouseEvent) => {
                 x: event.clientX,
                 y: event.clientY
             };
-            hoverItem.value = (props.data as any[]).find((itm) => {
+            const item = (props.data as any[]).find((itm) => {
                 return itm[props.columnKey].toString() === target.dataset.col
                     && itm[props.rowKey].toString() === target.dataset.row;
             });
+            if (item !== hoverItem.value)
+                hoverItem.value = item;
             return;
         }
     }
     tooltipPosition.value = undefined;
     hoverItem.value = undefined;
-}, 100);
+}, 10);
 
 
 function draw_axis(el, binding) {
@@ -168,7 +170,7 @@ function draw_axis(el, binding) {
 
         // if x-axis, check rotation
         if (axis === 'x') {
-            if (rotate_labels.value) {
+            if (dims.value.rotate_labels) {
                 el.classList.add('rotate');
             } else {
                 el.classList.remove('rotate');

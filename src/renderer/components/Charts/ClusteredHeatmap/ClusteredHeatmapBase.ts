@@ -7,6 +7,7 @@ import { GetScale } from '@render/components/Charts/Colors/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV, hydrateCluster } from '@render/components/Charts/D3Clustering';
 import { DefinedScaleBand } from '../D3Scale';
 import { toRaw } from 'vue';
+import { shallowRef } from 'vue';
 
 
 
@@ -87,15 +88,14 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         }
     );
 
-    const clusteredColumnOrder = ref<string[]>([]);
-    const columnHierarchy = ref<HierarchyNode<any>|undefined>(undefined);
-    const clusteredRowOrder = ref<string[]>([]);
-    const rowHierarchy = ref<HierarchyNode<any>|undefined>(undefined);
-    const rotate_labels = ref<boolean>(false);
+    const clusteredColumnOrder = shallowRef<string[]>([]);
+    const columnHierarchy = shallowRef<HierarchyNode<any>|undefined>(undefined);
+    const clusteredRowOrder = shallowRef<string[]>([]);
+    const rowHierarchy = shallowRef<HierarchyNode<any>|undefined>(undefined);
     const label_stats = ref({count: 0, total: 0, longest: 0});
     const tooltipPosition = ref<{x: number, y:number}|undefined>(undefined);
-    const hoverItem = ref<object|undefined>(undefined);
-    const margin = ref({ top: 20, right: 20, bottom: 50, left: 60 });
+    const hoverItem = shallowRef<object|undefined>(undefined);
+    const margin = ref({ top: 20, right: 20, bottom: 50, left: 20 });
 
 
     const has_data = computed(() => {
@@ -109,8 +109,8 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         return props.height - margin.value.top - margin.value.bottom;
     });
     const dims = computed(() => {
-        const rtreeWidth =  isRowsHClustered.value ? Math.min(innerWidth.value * .10, 50) : 0;
-        const ctreeHeight = isColumnsHClustered.value ? Math.min(innerHeight.value * .10, 50) : 0;
+        const rtreeWidth =  isRowsHClustered.value ? Math.min(innerWidth.value * 0.10, 50) : 0;
+        const ctreeHeight = isColumnsHClustered.value ? Math.min(innerHeight.value * 0.10, 50) : 0;
         const yaxisWidth = 45;
         let xaxisHeight = 45;
         let xaxisLabelYOffset = 40;
@@ -118,8 +118,8 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
 
         const heatWidth = innerWidth.value - rtreeWidth - yaxisWidth;
 
-        rotate_labels.value = label_stats.value.longest > heatWidth / label_stats.value.count;
-        if (rotate_labels.value) {
+        const rotate_labels = label_stats.value.longest > heatWidth / label_stats.value.count;
+        if (rotate_labels) {
             const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * label_stats.value.longest;
             xaxisHeight = xaxisLabelYOffset = rotatedHeight + 45;
         }
@@ -168,6 +168,7 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
             xaxis, yaxis,
             rtree, ctree,
             legend,
+            rotate_labels,
         };
     });
     const isColumnsClustered = computed(() => {
@@ -192,7 +193,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         switch (props.columnOrderType) {
             case OrderingType.HCluster:
             case OrderingType.KCluster:
-                console.log('clustered column order', clusteredColumnOrder.value);
                 return clusteredColumnOrder.value;
 
             case OrderingType.Value:
@@ -296,9 +296,8 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
             overrides.compute_label_stats(props.groupLabels as string[]);
         }
     }
-    
+
     async function clusterColumns() {
-        console.log('about to cluster columns');
         if (props.data !== null && props.data.length > 0) {
             if (props.columnOrderType === OrderingType.HCluster) {
                 instance.hCluster(toRaw(props.data), props.columnKey, props.valueKey, {
@@ -376,9 +375,7 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
     watchers.push(watch(() => props.selectedCol, (newValue) => {if (newValue) overrides.showSelectedCol(newValue)}, {immediate: true }));
     watchers.push(watch(() => rowOrder, (newValue) => emit('row-order-changed', newValue.value), {immediate: true }));
     watchers.push(watch(() => columnOrder, (newValue) =>  emit('col-order-changed', newValue.value), {immediate: true }));
-    
-    //watchers.push(watch(() => props.columnClusterK, (newValue) =>  clusterColumns(), {immediate: true }));
-    //watchers.push(watch(() => props.rowClusterK, () => clusterRows(), {immediate: true }));
+
 
     onMounted(() => {
         prep_data();
@@ -386,7 +383,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
     onUnmounted(() => {
         // un-watch the store
         watchers.forEach((w) => w());
-        //cleanup(); // cleanup the worker
     });
 
     return {
@@ -394,7 +390,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         clusteredRowOrder,
         columnHierarchy,
         rowHierarchy,
-        rotate_labels,
         label_stats,
         tooltipPosition,
         hoverItem,

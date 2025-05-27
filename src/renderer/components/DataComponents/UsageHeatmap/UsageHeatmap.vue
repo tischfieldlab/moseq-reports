@@ -25,7 +25,7 @@
         :rowOrderDataset="rowOrderDataset"
 
         xAxisTitle="Group"
-        :yAxisTitle="`Module ID (${countMethod})`"
+        :yAxisTitle="`Syllable ID (${countMethod})`"
         :legendTitle="`Usage (${countMethod})`"
         columnKey="group"
         rowKey="syllable"
