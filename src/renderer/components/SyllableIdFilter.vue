@@ -1,7 +1,7 @@
 <template>
-    <div class="filter-module-id mb-2">
-        <label for="filter-module-id" class="d-flex justify-content-between align-items-center">
-            <span>Filter Module ID</span>
+    <BCard>
+        <template #header>
+            <span>Filter Syllable ID</span>
             <button
                 v-if="tags.length > 0"
                 class="btn btn-link p-0 text"
@@ -10,7 +10,7 @@
 
                 <i class="bi-x-circle-fill"></i>
             </button>
-        </label>
+        </template>
         <BFormTags
             id="filter-module-id"
             v-model="tags"
@@ -18,7 +18,7 @@
             separator=" ,;"
             placeholder="Add ID(s)..."
             :tag-validator="tagValidator" />
-    </div>
+    </BCard>
 </template>
 
 <script lang="ts">
@@ -76,16 +76,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.filter-module-id {
-    padding: 0.5rem;
-    background-color: #f8f9fa;
-    border-radius: 4px;
+:deep(.card-body) {
+    padding: 0;
 }
-.filter-module-id label {
-    display: block;
-    margin-bottom: 0.25rem;
-}
-.filter-module-id .BFormTags {
-    margin: 0;
+
+:deep(.b-form-tags) {
+    margin-bottom: 0 !important;
+    border: 0;
 }
 </style>
