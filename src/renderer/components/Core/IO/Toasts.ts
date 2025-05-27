@@ -18,7 +18,7 @@ export function showSaveSuccessToast(dest: string, noun: string, showOrOpen: 'op
                 h('a', {
                     href: 'javascript:void(0);',
                     title: `Click to ${showOrOpen}`,
-                    click: clickHandler,
+                    onClick: clickHandler,
                 }, dest),
             ]);
 
@@ -30,7 +30,11 @@ export function showSaveSuccessToast(dest: string, noun: string, showOrOpen: 'op
             default: body
         },
     });
-    useHistoryStore().addEntry({message: body, variant: 'success'});
+    useHistoryStore().addEntry({
+        message: body,
+        variant: 'success',
+        details: noun,
+    });
 }
 
 
