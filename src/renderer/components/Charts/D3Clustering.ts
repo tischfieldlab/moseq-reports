@@ -1,3 +1,4 @@
+import { Cluster } from "ml-hclust";
 
 export function getDendrogramOrder(tree: any): string[] {
     return traverseDendrogram(tree, []);
@@ -20,4 +21,17 @@ export function elbowH(d: { source: { x: number; y: number }; target: { x: numbe
 
 export function elbowV(d: { source: { x: number; y: number }; target: { x: number; y: number } }): string {
     return `M${d.source.x},${d.source.y}H${d.target.x}V${d.target.y}`;
+}
+
+
+export function hydrateCluster(cluster: Cluster): Cluster {
+    const clusterOut = new Cluster();
+
+    clusterOut.height = cluster.height;
+    clusterOut.size = cluster.size;
+    clusterOut.index = cluster.index;
+    clusterOut.isLeaf = cluster.isLeaf;
+    clusterOut.children = cluster.children.map((child) => hydrateCluster(child));
+
+    return clusterOut;
 }

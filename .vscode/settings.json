@@ -1,7 +1,13 @@
 {
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "cSpell.words": [
+        "hcluster",
+        "kcluster",
+        "linearscale",
+        "maxticks",
+        "minticks",
         "timeago",
+        "vmin",
         "wstate"
     ]
 }

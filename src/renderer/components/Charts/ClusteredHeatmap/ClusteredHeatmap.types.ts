@@ -15,20 +15,22 @@ export enum HClusterDistance {
     Angular = "angular",
 }
 export enum HClusterLinkage {
-    Avg = "avg",
-    Max = "max",
-    Min = "min",
+    Single = "single",
+    Complete = "complete",
+    Average = "average",
+    Weighted = "wpgma",
+    Centroid = "centroid",
+    Median = "median",
+    Ward = "ward",
+    Ward2 = "ward2",
 }
 
-export type ClusterOptions = HClusterOptions | KClusterOptions;
 
 export interface HClusterOptions {
-    type: OrderingType.HCluster;
     distance: HClusterDistance;
     linkage: HClusterLinkage;
 }
 
 export interface KClusterOptions {
-    type: OrderingType.KCluster;
     k: number;
 }

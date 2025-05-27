@@ -28,9 +28,7 @@ const value = defineModel({
 });
 
 const options = computed((): { text: string; value: string }[] => {
-    console.log("dataview", props.dataview);
-    const dataviewStore = useDataViewStore(props.dataview.split("/")[1]);
-    console.log("dataviewStore", dataviewStore);
+    const dataviewStore = useDataViewStore(props.dataview);
     return Object.entries(dataviewStore.views)
         .map(([key, dset]) => {
             const parts = key.split("/");

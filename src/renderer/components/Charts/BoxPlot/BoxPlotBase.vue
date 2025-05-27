@@ -53,7 +53,6 @@ export interface BoxPlotBaseProps {
 
 export function useBoxPlotBase(props: BoxPlotBaseProps) {
     const worker = new Worker();
-
     worker.onmessage = (event) => {
         console.log("Worker Message Received:", event.data);
         if (event.data.type === "preparedData") {

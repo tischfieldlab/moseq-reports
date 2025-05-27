@@ -1,13 +1,9 @@
 import { groupby } from "@render/util/Array";
-import { scaleLinear } from "d3-scale";
+import { ScaleContinuousNumeric, scaleLinear, ScaleLinear } from "d3-scale";
 import { mean, quantile, extent } from "d3-array";
 import type { GroupStats, DataPoint, DataPointQueueNode } from "@render/components/Charts/BoxPlot/BoxPlot.types";
 import * as d3 from "d3";
 
-interface LinearScale {
-    domain: [number, number] | number[];
-    range: [number, number] | number[];
-}
 
 self.onmessage = (event: MessageEvent) => {
     console.log("Worker received message:", event.data);
@@ -56,7 +52,7 @@ function prepareData({
     const y = scaleLinear().domain(yExtent as number[]).range([height, 0]);
 
     if (swarmPoints) {
-        swarm_points(points, groupLabels, { domain: y.domain(), range: y.range() }, pointSize);
+        swarm_points(points, groupLabels, y, pointSize);
     }
 
     const groupedData = Object.entries(groupby(points, (p) => p.group, groupLabels))
@@ -117,8 +113,8 @@ function epanechnikovKernel(scale: number): (u: number) => number {
         Math.abs((u /= scale)) <= 1 ? (0.75 * (1 - u * u)) / scale : 0;
 }
 
-function swarm_points(data: DataPoint[], groupLabels: string[], scaleDefY: LinearScale, pointSize: number) {
-    const scaleY = scaleLinear().domain(scaleDefY.domain).range(scaleDefY.range);
+function swarm_points(data: DataPoint[], groupLabels: string[], scaleDefY: ScaleContinuousNumeric<number, number>, pointSize: number) {
+    const scaleY = scaleLinear().domain(scaleDefY.domain()).range(scaleDefY.range());
 
     groupLabels.forEach((g) => {
         const radius2 = (pointSize * 2.5) ** 2;

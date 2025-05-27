@@ -2,25 +2,28 @@
 
 </template>
 
-
-<script setup lang="ts">
-import { defineComponent, computed, inject, h } from "vue";
-import { scaleLinear } from "d3-scale";
-import ColorScaleLegendBase, { Orientation } from "./ColorScaleLegendBase";
-
+<script lang="ts">
 interface CanvasColorScaleLegendProps extends ColorScaleLegendProps {
     x: number;
     y: number;
 }
-const CanvasColorScaleLegendPropsDefaults = {
-    ...ColorScaleLegendPropsDefaults,
+const CanvasColorScaleLegendPropsDefaults = () => ({
+    ...ColorScaleLegendPropsDefaults(),
     x: 0,
     y: 0,
-};
+});
+</script>
+<script setup lang="ts">
+import { inject, Directive} from "vue";
+import { scaleLinear } from "d3-scale";
+import { ColorScaleLegendProps, ColorScaleLegendPropsDefaults, useColorScaleLegendBase } from "./ColorScaleLegendBase";
+import { CanvasContext } from "../Canvas";
 
 
-const props = withDefaults(defineProps<CanvasColorScaleLegendProps>(), CanvasColorScaleLegendPropsDefaults);
-const {axis_translate, isHorizontal label_translate, linearscale, offsets, stops} = useColorScaleLegendBase(props);
+
+
+const props = withDefaults(defineProps<CanvasColorScaleLegendProps>(), CanvasColorScaleLegendPropsDefaults());
+const {axis_translate, isHorizontal, label_translate, linearscale, offsets, stops} = useColorScaleLegendBase(props);
 
 const canvas = inject("canvas") as CanvasContext;
 
