@@ -1,4 +1,4 @@
-import { defineComponent, ref, provide, onMounted, nextTick, Directive, shallowRef } from "vue";
+import { defineComponent, ref, provide, onMounted, nextTick, Directive, shallowRef, ShallowRef, InjectionKey } from "vue";
 import { throttle } from "@render/util/Events";
 
 
@@ -8,12 +8,15 @@ export interface CanvasContext {
     scale: number;
 }
 
+export const CanvasContextKey: InjectionKey<ShallowRef<CanvasContext>> = Symbol("CanvasContext");
+
 export function useCanvas() {
     const canvas = shallowRef<CanvasContext>({
         cxt: null,
         scale: window.devicePixelRatio || 1,
     });
-    provide("canvas", canvas);
+
+    provide(CanvasContextKey, canvas);
 
     const last_width = ref(0);
     const last_height = ref(0);

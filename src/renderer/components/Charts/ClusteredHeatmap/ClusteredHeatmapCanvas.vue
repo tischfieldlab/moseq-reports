@@ -5,7 +5,7 @@
             @click="handleHeatmapClick"
             @mousemove="handleHeatmapHover"
             @mouseleave="hoverItem = undefined">
-            <ColorScaleLegend ref="legend"
+            <ColorScaleLegendCanvas ref="legend"
                     :title="legendTitle"
                     :scale="scale.z"
                     :width="dims.legend.w"
@@ -22,15 +22,14 @@
 
 
 <script setup lang="ts">
-import {onMounted, onUnmounted, useTemplateRef, watch, nextTick} from 'vue';
+import {onMounted, watchPostEffect, useTemplateRef, nextTick} from 'vue';
 import { sum } from 'd3-array';
-import ColorScaleLegend from '@render/components/Charts/Colors/ColorScaleLegendCanvas.vue';
+import ColorScaleLegendCanvas from '@render/components/Charts/Colors/ColorScaleLegendCanvas.vue';
 import ToolTip from '@render/components/Charts/ToolTip.vue';
 import MessageBox from '@render/components/Charts/CenteredMessage.vue';
 import { ClusteredHeatmapBaseEmits, ClusteredHeatmapBaseOverrides, ClusteredHeatmapBaseProps, ClusteredHeatmapBasePropsDefaults, useClusteredHeatmapBase } from './ClusteredHeatmapBase';
-import { debounce, throttle } from '@render/util/Events';
+import { throttle } from '@render/util/Events';
 import { useCanvas } from '../Canvas';
-import { watchEffect } from 'vue';
 
 
 const overrides: ClusteredHeatmapBaseOverrides = {
@@ -52,17 +51,18 @@ const overrides: ClusteredHeatmapBaseOverrides = {
                 longest: Math.max(...widths),
             };
             return;
+        } else {
+            // if canvas is not available yet (i.e. before fully mounted)
+            // then schedule the calculation for the next tick
+            nextTick(() => overrides.compute_label_stats(labels));
+            return;
         }
-        // if canvas is not available yet (i.e. before fully mounted)
-        // then schedule the calculation for the next tick
-        nextTick(() => overrides.compute_label_stats(labels));
-        return;
     }
 };
 
 
 const {canvas, vDpiAdapt} = useCanvas();
-const legend = useTemplateRef<InstanceType<typeof ColorScaleLegend>>('legend');
+const legend = useTemplateRef('legend');
 const root = useTemplateRef('root');
 
 const props = withDefaults(defineProps<ClusteredHeatmapBaseProps>(), ClusteredHeatmapBasePropsDefaults());
@@ -71,32 +71,13 @@ const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hover
 
 const watchers: (() => void)[] = [];
 
-/*
-onMounted(() => {
-
-    Object.keys(props).forEach((key) => {
-        watchers.push(watch(() => props[key], () => {
-            draw();
-        }));
-    });
-    /*Object.keys(this.$data).forEach((key) => {
-        watchers.push(watch(() => key, () => {
-            draw();
-        }));
-    });*//*
-    draw();
-});
-
-onUnmounted(() => {
-    watchers.forEach((unwatch) => unwatch());
-});*/
 
 onMounted(() => {
-    watchEffect(draw);
+    watchPostEffect(draw);
 });
 
 
-const draw = debounce(() => {
+const draw = () => {
     const cxt = canvas.value.cxt;
     if (cxt === null) {
         return;
@@ -104,7 +85,7 @@ const draw = debounce(() => {
 
     cxt.save();
     // clear canvas
-    cxt.clearRect(0, 0, props.width, dims.value.legend.y);
+    cxt.clearRect(0, 0, props.width, props.height);
 
     drawHeatmapCells(cxt);
     drawRowDendrogram(cxt);
@@ -114,9 +95,9 @@ const draw = debounce(() => {
 
     cxt.restore();
     if (legend.value) {
-        legend.value.$forceUpdate();
+        legend.value.renderCanvas();
     }
-}, 50);
+};
 
 
 function drawHeatmapCells(cxt: CanvasRenderingContext2D) {
@@ -136,12 +117,13 @@ function drawHeatmapCells(cxt: CanvasRenderingContext2D) {
     cxt.restore();
 }
 function drawRowDendrogram(cxt: CanvasRenderingContext2D) {
+    const localRowLinks = rowLinks.value;
     if (!isRowsHClustered.value) {
         return;
     }
     cxt.save();
     cxt.translate(dims.value.rtree.x, dims.value.rtree.y);
-    for (const link of rowLinks.value) {
+    for (const link of localRowLinks) {
         cxt.beginPath();
         cxt.strokeStyle = '#aaa';
         cxt.lineWidth = 1.5;
@@ -151,12 +133,13 @@ function drawRowDendrogram(cxt: CanvasRenderingContext2D) {
     cxt.restore();
 }
 function drawColumnDendrogram(cxt: CanvasRenderingContext2D) {
+    const localColumnLinks = columnLinks.value;
     if (!isColumnsHClustered.value) {
         return;
     }
     cxt.save();
     cxt.translate(dims.value.ctree.x, dims.value.ctree.y);
-    for (const link of columnLinks.value) {
+    for (const link of localColumnLinks) {
         cxt.beginPath();
         cxt.strokeStyle = '#aaa';
         cxt.lineWidth = 1.5;

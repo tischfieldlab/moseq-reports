@@ -14,10 +14,10 @@ const CanvasColorScaleLegendPropsDefaults = () => ({
 });
 </script>
 <script setup lang="ts">
-import { inject, Directive} from "vue";
-import { scaleLinear } from "d3-scale";
+import { inject, Directive, watchPostEffect} from "vue";
 import { ColorScaleLegendProps, ColorScaleLegendPropsDefaults, useColorScaleLegendBase } from "./ColorScaleLegendBase";
-import { CanvasContext } from "../Canvas";
+import { CanvasContextKey } from "../Canvas";
+import { line } from "d3-shape";
 
 
 
@@ -25,7 +25,8 @@ import { CanvasContext } from "../Canvas";
 const props = withDefaults(defineProps<CanvasColorScaleLegendProps>(), CanvasColorScaleLegendPropsDefaults());
 const {axis_translate, isHorizontal, label_translate, linearscale, offsets, stops} = useColorScaleLegendBase(props);
 
-const canvas = inject("canvas") as CanvasContext;
+const canvas = inject(CanvasContextKey);
+console.log("CanvasColorScaleLegendCanvas props", props, "canvas", canvas);
 
 
 function calcNumTicks(cxt: CanvasRenderingContext2D) {
@@ -46,7 +47,8 @@ function calcNumTicks(cxt: CanvasRenderingContext2D) {
 
 
 function renderCanvas() {
-    if (!canvas || !canvas.cxt) {
+    console.log("Rendering color scale legend canvas", canvas);
+    if (!canvas?.value || !canvas.value.cxt) {
         console.warn("No canvas context received");
         return;
     }
@@ -55,7 +57,7 @@ function renderCanvas() {
         return;
     }
 
-    const cxt = canvas.cxt;
+    const cxt = canvas.value.cxt;
     cxt.save();
     cxt.translate(props.x - props.width / 2, props.y);
     cxt.clearRect(-20, 0, props.width + 30, props.height + 50);
@@ -63,11 +65,19 @@ function renderCanvas() {
         ? cxt.createLinearGradient(0, 0, props.width, 0)
         : cxt.createLinearGradient(0, props.height, 0, 0);
 
-    if (!props.scale.domain().includes(NaN)) {
+    console.log(props.scale.domain(), linearscale.value.domain(), linearscale.value.range());
+    for (const stop of stops.value) {
+        grad.addColorStop(stop.v / 100, stop.z);
+    }
+
+
+
+    /*if (!props.scale.domain().includes(NaN)) {
         for (const d of linearscale.value.ticks(20)) {
+            console.log("Adding color stop for", d, "at", linearscale.value(d) / 100, props.scale(d));
             grad.addColorStop(linearscale.value(d) / 100, props.scale(d));
         }
-    }
+    }*/
 
     cxt.fillStyle = grad;
     cxt.fillRect(0, 0, props.width, props.height);
@@ -119,8 +129,14 @@ function renderCanvas() {
 
     cxt.restore();
 };
+/*
+watchPostEffect(renderCanvas)
 const vCbarAxis: Directive = {
     mounted: renderCanvas,
     updated: renderCanvas,
-}
+}*/
+
+defineExpose({
+    renderCanvas,
+});
 </script>

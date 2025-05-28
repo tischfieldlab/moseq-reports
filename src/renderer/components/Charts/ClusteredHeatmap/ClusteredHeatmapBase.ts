@@ -8,6 +8,7 @@ import { getDendrogramOrder, elbowH, elbowV, hydrateCluster } from '@render/comp
 import { DefinedScaleBand } from '../D3Scale';
 import { toRaw } from 'vue';
 import { shallowRef } from 'vue';
+import { Cluster } from 'ml-hclust';
 
 
 
@@ -89,13 +90,13 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
     );
 
     const clusteredColumnOrder = shallowRef<string[]>([]);
-    const columnHierarchy = shallowRef<HierarchyNode<any>|undefined>(undefined);
+    const columnHierarchy = shallowRef<HierarchyNode<Cluster>|undefined>(undefined);
     const clusteredRowOrder = shallowRef<string[]>([]);
-    const rowHierarchy = shallowRef<HierarchyNode<any>|undefined>(undefined);
+    const rowHierarchy = shallowRef<HierarchyNode<Cluster>|undefined>(undefined);
     const label_stats = ref({count: 0, total: 0, longest: 0});
     const tooltipPosition = ref<{x: number, y:number}|undefined>(undefined);
     const hoverItem = shallowRef<object|undefined>(undefined);
-    const margin = ref({ top: 20, right: 20, bottom: 50, left: 20 });
+    const margin = ref({ top: 20, right: 20, bottom: 50, left: 30 });
 
 
     const has_data = computed(() => {
@@ -111,7 +112,7 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
     const dims = computed(() => {
         const rtreeWidth =  isRowsHClustered.value ? Math.min(innerWidth.value * 0.10, 50) : 0;
         const ctreeHeight = isColumnsHClustered.value ? Math.min(innerHeight.value * 0.10, 50) : 0;
-        const yaxisWidth = 45;
+        const yaxisWidth = 40;
         let xaxisHeight = 45;
         let xaxisLabelYOffset = 40;
         const legendHeight = 50;
@@ -269,13 +270,15 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         if (columnHierarchy.value === undefined) {
             return [];
         }
-        return cluster().size([dims.value.ctree.w, dims.value.ctree.h])(columnHierarchy.value).links();
+        
+        return cluster<Cluster>().size([dims.value.ctree.w, dims.value.ctree.h])(columnHierarchy.value).links();
     });
     const rowLinks = computed(() => {
         if (rowHierarchy.value === undefined) {
             return [];
         }
-        return cluster().size([dims.value.rtree.h, dims.value.rtree.w])(rowHierarchy.value).links();
+        console.log('row hierarchy', rowHierarchy.value);
+        return cluster<Cluster>().size([dims.value.rtree.h, dims.value.rtree.w])(rowHierarchy.value).links();
     });
     const tooltip_text = computed(() => {
         if (hoverItem.value !== undefined){
@@ -371,14 +374,14 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
     //watchers.push(watchSyncEffect(prep_data));
     watchers.push(watchSyncEffect(async () => await clusterColumns()));
     watchers.push(watchSyncEffect(async () => await clusterRows()));
-    watchers.push(watch(() => props.selectedRow, (newValue) => { if (newValue) overrides.showSelectedRow(newValue)}, {immediate: true }));
-    watchers.push(watch(() => props.selectedCol, (newValue) => {if (newValue) overrides.showSelectedCol(newValue)}, {immediate: true }));
     watchers.push(watch(() => rowOrder, (newValue) => emit('row-order-changed', newValue.value), {immediate: true }));
     watchers.push(watch(() => columnOrder, (newValue) =>  emit('col-order-changed', newValue.value), {immediate: true }));
 
 
     onMounted(() => {
         prep_data();
+        watchers.push(watch(() => props.selectedRow, (newValue) => { if (newValue) overrides.showSelectedRow(newValue)}, {immediate: true }));
+        watchers.push(watch(() => props.selectedCol, (newValue) => { if (newValue) overrides.showSelectedCol(newValue)}, {immediate: true }));
     });
     onUnmounted(() => {
         // un-watch the store
