@@ -35,7 +35,7 @@ export default defineConfig(({ command }) => {
         }
       }),
       Components({
-        resolvers: [IconsResolve(), BootstrapVueNextResolver()],
+        resolvers: [IconsResolve({}), BootstrapVueNextResolver()],
         dts: true,
       }),
       Icons({

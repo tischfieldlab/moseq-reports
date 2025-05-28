@@ -4,7 +4,9 @@
             <template #default="{ tags, disabled, addTag, removeTag }">
                 <BDropdown size="sm" variant="outline-secondary" block menu-class="w-100" :disabled="disabled">
                     <template #button-content>
-                        <component :is="icon" />
+                        <slot name="icon">
+                            <IBiLayoutThreeColumns />
+                        </slot>
                     </template>
 
                     <BDropdownForm @submit.stop.prevent>
@@ -43,7 +45,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import IBiLayoutThreeColumns from 'virtual:icons/bi/layout-three-columns';
+import IBiLayoutThreeColumns from '~icons/bi/layout-three-columns';
 
 const modelValue = defineModel<string[]>({required: true});
 
@@ -51,14 +53,12 @@ interface ColumnSelectorProps {
     options: string[];
     label?: string;
     disabled?: boolean;
-    icon?: Object;
     noun?: string;
 }
 
 const props = withDefaults(defineProps<ColumnSelectorProps>(), {
     label: '',
     disabled: false,
-    icon: IBiLayoutThreeColumns,
     noun: 'Column',
 });
 

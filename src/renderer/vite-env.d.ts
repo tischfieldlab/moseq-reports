@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-comlink/client" />
+/// <reference types="unplugin-icons/types/vue" />
 
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'

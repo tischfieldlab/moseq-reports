@@ -17,8 +17,8 @@
             "@api": ["src/renderer/api"],
             "@main/*": ["src/electron/*"]
         },
+        
         "typeRoots": [
-            "./node_modules/unplugin-icons/types/vue",
             "./src/renderer/@types"
         ],
         "allowSyntheticDefaultImports": true,
