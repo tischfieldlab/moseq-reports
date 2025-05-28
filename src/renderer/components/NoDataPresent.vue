@@ -1,9 +1,10 @@
 <template>
-    <div class="has-no-data-container">
+    <div class="has-no-data-container" draggable="false">
         <BImg
             :style="{ visibility: show_background ? 'visible' : 'hidden' }"
             src="/img/mouse.png"
             fluid
+            draggable="false"
             class="no-data-img" />
         <h4 :style="{ visibility: show_help_text ? 'visible' : 'hidden' }" class="text-center mt-3">
             No data loaded. Please
@@ -63,13 +64,20 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     background-color: inherit;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    user-drag: none;
 }
 
 .no-data-img {
     opacity: 0.2;
     margin-top: -10%;
     pointer-events: none;
+    -webkit-user-select: none;
     user-select: none;
+    -webkit-user-drag: none;
+    user-drag: none;
     max-width: 50%; /* Ensures the image scales responsively */
 }
 
