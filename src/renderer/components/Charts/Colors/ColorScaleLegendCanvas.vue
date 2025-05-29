@@ -26,7 +26,6 @@ const props = withDefaults(defineProps<CanvasColorScaleLegendProps>(), CanvasCol
 const {axis_translate, isHorizontal, label_translate, linearscale, offsets, stops} = useColorScaleLegendBase(props);
 
 const canvas = inject(CanvasContextKey);
-console.log("CanvasColorScaleLegendCanvas props", props, "canvas", canvas);
 
 
 function calcNumTicks(cxt: CanvasRenderingContext2D) {
@@ -47,7 +46,6 @@ function calcNumTicks(cxt: CanvasRenderingContext2D) {
 
 
 function renderCanvas() {
-    console.log("Rendering color scale legend canvas", canvas);
     if (!canvas?.value || !canvas.value.cxt) {
         console.warn("No canvas context received");
         return;
@@ -65,19 +63,9 @@ function renderCanvas() {
         ? cxt.createLinearGradient(0, 0, props.width, 0)
         : cxt.createLinearGradient(0, props.height, 0, 0);
 
-    console.log(props.scale.domain(), linearscale.value.domain(), linearscale.value.range());
     for (const stop of stops.value) {
         grad.addColorStop(stop.v / 100, stop.z);
     }
-
-
-
-    /*if (!props.scale.domain().includes(NaN)) {
-        for (const d of linearscale.value.ticks(20)) {
-            console.log("Adding color stop for", d, "at", linearscale.value(d) / 100, props.scale(d));
-            grad.addColorStop(linearscale.value(d) / 100, props.scale(d));
-        }
-    }*/
 
     cxt.fillStyle = grad;
     cxt.fillRect(0, 0, props.width, props.height);

@@ -57,7 +57,6 @@ export default defineComponent({
         }
 
         watch(tagsAsIds, (newIds: number[], oldIds: number[]) => {
-            console.log("Syllable ID filter changed:", newIds, oldIds);
             if (JSON.stringify(newIds) !== JSON.stringify(oldIds)) {
                 dataviewStore.updateModuleIdFilters(newIds); // Update the filter in the store
             }

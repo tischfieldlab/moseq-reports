@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted, onUnmounted, watchSyncEffect, WatchEffect } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted, watchSyncEffect, WatchEffect, ComputedRef, shallowRef, toRaw } from 'vue';
 import { OrderingType, SortOrderDirection, HClusterDistance, HClusterLinkage } from './ClusteredHeatmap.types';
 import { cluster, hierarchy, HierarchyNode } from 'd3-hierarchy';
 import { min, max } from 'd3-array';
@@ -6,11 +6,7 @@ import { scaleBand, ScaleOrdinal, scaleOrdinal, scaleSequential } from 'd3-scale
 import { GetScale } from '@render/components/Charts/Colors/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV, hydrateCluster } from '@render/components/Charts/D3Clustering';
 import { DefinedScaleBand } from '../D3Scale';
-import { toRaw } from 'vue';
-import { shallowRef } from 'vue';
 import { Cluster } from 'ml-hclust';
-
-
 
 
 
@@ -75,8 +71,15 @@ export interface ClusteredHeatmapBaseEmits {
     (e: 'heatmap-click', data: {e: Event, row: string, col: string, value: string}): void
 }
 
+export interface LabelStats {
+    count: number;
+    total: number;
+    longest: number;
+}
+
 export interface ClusteredHeatmapBaseOverrides {
-    compute_label_stats: (labels: string[]) => void;
+    //compute_label_stats: (labels: string[]) => void;
+    label_stats: ComputedRef<LabelStats>;
     showSelectedRow: (id: number) => void;
     showSelectedCol: (id: number) => void;
 }
@@ -93,7 +96,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
     const columnHierarchy = shallowRef<HierarchyNode<Cluster>|undefined>(undefined);
     const clusteredRowOrder = shallowRef<string[]>([]);
     const rowHierarchy = shallowRef<HierarchyNode<Cluster>|undefined>(undefined);
-    const label_stats = ref({count: 0, total: 0, longest: 0});
     const tooltipPosition = ref<{x: number, y:number}|undefined>(undefined);
     const hoverItem = shallowRef<object|undefined>(undefined);
     const margin = ref({ top: 20, right: 20, bottom: 50, left: 30 });
@@ -119,9 +121,9 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
 
         const heatWidth = innerWidth.value - rtreeWidth - yaxisWidth;
 
-        const rotate_labels = label_stats.value.longest > heatWidth / label_stats.value.count;
+        const rotate_labels = overrides.label_stats.value.longest > heatWidth / overrides.label_stats.value.count;
         if (rotate_labels) {
-            const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * label_stats.value.longest;
+            const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * overrides.label_stats.value.longest;
             xaxisHeight = xaxisLabelYOffset = rotatedHeight + 45;
         }
 
@@ -290,16 +292,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         return '';
     });
 
-
-
-    function prep_data() {
-        if (props.data !== null) {
-            //clusterColumns();
-            //clusterRows();
-            overrides.compute_label_stats(props.groupLabels as string[]);
-        }
-    }
-
     async function clusterColumns() {
         if (props.data !== null && props.data.length > 0) {
             if (props.columnOrderType === OrderingType.HCluster) {
@@ -371,7 +363,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
     }
 
     const watchers: (() => void)[] = [];
-    //watchers.push(watchSyncEffect(prep_data));
     watchers.push(watchSyncEffect(async () => await clusterColumns()));
     watchers.push(watchSyncEffect(async () => await clusterRows()));
     watchers.push(watch(() => rowOrder, (newValue) => emit('row-order-changed', newValue.value), {immediate: true }));
@@ -379,7 +370,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
 
 
     onMounted(() => {
-        prep_data();
         watchers.push(watch(() => props.selectedRow, (newValue) => { if (newValue) overrides.showSelectedRow(newValue)}, {immediate: true }));
         watchers.push(watch(() => props.selectedCol, (newValue) => { if (newValue) overrides.showSelectedCol(newValue)}, {immediate: true }));
     });
@@ -393,7 +383,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         clusteredRowOrder,
         columnHierarchy,
         rowHierarchy,
-        label_stats,
         tooltipPosition,
         hoverItem,
         margin,

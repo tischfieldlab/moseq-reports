@@ -50,12 +50,13 @@
 
 <script setup lang="ts">
 import { sum, axisBottom, axisRight, select, selectAll } from 'd3';
-import {useClusteredHeatmapBase, ClusteredHeatmapBaseProps, ClusteredHeatmapBaseEmits, ClusteredHeatmapBasePropsDefaults, ClusteredHeatmapBaseOverrides} from './ClusteredHeatmapBase';
+import {useClusteredHeatmapBase, ClusteredHeatmapBaseProps, ClusteredHeatmapBaseEmits, ClusteredHeatmapBasePropsDefaults, ClusteredHeatmapBaseOverrides, LabelStats} from './ClusteredHeatmapBase';
 import ColorScaleLegend from '@render/components/Charts/Colors/ColorScaleLegendSVG.vue';
 import ToolTip from '@render/components/Charts/ToolTip.vue';
 import MessageBox from '@render/components/Charts/CenteredMessage.vue';
 import { throttle } from '@render/util/Events';
-import { useTemplateRef, Directive } from 'vue';
+import { useTemplateRef, Directive, computed } from 'vue';
+
 
 const overrides: ClusteredHeatmapBaseOverrides = {
     showSelectedRow: (id: number) => {
@@ -84,30 +85,36 @@ const overrides: ClusteredHeatmapBaseOverrides = {
             }
         }
     },
-    compute_label_stats: (labels: string[]) => {
-        const widths = [] as number[];
-        if (!canvas.value) { return; }
+    label_stats: computed<LabelStats>(() => {
+        const labels = props.groupLabels;
+        if (!canvas.value) {
+            return{
+                count: 0,
+                total: 0,
+                longest: 0,
+            };
+        }
         const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGTextElement;
         tag.classList.add('tick-measurement');
         canvas.value.appendChild(tag);
-        for (const label of labels) {
+        const widths = labels.map((label) => {
             tag.textContent = label;
-            widths.push(tag.getBBox().width);
-        }
+            return tag.getBBox().width;
+        });
         canvas.value.removeChild(tag);
-        label_stats.value = {
+        return {
             count: widths.length,
             total: sum(widths),
             longest: Math.max(...widths),
         };
-    },
+    }),
 };
 
 
 
 const props = withDefaults(defineProps<ClusteredHeatmapBaseProps>(), ClusteredHeatmapBasePropsDefaults());
 const emit = defineEmits<ClusteredHeatmapBaseEmits>();
-const { dims, scale, has_data, tooltip_text, label_stats, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, elbowH, elbowV, shouldHideLabel } = useClusteredHeatmapBase(props, emit, overrides);
+const { dims, scale, has_data, tooltip_text, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, elbowH, elbowV, shouldHideLabel } = useClusteredHeatmapBase(props, emit, overrides);
 
 const canvas = useTemplateRef('canvas');
 

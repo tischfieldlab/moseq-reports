@@ -11,7 +11,7 @@
             <BLink href="#" @click.prevent="initiateFileOpen" class="text-primary">
                 load some data
             </BLink>
-            by clicking <strong>File &gt; Open File</strong>.
+            by clicking <strong>File &rarr; Open File</strong>.
         </h4>
     </div>
 </template>

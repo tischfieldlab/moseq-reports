@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from "vue";
+import { defineComponent, computed } from "vue";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 
 export default defineComponent({

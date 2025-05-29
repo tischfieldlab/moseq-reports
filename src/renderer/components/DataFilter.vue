@@ -192,8 +192,6 @@ export default defineComponent({
                 ? availableIds.filter((id) => filterIds.includes(id))
                 : availableIds;
 
-            console.log("Filtered IDs:", filteredIds);
-
             return filteredIds.map((id) => ({
                 value: id,
                 text: id.toString(),
