@@ -62,8 +62,9 @@
 import {useWindowMixin} from '@render/components/Core/Window/WindowMixin'
 import DatasetPicker from '@render/components/DatasetPicker.vue';
 import { computed, watch } from 'vue'
-import { OrderingType, SortOrderDirection } from '../ClusteredHeatmap.types';
+import { OrderingType } from '../ClusteredHeatmap.types';
 import { ColumnOrderingProps, CommonOrderingPropsDefaults, ColumnOrderingSettings } from './Options.types';
+import { SortOrderDirection } from '../../common.types';
 
 
 const props = withDefaults(defineProps<ColumnOrderingProps>(), CommonOrderingPropsDefaults);

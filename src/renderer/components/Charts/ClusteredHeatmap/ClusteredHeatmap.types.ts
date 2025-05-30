@@ -6,10 +6,7 @@ export enum OrderingType {
     Dataset = "dataset",
     Computed = "computed",
 }
-export enum SortOrderDirection {
-    Asc = "asc",
-    Dec = "dec",
-}
+
 export enum HClusterDistance {
     AdditiveSymmetric = "additiveSymmetric",
     Avg = "avg",

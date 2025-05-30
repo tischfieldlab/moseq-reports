@@ -1,4 +1,5 @@
-import { HClusterDistance, HClusterLinkage, OrderingType, SortOrderDirection } from "../ClusteredHeatmap.types";
+import { SortOrderDirection } from "../../common.types";
+import { HClusterDistance, HClusterLinkage, OrderingType } from "../ClusteredHeatmap.types";
 
 export interface CommonProps {
     id: string;

@@ -1,5 +1,5 @@
 import { ref, computed, watch, onMounted, onUnmounted, watchSyncEffect, WatchEffect, ComputedRef, shallowRef, toRaw } from 'vue';
-import { OrderingType, SortOrderDirection, HClusterDistance, HClusterLinkage } from './ClusteredHeatmap.types';
+import { OrderingType, HClusterDistance, HClusterLinkage } from './ClusteredHeatmap.types';
 import { cluster, hierarchy, HierarchyNode } from 'd3-hierarchy';
 import { min, max } from 'd3-array';
 import { scaleBand, ScaleOrdinal, scaleOrdinal, scaleSequential } from 'd3-scale';
@@ -7,6 +7,7 @@ import { GetScale } from '@render/components/Charts/Colors/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV, hydrateCluster } from '@render/components/Charts/D3Clustering';
 import { DefinedScaleBand } from '../D3Scale';
 import { Cluster } from 'ml-hclust';
+import { SortOrderDirection } from '../common.types';
 
 
 
@@ -365,8 +366,8 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
     const watchers: (() => void)[] = [];
     watchers.push(watchSyncEffect(async () => await clusterColumns()));
     watchers.push(watchSyncEffect(async () => await clusterRows()));
-    watchers.push(watch(() => rowOrder, (newValue) => emit('row-order-changed', newValue.value), {immediate: true }));
-    watchers.push(watch(() => columnOrder, (newValue) =>  emit('col-order-changed', newValue.value), {immediate: true }));
+    watchers.push(watch(rowOrder, (newValue) => emit('row-order-changed', newValue), {immediate: true }));
+    watchers.push(watch(columnOrder, (newValue) =>  emit('col-order-changed', newValue), {immediate: true }));
 
 
     onMounted(() => {
