@@ -67,11 +67,11 @@ export const useDataWindowStore = <TSettings>(id: string) => defineStore(`datawi
             const maxY = clientRect.clientHeight;
 
             // In the event that this is a resize, we apply the aspect ratio constraints if there is an aspect ratio
-            const apsectRatioDims = applyAspectRatio(deltaX, deltaY, this.aspect_ratio);
+            const aspectRatioDims = applyAspectRatio(deltaX, deltaY, this.aspect_ratio);
 
-            if ((payload.width || payload.height) && (isValidWidth(apsectRatioDims.width) && isValidHeight(apsectRatioDims.height))) {
-                this.width = apsectRatioDims.width;
-                this.height = apsectRatioDims.height;
+            if ((payload.width || payload.height) && (isValidWidth(aspectRatioDims.width) && isValidHeight(aspectRatioDims.height))) {
+                this.width = aspectRatioDims.width;
+                this.height = aspectRatioDims.height;
             }
       
             if (payload.position_x !== undefined) {
