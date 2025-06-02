@@ -2,43 +2,15 @@ import { hexbin } from "d3-hexbin";
 import { groupby } from "@render/util/Array";
 import { scaleLinear } from "d3-scale";
 import { extent } from "d3-array";
+import { expose } from "comlink";
+import { Observation, HexBin } from "./HexBinPlot.types"
 
-export interface Observation {
-    x: number;
-    y: number;
-    id: string;
-    group: string;
-}
-
-interface HexBin {
-    x: number;
-    y: number;
-    length: number;
-    z: number;
-    [key: string]: any;
-}
-
-self.onmessage = (event: MessageEvent) => {
-    const { type, payload } = event.data;
-
-    if (type === "binData") {
-        console.log("🔄 Processing binData...");
-        const result = binData(payload);
-        self.postMessage({ type: "binData", result: result });
-    }
-};
-
-function binData({
-    data,
-    groupLabels,
-    width,
-    resolution,
-}: {
-    data: Observation[];
-    groupLabels: string[] | null;
-    width: number;
-    resolution: number;
-}) {
+function binData(
+    data: Observation[],
+    groupLabels: string[] | null,
+    width: number,
+    resolution: number
+) {
     const xScale = scaleLinear()
         .domain(extent(data, (d) => d.x) as [number, number])
         .range([0, width]);
@@ -79,3 +51,4 @@ function binData({
         domainY: yScale.domain(),
     };
 }
+expose({ binData });

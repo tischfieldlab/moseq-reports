@@ -4,8 +4,9 @@ import { hexbin } from 'd3-hexbin';
 import { scaleLinear, scaleSequential } from 'd3-scale';
 import { GetScale } from '@render/components/Charts/Colors/D3ColorProvider';
 import gridLayout from '@render/components/Charts/D3Layout';
-import Worker from './Worker.ts?worker';
-import { Observation } from './Worker';
+import { Observation, HexBin, HexBinWorkerAPI } from "./HexBinPlot.types"
+import { wrap } from "comlink";
+import HexBinWorker from './Worker?worker'
 
 export const HexBinPlotBasePropsDefaults = {
     resolution: 10,
@@ -30,7 +31,7 @@ export interface HexBinPlotBaseProps {
 };
 
 export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
-    const worker = new Worker();
+    const worker = wrap<HexBinWorkerAPI>(new HexBinWorker());
 
     const margin = ref({ top: 20, right: 20, bottom: 70, left: 20 });
     const binned = ref<Record<string, any[]>>({});
@@ -78,36 +79,28 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
             .size([scale.value.x.range()[1], scale.value.y.range()[0]])
     );
 
-    const prepareData = (newData: typeof props.data) => {
+    const prepareData = async (newData: Observation[]) => {
         if (!newData) return;
-        worker.postMessage({
-            type: "binData",
-            payload: JSON.parse(JSON.stringify({
-                data: newData,
-                groupLabels: props.useGroups ? props.groupLabels : null,
-                width: scale.value.x.range()[1],
-                resolution: props.resolution,
-            })),
-        });
 
-        worker.onmessage = (e) => {
-            if (e.data.type === 'binData') {
-                const { binned: bins, zmax: z, domainX: dx, domainY: dy } = e.data.result;
-                binned.value = bins;
-                zmax.value = z;
-                domainX.value = dx;
-                domainY.value = dy;
-            }
-        };
+        const result = await worker.binData(
+            JSON.parse(JSON.stringify(newData)), // to ensure transferable
+            props.useGroups ? props.groupLabels : null,
+            scale.value.x.range()[1],
+            props.resolution
+        );
+
+        binned.value = result.binned;
+        zmax.value = result.zmax;
+        domainX.value = result.domainX;
+        domainY.value = result.domainY;
     };
+
 
     watch(() => props.data, (newData) => {
         if (newData) prepareData(newData);
     }, { immediate: true });
 
-    onUnmounted(() => {
-        worker.terminate();
-    });
+
 
     return {
         margin,
