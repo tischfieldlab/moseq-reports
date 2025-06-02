@@ -22,7 +22,6 @@ export default defineConfig(({ command }) => {
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
   return {
     plugins: [
-      comlink(),
       vueDevTools(),
       vue({
         template: {
@@ -34,6 +33,7 @@ export default defineConfig(({ command }) => {
           }
         }
       }),
+      comlink(),
       Components({
         resolvers: [IconsResolve({}), BootstrapVueNextResolver()],
         dts: true,
@@ -54,7 +54,7 @@ export default defineConfig(({ command }) => {
             }
           },
           vite: {
-            build: {  
+            build: {
               sourcemap,
               minify: isBuild,
               outDir: 'dist/electron/main',
@@ -67,7 +67,7 @@ export default defineConfig(({ command }) => {
                 external: [
                   ...Object.keys(pkg.dependencies || {}),
                   //"@render/util" // Add any specific paths you want to externalize.
-                ],                
+                ],
               },
             },
           },
