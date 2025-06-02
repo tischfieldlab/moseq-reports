@@ -39,7 +39,6 @@ function get_distance(distance: HClusterDistance): (a: number[], b: number[]) =>
     return mldistance.distance[distance.toString()]
 }
 
-console.log(mldistance.distance);
 
 
 export interface KClusterResult {
