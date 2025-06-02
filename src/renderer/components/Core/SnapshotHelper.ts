@@ -220,11 +220,14 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
                     } else {
                         ctx.drawImage(img, item.pos_x * opts.scale, item.pos_y * opts.scale, img.width, img.height);
                     }
-                    ctx.save();
-                    ctx.font = `bold ${16 * opts.scale}px Verdana,Arial,sans-serif`;
-                    ctx.textBaseline = "bottom";
-                    ctx.fillText(item.title, item.pos_x * opts.scale, item.pos_y * opts.scale);
-                    ctx.restore();
+                    // draw the title if it exists
+                    if (item.title !== undefined) {
+                        ctx.save();
+                        ctx.font = `bold ${16 * opts.scale}px Verdana,Arial,sans-serif`;
+                        ctx.textBaseline = "bottom";
+                        ctx.fillText(item.title, item.pos_x * opts.scale, item.pos_y * opts.scale);
+                        ctx.restore();
+                    }
                     resolve();
                 };
                 img.src = item.dataURI as string;
