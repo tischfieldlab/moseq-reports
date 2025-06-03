@@ -30,13 +30,14 @@
                 />
 
                 <!-- Color Picker Button -->
-                <button
+                <BButton
+                    variant="link"
                     :id="generateId(datasource)"
                     title="Click to select color"
                     class="btn btn-link text-decoration-none color-button"
                 >
                     <i class="bi-droplet-half" :style="{ color: headerStyles.color }"></i>
-                </button>
+                </BButton>
                 <BPopover :target="generateId(datasource)" :click="true" placement="top">
                     <template v-slot:title>Dataview `{{ filter_name }}` Color </template>
                     <chrome-picker 
@@ -52,11 +53,12 @@
                     variant="link"
                     @click="confirmRemoveFilter"
                     title="Remove this filter"
-                    class="btn-close ms-auto"
+                    class="ms-auto"
                     aria-label="Close"
                     :disabled="isDefaultFilter"
-                    :style="{ color: headerStyles.color }"
-                ></BButton>
+                >
+                    <i class="bi-x-lg" :style="{ color: headerStyles.color }" />
+                </BButton>
             </div>
         </template>
 
