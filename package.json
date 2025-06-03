@@ -27,6 +27,7 @@
   "devDependencies": {
     "@iconify-json/bi": "^1.2.4",
     "@types/d3": "^7.4.3",
+    "@types/d3-hexbin": "^0.2.5",
     "@types/d3-sankey": "^0.12.4",
     "@types/date-fns": "^2.6.3",
     "@vitejs/plugin-vue": "^5.0.4",
@@ -68,6 +69,7 @@
     "cytoscape-svg": "^0.4.0",
     "d3": "^7.9.0",
     "d3-dsv": "^3.0.1",
+    "d3-hexbin": "^0.2.2",
     "d3-sankey": "^0.12.3",
     "d3-scale": "^4.0.2",
     "d3-scale-chromatic": "^3.1.0",
