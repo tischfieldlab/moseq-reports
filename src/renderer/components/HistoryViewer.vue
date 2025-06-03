@@ -2,23 +2,24 @@
     <div class="sidebar-container">
         <h3>Notification History</h3>
         <template v-if="items.length > 0">
-            <b-toast v-for="(itm, idx) in items" :key="idx" :show="true" :variant="itm.variant">
+            <b-toast v-for="(itm, idx) in items" :key="idx" :show="true" :variant="itm.variant" :no-close-button="true">
                 <template #title>
                     <timeago :datetime="itm.time" />
                 </template>
-                <component
-                :is="resolveMessage(itm.message)"
-                v-if="isVNode(itm.message)"
-                />
-                <div v-else>
-                    {{ itm.message }}
-                </div>
-                <BLink v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link">
-                    {{ itm.showDetails ? "Hide Details" : "Show Details" }}
-                </BLink>
-                <div v-if="itm.showDetails" class="details mt-2">
-                    <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
-                </div>
+
+                <template #default>
+                    <component :is="resolveMessage(itm.message)" v-if="isVNode(itm.message)" />
+                    <div style="align-self: stretch;" v-else>
+                        {{ itm.message }}
+                    </div>
+
+                    <BLink v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link" variant="light">
+                        {{ itm.showDetails ? "Hide Details" : "Show Details" }}
+                    </BLink>
+                    <div v-if="itm.showDetails" class="details mt-2">
+                        <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
+                    </div>
+                </template>
             </b-toast>
         </template>
         <div v-else>
@@ -95,9 +96,11 @@ export default defineComponent({
 <style scoped>
 .toast {
     margin: 6px;
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
     word-wrap: break-word;
+}
+
+.toast :deep(.d-flex) {
+    display: block !important;
 }
 
 .toast-header {
@@ -110,6 +113,13 @@ export default defineComponent({
 .toast-body {
     margin-top: 6px;
 }
+
+:deep(.toast-body::after) {
+    display: block;
+    content: "";
+    clear: both;
+}
+
 
 .notification-item {
     margin-left: 16px; 
@@ -132,7 +142,8 @@ h3 {
 .details-link {
     margin-left: 10px;
     cursor: pointer;
-    color: #0d6efd;
+    float: right;
+    display: inline-block;
 }
 
 .details {
