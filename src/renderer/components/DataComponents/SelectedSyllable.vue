@@ -33,7 +33,7 @@ export default defineComponent({
 RegisterDataComponent({
     friendly_name: "Selected Syllable",
     component_type: "SelectedSyllable",
-    init_width: 260,
+    init_width: 270,
     init_height: 155,
     available_render_modes: [RenderMode.HTML],
     default_render_mode: RenderMode.HTML,
@@ -42,12 +42,14 @@ RegisterDataComponent({
 
 <style scoped>
 .content {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    height: 100%;
+}
+.content h3,
+.content h5 {
+    width: 100%;
     text-align: center;
 }
 </style>
