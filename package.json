@@ -56,7 +56,7 @@
     "@popperjs/core": "^2.11.8",
     "@vue/devtools": "^7.6.8",
     "about-window": "^1.15.2",
-    "axios": "^1.7.9",
+    "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "bootstrap-vue-next": "^0.29.3",
