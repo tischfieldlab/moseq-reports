@@ -60,8 +60,7 @@ RegisterDataComponent({
 
 <script setup lang="ts">
 import { shallowRef, computed, watchEffect } from 'vue';
-import { ClusteredHeatmapSVG, ClusteredHeatmapCanvas } from '@render/components/Charts/ClusteredHeatmap';
-import { ColormapSettingsDefaults, ColumnOrderingSettingsDefaults, RowOrderingSettingsDefaults } from '@render/components/Charts/ClusteredHeatmap/Options/Options.types';
+import { ClusteredHeatmapSVG, ClusteredHeatmapCanvas, ColormapSettingsDefaults, ColumnOrderingSettingsDefaults, RowOrderingSettingsDefaults } from '@render/components/Charts/ClusteredHeatmap';
 import { RenderMode } from '@store/datawindow.types';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import { BehavioralDistanceHeatmapSettings } from './BehavioralDistanceHeatmap.types';

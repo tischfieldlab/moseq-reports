@@ -42,11 +42,9 @@
 import {defineComponent, computed, shallowRef, watch} from 'vue';
 import RegisterDataComponent from '@render/components/Core';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
-import {ClusteredHeatmapSVG, ClusteredHeatmapCanvas } from '@render/components/Charts/ClusteredHeatmap';
-//import LoadData from '@render/components/Core/DataLoader/DataLoader';
 import DataService, { Operation } from '@api';
 import { RenderMode } from '@store/datawindow.types';
-import {ColormapSettings, ColormapSettingsDefaults, ColumnOrderingSettings, ColumnOrderingSettingsDefaults, RowOrderingSettings, RowOrderingSettingsDefaults } from '@render/components/Charts/ClusteredHeatmap/Options/Options.types';
+import {ClusteredHeatmapSVG, ClusteredHeatmapCanvas, ColormapSettings, ColormapSettingsDefaults, ColumnOrderingSettings, ColumnOrderingSettingsDefaults, RowOrderingSettings, RowOrderingSettingsDefaults } from '@render/components/Charts/ClusteredHeatmap';
 
 
 export type UsageHeatmapSettings = ColormapSettings & ColumnOrderingSettings & RowOrderingSettings;

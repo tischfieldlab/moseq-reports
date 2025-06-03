@@ -22,14 +22,11 @@
 import { defineComponent, ref, computed, watch } from "vue";
 import RegisterDataComponent from "@render/components/Core";
 import {  WhiskerType, BoxPlotSVG, BoxPlotCanvas } from "@render/components/Charts/BoxPlot";
-import { OrderingType } from "@render/components/Charts/ClusteredHeatmap/ClusteredHeatmap.types";
-//import { Operation } from "@render/components/Core/DataLoader/DataLoader.types";
+import { OrderingType } from "@render/components/Charts/ClusteredHeatmap";
 import { RenderMode } from "@store/datawindow.types";
 import { useWindowMixin }  from "@render/components/Core/Window/WindowMixin";
-
-import DataService from "@api";
+import DataService, { Operation } from "@api";
 import { DetailedUsageSettings } from "./DetailedUsage.types";
-import { Operation } from "@render/api/DataLoader.types";
 
 
 RegisterDataComponent({

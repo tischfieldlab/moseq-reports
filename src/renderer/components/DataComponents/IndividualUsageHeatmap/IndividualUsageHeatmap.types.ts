@@ -1,4 +1,4 @@
-import { ColormapSettings, ColumnOrderingSettings, RowOrderingSettings } from "@render/components/Charts/ClusteredHeatmap/Options/Options.types";
+import { ColormapSettings, ColumnOrderingSettings, RowOrderingSettings } from "@render/components/Charts/ClusteredHeatmap";
 
 export interface UsageHeatmapSettings extends ColormapSettings, ColumnOrderingSettings, RowOrderingSettings {
     color_columns: boolean;

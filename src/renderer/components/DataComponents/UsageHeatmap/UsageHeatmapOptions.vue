@@ -9,9 +9,7 @@
 <script lang="ts">
 import {defineComponent, computed} from 'vue';
 import {useWindowMixin} from '@render/components/Core/Window/WindowMixin';
-import Colormap from '@render/components/Charts/ClusteredHeatmap/Options/Colormap.vue';
-import ColumnOrdering from '@render/components/Charts/ClusteredHeatmap/Options/ColumnOrdering.vue';
-import RowOrdering from '@render/components/Charts/ClusteredHeatmap/Options/RowOrdering.vue';
+import {Colormap, ColumnOrdering, RowOrdering} from '@render/components/Charts/ClusteredHeatmap';
 
 
 export default defineComponent({

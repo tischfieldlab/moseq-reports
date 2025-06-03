@@ -15,9 +15,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watchEffect } from "vue";
-import Colormap from '@render/components/Charts/ClusteredHeatmap/Options/Colormap.vue';
-import ColumnOrdering from '@render/components/Charts/ClusteredHeatmap/Options/ColumnOrdering.vue';
-import RowOrdering from '@render/components/Charts/ClusteredHeatmap/Options/RowOrdering.vue';
+import {Colormap, ColumnOrdering, RowOrdering} from '@render/components/Charts/ClusteredHeatmap';
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import { BehavioralDistanceHeatmapSettings } from "./BehavioralDistanceHeatmap.types";
 import DataService from "@render/api";

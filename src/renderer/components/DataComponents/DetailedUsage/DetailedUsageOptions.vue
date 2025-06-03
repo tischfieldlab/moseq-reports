@@ -80,7 +80,7 @@
 import { defineComponent, computed, ref } from "vue";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import { WhiskerType } from "@render/components/Charts/BoxPlot";
-import { OrderingType } from "@render/components/Charts/ClusteredHeatmap/ClusteredHeatmap.types";
+import { OrderingType } from "@render/components/Charts/ClusteredHeatmap";
 import { DetailedUsageSettings } from "./DetailedUsage.types";
 import DatasetPicker from "@render/components/DatasetPicker.vue";
 
