@@ -155,7 +155,6 @@ export default defineComponent({
                 return $wstate.settings.snapshot.backgroundColor;
             },
             set(value: { hex: string }) {
-                console.log(value);
                 $wstate.updateComponentSettings({
                     settings: {
                         snapshot: {
@@ -167,7 +166,6 @@ export default defineComponent({
         });
         
         function getComponent() {
-            console.log('getComponent', WindowManager.getWindowByID(props.id));
             return WindowManager.getWindowByID(props.id)!;
         }
         function takeSnapshot() {

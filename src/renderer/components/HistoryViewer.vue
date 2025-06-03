@@ -40,10 +40,7 @@ export default defineComponent({
         const historyStore = useHistoryStore();
 
         historyStore.$onAction((action) => {
-            console.log("HistoryStore action triggered:", action.name);
-
             if (action.name === "addEntry") {
-                console.log("HistoryStore action triggered:", action.name);
                 action.after(() => {
                     items.value.push({
                         ...historyStore.items[historyStore.items.length - 1],
@@ -51,7 +48,6 @@ export default defineComponent({
                     });
                 });
             } else if (action.name === "removeEntry") {
-                console.log("HistoryStore action triggered:", action.name);
                 items.value.splice(action.args[0], 1);
             }
         });
@@ -64,9 +60,7 @@ export default defineComponent({
         );
 
         const toggleDetails = (idx) => {
-            console.log("Toggling details for item at index:", idx, items.value[idx].showDetails, !items.value[idx].showDetails);
             items.value[idx].showDetails = !items.value[idx].showDetails;
-            console.log("New state:", items.value[idx].showDetails);
         };
         
         const isVNode = (msg) => typeof msg === 'function';

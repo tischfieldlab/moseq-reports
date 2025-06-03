@@ -1,6 +1,4 @@
-import { defineStore, acceptHMRUpdate } from 'pinia'
 import { RenderMode } from "@store/datawindow.types";
-import { ipcRenderer } from 'electron';
 
 export interface ComponentRegistryState {
     registry: ComponentRegistration[];
@@ -19,32 +17,6 @@ export interface ComponentRegistration {
     aspect_ratio?: number;
 }
 
-/*export const useComponentRegistryStore = defineStore('component-registry', {
-    state: (): ComponentRegistryState => ({
-        registry: [] as ComponentRegistration[],
-    }),
-    getters: {
-        getSpecification: (state) => (componentType: string) => {
-            return state.registry.find((r) => r.component_type === componentType);
-        },
-    },
-    actions: {
-        registerComponent(payload: ComponentRegistration) {
-            const loc = this.registry.findIndex((r) => r.component_type === payload.component_type);
-            if (loc === -1) {
-                this.registry.push(payload);
-            } else {
-                console.warn(`${payload.component_type} has already been registered! Merging...`);
-                this.registry.splice(loc, 1, payload);
-            }
-        },
-    },
-});
-
-if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useComponentRegistryStore, import.meta.hot))
-}*/
-
 
 class ComponentRegistry {
     public registry: ComponentRegistration[] = [];
@@ -58,7 +30,7 @@ class ComponentRegistry {
             this.registry.splice(loc, 1, component);
         }
 
-        window.menuAPI.addComponentRegistration({
+        window.menuAPI.preload.addComponentRegistration({
             component_type: component.component_type,
             friendly_name: component.friendly_name
         });

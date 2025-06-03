@@ -1,6 +1,5 @@
 import { Menu } from "@electron/remote";
-import { ipcRenderer } from "electron";
-import { MenuEvents, ComponentRegistration, IMenuAPI } from "../shared/menuAPI";
+import { MenuComponentRegistration, IMenuAPI, IMenuAPIPreload } from "../shared/menuAPI";
 import showAboutWindow from "../../renderer/commands/ShowAbout";
 import { Titlebar, TitlebarColor } from "custom-electron-titlebar";
 // Future: import { CheckUpdates } from "../../renderer/commands/LoadUpdates";
@@ -25,7 +24,7 @@ function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.Me
             accelerator: "CmdOrCtrl+O",
             type: "normal",
             click: () => {
-                ipcRenderer.send(MenuEvents.OPEN_DATA);
+                window.menuAPI.renderer.openData();
             },
         }, {
             type: "separator"
@@ -56,8 +55,7 @@ function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.Me
                 type: "normal",
                 enabled: menuBarManager.isDataLoaded,
                 click: (event, focusedWindow) => {
-                    //console.log("✅ Creating component menu:", cr);
-                    ipcRenderer.send(MenuEvents.CREATE_COMPONENT, cr);
+                    window.menuAPI.renderer.createComponent(cr);
                 },
             }
         }),
@@ -67,8 +65,8 @@ function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.Me
             id: "menu-view-snapshot-workspace",
             label: "Snapshot Workspace...",
             type: "normal",
-            click(_item, window) {
-                // window?.webContents.send(MenuEvents.SNAPSHOT_WORKSPACE);
+            click: (_item) => {
+                window.menuAPI.renderer.snapshotWorkspace();
             },
         }, {
             label: "Sidebar Position...",
@@ -76,16 +74,18 @@ function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.Me
                 label: "Left",
                 type: "radio",
                 click: (mi) => {
-                    // SetSidebarLeft();
+                    window.menuAPI.renderer.setSidebarPosition("left");
                     mi.checked = true;
                 },
+                checked: menuBarManager.SidebarPosition === "left",
             }, {
                 label: "Right",
                 type: "radio",
                 click: (mi) => {
-                    // SetSidebarRight();
+                    window.menuAPI.renderer.setSidebarPosition("right");
                     mi.checked = true;
                 },
+                checked: menuBarManager.SidebarPosition === "right",
             },],
         }, {
             type: "separator"
@@ -94,28 +94,28 @@ function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.Me
             label: "Save Layout...",
             type: "normal",
             click: () => {
-                // SaveLayout();
+                window.menuAPI.renderer.saveLayout();
             },
         }, {
             id: "menu-view-load-layout",
             label: "Load Layout...",
             type: "normal",
             click: () => {
-                // loadLayoutCommand();
+                window.menuAPI.renderer.loadLayout();
             },
         }, {
             id: "menu-view-clear-layout",
             label: "Clear Layout",
             type: "normal",
             click: () => {
-                // ClearLayout();
+                window.menuAPI.renderer.clearLayout();
             },
         }, {
             id: "menu-view-default-layout",
             label: "Default Layout",
             type: "normal",
             click: () => {
-                // LoadDefaultLayout();
+                window.menuAPI.renderer.loadDefaultLayout();
             },
         }, {
             type: "separator"
@@ -159,7 +159,8 @@ export class MenuBarManager {
     private _base_title: string = "Moseq Reports";
     private _is_data_loaded: boolean = false;
     private _loaded_filename: string | undefined = undefined;
-    private _component_registry: ComponentRegistration[] = [];
+    private _component_registry: MenuComponentRegistration[] = [];
+    private _sidebar_position: "left" | "right" = "left";
 
     private constructor() {
         this.refreshMenu();
@@ -174,6 +175,13 @@ export class MenuBarManager {
             MenuBarManager._instance = new MenuBarManager();
         }
         return MenuBarManager._instance;
+    }
+    get SidebarPosition(): "left" | "right" {
+        return this._sidebar_position;
+    }
+    set SidebarPosition(position: "left" | "right") {
+        this._sidebar_position = position;
+        this.refreshMenu();
     }
 
     get isDataLoaded(): boolean {
@@ -191,7 +199,7 @@ export class MenuBarManager {
         }
         this.refreshTitle();
     }
-    addComponentRegistration(component: ComponentRegistration) {
+    addComponentRegistration(component: MenuComponentRegistration) {
         const loc = this._component_registry.findIndex((r) => r.component_type === component.component_type);
         if (loc === -1) {
             this._component_registry.push(component);
@@ -201,7 +209,7 @@ export class MenuBarManager {
         }
         this.refreshMenu();
     }
-    getRegisteredComponents(): ComponentRegistration[] {
+    getRegisteredComponents(): MenuComponentRegistration[] {
         return this._component_registry;
     }
     private refreshTitle() {
@@ -222,9 +230,15 @@ export class MenuBarManager {
 
 
 
-const MenuBridge: IMenuAPI = {
+const MenuBridge: IMenuAPIPreload = {
     setBaseTitle: (title: string) => MenuBarManager.getInstance().setBaseTitle(title),
     setLoadedFilename: (filename: string) => MenuBarManager.getInstance().setLoadedFilename(filename),
-    addComponentRegistration: (component: ComponentRegistration) => MenuBarManager.getInstance().addComponentRegistration(component),
+    addComponentRegistration: (component: MenuComponentRegistration) => MenuBarManager.getInstance().addComponentRegistration(component),
+    updateSidebarPosition: (position: "left" | "right") => {
+        MenuBarManager.getInstance().SidebarPosition = position;
+    },
 }
-window.menuAPI = MenuBridge;
+if (!window.menuAPI) {
+    window.menuAPI = {} as IMenuAPI;
+}
+window.menuAPI.preload = MenuBridge;

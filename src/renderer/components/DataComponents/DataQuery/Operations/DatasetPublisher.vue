@@ -107,7 +107,6 @@ const downloadData = async () => {
         showSaveSuccessToast(filePath, 'dataset');
     } catch (err: unknown) {
         if (err instanceof SaveCancelledError) {
-            console.log("save cancelled by user.");
             return;
         } else if (err instanceof Error) {
             console.error(err);

@@ -1,12 +1,9 @@
 import { DehydratedDataWindow, DataWindowState } from "@store/datawindow.types";
 import { clone } from "@render/util/Object";
 import { defineStore, acceptHMRUpdate } from 'pinia'
-
 import {useDataWindowStore} from './datawindow.store'
 import { useFiltersStore } from './filters.store'
 import { componentRegistry, ComponentRegistration } from "./component_registry.store";
-import { ipcRenderer } from "electron";
-import { MenuEvents } from "@main/shared/menuAPI";
 import { defaultOptionsFromSpec } from "@render/components/Core/SnapshotHelper";
 
 export interface WindowsState {
@@ -113,13 +110,7 @@ if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useWindowsStore, import.meta.hot))
 }
 
-// Handle create-component
-ipcRenderer.on(MenuEvents.CREATE_COMPONENT, (_event, component: ComponentRegistration) => {
-    //console.log("✅ Received create-component event:", component);
-    const spec = componentRegistry.getSpecification(component.component_type);
-    const windowsStore = useWindowsStore();
-    windowsStore.createWindow(spec);
-});
+
 
 function createDataWindow<TSettings>(component: ComponentRegistration): DataWindowState<TSettings> {
     if (!component) {

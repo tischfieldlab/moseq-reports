@@ -123,12 +123,10 @@ const CanvasMixin = defineComponent({
         };
 
         const findPointById = (id: string) => {
-            console.log("Finding point by ID", id);
             return { id, type: "point" };
         };
 
         const findGroupById = (id: string) => {
-            console.log("Finding group by ID", id);
             return { id, type: "group" };
         };
 

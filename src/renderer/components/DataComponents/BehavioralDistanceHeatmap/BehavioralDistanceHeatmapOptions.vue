@@ -55,7 +55,6 @@ const distance_metric = computed({
 watchEffect(async () => {
     DataService.fetchData<any>('behave_dist', [{ type: 'pluck', column: 'columns' }])
         .then((data) => {
-            console.log('Behavioral Distance Heatmap Options', data); 
             method_options.value = data.filter((itm) => !itm.startsWith('row') && !itm.startsWith('col'));
         });
 });

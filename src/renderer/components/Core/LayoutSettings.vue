@@ -113,7 +113,6 @@ export default defineComponent({
         });
 
         const resetSize = () => {
-            console.log("Resetting size");
             $wstate.resetSize();
         };
 

@@ -280,7 +280,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         if (rowHierarchy.value === undefined) {
             return [];
         }
-        console.log('row hierarchy', rowHierarchy.value);
         return cluster<Cluster>().size([dims.value.rtree.h, dims.value.rtree.w])(rowHierarchy.value).links();
     });
     const tooltip_text = computed(() => {
@@ -324,7 +323,6 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
         }
     }
     async function clusterRows() {
-        console.log('about to cluster rows');
         if (props.data !== null && props.data.length > 0) {
             if (props.rowOrderType === OrderingType.HCluster) {
                 instance.hCluster(toRaw(props.data), props.rowKey, props.valueKey, {

@@ -35,6 +35,7 @@ declare module 'vue' {
     BListGroup: typeof import('bootstrap-vue-next/components/BListGroup')['BListGroup']
     BListGroupItem: typeof import('bootstrap-vue-next/components/BListGroup')['BListGroupItem']
     BModal: typeof import('bootstrap-vue-next/components/BModal')['BModal']
+    BOffcanvas: typeof import('bootstrap-vue-next/components/BOffcanvas')['BOffcanvas']
     BOverlay: typeof import('bootstrap-vue-next/components/BOverlay')['BOverlay']
     BPagination: typeof import('bootstrap-vue-next/components/BPagination')['BPagination']
     BPopover: typeof import('bootstrap-vue-next/components/BPopover')['BPopover']

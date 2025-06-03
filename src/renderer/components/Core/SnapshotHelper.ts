@@ -100,7 +100,7 @@ export async function SnapshotWorkspace() {
             throw new Error("No id found on target!");
         }
         const dataWindowStore = useDataWindowStore(window.$props.id as string);
-        return dataWindowStore.is_hidden !== false;
+        return !dataWindowStore.is_hidden;
     });
 
     if (toSnapshot.length <= 0) {
@@ -110,7 +110,7 @@ export async function SnapshotWorkspace() {
 
     Promise.all(
         toSnapshot.map(async (item) => {
-            const wstate = (item as any).$wstate as DataWindowState<any>;
+            const wstate = useDataWindowStore((item.$props as any).id as string);
             return {
                 dataURI: await targetToDataURI(item, opts),
                 pos_x: wstate.pos_x,
@@ -282,7 +282,6 @@ export function resolveTarget(target: ComponentPublicInstance): {
     type: "video" | "svg" | "html" | "callback";
     target: HTMLElement | ((options: SnapshotOptions) => Promise<string>);
 } {
-    console.log("resolveTarget", target);
     const eattr = "data-snapshot-target";
     const explicit = (
         target.$el.hasAttribute(eattr) ? target.$el : target.$el.querySelector(`[${eattr}]`)

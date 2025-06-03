@@ -5,10 +5,12 @@ import {useSidebarStore, SidebarPosition} from '@store/sidebar.store';
 export function SetSidebarRight() {
     const sidebarStore = useSidebarStore();
     sidebarStore.setSidebarPosition(SidebarPosition.Right);
+    window.menuAPI.preload.updateSidebarPosition("right");
 }
 export function SetSidebarLeft() {
     const sidebarStore = useSidebarStore();
     sidebarStore.setSidebarPosition(SidebarPosition.Left);
+    window.menuAPI.preload.updateSidebarPosition("left");
 }
 export function CurrentSidebarPosition() {
     const sidebarStore = useSidebarStore();

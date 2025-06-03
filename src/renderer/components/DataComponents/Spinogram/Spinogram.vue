@@ -142,8 +142,6 @@ export default defineComponent({
             const c = rgb(settings.value.line_color || "#FF0000");
             const ae = extent(spinogram_data.value.map((tp) => tp.a)) as [number, number];
             const te = extent(spinogram_data.value.map((tp) => tp.t)) as [number, number];
-            console.log("ae", ae);
-            console.log("te", te);
 
             const t = scaleSequential(d3.interpolateRgb(rgb(c.r, c.g, c.b, ae[0]).toString(), rgb(c.r, c.g, c.b, ae[1]).toString())).domain(te);
 
@@ -172,7 +170,6 @@ export default defineComponent({
                     items.value = [];
                 })
                 .then((data: any) => {
-                    console.log("Spinogram data:", data);
                     items.value = data.map((itm) => ({
                         ...itm,
                         data: itm.data.map((stp) => ({ ...stp, xy: stp.x.map((tpx, jdx) => [tpx, stp.y[jdx]]) })),

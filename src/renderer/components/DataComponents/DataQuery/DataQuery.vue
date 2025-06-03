@@ -254,14 +254,12 @@ export default defineComponent({
 
             for (let i = 0; i < operations.value.length + 1; i++) {
                 const ops = prepareOperations(operations.value.slice(0, i));
-                console.log('Fetching data with operations:', i, ops);
                 DataService.fetchData(selectedDataset.value, ops)
                     .catch(err => {
                         console.error('Error fetching data:', err);
                         intermediateResults.value[i] = [];
                     })
                     .then(data => {
-                        console.log('Data fetched:', i, data);
                         intermediateResults.value[i] = data;
                     });
             }

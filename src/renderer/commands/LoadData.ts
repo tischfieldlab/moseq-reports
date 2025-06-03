@@ -53,7 +53,6 @@ async function beginLoadingProcess(filename: string) {
 
     nextTick()
         .then(() => {
-            //console.log("Starting data load process...");
             EventEmitter.emit("begin-dataset-load");
             datasetStore.Unload();
         })
@@ -63,9 +62,7 @@ async function beginLoadingProcess(filename: string) {
         })
         .then((data) => {
             // let preload know that the dataset is loaded, and the new name of the dataset
-            window.menuAPI.setLoadedFilename(data.name);
-
-            //console.log("Processed data received from DataServer:", data);
+            window.menuAPI.preload.setLoadedFilename(data.name);
             datasetStore.setData(data)
             return data;
         })

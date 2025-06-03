@@ -122,7 +122,6 @@ const label_stats = ref<LabelStats>({
 const {canvas, vDpiAdapt} = useCanvas();
 
 const draw = debounce(() => {
-    console.log('draw');
     //emitStartLoading();
     nextTick().then(() => {
         const ctx = canvas.value.cxt;

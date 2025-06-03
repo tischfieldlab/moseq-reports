@@ -19,6 +19,7 @@ export function showSaveSuccessToast(dest: string, noun: string, showOrOpen: 'op
                     href: 'javascript:void(0);',
                     title: `Click to ${showOrOpen}`,
                     onClick: clickHandler,
+                    class: 'text-light',
                 }, dest),
             ]);
 
@@ -51,6 +52,7 @@ export function showSaveErrorToast(err: Error|string, noun: string) {
         }
     })
     .then((deets: string|undefined) => {
+        console.error(`Error saving ${noun}:`, err);
         app_root.$showToast({
             title: `Error saving ${noun}!`,
             variant: 'danger',

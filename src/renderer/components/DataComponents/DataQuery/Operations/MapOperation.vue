@@ -38,7 +38,6 @@ watch(localSelectedColumns, (cols) => {
 
 const columnOptions = computed((): string[] => {
     const obj = props.previousResult;
-    console.log('columnOptions', obj);
     if (!obj) return [];
     if (Array.isArray(obj)) {
         return obj.length > 0 ? Object.keys(obj[0]) : [];

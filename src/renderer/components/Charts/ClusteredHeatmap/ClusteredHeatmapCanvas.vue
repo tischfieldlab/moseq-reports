@@ -42,7 +42,6 @@ const overrides: ClusteredHeatmapBaseOverrides = {
     label_stats: computed<LabelStats>(() => {
         const labels = props.groupLabels;
         const cxt = canvas.value.cxt;
-        console.log('compute_label_stats called with', labels, cxt);
         if (cxt !== null) {
             const widths = labels.map((l) => cxt.measureText(l).width);
             return {
