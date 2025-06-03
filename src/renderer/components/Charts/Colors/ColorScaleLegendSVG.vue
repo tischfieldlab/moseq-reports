@@ -44,7 +44,7 @@ import { Orientation } from "./Colors.types";
 import { Directive } from "vue";
 import { v4 as uuidv4 } from 'uuid';
 
-const props = withDefaults(defineProps<ColorScaleLegendProps>(), ColorScaleLegendPropsDefaults);
+const props = withDefaults(defineProps<ColorScaleLegendProps>(), ColorScaleLegendPropsDefaults());
 const {axis_translate, label_translate, linearscale, offsets, stops} = useColorScaleLegendBase(props);
 const gradientId = ref(`color-gradient-${uuidv4()}`);
 
@@ -79,8 +79,8 @@ const renderAxis = (el) => {
 };
 
 const vCbarAxis: Directive = {
-    mounted: (el) => {renderAxis(el); nextTick().then(() => renderAxis(el));},
-    updated: renderAxis,
+    mounted: (el) => renderAxis(el),
+    updated: (el) => renderAxis(el),
 }
 </script>
 

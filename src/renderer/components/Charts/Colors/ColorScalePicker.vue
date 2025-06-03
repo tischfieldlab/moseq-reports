@@ -50,129 +50,110 @@
             <div class="swatch swatch-left" :style="{ backgroundColor: custom1 }">
                 <BButton size="sm" variant="link" :id="colorOneId" title="Click to select starting color"
                     class="text-dark text-decoration-none color-button">
-                    <B-Icon icon="droplet-half" :style="{ color: getContrast(custom1) }" />
+                    <IBiDropletHalf :style="{ color: getContrastingColor(custom1) }" />
                 </BButton>
             </div>
             <BPopover :target="colorOneId" triggers="click blur" placement="top">
                 <template #title>Start Color</template>
-                <ChromePicker :value="custom1" @input="updateCustomColor1" :disableAlpha="true" />
+                <Chrome v-model="custom1" @update:modelValue="updateCustomColor1" :disableAlpha="true" />
             </BPopover>
 
             <div class="swatch swatch-right" :style="{ backgroundColor: custom2 }">
                 <BButton size="sm" variant="link" :id="colorTwoId" title="Click to select ending color"
                     class="text-dark text-decoration-none color-button">
-                    <B-Icon icon="droplet-half" :style="{ color: getContrast(custom2) }" />
+                    <IBiDropletHalf :style="{ color: getContrastingColor(custom2) }" />
                 </BButton>
             </div>
             <BPopover :target="colorTwoId" triggers="click blur" placement="top">
                 <template #title>End Color</template>
-                <ChromePicker :value="custom2" @input="updateCustomColor2" :disableAlpha="true" />
+                <Chrome v-model="custom2" @update:modelValue="updateCustomColor2" :disableAlpha="true" />
             </BPopover>
         </div>
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed, watch } from "vue";
+<script setup lang="ts">
+import { ref, computed, watch } from "vue";
 import { Chrome } from "@ckpack/vue-color";
 import { GetInterpolatedScaleOptions, getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
 import ColorScaleBar from "./ColorScaleBar.vue";
 import { BDropdown, BDropdownItem, BDropdownHeader, BFormRow, BCol, BButton, BPopover } from "bootstrap-vue-next";
 
-export default defineComponent({
-    name: "ColorScalePicker",
-    components: {
-        ChromePicker: Chrome,
-        ColorScaleBar,
-        BDropdown,
-        BDropdownItem,
-        BDropdownHeader,
-        BFormRow,
-        BCol,
-        BButton,
-        BPopover,
-    },
-    props: {
-        value: { type: String },
-        categories: { type: Array as () => string[] },
-    },
-    setup(props, { emit }) {
-        const selected = ref<{ text: string; value: string } | undefined>();
-        const options = ref(GetInterpolatedScaleOptions());
-        const custom1 = ref("#FFFFFF");
-        const custom2 = ref("#000000");
-        const colorOneId = computed(() => `color-picker-one`);
-        const colorTwoId = computed(() => `color-picker-two`);
-        const customOption = computed(() => ({
-            text: "Custom",
-            value: `custom:${custom1.value}:${custom2.value}`,
-        }));
 
-        const isCustom = computed(() => selected.value?.value.startsWith("custom:") ?? false);
-        const categoryEnabled = (category: string) => {
-            return !props.categories || props.categories.length === 0 || props.categories.includes(category);
-        };
-        const select = (option: { text: string; value: string }) => {
-            selected.value = option;
-            emit("input", option.value);
-        };
-        const updateCustomColor1 = (value: any) => {
-            custom1.value = value.hex;
-            select(customOption.value);
-        };
+const props = withDefaults(defineProps<{
+    categories?: string[];
+}>(), {
+    categories: (): string[] => [],
+});
 
-        const updateCustomColor2 = (value: any) => {
-            custom2.value = value.hex;
-            select(customOption.value);
-        };
+const model = defineModel<string>()
 
-        watch(
-            () => props.value,
-            (newValue) => {
-                if (!newValue) return;
+const selected = ref<{ text: string; value: string } | undefined>();
+const options = ref(GetInterpolatedScaleOptions());
+const custom1 = ref("#FFFFFF");
+const custom2 = ref("#000000");
+const colorOneId = computed(() => `color-picker-one`);
+const colorTwoId = computed(() => `color-picker-two`);
+const customOption = computed(() => ({
+    text: "Custom",
+    value: `custom:${custom1.value}:${custom2.value}`,
+}));
 
-                if (newValue.startsWith("custom:")) {
-                    const parts = newValue.split(":");
-                    custom1.value = parts[1];
-                    custom2.value = parts[2];
-                    selected.value = customOption.value;
-                } else {
-                    for (const cat of Object.keys(options.value)) {
-                        for (const scale of options.value[cat]) {
-                            if (scale.value === newValue) {
-                                selected.value = scale;
-                                return;
-                            }
-                        }
+const isCustom = computed(() => selected.value?.value.startsWith("custom:") ?? false);
+const categoryEnabled = (category: string) => {
+    return !props.categories || props.categories.length === 0 || props.categories.includes(category);
+};
+const select = (option: { text: string; value: string }) => {
+    model.value = option.value;
+};
+const updateCustomColor1 = (value: any) => {
+    custom1.value = value.hex;
+    select(customOption.value);
+};
+
+const updateCustomColor2 = (value: any) => {
+    custom2.value = value.hex;
+    select(customOption.value);
+};
+
+watch(
+    () => model.value,
+    (newValue) => {
+        if (!newValue)
+            return;
+
+        if (newValue === selected.value?.value)
+            return;
+
+        if (newValue.startsWith("custom:")) {
+            const parts = newValue.split(":");
+            custom1.value = parts[1];
+            custom2.value = parts[2];
+            selected.value = customOption.value;
+        } else {
+            for (const cat of Object.keys(options.value)) {
+                for (const scale of options.value[cat]) {
+                    if (scale.value === newValue) {
+                        selected.value = scale;
+                        return;
                     }
                 }
-            },
-            { immediate: true }
-        );
-
-        return {
-            selected,
-            options,
-            custom1,
-            custom2,
-            isCustom,
-            customOption,
-            categoryEnabled,
-            select,
-            updateCustomColor1,
-            updateCustomColor2,
-            getContrast: getContrastingColor,
-            colorOneId,
-            colorTwoId,
-        };
+            }
+        }
     },
-});
+    { immediate: true }
+);
 </script>
 
 <style scoped>
 .swatch {
     display: inline-block;
     margin: 3px;
+}
+
+.picker-container ::v-deep(.btn) {
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) 0;
 }
 
 .custom-container {
@@ -184,8 +165,8 @@ export default defineComponent({
 }
 
 .selected-value {
-    display: inline-flex;
-    width: 100%;
+    display: inline-flex !important;
+    width: 95%;
 }
 
 ::v-deep(.dropdown-menu) {
@@ -198,5 +179,8 @@ export default defineComponent({
     border-bottom-left-radius: 0;
     border-color: rgb(206, 212, 218);
     background: #ffffff;
+}
+::v-deep(.row) {
+    margin:0;
 }
 </style>

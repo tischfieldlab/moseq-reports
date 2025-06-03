@@ -1,5 +1,9 @@
 import { SnapshotOptions } from "@render/components/Core/SnapshotHelper";
 
+type DeepPartial<T> = T extends object ? {
+    [P in keyof T]?: DeepPartial<T[P]>;
+} : T;
+
 export interface DataWindowState<TSettings> {
     type: string;
     title: string;
@@ -43,7 +47,7 @@ export interface UpdateComponentZIndexPayload {
     z_index: number;
 }
 export interface UpdateComponentSettingsPayload<TSettings> {
-    settings: Partial<TSettings>;
+    settings: DeepPartial<TSettings>;
 }
 
 export interface UpdateComponentTitlePayload {

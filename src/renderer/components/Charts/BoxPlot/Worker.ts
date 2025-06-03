@@ -1,38 +1,11 @@
 import { groupby } from "@render/util/Array";
-import { scaleLinear } from "d3-scale";
+import { ScaleContinuousNumeric, scaleLinear, ScaleLinear } from "d3-scale";
 import { mean, quantile, extent } from "d3-array";
 import type { GroupStats, DataPoint, DataPointQueueNode } from "@render/components/Charts/BoxPlot/BoxPlot.types";
 import * as d3 from "d3";
 
-interface LinearScale {
-    domain: [number, number] | number[];
-    range: [number, number] | number[];
-}
 
-self.onmessage = (event: MessageEvent) => {
-    console.log("Worker received message:", event.data);
-    const { type, payload } = event.data;
-
-    if (type === "prepareData") {
-        console.log("🔄 Processing prepareData...");
-        const result = prepareData(payload);
-        const cleanedResult = JSON.parse(JSON.stringify(result));
-        self.postMessage({ type: "preparedData", cleanedResult });
-    }
-    if (type === "swarmPoints") {
-        console.log("🔄 Processing swarmPoints...");
-        const updatedPoints = swarm_points(
-            payload.points,
-            payload.groupLabels,
-            payload.scaleDefY,
-            payload.pointSize
-        );
-        console.log("📤 Sending swarmPointsUpdated:", updatedPoints);
-        self.postMessage({ type: "swarmPointsUpdated", result: updatedPoints });
-    }
-};
-
-function prepareData({
+export function prepareData({
     points,
     height,
     pointSize,
@@ -53,10 +26,14 @@ function prepareData({
         yExtent[1] = Math.max(0, yExtent[1]);
     }
 
-    const y = scaleLinear().domain(yExtent as number[]).range([height, 0]);
+    const yDef: ScaleDef = {
+        domain: yExtent as [number, number],
+        range: [height, 0],
+    }
+    const y = scaleLinear().domain(yDef.domain).range(yDef.range);
 
     if (swarmPoints) {
-        swarm_points(points, groupLabels, { domain: y.domain(), range: y.range() }, pointSize);
+        swarm_points(points, groupLabels, yDef, pointSize);
     }
 
     const groupedData = Object.entries(groupby(points, (p) => p.group, groupLabels))
@@ -117,7 +94,11 @@ function epanechnikovKernel(scale: number): (u: number) => number {
         Math.abs((u /= scale)) <= 1 ? (0.75 * (1 - u * u)) / scale : 0;
 }
 
-function swarm_points(data: DataPoint[], groupLabels: string[], scaleDefY: LinearScale, pointSize: number) {
+interface ScaleDef {
+    domain: [number, number];
+    range: [number, number];
+}
+export function swarm_points(data: DataPoint[], groupLabels: string[], scaleDefY: ScaleDef, pointSize: number) {
     const scaleY = scaleLinear().domain(scaleDefY.domain).range(scaleDefY.range);
 
     groupLabels.forEach((g) => {

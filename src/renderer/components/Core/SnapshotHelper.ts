@@ -22,9 +22,9 @@ export interface SnapshotOptions {
 }
 
 export function defaultOptions(target: ComponentPublicInstance): SnapshotOptions {
-    const rtgt = resolveTarget(target);
+    const resolvedTarget = resolveTarget(target);
     return {
-        format: rtgt.type === "video" ? "video" : "png",
+        format: resolvedTarget.type === "video" ? "video" : "png",
         quality: 1,
         scale: 4,
         backgroundColor: "#FFFFFF00", // fully transparent white
@@ -58,10 +58,10 @@ export default async function Snapshot(target: ComponentPublicInstance, basename
     return targetToDataURI(target, options)
         .then((data) => dataUriToFile(data as string))
         .then((finfo) => {
-            const dfltPath = getSuggestedFilename(target) || basename;
+            const defaultSnapshotPath = getSuggestedFilename(target) || basename;
             const dest = dialog.showSaveDialogSync({
                 title: "Save Snapshot",
-                defaultPath: `${dfltPath}.${finfo.extension}`,
+                defaultPath: `${defaultSnapshotPath}.${finfo.extension}`,
                 filters: filtersForFinfo(finfo),
             });
             if (dest === undefined) {
@@ -220,11 +220,14 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
                     } else {
                         ctx.drawImage(img, item.pos_x * opts.scale, item.pos_y * opts.scale, img.width, img.height);
                     }
-                    ctx.save();
-                    ctx.font = `bold ${16 * opts.scale}px Verdana,Arial,sans-serif`;
-                    ctx.textBaseline = "bottom";
-                    ctx.fillText(item.title, item.pos_x * opts.scale, item.pos_y * opts.scale);
-                    ctx.restore();
+                    // draw the title if it exists
+                    if (item.title !== undefined) {
+                        ctx.save();
+                        ctx.font = `bold ${16 * opts.scale}px Verdana,Arial,sans-serif`;
+                        ctx.textBaseline = "bottom";
+                        ctx.fillText(item.title, item.pos_x * opts.scale, item.pos_y * opts.scale);
+                        ctx.restore();
+                    }
                     resolve();
                 };
                 img.src = item.dataURI as string;

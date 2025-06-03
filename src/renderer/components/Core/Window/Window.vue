@@ -112,7 +112,7 @@ export default defineComponent({
 
         const show_settings_modal = ref(false);
         const component_loading = ref(0);
-        const bodyRef = useTemplateRef<ComponentPublicInstance>('window');
+        const bodyRef = useTemplateRef<ComponentPublicInstance>('body');
         //console.log("bodyRef", bodyRef);
 
         const settings_title = computed(() => `${title.value} Settings`);

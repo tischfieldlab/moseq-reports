@@ -33,3 +33,14 @@ export function sample<TItem>(arr: TItem[], size: number): TItem[] {
     }
     return shuffled.slice(min);
 }
+
+export function argsort<TItem>(arr: TItem[], compareFn: (a: TItem, b: TItem) => number): number[] {
+    return arr
+        .map((item, index) => [item, index] as [TItem, number])
+        .sort((a, b) => compareFn(a[0], b[0]))
+        .map((item) => item[1]);
+}
+
+export function apply_argsort<TItem>(arr: TItem[], indices: number[]): TItem[] {
+    return indices.map((index) => arr[index]);
+}

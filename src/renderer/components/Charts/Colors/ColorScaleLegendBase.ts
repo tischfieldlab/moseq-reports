@@ -6,27 +6,28 @@ import { computed } from "vue";
 
 
 export interface ColorScaleLegendProps {
-    scale: ScaleSequential<string>;
-    width?: number;
-    height?: number;
+    scale: ((value: number) => string) & ScaleSequential<string>;
+    width: number;
+    height: number;
     title?: string;
     orientation?: Orientation;
     maxticks?: number;
     minticks?: number;
-    tickformat?: string | null;
+    tickformat?: string;
 }
 
-export const ColorScaleLegendPropsDefaults = {
-    width: 100,
-    height: 10,
-    title: "",
-    orientation: Orientation.Horizontal,
-    maxticks: 5,
-    minticks: 1,
-    tickformat: null,
+export function ColorScaleLegendPropsDefaults() {
+    return {
+        width: 100,
+        height: 10,
+        title: "",
+        orientation: Orientation.Horizontal,
+        maxticks: 5,
+        minticks: 1,
+    };
 }
 
-export function useColorScaleLegendBase(props: Required<ColorScaleLegendProps>) {
+export function useColorScaleLegendBase(props: ColorScaleLegendProps) {
     const offsets = computed(() => {
         return props.orientation === Orientation.Horizontal
             ? { x1: "0%", x2: "100%", y1: "0%", y2: "0%" }

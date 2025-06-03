@@ -268,9 +268,11 @@ export default defineComponent({
         }
 
         watch(selectedDataset, val => {
-            $wstate.updateComponentSettings({
-                settings: { dataset: val },
-            });
+            if (val !== null) {
+                $wstate.updateComponentSettings({
+                    settings: { dataset: val },
+                });
+            }
         });
 
         watch(operations, val => {

@@ -97,9 +97,7 @@ export function GetScale(name: string) {
 export function GetScaleWithOpacity(name: string, opacity: any) {
     const base = GetScale(name) as (t: number) => string;
     return (t: number) => {
-        const out = (base(t) as string).replace("rgb", "rgba").replace(")", `, ${opacity(t)})`);
-        // console.log(t, base(t), opacity(t), out);
-        return out;
+        return (base(t) as string).replace("rgb", "rgba").replace(")", `, ${opacity(t)})`);
     };
 }
 

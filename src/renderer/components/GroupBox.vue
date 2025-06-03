@@ -32,13 +32,12 @@
     </BCard>
 </template>
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, onUnmounted } from "vue";
+import { defineComponent, ref } from "vue";
 import draggable from "vuedraggable";
 import { Chrome } from "@ckpack/vue-color";
 import { getContrastingColor } from "@render/components/Charts/Colors/D3ColorProvider";
 
 import { useDataViewStore } from "@store/dataview.store";
-import {useDatasetsStore} from "@store/datasets.store";
 import { debounce } from "@render/util/Events";
 import DataService from "@api";
 
@@ -56,10 +55,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const datasetsStore = useDatasetsStore();
         const dataviewStore = useDataViewStore(props.datasource);
-
-        const watchers: (() => void)[] = [];
 
         const group_counts = ref<Record<string, number>>({});
         const updateGroupCounts = async () => {
@@ -91,56 +87,9 @@ export default defineComponent({
             option.color = event;
         }, 100);
 
-        onMounted(() => {
-        
-
-            /*watchers.push(
-                store.watch(
-                (state, getters) => getters[`${props.datasource}/availableGroups`],
-                () => {
-                    updateGroupCounts();
-                    buildGroups();
-                },
-                { immediate: true }
-                )
-            );*/
-            /*
-            watchers.push(
-                store.watch(
-                    (state) => {
-                        const dv = state[props.datasource];
-                        return {
-                            c: dv?.groupColors || [],
-                            s: dv?.selectedGroups || [],
-                        };
-                    },
-                    (newValue) => {
-                        if (newValue.s && newValue.c) {
-                            groups.value.forEach((g) => {
-                                const isSelected = newValue.s.includes(g.name);
-                                g.selected = isSelected;
-                                if (isSelected) {
-                                    g.color = newValue.c[newValue.s.indexOf(g.name)];
-                                    console.log("g color",g.color)
-                                }
-                            });
-                        }
-                    },
-                    { deep: true }
-                )
-            );*/
-        });
-
-        onUnmounted(() => {
-            watchers.forEach((unwatch) => unwatch());
-        });
-
         return {
             groups: dataviewStore.groups,
             group_counts,
-            //buildGroups,
-            //updateGroups,
-            //updateColors,
             updateGroupCounts,
             getContrast,
             colorChangeHandler,

@@ -1,11 +1,11 @@
 <script lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import * as d3 from 'd3';
+import { ref, computed, watch, onMounted, onUnmounted, toRaw, shallowRef } from 'vue';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { DataPoint, GroupStats, isDataPoint, isGroupStats, ToolTipPosition, WhiskerType } from './BoxPlot.types';
-import Worker from './Worker.ts?worker';
 import { DefinedArea, DefinedScaleBand, DefinedSymbol } from '../D3Scale';
+import { releaseProxy } from 'comlink';
+
 
 function default_tooltip_formatter(value: DataPoint | GroupStats): string {
     if (value) {
@@ -52,21 +52,14 @@ export interface BoxPlotBaseProps {
 };
 
 export function useBoxPlotBase(props: BoxPlotBaseProps) {
-    const worker = new Worker();
-
-    worker.onmessage = (event) => {
-        console.log("Worker Message Received:", event.data);
-        if (event.data.type === "preparedData") {
-            points.value = event.data.cleanedResult.points;
-            groupedData.value = event.data.cleanedResult.groupedData;
-            domainY.value = event.data.cleanedResult.domainY;
-            domainKde.value = event.data.cleanedResult.domainKde;
-        } else if (event.data.type === "swarmPointsUpdated") {
-            points.value = event.data.result;
+    const worker = new ComlinkWorker<typeof import("./Worker")>(
+        new URL("./Worker", import.meta.url),
+        {
+          /* normal Worker options*/
         }
-    };
+    );
 
-    const points = ref<DataPoint[]>([]);
+    const points = shallowRef<DataPoint[]>([]);
     const groupedData = ref<GroupStats[]>([]);
     const margin = ref({ top: 20, right: 20, bottom: 50, left: 60 });
     const xAxisLabelYPos = ref(45);
@@ -140,32 +133,40 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
             : ''
     );
 
-    const prepareData = (newData) => {
-        if (!newData) return;
-        worker.postMessage({
-            type: "prepareData",
-            payload: JSON.parse(JSON.stringify({
-                points: newData,
-                height: props.height,
-                pointSize: props.point_size,
-                groupLabels: props.groupLabels,
-                swarmPoints: props.show_points,
-                kdeScale: props.kde_scale,
-                whiskerType: props.whisker_type,
-            })),
-        });
+    const prepareData = () => {
+        if (!props.data) return;
+        worker.prepareData({
+            points: toRaw(props.data),
+            height: props.height,
+            pointSize: props.point_size,
+            groupLabels: props.groupLabels,
+            swarmPoints: props.show_points,
+            kdeScale: props.kde_scale,
+        })
+            .then((result) => {
+                points.value = result.points;
+                groupedData.value = result.groupedData;
+                domainY.value = result.domainY;
+                domainKde.value = result.domainKde;
+            })
+            .catch((error) => {
+                console.error("Error preparing data:", error);
+            });
     };
 
     const updateSwarmPoints = async () => {
-        worker.postMessage({
-            type: "updateSwarmPoints",
-            payload: {
-                points: points.value,
-                groupLabels: props.groupLabels,
-                yScale: { domain: scale.value.y.domain(), range: scale.value.y.range() },
-                pointSize: props.point_size,
-            },
-        });
+        worker.swarm_points(
+            points.value,
+            props.groupLabels,
+            { domain: scale.value.y.domain() as [number, number], range: scale.value.y.range() as [number, number] },
+            props.point_size,
+        )
+            .then((result) => {
+                points.value = result;
+            })
+            .catch((error) => {
+                console.error("Error updating swarm points:", error);
+            });
     };
 
     const is_outlier = (node) => {
@@ -173,8 +174,8 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
         return group ? node.value < fences.value.lower(group) || node.value > fences.value.upper(group) : false;
     };
 
-    watch(() => props.data, (newData) => { if (newData) prepareData(newData); }, { immediate: true });
-    watch(() => props.point_size, () => { updateSwarmPoints(); });
+    watch(() => props.data, prepareData, { immediate: true });
+    watch(() => props.point_size, updateSwarmPoints);
 
     const handleHover = (event) => {
         if (event.target) {
@@ -186,7 +187,7 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
         }
     };
 
-    onUnmounted(() => { worker.terminate(); document.removeEventListener('mousemove', handleHover); });
+    onUnmounted(() => { worker[releaseProxy](); document.removeEventListener('mousemove', handleHover); });
     onMounted(() => { document.addEventListener('mousemove', handleHover); });
 
     return { points, groupedData, has_data, scale, fences, diamond, violinArea, violinLine, margin, origin, tooltip_text, tooltipPosition, hoverItem, actuallyShowPoints, is_outlier, halfBandwith, quaterBandwith, xAxisLabelYPos, innerHeight, innerWidth, rotate_labels };

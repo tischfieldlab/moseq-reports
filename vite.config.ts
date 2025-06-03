@@ -11,6 +11,8 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import Icons from 'unplugin-icons/vite'
 import IconsResolve from 'unplugin-icons/resolver'
 import { comlink } from 'vite-plugin-comlink';
+
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   fs.rmSync('dist-electron', { recursive: true, force: true })
@@ -33,7 +35,7 @@ export default defineConfig(({ command }) => {
       }),
       comlink(),
       Components({
-        resolvers: [IconsResolve(), BootstrapVueNextResolver()],
+        resolvers: [IconsResolve({}), BootstrapVueNextResolver()],
         dts: true,
       }),
       Icons({
@@ -52,7 +54,7 @@ export default defineConfig(({ command }) => {
             }
           },
           vite: {
-            build: {  
+            build: {
               sourcemap,
               minify: isBuild,
               outDir: 'dist/electron/main',
@@ -65,7 +67,7 @@ export default defineConfig(({ command }) => {
                 external: [
                   ...Object.keys(pkg.dependencies || {}),
                   //"@render/util" // Add any specific paths you want to externalize.
-                ],                
+                ],
               },
             },
           },
