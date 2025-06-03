@@ -1,12 +1,11 @@
 <script lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onUnmounted, toRaw } from 'vue';
 import { hexbin } from 'd3-hexbin';
 import { scaleLinear, scaleSequential } from 'd3-scale';
 import { GetScale } from '@render/components/Charts/Colors/D3ColorProvider';
 import gridLayout from '@render/components/Charts/D3Layout';
-import { Observation, HexBin, HexBinWorkerAPI } from "./HexBinPlot.types"
-import { wrap } from "comlink";
-import HexBinWorker from './Worker?worker'
+import { releaseProxy } from 'comlink';
+import { Observation } from './HexBinPlot.types';
 
 export const HexBinPlotBasePropsDefaults = {
     resolution: 10,
@@ -31,7 +30,10 @@ export interface HexBinPlotBaseProps {
 };
 
 export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
-    const worker = wrap<HexBinWorkerAPI>(new HexBinWorker());
+    const worker = new ComlinkWorker<typeof import('./Worker')>(
+        new URL('./Worker', import.meta.url),
+        {}
+    );
 
     const margin = ref({ top: 20, right: 20, bottom: 70, left: 20 });
     const binned = ref<Record<string, any[]>>({});
@@ -57,7 +59,7 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
         const gl = gridLayout()
             .size([innerSize.value.w, innerSize.value.h])
             .padding([0.3, 0.5])
-            .aspect(1.0)(props.useGroups ? props.groupLabels : ["Overall"]);
+            .aspect(1.0)(props.useGroups ? props.groupLabels : ['Overall']);
         return gl;
     });
 
@@ -73,34 +75,41 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
 
     const hexbing = computed(() =>
         hexbin<Observation>()
-            .x(d => scale.value.x(d.x))
-            .y(d => scale.value.y(d.y))
+            .x((d) => scale.value.x(d.x))
+            .y((d) => scale.value.y(d.y))
             .radius(props.resolution)
             .size([scale.value.x.range()[1], scale.value.y.range()[0]])
     );
 
-    const prepareData = async (newData: Observation[]) => {
-        if (!newData) return;
-
-        const result = await worker.binData(
-            JSON.parse(JSON.stringify(newData)), // to ensure transferable
-            props.useGroups ? props.groupLabels : null,
-            scale.value.x.range()[1],
-            props.resolution
-        );
-
-        binned.value = result.binned;
-        zmax.value = result.zmax;
-        domainX.value = result.domainX;
-        domainY.value = result.domainY;
+    const prepareData = async () => {
+        if (!props.data) return;
+        try {
+            const result = await worker.binData({
+                data: toRaw(props.data),
+                groupLabels: props.useGroups ? props.groupLabels : null,
+                width: scale.value.x.range()[1],
+                resolution: props.resolution,
+            });
+            binned.value = result.binned;
+            zmax.value = result.zmax;
+            domainX.value = result.domainX;
+            domainY.value = result.domainY;
+        } catch (error) {
+            console.error('Error preparing data:', error);
+        }
     };
 
+    watch(
+        () => props.data,
+        () => {
+            if (props.data) prepareData();
+        },
+        { immediate: true }
+    );
 
-    watch(() => props.data, (newData) => {
-        if (newData) prepareData(newData);
-    }, { immediate: true });
-
-
+    onUnmounted(() => {
+        worker[releaseProxy]();
+    });
 
     return {
         margin,
@@ -116,7 +125,7 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
         hexbing,
         hexWidth,
         hexHeight,
-        prepareData
+        prepareData,
     };
 }
 </script>

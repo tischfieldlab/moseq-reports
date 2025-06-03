@@ -2,15 +2,19 @@ import { hexbin } from "d3-hexbin";
 import { groupby } from "@render/util/Array";
 import { scaleLinear } from "d3-scale";
 import { extent } from "d3-array";
-import { expose } from "comlink";
 import { Observation, HexBin } from "./HexBinPlot.types"
 
-function binData(
-    data: Observation[],
-    groupLabels: string[] | null,
-    width: number,
-    resolution: number
-) {
+export function binData({
+    data,
+    groupLabels,
+    width,
+    resolution,
+}: {
+    data: Observation[];
+    groupLabels: string[] | null;
+    width: number;
+    resolution: number;
+}) {
     const xScale = scaleLinear()
         .domain(extent(data, (d) => d.x) as [number, number])
         .range([0, width]);
@@ -51,4 +55,3 @@ function binData(
         domainY: yScale.domain(),
     };
 }
-expose({ binData });
