@@ -95,7 +95,7 @@ const dataspec = computed((): Operation[] => {
         }, {
             type: 'filter',
             filters: {
-                group: dataview.selectedGroups,
+                group: dataview.value.selectedGroups,
             },
         }, {
             type: 'aggregate',
@@ -108,7 +108,7 @@ const dataspec = computed((): Operation[] => {
 });
 
 watchEffect(() => {
-    const rID = dataview.selectedSyllableAs(CountMethod.Raw);
+    const rID = dataview.value.selectedSyllableAs(CountMethod.Raw);
     DataService.fetchData<any>(`scalars/${rID}`, dataspec.value)
         .then((data) => individualUseageData.value = data)
 });

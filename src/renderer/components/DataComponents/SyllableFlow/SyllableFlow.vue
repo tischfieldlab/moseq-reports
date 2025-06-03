@@ -56,13 +56,13 @@ export default defineComponent({
         const rawData = ref<TransitionItem[]>([]);
         const isLoading = ref(false);
         const selectedSyllable = computed({
-            get: () => dataview.selectedSyllable,
+            get: () => dataview.value.selectedSyllable,
             set: (val: number) => {
-                dataview.selectedSyllable = val;
+                dataview.value.selectedSyllable = val;
             },
         });
 
-        const activeSyllables = computed(() => dataview.selectedSyllables.map((s) => s.toString()));
+        const activeSyllables = computed(() => dataview.value.selectedSyllables.map((s) => s.toString()));
 
         const sourceData = computed(() => {
             const relDiffGroup = settings.value.relative_diff_group;
@@ -75,8 +75,8 @@ export default defineComponent({
                     type: 'map',
                     columns: [
                         ['default_group', 'group'],
-                        [`row_id_${dataview.countMethod.toLowerCase()}`, 'row_id'],
-                        [`col_id_${dataview.countMethod.toLowerCase()}`, 'col_id'],
+                        [`row_id_${dataview.value.countMethod.toLowerCase()}`, 'row_id'],
+                        [`col_id_${dataview.value.countMethod.toLowerCase()}`, 'col_id'],
                         'raw',
                     ],
                 },
@@ -131,14 +131,14 @@ export default defineComponent({
             if (!settings.value.plot_group) {
                 $wstate.updateComponentSettings({
                     settings: {
-                        plot_group: dataview.selectedGroups[0],
+                        plot_group: dataview.value.selectedGroups[0],
                     },
                 });
             }
             if (!settings.value.relative_diff_group) {
                 $wstate.updateComponentSettings({
                     settings: {
-                        relative_diff_group: dataview.selectedGroups[1],
+                        relative_diff_group: dataview.value.selectedGroups[1],
                     },
                 });
             }
@@ -248,7 +248,7 @@ export default defineComponent({
         });
 
         const noDataMessage = computed(() => {
-            return `No transitions for group ${settings.value.plot_group} Module ${selectedSyllable.value} (${dataview.countMethod})`;
+            return `No transitions for group ${settings.value.plot_group} Module ${selectedSyllable.value} (${dataview.value.countMethod})`;
         });
 
         const colorLegendTitle = computed(() => {
@@ -264,7 +264,7 @@ export default defineComponent({
             if (settings.value.show_relative_diff) {
                 title += ` vs ${settings.value.relative_diff_group}`;
             }
-            return `${title} Module ${selectedSyllable.value} (${dataview.countMethod})`;
+            return `${title} Module ${selectedSyllable.value} (${dataview.value.countMethod})`;
         });
 
         const tooltipFormatter = (hoverItem: Node | Link) => {

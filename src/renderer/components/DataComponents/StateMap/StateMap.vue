@@ -115,14 +115,14 @@ onBeforeMount(() => {
     if ($wstate.settings.plot_group === undefined || $wstate.settings.plot_group === '') {
         $wstate.updateComponentSettings({
             settings: {
-                plot_group: dataview.selectedGroups[0],
+                plot_group: dataview.value.selectedGroups[0],
             },
         });
     }
     if ($wstate.settings.relative_diff_group === undefined || $wstate.settings.relative_diff_group === '') {
         $wstate.updateComponentSettings({
             settings: {
-                relative_diff_group: dataview.selectedGroups[1],
+                relative_diff_group: dataview.value.selectedGroups[1],
             },
         });
     }
@@ -273,7 +273,7 @@ const elements = computed((): any[] => {
     }
 
     const elements = [] as (Node|Link)[];
-    for (const s of dataview.selectedSyllables) {
+    for (const s of dataview.value.selectedSyllables) {
         const n = raw_data.value.usages.find((row) => row.syllable === s);
         if (n !== undefined) {
             elements.push({
@@ -288,7 +288,7 @@ const elements = computed((): any[] => {
     }
 
     for (const [i, t] of trans.entries()) {
-        if (dataview.selectedSyllables.includes(t.row_id) && dataview.selectedSyllables.includes(t.col_id)) {
+        if (dataview.value.selectedSyllables.includes(t.row_id) && dataview.value.selectedSyllables.includes(t.col_id)) {
             const val = (t.raw / transSum);
             if (showRelDiff && (t.row_id !== relTrans[i].row_id || t.col_id !== relTrans[i].col_id)) {
                 /* tslint:disable-next-line:no-console */
@@ -379,16 +379,16 @@ const sourceData = computed(() => {
         {
             type: 'map',
             columns: [
-                [`usage_${dataview.countMethod.toLowerCase()}`, 'usage'],
+                [`usage_${dataview.value.countMethod.toLowerCase()}`, 'usage'],
                 ['group', 'group'],
-                [`id_${dataview.countMethod.toLowerCase()}`, 'syllable'],
+                [`id_${dataview.value.countMethod.toLowerCase()}`, 'syllable'],
             ],
         },
         {
             type: 'filter',
             filters: {
                 group: filterGroups,
-                syllable: dataview.selectedSyllables,
+                syllable: dataview.value.selectedSyllables,
             },
         },
         {
@@ -405,8 +405,8 @@ const sourceData = computed(() => {
             type: 'map',
             columns: [
                 ['default_group', 'group'],
-                [`row_id_${dataview.countMethod.toLowerCase()}`, 'row_id'],
-                [`col_id_${dataview.countMethod.toLowerCase()}`, 'col_id'],
+                [`row_id_${dataview.value.countMethod.toLowerCase()}`, 'row_id'],
+                [`col_id_${dataview.value.countMethod.toLowerCase()}`, 'col_id'],
                 'raw',
             ]
         },
@@ -457,7 +457,7 @@ function linkColor(l) {
 // changes selected syllable to the node clicked.
 function onNodeClick(event) {
     if (event.target && event.target._private.data.id) {
-        dataview.selectedSyllable = Number.parseInt(event.target._private.data.id, 10);
+        dataview.value.selectedSyllable = Number.parseInt(event.target._private.data.id, 10);
     }
 }
 // returns snapshot of the current layout of the State Map.

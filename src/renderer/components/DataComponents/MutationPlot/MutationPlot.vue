@@ -85,11 +85,11 @@ const render_mode = computed(() => {
 });
 const syllable_ordering = computed((): any[] => {
     if ($wstate.settings.syllable_order_type === OrderingType.Natural) {
-        return dataview.selectedSyllables;
+        return dataview.value.selectedSyllables;
 
     } else if ($wstate.settings.syllable_order_type === OrderingType.Dataset) {
-        if (dataview.views[$wstate.settings.syllable_order_dataset] !== undefined) {
-            return dataview.views[$wstate.settings.syllable_order_dataset].data.map((d) => Number.parseInt(d, 10));
+        if (dataview.value.views[$wstate.settings.syllable_order_dataset] !== undefined) {
+            return dataview.value.views[$wstate.settings.syllable_order_dataset].data.map((d) => Number.parseInt(d, 10));
         }
 
     } else if ($wstate.settings.syllable_order_type === OrderingType.Value) {
@@ -104,7 +104,7 @@ const syllable_ordering = computed((): any[] => {
                     })
                     .map((u) => u.syllable);
     } else if ($wstate.settings.syllable_order_type === OrderingType.Computed) {
-        const syllables = dataview.selectedSyllables;
+        const syllables = dataview.value.selectedSyllables;
         const minData = aggregateView.value.filter((u) => u.group === $wstate.settings.syllable_order_diff_minuend);
         const subData = aggregateView.value.filter((u) => u.group === $wstate.settings.syllable_order_diff_subtrahend);
 
@@ -131,10 +131,10 @@ const syllable_ordering = computed((): any[] => {
 });
 const groupNames = computed((): string[] => {
     if ($wstate.settings.group_order_type === OrderingType.Natural) {
-        return dataview.selectedGroups;
+        return dataview.value.selectedGroups;
     /*} else if ($wstate.settings.group_order_type === OrderingType.Dataset) {
-        if (dataview.views[$wstate.settings.group_order_dataset] !== undefined) {
-            return dataview.views[$wstate.settings.group_order_dataset].data
+        if (dataview.value.views[$wstate.settings.group_order_dataset] !== undefined) {
+            return dataview.value.views[$wstate.settings.group_order_dataset].data
         }
     */} else {
         // tslint:disable-next-line:no-console
@@ -143,24 +143,24 @@ const groupNames = computed((): string[] => {
     return [];
 });
 const groupColors = computed((): string[] => {
-    return groupNames.value.map((gn) => dataview.selectedGroupColors[dataview.selectedGroups.indexOf(gn)]);
+    return groupNames.value.map((gn) => dataview.value.selectedGroupColors[dataview.value.selectedGroups.indexOf(gn)]);
 });
 const dataset = computed((): Operation[] => {
     return [
         {
             type: 'map',
             columns: [
-                [`usage_${dataview.countMethod.toLowerCase()}`, 'value'],
+                [`usage_${dataview.value.countMethod.toLowerCase()}`, 'value'],
                 ['group', 'group'],
-                [`id_${dataview.countMethod.toLowerCase()}`, 'syllable'],
+                [`id_${dataview.value.countMethod.toLowerCase()}`, 'syllable'],
                 ['uuid', 'id'],
             ],
         },
         {
             type: 'filter',
             filters: {
-                syllable: dataview.selectedSyllables,
-                group: dataview.selectedGroups,
+                syllable: dataview.value.selectedSyllables,
+                group: dataview.value.selectedGroups,
             },
         },
         {
@@ -197,7 +197,7 @@ function calculateErrors(data: PlotData[]) {
 }
 function onLineplotClick(event) {
     if (event.var) {
-        dataview.selectedSyllable = Number.parseInt(event.var, 10);
+        dataview.value.selectedSyllable = Number.parseInt(event.var, 10);
     }
 }
 function format_tooltip(itm: PlotData): string {

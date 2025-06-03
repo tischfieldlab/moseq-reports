@@ -92,28 +92,28 @@ export default defineComponent({
             }
         });
         const selectedGroups = computed(() => {
-            return dataview.selectedGroups;
+            return dataview.value.selectedGroups;
         });
         const selectedSyllable = computed({
             get(): number {
-                return dataview.selectedSyllable;
+                return dataview.value.selectedSyllable;
             },
             set(event: number) {
-                dataview.selectedSyllable = event;
+                dataview.value.selectedSyllable = event;
             },
         });
         const countMethod = computed(() => {
-            return dataview.countMethod;
+            return dataview.value.countMethod;
         });
         const rowOrderDataset = computed(() => {
-            if ($wstate.settings.row_order_dataset in dataview.views) {
-                return dataview.views[$wstate.settings.row_order_dataset].data;
+            if ($wstate.settings.row_order_dataset in dataview.value.views) {
+                return dataview.value.views[$wstate.settings.row_order_dataset].data;
             }
             return [];
         });
         const columnOrderDataset = computed(() => {
-            if ($wstate.settings.column_order_dataset in dataview.views) {
-                return dataview.views[$wstate.settings.column_order_dataset].data;
+            if ($wstate.settings.column_order_dataset in dataview.value.views) {
+                return dataview.value.views[$wstate.settings.column_order_dataset].data;
             }
             return [];
         });
@@ -121,15 +121,15 @@ export default defineComponent({
             return [{
                 type: 'map',
                 columns: [
-                    [`usage_${dataview.countMethod.toLowerCase()}`, 'usage'],
+                    [`usage_${dataview.value.countMethod.toLowerCase()}`, 'usage'],
                     ['group', 'group'],
-                    [`id_${dataview.countMethod.toLowerCase()}`, 'syllable'],
+                    [`id_${dataview.value.countMethod.toLowerCase()}`, 'syllable'],
                 ],
             }, {
                 type: 'filter',
                 filters: {
-                    group: dataview.selectedGroups,
-                    syllable: dataview.selectedSyllables,
+                    group: dataview.value.selectedGroups,
+                    syllable: dataview.value.selectedSyllables,
                 },
             }, {
                 type: 'aggregate',
@@ -146,14 +146,14 @@ export default defineComponent({
             }
         }
         function rowOrderChanged(event) {
-            dataview.publishDataset({
+            dataview.value.publishDataset({
                 owner: props.id,
                 name: 'Row Order',
                 data: event,
             });
         }
         function colOrderChanged(event) {
-            dataview.publishDataset({
+            dataview.value.publishDataset({
                 owner: props.id,
                 name: 'Column Order',
                 data: event,

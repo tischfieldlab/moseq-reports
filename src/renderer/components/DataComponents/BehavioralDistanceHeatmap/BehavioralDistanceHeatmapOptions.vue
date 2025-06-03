@@ -31,10 +31,10 @@ const {$wstate, dataview} = useWindowMixin<BehavioralDistanceHeatmapSettings>(pr
 const method_options = ref<string[]>([]);
 const syllable_options = computed((): {text: string, value: string}[] => {
     let vals;
-    if (dataview.moduleIdFilter.length === 0) {
-        vals = dataview.availableModuleIds;
+    if (dataview.value.moduleIdFilter.length === 0) {
+        vals = dataview.value.availableModuleIds;
     } else {
-        vals = dataview.moduleIdFilter;
+        vals = dataview.value.moduleIdFilter;
     }
     return vals.map((g) => ({text: g.toString(), value: g.toString()}));
 });

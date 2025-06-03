@@ -183,10 +183,10 @@ const available_layouts = [
 
 // Return current non filtered groups.
 const available_groups = computed((): {text: string, value: string}[] => {
-    return dataview.selectedGroups.map((g) => ({text: g, value: g}));
+    return dataview.value.selectedGroups.map((g) => ({text: g, value: g}));
 });
 const available_diff_groups = computed((): any[] => {
-    return dataview.selectedGroups
+    return dataview.value.selectedGroups
             .map((g) => ({text: g, value: g}))
             .filter((el) => el.value !== plot_group.value);
 });

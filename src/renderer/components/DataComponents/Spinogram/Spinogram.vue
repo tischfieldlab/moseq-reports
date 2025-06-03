@@ -116,8 +116,8 @@ export default defineComponent({
         const outsideHeight = computed(() => layout.value.height - 31);
         const width = computed(() => outsideWidth.value - margin.left - margin.right);
         const height = computed(() => outsideHeight.value - margin.top - margin.bottom);
-        const selectedSyllable = computed(() => dataview.selectedSyllable);
-        const countMethod = computed(() => dataview.countMethod.toLowerCase());
+        const selectedSyllable = computed(() => dataview.value.selectedSyllable);
+        const countMethod = computed(() => dataview.value.countMethod.toLowerCase());
         const line_color = computed(() => settings.value.line_color);
         const line_weight = computed(() => settings.value.line_weight);
 
@@ -158,7 +158,7 @@ export default defineComponent({
                 {
                     type: "filter",
                     filters: {
-                        [`sid_${dataview.countMethod.toLowerCase()}`]: [dataview.selectedSyllable]
+                        [`sid_${dataview.value.countMethod.toLowerCase()}`]: [dataview.value.selectedSyllable]
                     }
                 }
             ];

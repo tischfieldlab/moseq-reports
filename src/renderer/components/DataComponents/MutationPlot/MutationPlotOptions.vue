@@ -11,7 +11,7 @@
             <BCol cols="1"></BCol>
             <BCol>
                 <BInputGroup prepend="Dataset">
-                    <DatasetPicker v-model="group_order_dataset" :dataview="dataview" :owner="subid" />
+                    <DatasetPicker v-model="group_order_dataset" :dataview="dataview" :owner="id" />
                 </BInputGroup>
             </BCol>
         </BRow>-->
@@ -144,7 +144,7 @@ const error_type_options = ref([
 
 
 const group_options = computed((): {text: string, value: string}[] => {
-    return dataview.selectedGroups.map((g) => ({text: g, value: g}));
+    return dataview.value.selectedGroups.map((g) => ({text: g, value: g}));
 });
 /*
 const group_order_type = computed({

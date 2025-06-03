@@ -82,7 +82,7 @@ export default defineComponent({
                 {
                     type: "filter",
                     filters: {
-                        group: dataview.selectedGroups,
+                        group: dataview.value.selectedGroups,
                     },
                 }
             ];
@@ -90,7 +90,7 @@ export default defineComponent({
         });
 
         watchEffect(async () => {
-            const rID = dataview.selectedSyllableAs(CountMethod.Raw);
+            const rID = dataview.value.selectedSyllableAs(CountMethod.Raw);
             const path = `scalars/${rID}`;
             DataService.fetchData<Observation[]>(path, operations.value)
                 .then(data => {

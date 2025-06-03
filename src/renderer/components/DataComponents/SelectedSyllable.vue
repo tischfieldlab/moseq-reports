@@ -21,8 +21,8 @@ export default defineComponent({
     },
     setup(props) {
         const { dataview} = useWindowMixin(props.id);
-        const syllable = computed(() => dataview.selectedSyllable);
-        const countMethod = computed(() => dataview.countMethod.toLowerCase());
+        const syllable = computed(() => dataview.value.selectedSyllable);
+        const countMethod = computed(() => dataview.value.countMethod.toLowerCase());
 
         return {
             syllable,

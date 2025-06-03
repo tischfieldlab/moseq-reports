@@ -107,7 +107,7 @@ const columnLabelColors = computed((): {[column: string]: string} => {
                 .map((itm) => {
                     return [
                         itm.uuid,
-                        dataview.selectedGroupColors[dataview.selectedGroups.indexOf(itm.group)]
+                        dataview.value.selectedGroupColors[dataview.value.selectedGroups.indexOf(itm.group)]
                     ];
                 }));
     } else {
@@ -126,8 +126,8 @@ const selectedGroups = computed((): string[] => {
 
 // returns current order of dataset if changes occur to it.
 const rowOrderDataset = computed((): any[] => {
-    if ($wstate.settings.row_order_dataset in dataview.views) {
-        return dataview.views[$wstate.settings.row_order_dataset].data;
+    if ($wstate.settings.row_order_dataset in dataview.value.views) {
+        return dataview.value.views[$wstate.settings.row_order_dataset].data;
     }
     return [];
 });
@@ -136,17 +136,17 @@ const dataset = computed((): Operation[] => {
         {
             type: 'map',
             columns: [
-                [`usage_${dataview.countMethod.toLowerCase()}`, 'usage'],
+                [`usage_${dataview.value.countMethod.toLowerCase()}`, 'usage'],
                 ['uuid', 'uuid'],
                 ['group', 'group'],
-                [`id_${dataview.countMethod.toLowerCase()}`, 'syllable'],
+                [`id_${dataview.value.countMethod.toLowerCase()}`, 'syllable'],
             ],
         },
         {
             type: 'filter',
             filters: {
-                group: dataview.selectedGroups,
-                syllable: dataview.selectedSyllables,
+                group: dataview.value.selectedGroups,
+                syllable: dataview.value.selectedSyllables,
             },
         },
     ];
@@ -164,12 +164,12 @@ watchEffect(async () => {
 
 function onHeatmapClick(event) {
     if (event.row) {
-        dataview.selectedSyllable = Number.parseInt(event.row, 10);
+        dataview.value.selectedSyllable = Number.parseInt(event.row, 10);
     }
 }
 // changes row order by sending a signal to store to commit mutation publishDataset.
 function rowOrderChanged(event) {
-    dataview.publishDataset({
+    dataview.value.publishDataset({
         owner: props.id,
         name: 'Row Order',
         data: event,
@@ -177,7 +177,7 @@ function rowOrderChanged(event) {
 }
 // changes column order by sending a signal to store to commit mutation publishDataset.
 function colOrderChanged(event) {
-    dataview.publishDataset({
+    dataview.value.publishDataset({
         owner: props.id,
         name: 'Column Order',
         data: event,

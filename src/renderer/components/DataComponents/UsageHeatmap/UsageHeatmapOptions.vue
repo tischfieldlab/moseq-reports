@@ -28,10 +28,10 @@ export default defineComponent({
         const {dataview} = useWindowMixin(props.id);
 
         const row_order_column_value_options = computed((): {text: string, value: string}[] => {
-            return dataview.selectedGroups.map((g) => ({text: g, value: g}));
+            return dataview.value.selectedGroups.map((g) => ({text: g, value: g}));
         });
         const column_order_row_value_options = computed((): {text: string, value: string}[] => {
-            return dataview.selectedSyllables.map((s) => ({text: `${s}`, value: `${s}`}));
+            return dataview.value.selectedSyllables.map((s) => ({text: `${s}`, value: `${s}`}));
         });
 
         return {

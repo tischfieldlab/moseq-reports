@@ -116,9 +116,9 @@ export default defineComponent({
         //console.log("bodyRef", bodyRef);
 
         const settings_title = computed(() => `${title.value} Settings`);
-        const swatch_color = computed(() => dataview.color);
-        const is_loading = computed(() => component_loading.value > 0 || dataview.loading);
-        const swatch_title = computed(() => `Using ${dataview.name}`);
+        const swatch_color = computed(() => dataview.value.color);
+        const is_loading = computed(() => component_loading.value > 0 || dataview.value.loading);
+        const swatch_title = computed(() => `Using ${dataview.value.name}`);
         const window_width = computed(() => $wstate.width);
         const window_height = computed(() => $wstate.height);
         const window_position = computed(() => {

@@ -64,8 +64,8 @@ export default defineComponent({
 
         const individualUsageData = ref([]);
         const { layout, dataview, settings, $wstate} = useWindowMixin<DetailedUsageSettings>(props.id);
-        const selectedSyllable = computed(() => dataview.selectedSyllable);
-        const countMethod = computed(() => dataview.countMethod.toLowerCase());
+        const selectedSyllable = computed(() => dataview.value.selectedSyllable);
+        const countMethod = computed(() => dataview.value.countMethod.toLowerCase());
         const dataset = computed((): Operation[] =>
             [{
                 type: "map",
@@ -79,7 +79,7 @@ export default defineComponent({
                 type: "filter",
                 filters: {
                     syllable: [selectedSyllable.value],
-                    group: dataview.selectedGroups,
+                    group: dataview.value.selectedGroups,
                 },
             }, {
                 type: "sort",
@@ -101,9 +101,9 @@ export default defineComponent({
 
         const groupNames = computed(() => {
             if (settings.value.group_order_type === OrderingType.Natural) {
-                return dataview.selectedGroups;
+                return dataview.value.selectedGroups;
             } else if (settings.value.group_order_type === OrderingType.Dataset) {
-                const datasetGroups = dataview.views[settings.value.group_order_dataset];
+                const datasetGroups = dataview.value.views[settings.value.group_order_dataset];
                 if (datasetGroups !== undefined) {
                     return datasetGroups.data;
                 }
@@ -113,7 +113,7 @@ export default defineComponent({
             return [];
         });
         const groupColors = computed(() => {
-            const colors = Object.fromEntries(dataview.groups.map((g) => [g.name, g.color]));
+            const colors = Object.fromEntries(dataview.value.groups.map((g) => [g.name, g.color]));
             return groupNames.value.map((gn) => colors[gn] = colors[gn]);
         });
 

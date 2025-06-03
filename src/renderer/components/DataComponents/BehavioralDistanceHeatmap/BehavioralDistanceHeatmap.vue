@@ -95,39 +95,39 @@ const render_mode = computed(() => {
 });
 // Reacts to changes in properties `row_order_dataset`, and `dataset.views` in settings` to return new row order
 const rowOrderDataset = computed((): any[] => {
-    if ($wstate.settings.row_order_dataset in dataview.views) {
-        return dataview.views[$wstate.settings.row_order_dataset].data;
+    if ($wstate.settings.row_order_dataset in dataview.value.views) {
+        return dataview.value.views[$wstate.settings.row_order_dataset].data;
     }
     return [];
 });
 // Reacts to changes in properties `column_order_dataset`, and `dataset.views` in settings to return new column ordering.
 const columnOrderDataset = computed((): any[] => {
-    if ($wstate.settings.column_order_dataset in dataview.views) {
-        return dataview.views[$wstate.settings.column_order_dataset].data;
+    if ($wstate.settings.column_order_dataset in dataview.value.views) {
+        return dataview.value.views[$wstate.settings.column_order_dataset].data;
     }
     return [];
 });
 const includeSyllables = computed((): any[] => {
-    if (dataview.moduleIdFilter.length === 0) {
-        return dataview.availableModuleIds;
+    if (dataview.value.moduleIdFilter.length === 0) {
+        return dataview.value.availableModuleIds;
     } else {
-        return dataview.moduleIdFilter;
+        return dataview.value.moduleIdFilter;
     }
 });
 
 const dataset = computed((): Operation[] =>{
     let syllables;
-    if (dataview.moduleIdFilter.length === 0) {
-        syllables = dataview.availableModuleIds;
+    if (dataview.value.moduleIdFilter.length === 0) {
+        syllables = dataview.value.availableModuleIds;
     } else {
-        syllables = dataview.moduleIdFilter;
+        syllables = dataview.value.moduleIdFilter;
     }
     return [
         {
             type: 'map',
             columns: [
-                [`row_id_${dataview.countMethod.toLowerCase()}`, 'source'],
-                [`col_id_${dataview.countMethod.toLowerCase()}`, 'sink'],
+                [`row_id_${dataview.value.countMethod.toLowerCase()}`, 'source'],
+                [`col_id_${dataview.value.countMethod.toLowerCase()}`, 'sink'],
                 [$wstate.settings.distance_metric, 'value'],
             ],
         },
@@ -148,12 +148,12 @@ watchEffect(async () => {
 // changes current selected syllable based on area clicked in heatmap sends signal to store to run publishDataset method in mutations
 function onHeatmapClick(event) {
     if (event.row) {
-        dataview.selectedSyllable = Number.parseInt(event.row, 10);
+        dataview.value.selectedSyllable = Number.parseInt(event.row, 10);
     }
 }
 // Changes Row Order
 function rowOrderChanged(event) {
-    dataview.publishDataset({
+    dataview.value.publishDataset({
         owner: props.id,
         name: 'Row Order',
         data: event,
@@ -161,7 +161,7 @@ function rowOrderChanged(event) {
 }
 // Changes column Order
 function colOrderChanged(event) {
-    dataview.publishDataset({
+    dataview.value.publishDataset({
         owner: props.id,
         name: 'Column Order',
         data: event,

@@ -32,7 +32,7 @@ const {$wstate, dataview} = useWindowMixin<UsageHeatmapSettings>(props.id);
 const availableUUIDs = ref<{text: string, value: string}[]>([]);
 
 const column_order_row_value_options = computed((): {text: string, value: string}[] => {
-    return dataview.selectedSyllables.map((s) => ({text: `${s}`, value: `${s}`}));
+    return dataview.value.selectedSyllables.map((s) => ({text: `${s}`, value: `${s}`}));
 });
 const uuidSourceData = computed((): Operation[] => {
     const filters: Operation[] = [

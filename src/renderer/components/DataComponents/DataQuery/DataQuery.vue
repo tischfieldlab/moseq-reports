@@ -154,9 +154,9 @@ export default defineComponent({
         const finalDataset = computed(() => intermediateResults.value.at(-1));
 
         const specialTokens = computed(() => ({
-            $SelectedSyllable: dataview.selectedSyllable,
-            $AvailableSyllables: dataview.selectedSyllables,
-            $SelectedGroups: dataview.selectedGroups,
+            $SelectedSyllable: dataview.value.selectedSyllable,
+            $AvailableSyllables: dataview.value.selectedSyllables,
+            $SelectedGroups: dataview.value.selectedGroups,
         }));
 
         function getDataSourceItems(manifest, prefix = '/') {

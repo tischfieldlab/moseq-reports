@@ -47,20 +47,20 @@ export default defineComponent({
         const aspectRatio = ref<number>(0);
         const uID = computed(() => {
             if (!datasource.value) return null;
-            return dataview.selectedSyllableAs(CountMethod.Usage);
+            return dataview.value.selectedSyllableAs(CountMethod.Usage);
         });
 
         const rID = computed(() => {
             if (!datasource.value) return null;
-            return dataview.selectedSyllableAs(CountMethod.Raw);
+            return dataview.value.selectedSyllableAs(CountMethod.Raw);
         });
 
         const fname = computed(() => {
             return `syllable_sorted-id-${uID.value} (usage)_original-id-${rID.value}.mp4`;
         });
 
-        const selected_syllable = computed(() => dataview.selectedSyllable);
-        const count_method = computed(() => dataview.countMethod);
+        const selected_syllable = computed(() => dataview.value.selectedSyllable);
+        const count_method = computed(() => dataview.value.countMethod);
         const fetchMoviePath = async () => {
             crowdMoviePath.value = DataService.resolve(`/crowd_movies/${encodeURIComponent(fname.value)}`)
         };

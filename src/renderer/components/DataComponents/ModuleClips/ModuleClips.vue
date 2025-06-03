@@ -77,10 +77,10 @@ export default defineComponent({
         const { $wstate, layout, dataview, settings } = useWindowMixin<ModuleClipsSettings>(props.id);
         const exampleNum = ref(1);
         const videoId = ref(`video-${Math.random().toString(36).substr(2, 9)}`);
-        const selectedSyllable = computed(() => dataview.selectedSyllable);
-        const countMethod = computed(() => dataview.countMethod);
+        const selectedSyllable = computed(() => dataview.value.selectedSyllable);
+        const countMethod = computed(() => dataview.value.countMethod);
         const items = computed(() => {
-            const ids = dataview.selectedSyllableMap;
+            const ids = dataview.value.selectedSyllableMap;
             const clips = (datasetsStore.manifest?.syllable_clips as any).manifest || [];
             return clips.filter((row: any) => row.sid_raw === ids.raw);
         });
