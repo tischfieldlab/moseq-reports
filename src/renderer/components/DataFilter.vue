@@ -285,7 +285,7 @@ export default defineComponent({
 }
 .datafilter {
     margin-left: 7px;
-    margin-bottom: 4px;
+    margin-bottom: 14px;
 }
 .container {
     padding: 0;

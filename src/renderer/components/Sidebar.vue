@@ -9,29 +9,25 @@
                 :style="{ 'justify-self': itm.align }"
                 :title="current === itm ? `Hide ${itm.name}` : `Show ${itm.name}`"
             >
-                <BButton variant="link" size="lg" @click="toggleItem(itm)">
+                <BButton variant="link" size="lg" @click="toggleItem(itm)" :class="{ active: current === itm }">
                     <i :class="current === itm ? itm.icon[0] : itm.icon[1]"></i>
                 </BButton>
             </div>
         </div>
 
         <!-- Sidebar -->
-        <div
-            class="offcanvas"
-            :class="{ 'offcanvas-end': right, 'offcanvas-start': !right, show: is_open }"
-            tabindex="-1"
-            id="sidebar"
-            aria-labelledby="sidebarLabel"
+        <BOffcanvas
+            v-model="is_open"
+            :placement="placement"
+            :no-header="true"
+            :no-backdrop="true"
+            shadow="lg"
+            :width="300"
         >
-            <div class="offcanvas-header">
-                <!--<BButton type="button" class="btn-close" @click="close" aria-label="Close"></BButton>-->
-            </div>
-            <div class="offcanvas-body">
-                <keep-alive>
-                    <component :is="current?.component" />
-                </keep-alive>
-            </div>
-        </div>
+            <keep-alive>
+                <component :is="current?.component" />
+            </keep-alive>
+        </BOffcanvas>
     </Teleport>
 </template>
 <script lang="ts">
@@ -87,6 +83,9 @@ export default defineComponent({
         showItem() {
             return (item: SidebarItem) => item.isVisible();
         },
+        placement() {
+            return this.right ? "end" : "start";
+        },
     },
     methods: {
         openItem(name: string) {
@@ -107,7 +106,7 @@ export default defineComponent({
     },
 });
 </script>
-<style scoped>
+<style>
 .button-bar {
     display: flex;
     flex-direction: column;
@@ -116,9 +115,10 @@ export default defineComponent({
     padding-top: 12px;
     width: 48px;
     top: 30px;
-    bottom: 0;  
+    bottom: 0;
     background-color: #ffffff;
     z-index: 1050;
+    margin-left: 0;
 }
 .button-bar.right {
     right: 0;
@@ -128,38 +128,34 @@ export default defineComponent({
     height: 48px;
     padding: 6px;
     cursor: pointer;
+    border-radius: 0;
+    color: #2c3e50 !important; /* Change color of active button */
 }
+.button-bar .btn.active {
+    border-left: 4px solid #2c3e50 !important; /* Highlight active button */
+}
+.button-bar.right .btn.active {
+    border-right: 4px solid #2c3e50 !important; /* Highlight active button */
+    border-left: none !important; /* Remove left border for right sidebar */
+}
+
 .offcanvas {
-    padding-left: 26px; /* Add padding to the left to avoid cut-off */
-    box-sizing: border-box; /* Ensure padding doesn't overflow */
-    width: 300px;
-    transition: transform 0.3s ease;
+    width: 330px !important;
 }
-.offcanvas-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 15px; 
-    margin: 0;
+.offcanvas.offcanvas-start {
+    left: 48px !important;
 }
-.datafilter.card {
-    margin-left: 10px; 
+.offcanvas.offcanvas-end {
+    right: 48px !important;
 }
-
-.button-bar {
-    margin-left: 0; 
-}
-.offcanvas-header .btn-close {
-    margin-bottom: -30px; 
-    margin-top: 16px; 
-    position: relative;
-    top: 5px;
+.offcanvas-body {
+    padding-top: 36px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    background-color: #f8f9fa !important;
 }
 
-.offcanvas.show {
-    transform: translateX(0);
-}
-.offcanvas-end {
-    right: -300px;
-}
+
+
+
 </style>
