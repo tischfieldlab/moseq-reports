@@ -4,17 +4,7 @@ import { scaleLinear } from "d3-scale";
 import { extent } from "d3-array";
 import { Observation, HexBin } from "./HexBinPlot.types"
 
-export function binData({
-    data,
-    groupLabels,
-    width,
-    resolution,
-}: {
-    data: Observation[];
-    groupLabels: string[] | null;
-    width: number;
-    resolution: number;
-}) {
+export function binData(data: Observation[], groupLabels: string[] | null, width: number, resolution: number,) {
     const xScale = scaleLinear()
         .domain(extent(data, (d) => d.x) as [number, number])
         .range([0, width]);
@@ -36,14 +26,15 @@ export function binData({
     const binned: { [group: string]: HexBin[] } = {};
     for (const [group, values] of Object.entries(groupedData)) {
         const bins: HexBin[] = hexer(values).map(bin => ({
-            x: bin.x,
-            y: bin.y,
-            length: bin.length,
-            z: bin.length / values.length,
-        }
-    ));
-    binned[group] = bins;
-}
+                x: bin.x,
+                y: bin.y,
+                length: bin.length,
+                z: bin.length / values.length,
+            }
+        ));
+        binned[group] = bins;
+    }
+
     const zmax = Math.max(
         ...Object.values(binned).flatMap((bins) => bins.map((bin) => bin.z))
     );

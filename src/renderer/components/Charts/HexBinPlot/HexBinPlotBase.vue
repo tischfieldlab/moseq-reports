@@ -1,33 +1,13 @@
 <script lang="ts">
-import { ref, computed, watch, onUnmounted, toRaw } from 'vue';
+import { ref, computed, onUnmounted, toRaw, watchEffect } from 'vue';
 import { hexbin } from 'd3-hexbin';
 import { scaleLinear, scaleSequential } from 'd3-scale';
 import { GetScale } from '@render/components/Charts/Colors/D3ColorProvider';
 import gridLayout from '@render/components/Charts/D3Layout';
 import { releaseProxy } from 'comlink';
-import { Observation } from './HexBinPlot.types';
+import { HexBinPlotBaseProps, Observation } from './HexBinPlot.types';
 
-export const HexBinPlotBasePropsDefaults = {
-    resolution: 10,
-    useGroups: false,
-    colorscale: 'interpolateBuPu',
-    title: 'title',
-    legendTitle: 'title',
-    noDataMessage: 'Sorry, no data available!',
-};
 
-export interface HexBinPlotBaseProps {
-    data: { x: number; y: number; id: string; group: string }[],
-    width: number,
-    height: number,
-    resolution: number,
-    useGroups: boolean,
-    colorscale: string,
-    groupLabels: string[],
-    title: string,
-    legendTitle: string,
-    noDataMessage?: string
-};
 
 export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
     const worker = new ComlinkWorker<typeof import('./Worker')>(
@@ -38,8 +18,8 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
     const margin = ref({ top: 20, right: 20, bottom: 70, left: 20 });
     const binned = ref<Record<string, any[]>>({});
     const zmax = ref(0);
-    const domainX = ref<[number, number]>([0, 0]);
-    const domainY = ref<[number, number]>([0, 0]);
+    const domainX = ref<number[]>([0, 0]);
+    const domainY = ref<number[]>([0, 0]);
 
     const innerSize = computed(() => ({
         w: props.width - margin.value.left - margin.value.right,
@@ -81,15 +61,14 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
             .size([scale.value.x.range()[1], scale.value.y.range()[0]])
     );
 
-    const prepareData = async () => {
-        if (!props.data) return;
+    watchEffect(async () => {
         try {
-            const result = await worker.binData({
-                data: toRaw(props.data),
-                groupLabels: props.useGroups ? props.groupLabels : null,
-                width: scale.value.x.range()[1],
-                resolution: props.resolution,
-            });
+            const result = await worker.binData(
+                toRaw(props.data),
+                props.useGroups ? props.groupLabels : null,
+                scale.value.x.range()[1],
+                props.resolution,
+            );
             binned.value = result.binned;
             zmax.value = result.zmax;
             domainX.value = result.domainX;
@@ -97,15 +76,8 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
         } catch (error) {
             console.error('Error preparing data:', error);
         }
-    };
+    });
 
-    watch(
-        () => props.data,
-        () => {
-            if (props.data) prepareData();
-        },
-        { immediate: true }
-    );
 
     onUnmounted(() => {
         worker[releaseProxy]();
@@ -125,7 +97,6 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
         hexbing,
         hexWidth,
         hexHeight,
-        prepareData,
     };
 }
 </script>

@@ -26,7 +26,6 @@
 
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-import { BContainer, BRow, BInputGroup, BFormSelect, BFormInput } from "bootstrap-vue-next";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import ColorScalePicker from "@render/components/Charts/Colors/ColorScalePicker.vue";
 import { PositionPlotSettings, PositionPlotMode } from './PositionPlot.types';
@@ -68,10 +67,11 @@ export default defineComponent({
 
         const resolution = computed({
             get: () => $wstate.settings.resolution,
-            set: (value: number) => {
-                if (value !== $wstate.settings.resolution) {
+            set: (value: string) => {
+                const parsedValue = parseInt(value);
+                if (parsedValue !== $wstate.settings.resolution) {
                     $wstate.updateComponentSettings({
-                        settings: { resolution: value },
+                        settings: { resolution: parsedValue },
                     });
                 }
             },

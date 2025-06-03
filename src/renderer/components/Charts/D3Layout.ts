@@ -12,7 +12,7 @@ export interface GridCell {
 
 export default function gridLayout() {
     let numCells = 1;
-    let aspect = 1;
+    let aspect_ratio = 1;
     let paddingX = 0;
     let paddingY = 0;
     let widthTotal = 550;
@@ -21,20 +21,20 @@ export default function gridLayout() {
     function grid(data: any[]): GridCell[] {
         numCells = data.length;
 
-        const widthIndividual = Math.sqrt((aspect * widthTotal * heightTotal) / numCells);
+        const widthIndividual = Math.sqrt((aspect_ratio * widthTotal * heightTotal) / numCells);
         const minNx = Math.floor(widthTotal / widthIndividual);
         const maxNy = Math.ceil(numCells / minNx);
 
         let maxNx = Math.ceil(widthTotal / widthIndividual);
         let minNy = Math.ceil(numCells / maxNx);
 
-        while ((widthTotal / maxNx / aspect) * minNy > heightTotal) {
+        while ((widthTotal / maxNx / aspect_ratio) * minNy > heightTotal) {
             maxNx += 1;
             minNy = Math.ceil(numCells / maxNx);
         }
 
         const horizontalWidth = widthTotal / maxNx;
-        const horizontalHeight = horizontalWidth / aspect;
+        const horizontalHeight = horizontalWidth / aspect_ratio;
 
         const widthI = horizontalWidth;
         const heightI = horizontalHeight;
@@ -63,25 +63,34 @@ export default function gridLayout() {
         return cells;
     }
 
-    grid.size = function ([width, height]: [number, number]) {
+    function size(): [number, number];
+    function size([width, height]: [number, number]): typeof grid;
+    function size(width_height?) {
         if (arguments.length === 0) return [widthTotal, heightTotal];
-        widthTotal = width;
-        heightTotal = height;
+        widthTotal = width_height[0];
+        heightTotal = width_height[1];
         return grid;
-    };
+    }
+    grid.size = size;
 
-    grid.aspect = function (newAspect?: number) {
-        if (arguments.length === 0) return aspect;
-        if (newAspect !== undefined) aspect = newAspect;
+    function aspect(): number;
+    function aspect(newAspect: number): typeof grid;
+    function aspect(newAspect?) {
+        if (arguments.length === 0) return aspect_ratio;
+        if (newAspect !== undefined) aspect_ratio = newAspect;
         return grid;
-    };
+    }
+    grid.aspect = aspect;
 
-    grid.padding = function ([x, y]: [number, number]) {
+    function padding(): [number, number];
+    function padding([x, y]: [number, number]): typeof grid;
+    function padding(x_y?) {
         if (arguments.length === 0) return [paddingX, paddingY];
-        paddingX = x;
-        paddingY = y;
+        paddingX = x_y[0];
+        paddingY = x_y[1];
         return grid;
     };
+    grid.padding = padding;
 
     return grid;
 }
