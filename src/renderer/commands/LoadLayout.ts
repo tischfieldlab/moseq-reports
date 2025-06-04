@@ -1,10 +1,10 @@
 import fs from "fs";
 import { dialog, shell } from "@electron/remote";
-import Toastify from "toastify-js";
 import { DehydratedDataWindow } from "@store/datawindow.types";
 import { useWindowsStore } from "@store/windows.store"
 import { useFiltersStore } from "@store/filters.store";
 import { DataViewRecord } from "@render/store/dataview.types";
+import { showGenericSimpleToast, showLoadErrorToast, showLoadSuccessToast, showLoadSuccessToastSimple, showSaveErrorToast, showSaveSuccessToast, showStartLoadingToast } from "@render/components/Core/IO/Toasts";
 
 
 
@@ -36,8 +36,9 @@ export default function () {
  */
 export async function LoadDefaultLayout(showNotifications = true) {
     const windowsStore = useWindowsStore();
+    let loading_toast;
     if (showNotifications) {
-        showStartLoadingToast();
+        loading_toast = showStartLoadingToast("Loading Layout", 'Hang tight... We\'re getting your layout ready.');
     }
     try {
         const response = await fetch(`/default_layout.${LayoutFileExt}`);
@@ -45,12 +46,13 @@ export async function LoadDefaultLayout(showNotifications = true) {
         await windowsStore.loadLayout(data);
 
         if (showNotifications) {
-            showLoadSuccessToast("Default Layout");
+            loading_toast.destroy();
+            showLoadSuccessToastSimple('Layout loaded successfully!', "Default layout was loaded successfully.");
         }
     } catch (error) {
-        console.error("Error loading default layout:", error);
         if (showNotifications) {
-            showErrorToast("Failed to load default layout.");
+            loading_toast.destroy();
+            showLoadErrorToast(error, "default layout.");
         }
     }
 }
@@ -63,8 +65,9 @@ export async function LoadDefaultLayout(showNotifications = true) {
 export async function LoadLayoutFile(filename: string, showNotifications = true) {
     const windowsStore = useWindowsStore();
     const filtersStore = useFiltersStore();
+    let loading_toast;
     if (showNotifications) {
-        showStartLoadingToast();
+        loading_toast = showStartLoadingToast("Loading Layout", 'Hang tight... We\'re getting your layout ready.');
     }
 
     try {
@@ -91,12 +94,13 @@ export async function LoadLayoutFile(filename: string, showNotifications = true)
         }
 
         if (showNotifications) {
-            showLoadSuccessToast(filename);
+            loading_toast.destroy();
+            showLoadSuccessToast(filename, "layout");
         }
     } catch (error) {
-        console.error("Error loading layout file:", error);
         if (showNotifications) {
-            showErrorToast("Failed to load layout file.");
+            loading_toast.destroy();
+            showLoadErrorToast(error, "layout file");
         }
     }
 }
@@ -118,10 +122,10 @@ export async function SaveLayout() {
             const contents = JSON.stringify(data, null, "\t");
 
             fs.writeFileSync(dest, contents);
-            showSaveSuccessToast(dest);
+            showSaveSuccessToast(dest, 'layout');
         } catch (error) {
             console.error("Error saving layout:", error);
-            showErrorToast("Failed to save layout.");
+            showSaveErrorToast(error, "layout");
         }
     }
 }
@@ -132,60 +136,7 @@ export async function SaveLayout() {
 export function ClearLayout() {
     const windowsStore = useWindowsStore();
     windowsStore.clearLayout();
+    showGenericSimpleToast("Layout cleared", "The current layout has been cleared.");
 }
 
-/**
- * Shows a toast for successful layout save operation.
- * @param dest - The file destination where the layout was saved.
- */
-function showSaveSuccessToast(dest: string) {
-    Toastify({
-        text: `Your layout was saved successfully to ${dest}`,
-        duration: 5000,
-        gravity: "bottom",
-        position: "right",
-        backgroundColor: "green",
-        onClick: () => shell.showItemInFolder(dest),
-    }).showToast();
-}
 
-/**
- * Shows a toast for the start of a layout loading operation.
- */
-function showStartLoadingToast() {
-    Toastify({
-        text: "Hang tight... We're getting your layout ready.",
-        duration: 5000,
-        gravity: "bottom",
-        position: "right",
-        backgroundColor: "blue",
-    }).showToast();
-}
-
-/**
- * Shows a toast for successful layout load operation.
- * @param filename - The name of the loaded file.
- */
-function showLoadSuccessToast(filename: string) {
-    Toastify({
-        text: `"${filename}" was loaded successfully.`,
-        duration: 5000,
-        gravity: "bottom",
-        position: "right",
-        backgroundColor: "green",
-    }).showToast();
-}
-
-/**
- * Shows a toast for error during layout operations.
- * @param message - The error message to display.
- */
-function showErrorToast(message: string) {
-    Toastify({
-        text: message,
-        duration: 5000,
-        gravity: "bottom",
-        position: "right",
-        backgroundColor: "red",
-    }).showToast();
-}

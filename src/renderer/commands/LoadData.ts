@@ -12,6 +12,7 @@ import { useWindowsStore } from "@store/windows.store";
 import DataService from "@api";
 import { app_root } from '..';
 import { BSpinner } from 'bootstrap-vue-next';
+import { showLoadErrorToast, showLoadSuccessToast, showStartLoadingToast } from '@render/components/Core/IO/Toasts';
 
 
 
@@ -49,7 +50,10 @@ async function beginLoadingProcess(filename: string) {
     const filtersStore = useFiltersStore();
     const windowsStore = useWindowsStore();
 
-    const loading_toast = showStartLoadingToast();
+    const loading_toast = showStartLoadingToast(
+        'Loading Data',
+        'Hang tight... We\'re getting your data ready.'
+    );
 
     nextTick()
         .then(() => {
@@ -91,21 +95,8 @@ async function beginLoadingProcess(filename: string) {
             // destroy the loading toast
             loading_toast.hide();
 
-            // message to show in the toast and in the history
-            const message = 'File "' + datasetStore.name + '" was loaded successfully.';
-
-            // show success toast
-            app_root.$showToast({
-                title: 'Data loaded successfully!',
-                variant: 'success',
-                isStatus: true,
-                position: 'bottom-end',
-                body: message,
-                modelValue: 5000,
-            });
-
-            // add an entry to the history store
-            historyStore.addEntry({ message, variant: "success" });
+            // show success toast, and add an entry to the history store
+            showLoadSuccessToast(`[${datasetStore.name}](${filename})`, "MSQ file");
 
             // emit an event to notify that the dataset has been loaded
             EventEmitter.emit("finish-dataset-load");
@@ -116,18 +107,8 @@ async function beginLoadingProcess(filename: string) {
             // destroy the loading toast
             loading_toast.destroy();
 
-            // show error toast
-            app_root.$showToast({
-                title: 'Error loading data!',
-                variant: 'danger',
-                isStatus: true,
-                position: 'bottom-end',
-                body: reason.toString(),
-                modelValue: 5000,
-            });
-
-            // add an entry to the history store
-            historyStore.addEntry({ message: reason.toString(), variant: "danger" });
+            // show error toast and add an entry to the history store
+            showLoadErrorToast(reason, 'data');
 
             // emit an event to notify that the dataset failed to load
             EventEmitter.emit("fail-dataset-load");
@@ -135,7 +116,7 @@ async function beginLoadingProcess(filename: string) {
 }
 
 
-
+/*
 function showStartLoadingToast() {
     return app_root.$showToast({
         id: 'loading-toast',
@@ -155,5 +136,5 @@ function showStartLoadingToast() {
             ]),
         }
     });
-}
+}*/
 
