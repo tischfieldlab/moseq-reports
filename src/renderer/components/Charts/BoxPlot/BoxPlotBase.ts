@@ -1,4 +1,3 @@
-<script lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, toRaw, shallowRef } from 'vue';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { area, line, symbol, symbolDiamond } from 'd3-shape';
@@ -192,4 +191,3 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
 
     return { points, groupedData, has_data, scale, fences, diamond, violinArea, violinLine, margin, origin, tooltip_text, tooltipPosition, hoverItem, actuallyShowPoints, is_outlier, halfBandwith, quaterBandwith, xAxisLabelYPos, innerHeight, innerWidth, rotate_labels };
 }
-</script>
