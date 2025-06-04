@@ -91,7 +91,7 @@
 <script setup lang="ts">
 import { ref, nextTick, useTemplateRef } from "vue";
 import * as d3 from "d3";
-import { useBoxPlotBase, BoxPlotBaseProps, BoxPlotBasePropsDefaults } from "@render/components/Charts/BoxPlot/BoxPlotBase.vue";
+import { useBoxPlotBase, BoxPlotBaseProps, BoxPlotBasePropsDefaults } from "@render/components/Charts/BoxPlot/BoxPlotBase";
 import ToolTip from "@render/components/Charts/ToolTip.vue";
 import MessageBox from "@render/components/Charts/CenteredMessage.vue";
 import { throttle } from "@render/util/Events";

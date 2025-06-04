@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang='ts'>
-import {BoxPlotBaseProps, BoxPlotBasePropsDefaults, useBoxPlotBase} from './BoxPlotBase.vue';
+import {BoxPlotBaseProps, BoxPlotBasePropsDefaults, useBoxPlotBase} from './BoxPlotBase';
 import { GroupStats, DataPoint, LabelStats } from './BoxPlot.types';
 import { sum } from 'd3-array';
 import { throttle, debounce } from '@render/util/Events';
