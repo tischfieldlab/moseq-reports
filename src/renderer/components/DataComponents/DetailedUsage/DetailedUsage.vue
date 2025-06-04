@@ -13,7 +13,7 @@
         :show_violinplot="settings.show_violinplot"
         :kde_scale="settings.violin_kde_scale"
         xAxisTitle="Group"
-        :yAxisTitle="`Module #${selectedSyllable} Usage (${countMethod})`"
+        :yAxisTitle="`Syllable #${selectedSyllable} Usage (${countMethod})`"
         :tooltipFormatter=formatTooltip
     />
 </template>

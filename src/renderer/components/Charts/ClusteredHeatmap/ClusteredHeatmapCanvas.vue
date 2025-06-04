@@ -310,7 +310,7 @@ const handleHeatmapHover = throttle((event: MouseEvent) => {
 function heatmap_node_tooltip(item: object) {
     return `<div style="text-align:left;">
                 Group: ${item[props.columnKey]}<br />
-                Module: ${item[props.rowKey]}<br />
+                Syllable: ${item[props.rowKey]}<br />
                 Usage: ${item[props.valueKey].toExponential(3)}
             </div>`;
 }

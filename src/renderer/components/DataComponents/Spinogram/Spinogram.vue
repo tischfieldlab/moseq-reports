@@ -7,7 +7,7 @@
 
             <svg :width="outsideWidth" :height="outsideHeight">
                 <text class="title" :x="outsideWidth / 2" y="10">
-                    Module #{{ selectedSyllable }} ({{ countMethod }}) Spinogram
+                    Syllable #{{ selectedSyllable }} ({{ countMethod }}) Spinogram
                 </text>
 
                 <g :transform="`translate(${margin.left}, ${dims.y - dims.h - 10})`">

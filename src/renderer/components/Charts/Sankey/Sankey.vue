@@ -6,30 +6,51 @@
                     {{ title }}
                 </text>
                 <g>
-                    <text class="axis-label"
-                        :transform="`translate(10, ${(innerHeight / 2) + margin.top}) rotate(-90)`">Incoming</text>
-                    <text class="axis-label"
-                        :transform="`translate(${width - (margin.right / 2)}, ${(innerHeight / 2) + margin.top}) rotate(-90)`">Outgoing</text>
+                    <text class="axis-label" :transform="`translate(10, ${(innerHeight / 2) + margin.top}) rotate(-90)`">
+                        Incoming
+                    </text>
+                    <text class="axis-label" :transform="`translate(${width - (margin.right / 2)}, ${(innerHeight / 2) + margin.top}) rotate(-90)`">
+                        Outgoing
+                    </text>
                     <g class="node" v-for="n in graph.nodes" :key="n.name"
-                        :transform="`translate(${(n.x0 || 0) + 1}, ${(n.y0 || 0)})`" @click="onNodeClick($event, n)"
-                        :data-nodeid="n.id">
-                        <rect :x="0" :y="0" :width="(n.x1 - n.x0 - 2 || 0)" :height="Math.max(1, n.y1 - n.y0) || 0"
-                            :fill="color(scale.n(n[nodeColorProperty])).darker(0.5).toString()" :data-nodeid="n.id"></rect>
-                        <text v-if="Math.max(1, n.y1 - n.y0) > 10" class="node-label" :x="(n.x1 - n.x0 - 2) / 2 - 6"
-                            :y="Math.max(1, n.y1 - n.y0) / 2" :data-nodeid="n.id">
+                        :transform="`translate(${(n.x0 || 0) + 1}, ${(n.y0 || 0)})`"
+                        @click="onNodeClick($event, n)"
+                        :data-nodeid="n.id"
+                    >
+                        <rect :x="0"
+                              :y="0"
+                              :width="(n.x1 - n.x0 - 2 || 0)"
+                              :height="Math.max(1, n.y1 - n.y0) || 0"
+                              :fill="color(scale.n(n[nodeColorProperty]))?.darker(0.5).toString()"
+                              :data-nodeid="n.id" />
+                        <text v-if="Math.max(1, n.y1 - n.y0) > 10"
+                              class="node-label"
+                              :x="(n.x1 - n.x0 - 2) / 2"
+                              :y="Math.max(1, n.y1 - n.y0) / 2"
+                              :data-nodeid="n.id"
+                        >
                             {{ n.id }}
                         </text>
                     </g>
                 </g>
                 <g>
                     <template v-for="l in graph.links" :key="l.id">
-                        <path class="link" :d="sankeyLinkHorizontal(l)" fill="none" :stroke="scale.l(l)"
-                            :stroke-width="Math.max(1, l.width || 1)" :data-transitionid="l.id"
-                            @click="onEdgeClick($event, l)"></path>
+                        <path class="link"
+                              :d="(sankeyLinkHorizontal(l as any) as string)"
+                              fill="none"
+                              :stroke="scale.l(l)"
+                              :stroke-width="Math.max(1, l.width || 1)"
+                              :data-transitionid="l.id"
+                              @click="onEdgeClick($event, l)" />
                     </template>
                 </g>
-                <ColorScaleLegend v-if="showColorLegend" :title="colorLegendTitle" :scale="scale.li" :width="150"
-                    :height="10" :transform="`translate(${width / 2}, ${height - margin.bottom})`" />
+                <ColorScaleLegend
+                    v-if="showColorLegend"
+                    :title="colorLegendTitle"
+                    :scale="scale.li"
+                    :width="150"
+                    :height="10"
+                    :transform="`translate(${width / 2}, ${height - margin.bottom})`" />
             </template>
         </svg>
         <div v-if="graph.links.length === 0" class="no-data">
@@ -44,8 +65,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted } from 'vue';
-import { sankey, sankeyCenter, sankeyLeft, sankeyRight, sankeyJustify, SankeyLayout, SankeyGraph } from 'd3-sankey';
+import { ref, computed, watch } from 'vue';
+import { sankey, sankeyCenter, sankeyLeft, sankeyRight, sankeyJustify, SankeyGraph } from 'd3-sankey';
 import { linkHorizontal } from 'd3-shape';
 import { color } from 'd3-color';
 import { scaleOrdinal, scaleDiverging, ScaleOrdinal } from 'd3-scale';
@@ -234,5 +255,27 @@ function default_tooltip_formatter(hoverItem: Node | Link): string {
     width: 100%;
     height: 100%;
     overflow: hidden;
+}
+.link {
+    mix-blend-mode: multiply;
+}
+g.node {
+    cursor: pointer;
+}
+.node-label {
+    text-anchor: middle;
+    alignment-baseline: middle;
+    dominant-baseline: middle;
+    font-size: 12px;
+}
+.axis-label {
+    text-anchor: middle;
+}
+.no-data .card {
+    width: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 </style>

@@ -168,7 +168,7 @@ function colOrderChanged(event) {
 }
 function heatmap_node_tooltip(item: any) {
     return `<div style="text-align:left;">
-                Module: ${item.source} vs ${item.sink}<br />
+                Syllable: ${item.source} vs ${item.sink}<br />
                 Distance: ${item.value?.toExponential(3)}
             </div>`;
 }

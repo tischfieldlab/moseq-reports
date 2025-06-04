@@ -6,7 +6,7 @@
         @sizeCalculated="sizeCalculated"
     >
         <template #prepend>
-            <span> Module {{ selected_syllable }} ({{ count_method }}) </span>
+            <span> Syllable {{ selected_syllable }} ({{ count_method }}) </span>
         </template>
         <template #no-video>
             <BCard bg-variant="primary" text-variant="white" class="text-center">

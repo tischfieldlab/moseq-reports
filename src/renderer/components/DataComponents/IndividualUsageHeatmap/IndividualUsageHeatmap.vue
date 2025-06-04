@@ -184,7 +184,7 @@ function heatmap_node_tooltip(item: any) {
     return `<div style="text-align:left;">
                 UUID: ${item.uuid}<br />
                 Group: ${item.group}<br />
-                Module: ${item.syllable}<br />
+                Syllable: ${item.syllable}<br />
                 Usage: ${item.usage.toExponential(3)}
             </div>`;
 }

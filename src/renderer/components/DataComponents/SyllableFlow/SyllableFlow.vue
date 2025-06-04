@@ -1,5 +1,5 @@
 <template>
-    <Sankey 
+    <Sankey
         :width="layout.width"
         :height="layout.height"
         :data="graph"
@@ -29,8 +29,8 @@ import Sankey from '@render/components/Charts/Sankey/Sankey.vue';
 import { Node, Link, NodeAlignment, ColoringMode } from '@render/components/Charts/Sankey/Sankey.types';
 import { RenderMode } from '@render/store/datawindow.types';
 import { SyllableFlowSettings, TransitionItem } from './SyllableFlow.types';
-import  { Operation } from '@api';
-import DataService from '@api';
+import DataService, { Operation } from '@api';
+
 
 RegisterDataComponent({
     friendly_name: 'Syllable Flow',
@@ -224,7 +224,7 @@ export default defineComponent({
         });
 
         const noDataMessage = computed(() => {
-            return `No transitions for group ${settings.value.plot_group} Module ${selectedSyllable.value} (${dataview.value.countMethod})`;
+            return `No transitions for group ${settings.value.plot_group} Syllable ${selectedSyllable.value} (${dataview.value.countMethod})`;
         });
 
         const colorLegendTitle = computed(() => {
@@ -240,13 +240,13 @@ export default defineComponent({
             if (settings.value.show_relative_diff) {
                 title += ` vs ${settings.value.relative_diff_group}`;
             }
-            return `${title} Module ${selectedSyllable.value} (${dataview.value.countMethod})`;
+            return `${title} Syllable ${selectedSyllable.value} (${dataview.value.countMethod})`;
         });
 
         const tooltipFormatter = (hoverItem: Node | Link) => {
             if (hoverItem !== undefined) {
                 if (hoverItem.type === 'node') {
-                    return `Module ${hoverItem.id}`;
+                    return `Syllable ${hoverItem.id}`;
                 } else if (hoverItem.type === 'edge') {
                     return `Transition ${hoverItem.id}<br />P(t) = ${(hoverItem as Link).value.toExponential(3)}`;
                 }

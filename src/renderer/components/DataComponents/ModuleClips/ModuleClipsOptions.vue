@@ -7,7 +7,7 @@
         </BRow>
 
         <BRow>
-            <BFormCheckbox v-model="onlySubclip" switch>Only module subclip</BFormCheckbox>
+            <BFormCheckbox v-model="onlySubclip" switch>Only syllable subclip</BFormCheckbox>
         </BRow>
 
         <BRow>

@@ -163,7 +163,7 @@ export default defineComponent({
         heatmap_node_tooltip(item: HeatmapTile) {
             return `<div style="text-align:left;">
                         Group: ${item.group}<br />
-                        Module: ${item.syllable}<br />
+                        Syllable: ${item.syllable}<br />
                         Usage: ${item.usage.toExponential(3)}
                     </div>`;
         },

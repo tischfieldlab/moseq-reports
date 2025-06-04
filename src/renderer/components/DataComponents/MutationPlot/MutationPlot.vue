@@ -15,8 +15,8 @@
         :pointSize="$wstate.settings.point_size"
         :showLines="$wstate.settings.show_lines"
         :lineWeight="$wstate.settings.line_weight"
-        xAxisTitle="Module ID"
-        :yAxisTitle="`Module Usage (${dataview.countMethod})`"
+        xAxisTitle="Syllable ID"
+        :yAxisTitle="`Syllable Usage (${dataview.countMethod})`"
         :tooltipFormatter="format_tooltip"
         @lineplot-click="onLineplotClick"
     />
@@ -201,7 +201,7 @@ function onLineplotClick(event) {
     }
 }
 function format_tooltip(itm: PlotData): string {
-    return `Module: ${itm.syllable}<br />
+    return `Syllable: ${itm.syllable}<br />
             Group: ${itm.group}<br />
             Count: ${itm.count}<br />
             Value: ${itm.value.toExponential(2)}

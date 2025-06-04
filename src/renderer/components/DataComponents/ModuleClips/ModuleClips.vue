@@ -20,7 +20,7 @@
             @sizeCalculated="sizeCalculated"
         >
             <template #prepend>
-                <span> Module {{ selectedSyllable }} ({{ countMethod }}) </span>
+                <span> Syllable {{ selectedSyllable }} ({{ countMethod }}) </span>
             </template>
 
             <template #no-video>
@@ -45,7 +45,7 @@ import { ModuleClipsSettings } from "./ModuleClips.types";
 import DataService from "@api";
 
 RegisterDataComponent({
-    friendly_name: "Module Clips",
+    friendly_name: "Syllable Clips",
     component_type: "ModuleClips",
     init_width: 360,
     init_height: 360,

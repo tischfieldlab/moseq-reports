@@ -17,7 +17,7 @@
         </BRow>-->
         <BRow>
             <BCol>
-                <BInputGroup prepend="Module Ordering">
+                <BInputGroup prepend="Syllable Ordering">
                     <BFormSelect v-model="syllable_order_type" :options="syllable_order_options"></BFormSelect>
                 </BInputGroup>
             </BCol>
