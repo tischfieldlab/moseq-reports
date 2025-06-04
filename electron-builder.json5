@@ -35,6 +35,7 @@
         sign: false
     },
     mac: {
+        icon: "img/icons/mouse.icns",
         hardenedRuntime: true,
         entitlements: "buildfiles/entitlements.mac.plist",
         entitlementsInherit: "buildfiles/entitlements.mac.plist",
@@ -59,7 +60,7 @@
             "msi",
             "nsis"
         ],
-        icon: "public/img/icons/winapp256x256.ico",
+        icon: "img/icons/winapp256x256.ico",
         // certificateSubjectName: "Rutgers, The State University of New Jersey",
         // certificateFile: "test.pfx",
         publish: ["github"],
