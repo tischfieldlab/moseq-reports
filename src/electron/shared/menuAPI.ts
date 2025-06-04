@@ -28,6 +28,7 @@ export interface IMenuAPIRenderer {
     loadLayout: () => void,
     loadDefaultLayout: () => void,
     clearLayout: () => void,
+    showAboutWindow: () => void,
 }
 export interface IMenuAPI {
     preload: IMenuAPIPreload;

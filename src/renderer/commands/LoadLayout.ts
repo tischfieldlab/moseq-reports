@@ -63,12 +63,13 @@ export async function LoadDefaultLayout(showNotifications = true) {
  * @param showNotifications - Whether to show notifications for the operation.
  */
 export async function LoadLayoutFile(filename: string, showNotifications = true) {
-    const windowsStore = useWindowsStore();
-    const filtersStore = useFiltersStore();
     let loading_toast;
     if (showNotifications) {
         loading_toast = showStartLoadingToast("Loading Layout", 'Hang tight... We\'re getting your layout ready.');
     }
+
+    const windowsStore = useWindowsStore();
+    const filtersStore = useFiltersStore();
 
     try {
         const content = await new Promise<unknown>((resolve, reject) => {

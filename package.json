@@ -1,10 +1,15 @@
 {
-  "name": "electron-vue-vite",
+  "name": "moseq-reports",
   "version": "28.1.0",
   "main": "dist/electron/main/index.js",
   "description": "Interactive interrogation of Moseq models",
   "author": "Karthik Narra",
   "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/tischfieldlab/moseq-reports/issues"
+  },
+  "homepage": "https://github.com/tischfieldlab/moseq-reports",
+  "documentation": "https://tischfieldlab.github.io/moseq-reports/",
   "private": true,
   "keywords": [
     "electron",
@@ -55,7 +60,6 @@
     "@electron/remote": "^2.1.2",
     "@popperjs/core": "^2.11.8",
     "@vue/devtools": "^7.6.8",
-    "about-window": "^1.15.2",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",

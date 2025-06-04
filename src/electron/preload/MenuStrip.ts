@@ -1,6 +1,5 @@
 import { Menu } from "@electron/remote";
 import { MenuComponentRegistration, IMenuAPI, IMenuAPIPreload } from "../shared/menuAPI";
-import showAboutWindow from "../../renderer/commands/ShowAbout";
 import { Titlebar, TitlebarColor } from "custom-electron-titlebar";
 // Future: import { CheckUpdates } from "../../renderer/commands/LoadUpdates";
 // Future: import { documentation } from "../../../package.json";
@@ -139,7 +138,7 @@ function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.Me
             {
                 label: "About",
                 type: "normal",
-                click: () => showAboutWindow(),
+                click: () => window.menuAPI.renderer.showAboutWindow(),
             },
             // {
             //   label: "User Guide",

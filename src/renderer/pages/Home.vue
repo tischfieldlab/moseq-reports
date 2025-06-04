@@ -5,6 +5,7 @@
     <WindowContainer />
     <FileDropAcceptor />
     <BToastOrchestrator />
+    <About />
   </div>
 </template>
 
@@ -16,6 +17,7 @@ import FileDropAcceptor from "@render/components/FileDropAcceptor.vue";
 import WindowContainer from "@render/components/Core/Window/WindowContainer.vue";
 import { useSidebarStore, SidebarPosition } from "@store/sidebar.store";
 import { useDatasetsStore } from "@store/datasets.store";
+import About from "@render/components/About.vue";
 
 
 
@@ -26,6 +28,7 @@ export default defineComponent({
         NoDataPresent,
         FileDropAcceptor,
         WindowContainer,
+        About,
     },
     computed: {
         title() {

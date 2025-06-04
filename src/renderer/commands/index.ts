@@ -6,6 +6,7 @@ import CreateComponent from "./CreateComponent";
 import { SnapshotWorkspace } from "@render/components/Core/SnapshotHelper";
 import { SetSidebarLeft, SetSidebarRight } from "./SidebarPosition";
 import LoadLayout, { ClearLayout, LoadDefaultLayout, SaveLayout } from "./LoadLayout";
+import showAboutWindow from "./ShowAbout";
 
 const MenuBridge: IMenuAPIRenderer = {
     openData: () => LoadData(),
@@ -24,7 +25,8 @@ const MenuBridge: IMenuAPIRenderer = {
     saveLayout: () => SaveLayout(),
     loadLayout: () => LoadLayout(),
     loadDefaultLayout: () => LoadDefaultLayout(),
-    clearLayout: () => ClearLayout()
+    clearLayout: () => ClearLayout(),
+    showAboutWindow: () => showAboutWindow(),
 }
 if (!window.menuAPI) {
     window.menuAPI = {} as IMenuAPI;
