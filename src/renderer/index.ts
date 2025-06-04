@@ -1,11 +1,11 @@
 import "@render/commands"
-import { createApp, h } from "vue";
+import { createApp } from "vue";
 import App from "@render/App.vue";
 import VueForceNextTick from "vue-force-next-tick";
 import uniqueIdPlugin from '@render/@types/uniqueIdPlugin';
 import timeago from "vue-timeago3";
-import {enUS} from 'date-fns/locale';
-import {createBootstrap} from 'bootstrap-vue-next'
+import { enUS } from 'date-fns/locale';
+import { createBootstrap } from 'bootstrap-vue-next'
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
@@ -28,7 +28,7 @@ app.use(timeago, {
     locale: enUS,
 });
 
-const app_root = await app.mount("#app");
+const app_root = app.mount("#app");
 app_root.$nextTick(() => {
     postMessage({ payload: "removeLoading" }, "*");
 });

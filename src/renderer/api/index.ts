@@ -1,22 +1,25 @@
 import { DatasetsState } from '@render/store/datasets.store';
 import {useDatasetsStore} from '@store/datasets.store';
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { ipcRenderer } from 'electron';
 import { Operation } from './DataLoader.types';
 
 
-
-const serverAddress = await ipcRenderer.invoke("get-data-server-address");
-
-if (!serverAddress) {
-    throw new Error("Unable to retrieve data server address.");
-}
-console.log("Data server address fetched:", serverAddress);
-
-const api = axios.create({
-    baseURL: serverAddress,
-    // You can add other default configurations here, such as headers
-});
+let api: AxiosInstance;
+ipcRenderer.invoke("get-data-server-address")
+    .then((address: string) => {
+        if (!address) {
+            throw new Error("Unable to retrieve data server address.");
+        }
+        console.log("Data server address received from main process:", address);
+        api = axios.create({
+            baseURL: address,
+            // You can add other default configurations here, such as headers
+        });
+    })
+    .catch((error: Error) => {
+        console.error("Failed to retrieve data server address:", error);
+    });
 
 
 const DataService = {
