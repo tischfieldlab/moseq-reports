@@ -26,8 +26,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build && electron-builder",
-    "preview": "vite preview"
+    "build": "vue-tsc --noEmit && vite build && electron-builder --publish never",
+    "build-release": "vue-tsc --noEmit && vite build && electron-builder --publish always",
+    "preview": "vite preview",
+    "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'"
   },
   "devDependencies": {
     "@electron/notarize": "^3.0.1",
