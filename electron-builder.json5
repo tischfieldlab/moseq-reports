@@ -1,43 +1,74 @@
 // @see https://www.electron.build/configuration/configuration
 {
-  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
-  "asar": true,
-  "productName": "YourAppName",
-  "directories": {
-    "output": "release/${version}"
-  },
-  "files": [
-    "dist",
-    "dist-electron"
-  ],
-  "mac": {
-    "target": [
-      "dmg"
+    "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+    productName: "moseq-reports",
+    appId: "edu.rutgers.tischfieldlab.moseq-reports",
+    "asar": true,
+    "directories": {
+        "output": "release/${version}"
+    },
+    "files": [
+        "dist",
+        "dist-electron"
     ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
-  },
-  "win": {
-    "target": [
-      {
-        "target": "nsis",
-        "arch": [
-          "x64"
-        ]
-      }
+    fileAssociations: [
+        {
+            ext: "msq",
+            name: "Moseq Data File",
+            role: "Editor"
+        }
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
-  },
-  "nsis": {
-    "oneClick": false,
-    "perMachine": false,
-    "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false
-  },
-  "linux": {
-    "target": [
-      "AppImage"
-    ],
-    "artifactName": "${productName}-Linux-${version}.${ext}"
-  }
+    dmg: {
+        contents: [
+            {
+                x: 120,
+                y: 220
+            },
+            {
+                x: 420,
+                y: 220,
+                type: "link",
+                path: "/Applications"
+            }
+        ],
+        publish: ["github"],
+        sign: false
+    },
+    mac: {
+        hardenedRuntime: true,
+        entitlements: "buildfiles/entitlements.mac.plist",
+        entitlementsInherit: "buildfiles/entitlements.mac.plist",
+        gatekeeperAssess: false,
+    },
+    linux: {
+        target: [
+            "deb",
+            "AppImage",
+        ],
+        category: "Development",
+        fileAssociations: [
+            {
+                ext: 'msq',
+            },
+        ],
+    },
+    win: {
+        // For some reason, this fails on the nsi version... so we are leaving it
+        // out for the moment...
+        target: [
+            "msi",
+            "nsis"
+        ],
+        icon: "public/img/icons/winapp256x256.ico",
+        // certificateSubjectName: "Rutgers, The State University of New Jersey",
+        // certificateFile: "test.pfx",
+        publish: ["github"],
+    },
+    publish: {
+        provider: "github",
+        owner: "tischfieldlab",
+        repo: "moseq-reports",
+        private: true,
+    },
+    afterSign: "buildfiles/notarize.js"
 }
