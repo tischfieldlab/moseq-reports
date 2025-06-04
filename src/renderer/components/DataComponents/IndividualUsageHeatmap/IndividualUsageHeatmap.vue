@@ -36,10 +36,6 @@
         @col-order-changed="colOrderChanged"
         :tooltipFormatter="heatmap_node_tooltip"
     />
-    <!--
-        :columnOrderDataset="columnOrderDataset"
-        :columnOrderValue=""
-    -->
 </template>
 
 <script lang="ts">
