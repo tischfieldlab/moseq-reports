@@ -3,7 +3,10 @@
   "version": "28.1.0",
   "main": "dist/electron/main/index.js",
   "description": "Interactive interrogation of Moseq models",
-  "author": "Karthik Narra",
+  "author": {
+    "name": "Jay A. Tischfield Lab",
+    "email": "thackray@rutgers.edu"
+  },
   "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/tischfieldlab/moseq-reports/issues"
