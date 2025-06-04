@@ -32,7 +32,10 @@
     "build": "vue-tsc --noEmit && vite build && electron-builder --publish never",
     "build-release": "vue-tsc --noEmit && vite build && electron-builder --publish always",
     "preview": "vite preview",
-    "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'"
+    "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'",
+    "docs:dev": "vuepress dev docs/vuepress",
+    "docs:clean": "npx vuese gen && node ./docs/vuepress/vueseOrganize.js",
+    "docs:build": "npx vuese gen && node ./docs/vuepress/vueseOrganize.js && vuepress build docs/vuepress"
   },
   "devDependencies": {
     "@electron/notarize": "^3.0.1",
@@ -66,6 +69,8 @@
     "@electron/remote": "^2.1.2",
     "@popperjs/core": "^2.11.8",
     "@vue/devtools": "^7.6.8",
+    "@vuepress/bundler-vite": "^2.0.0-rc.23",
+    "@vuepress/theme-default": "^2.0.0-rc.108",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
@@ -109,6 +114,7 @@
     "vue-draggable-resizable": "^3.0.0",
     "vue-force-next-tick": "^1.2.0",
     "vue-object-merge": "^1.0.0",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "vuepress": "^2.0.0-rc.23"
   }
 }
