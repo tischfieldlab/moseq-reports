@@ -14,7 +14,7 @@
                         :transform="`translate(${(n.x0 || 0) + 1}, ${(n.y0 || 0)})`" @click="onNodeClick($event, n)"
                         :data-nodeid="n.id">
                         <rect :x="0" :y="0" :width="(n.x1 - n.x0 - 2 || 0)" :height="Math.max(1, n.y1 - n.y0) || 0"
-                            :fill="color(scale.n(n[nodeColorProperty])).darker(0.5).toString()" :data-nodeid="n.id"></rect>
+                            :fill="getNodeFillColor(n)" :data-nodeid="n.id"></rect>
                         <text v-if="Math.max(1, n.y1 - n.y0) > 10" class="node-label" :x="(n.x1 - n.x0 - 2) / 2 - 6"
                             :y="Math.max(1, n.y1 - n.y0) / 2" :data-nodeid="n.id">
                             {{ n.id }}
@@ -23,7 +23,7 @@
                 </g>
                 <g>
                     <template v-for="l in graph.links" :key="l.id">
-                        <path class="link" :d="sankeyLinkHorizontal(l)" fill="none" :stroke="scale.l(l)"
+                        <path class="link" :d="sankey_link_Horizontal(l) || undefined" fill="none" :stroke="scale.l(l)"
                             :stroke-width="Math.max(1, l.width || 1)" :data-transitionid="l.id"
                             @click="onEdgeClick($event, l)"></path>
                     </template>
@@ -44,9 +44,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted } from 'vue';
-import { sankey, sankeyCenter, sankeyLeft, sankeyRight, sankeyJustify, SankeyLayout, SankeyGraph } from 'd3-sankey';
-import { linkHorizontal } from 'd3-shape';
+import { ref, computed, watchEffect} from 'vue';
+import { sankey, sankeyCenter, sankeyLeft, sankeyRight, sankeyJustify, sankeyLinkHorizontal, SankeyGraph } from 'd3-sankey';
 import { color } from 'd3-color';
 import { scaleOrdinal, scaleDiverging, ScaleOrdinal } from 'd3-scale';
 import { max } from 'd3-array';
@@ -82,19 +81,10 @@ const emit = defineEmits(['node-click', 'edge-click']);
 const margin = ref({ top: 20, right: 20, bottom: 20, left: 20 });
 const tooltipPosition = ref<{ x: number; y: number } | undefined>(undefined);
 const hoverItem = ref<Node | Link | undefined>(undefined);
-
-watch(
-    () => props.linkColorMode,
-    (newValue) => {
-        margin.value.bottom = newValue === ColoringMode.Quantitative ? 70 : 20;
-    },
-    { immediate: true }
-);
-
 const innerWidth = computed(() => props.width - margin.value.left - margin.value.right);
 const innerHeight = computed(() => props.height - margin.value.top - margin.value.bottom);
 
-const sankeyLinkHorizontal = linkHorizontal()
+const sankey_link_Horizontal = sankeyLinkHorizontal()
     .source((link: any) => [link.source.x1, link.y0])
     .target((link: any) => [link.target.x0, link.y1]);
 
@@ -172,8 +162,7 @@ const tooltip_text = computed(() => {
 });
 
 const showColorLegend = computed(() => props.linkColorMode === ColoringMode.Quantitative);
-
-
+const debouncedHover = throttle(handleHover, 10);
 
 function onNodeClick(event: MouseEvent, node: Node) {
     emit('node-click', {
@@ -215,8 +204,6 @@ function handleHover(event: MouseEvent) {
     hoverItem.value = undefined;
 }
 
-const debouncedHover = throttle(handleHover, 10);
-
 function default_tooltip_formatter(hoverItem: Node | Link): string {
     if (hoverItem !== undefined) {
         if ('type' in hoverItem && hoverItem.type === 'node') {
@@ -227,6 +214,15 @@ function default_tooltip_formatter(hoverItem: Node | Link): string {
     }
     return '';
 }
+function getNodeFillColor(n: Node): string {
+  const colorValue = scale.value.n(n[props.nodeColorProperty]);
+  const c = color(colorValue);
+  return c ? c.darker(0.5).toString() : '#ccc';
+}
+
+watchEffect(() => {
+    margin.value.bottom = props.linkColorMode === ColoringMode.Quantitative ? 70 : 20;
+});
 </script>
 
 <style scoped>
