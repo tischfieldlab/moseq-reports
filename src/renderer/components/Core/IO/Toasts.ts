@@ -5,6 +5,28 @@ import { h } from 'vue';
 import {useHistoryStore} from '@store/history.store';
 import { BaseColorVariant, BSpinner } from 'bootstrap-vue-next';
 
+
+export function showStartSavingToast(title: string = 'Saving', message: string = 'Hang tight...') {
+    return app_root.$showToast({
+        id: 'saving-toast',
+        title: title,
+        variant: 'info',
+        isStatus: true,
+        position: 'bottom-end',
+        modelValue: true,
+        slots: {
+            default: () => h('div', {}, [
+                h(BSpinner, {
+                    type: 'grow',
+                    small: true,
+                    style: { 'margin-right': '1em' }
+                }),
+                message,
+            ]),
+        }
+    });
+}
+
 export function showSaveSuccessToast(dest: string, noun: string, showOrOpen: 'open'|'show' = 'open') {
 
     const {path, clickHandler} = makeClickHandler(dest, showOrOpen);

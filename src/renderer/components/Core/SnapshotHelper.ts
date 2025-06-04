@@ -8,7 +8,7 @@ import fs from "fs";
 import mime from "mime-types";
 import { DataWindowState, RenderMode } from "@store/datawindow.types";
 import { SaveCancelledError } from "@render/components/Core/IO/types";
-import { showSaveErrorToast, showSaveSuccessToast } from "@render/components/Core/IO/Toasts";
+import { showSaveErrorToast, showSaveSuccessToast, showStartSavingToast } from "@render/components/Core/IO/Toasts";
 import WindowManager from "@render/components/Core/Window/WindowManager";
 import {ComponentPublicInstance, getCurrentInstance } from "vue";
 import {useDataWindowStore} from '@store/datawindow.store'
@@ -55,6 +55,7 @@ export function ensureDefaults(target: ComponentPublicInstance) {
 }
 
 export default async function Snapshot(target: ComponentPublicInstance, basename: string, options: SnapshotOptions) {
+    const loading_toast = showStartSavingToast("Saving Snapshot", 'Hang tight... We\'re getting your snapshot ready.');
     return targetToDataURI(target, options)
         .then((data) => dataUriToFile(data as string))
         .then((finfo) => {
@@ -82,8 +83,12 @@ export default async function Snapshot(target: ComponentPublicInstance, basename
                 });
             });
         })
-        .then((dest) => showSaveSuccessToast(dest as string, "snapshot"))
+        .then((dest) => {
+            loading_toast.destroy();
+            showSaveSuccessToast(dest as string, "snapshot");
+        })
         .catch((err) => {
+            loading_toast.destroy();
             if (err instanceof SaveCancelledError) {
                 return; // don't care the user cancelled of their own accord
             }
@@ -92,6 +97,8 @@ export default async function Snapshot(target: ComponentPublicInstance, basename
 }
 
 export async function SnapshotWorkspace() {
+    const loading_toast = showStartSavingToast("Saving Workspace Snapshot", 'Hang tight... We\'re getting your snapshot ready.');
+
     const opts = defaultOptions(app_root);
     opts.backgroundColor = "#FFFFFFFF"; // opaque white background
 
@@ -150,8 +157,12 @@ export async function SnapshotWorkspace() {
                 });
             });
         })
-        .then((dest) => showSaveSuccessToast(dest as string, "workspace snapshot"))
+        .then((dest) => {
+            loading_toast.destroy();
+            showSaveSuccessToast(dest as string, "workspace snapshot");
+        })
         .catch((err) => {
+            loading_toast.destroy();
             if (err instanceof SaveCancelledError) {
                 return; // don't care the user cancelled of their own accord
             }
