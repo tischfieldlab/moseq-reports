@@ -14,8 +14,8 @@
                         :transform="`translate(${(n.x0 || 0) + 1}, ${(n.y0 || 0)})`" @click="onNodeClick($event, n)"
                         :data-nodeid="n.id">
                         <rect :x="0" :y="0" :width="(n.x1 - n.x0 - 2 || 0)" :height="Math.max(1, n.y1 - n.y0) || 0"
-                            :fill="color(scale.n(n[nodeColorProperty])).darker(0.5)" :data-nodeid="n.id"></rect>
-                        <text v-if="Math.max(1, n.y1 - n.y0) > 10" class="node-label" :x="(n.x1 - n.x0 - 2) / 2"
+                            :fill="color(scale.n(n[nodeColorProperty])).darker(0.5).toString()" :data-nodeid="n.id"></rect>
+                        <text v-if="Math.max(1, n.y1 - n.y0) > 10" class="node-label" :x="(n.x1 - n.x0 - 2) / 2 - 6"
                             :y="Math.max(1, n.y1 - n.y0) / 2" :data-nodeid="n.id">
                             {{ n.id }}
                         </text>
@@ -127,11 +127,15 @@ const sankeyGen = computed(() => {
 });
 
 const graph = computed(() => {
-    return sankeyGen.value(props.data) as SankeyGraph<CompleteSankeyNode<Node, Link>, CompleteSankeyLink<Node, Link>>;
+        if (!props.data || props.data.nodes.length === 0 || props.data.links.length === 0) {
+            return { nodes: [], links: [] }; 
+    }
+    const result = sankeyGen.value(props.data);
+    return result as SankeyGraph<CompleteSankeyNode<Node, Link>, CompleteSankeyLink<Node, Link>>;
 });
 
 const scale = computed(() => {
-    let n: ScaleOrdinal<string, string>;
+    let n: ScaleOrdinal<string, string> = scaleOrdinal<string, string>();
     if (props.nodeColorMode === ColoringMode.Categorical) {
         n = scaleOrdinal<string, string>().range(GetScale(props.categoricalColormap || 'schemeDark2') as string[]);
         if (props.nodeIdSuperset !== undefined) {

@@ -1,23 +1,36 @@
 <template>
-    <Sankey :width="layout.width" :height="layout.height" :data="graph" :title="plotTitle"
-        :colorLegendTitle="colorLegendTitle" :noDataMessage="noDataMessage" :tooltipFormatter="tooltipFormatter"
-        :nodeIdSuperset="activeSyllables" :nodeAlignment="settings.node_alignment" :nodeWidth="settings.node_width"
-        :nodePadding="settings.node_padding" :nodeColorMode="nodeColoring.mode" :nodeColorProperty="nodeColoring.prop"
-        :linkColorMode="linkColoring.mode" :linkColorProperty="linkColoring.prop" :categoricalColormap="'schemeDark2'"
-        :quantitativeColormap="settings.colorscale" @node-click="onNodeClick" />
+    <Sankey 
+        :width="layout.width"
+        :height="layout.height"
+        :data="graph"
+        :title="plotTitle"
+        :colorLegendTitle="colorLegendTitle"
+        :noDataMessage="noDataMessage"
+        :tooltipFormatter="tooltipFormatter"
+        :nodeIdSuperset="activeSyllables"
+        :nodeAlignment="settings.node_alignment"
+        :nodeWidth="settings.node_width"
+        :nodePadding="settings.node_padding"
+        :nodeColorMode="nodeColoring.mode"
+        :nodeColorProperty="nodeColoring.prop"
+        :linkColorMode="linkColoring.mode"
+        :linkColorProperty="linkColoring.prop"
+        :categoricalColormap="'schemeDark2'"
+        :quantitativeColormap="settings.colorscale"
+        @node-click="onNodeClick"
+    />
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch, onMounted } from 'vue';
+import { defineComponent, ref, computed, watchEffect, onMounted } from 'vue';
 import RegisterDataComponent from '@render/components/Core';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import Sankey from '@render/components/Charts/Sankey/Sankey.vue';
 import { Node, Link, NodeAlignment, ColoringMode } from '@render/components/Charts/Sankey/Sankey.types';
 import { RenderMode } from '@render/store/datawindow.types';
-import axios from 'axios';
 import { SyllableFlowSettings, TransitionItem } from './SyllableFlow.types';
-import api, { Operation } from '@api';
-
+import  { Operation } from '@api';
+import DataService from '@api';
 
 RegisterDataComponent({
     friendly_name: 'Syllable Flow',
@@ -51,10 +64,9 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const { $wstate, layout, dataview, datasource, settings } = useWindowMixin<SyllableFlowSettings>(props.id);
+        const { $wstate, layout, dataview, settings } = useWindowMixin<SyllableFlowSettings>(props.id);
 
-        const rawData = ref<TransitionItem[]>([]);
-        const isLoading = ref(false);
+        const SyllableData = ref<TransitionItem[]>([]);
         const selectedSyllable = computed({
             get: () => dataview.value.selectedSyllable,
             set: (val: number) => {
@@ -108,46 +120,10 @@ export default defineComponent({
             };
         });
 
-        watch(
-            sourceData,
-            async (s) => {
-                if (!s || !s.is_valid) return;
-
-                //emitStartLoading();
-
-                api.fetchData('transitions', s.transFilters)
-                    .then((data) => {
-                        console.log(data);
-                        rawData.value = data as TransitionItem[];
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching transition data:', error);
-                        rawData.value = [];
-                    });
-            },
-            { immediate: true }
-        );
-        onMounted(() => {
-            if (!settings.value.plot_group) {
-                $wstate.updateComponentSettings({
-                    settings: {
-                        plot_group: dataview.value.selectedGroups[0],
-                    },
-                });
-            }
-            if (!settings.value.relative_diff_group) {
-                $wstate.updateComponentSettings({
-                    settings: {
-                        relative_diff_group: dataview.value.selectedGroups[1],
-                    },
-                });
-            }
-        });
-        console.log(rawData)
         const graph = computed(() => {
-            const trans = rawData.value.filter((row) => row.group === settings.value.plot_group);
+            const trans = SyllableData.value.filter((row) => row.group === settings.value.plot_group);
             const transSum = trans.reduce((acc, curr) => acc + curr.raw, 0);
-            const relTrans = rawData.value.filter((row) => row.group === settings.value.relative_diff_group);
+            const relTrans = SyllableData.value.filter((row) => row.group === settings.value.relative_diff_group);
             const relTransSum = relTrans.reduce((acc, curr) => acc + curr.raw, 0);
 
             const g = { nodes: [] as Node[], links: [] as Link[] };
@@ -165,7 +141,7 @@ export default defineComponent({
             trans
                 .filter((row) => row.col_id === selectedSyllable.value)
                 .forEach((t) => {
-                    if (activeSyllables.value.includes(t.row_id) && t.row_id !== selectedSyllable.value) {
+                    if (activeSyllables.value.includes(t.row_id.toString()) && t.row_id !== selectedSyllable.value) {
                         const val = t.raw / transSum;
                         if (val > settings.value.prune_threshold) {
                             const inName = `in-${t.row_id}`;
@@ -197,7 +173,7 @@ export default defineComponent({
             trans
                 .filter((row) => row.row_id === selectedSyllable.value)
                 .forEach((t) => {
-                    if (activeSyllables.value.includes(t.col_id) && t.col_id !== selectedSyllable.value) {
+                    if (activeSyllables.value.includes(t.col_id.toString()) && t.col_id !== selectedSyllable.value) {
                         const val = t.raw / transSum;
                         if (val > settings.value.prune_threshold) {
                             const outName = `out-${t.col_id}`;
@@ -224,7 +200,7 @@ export default defineComponent({
                         }
                     }
                 });
-
+            console.log(graph,g)
             return g;
         });
 
@@ -272,7 +248,7 @@ export default defineComponent({
                 if (hoverItem.type === 'node') {
                     return `Module ${hoverItem.id}`;
                 } else if (hoverItem.type === 'edge') {
-                    return `Transition ${hoverItem.id}<br />P(t) = ${hoverItem.real_value.toExponential(3)}`;
+                    return `Transition ${hoverItem.id}<br />P(t) = ${(hoverItem as Link).value.toExponential(3)}`;
                 }
             }
             return '';
@@ -281,6 +257,31 @@ export default defineComponent({
         const onNodeClick = (event: { value: { id: number } }) => {
             selectedSyllable.value = event.value.id;
         };
+        watchEffect(async () => {
+            try {
+                const data = await DataService.fetchData('transitions', sourceData.value.transFilters);
+                SyllableData.value = data as TransitionItem[];
+            } catch (error) {
+                console.error('Error fetching transition data:', error);
+                SyllableData.value = [];
+            }
+        });
+        onMounted(() => {
+            if (!settings.value.plot_group) {
+                $wstate.updateComponentSettings({
+                    settings: {
+                        plot_group: dataview.value.selectedGroups[0],
+                    },
+                });
+            }
+            if (!settings.value.relative_diff_group) {
+                $wstate.updateComponentSettings({
+                    settings: {
+                        relative_diff_group: dataview.value.selectedGroups[1],
+                    },
+                });
+            }
+        });
 
         return {
             layout,
