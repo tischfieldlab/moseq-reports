@@ -1,5 +1,7 @@
-import {show_about} from "@render/components/About.vue";
+import {useAboutWindowStore} from '@store/aboutwin.store';
+
 
 export default function showAboutWindow() {
-    show_about.value = true;
+    const aboutWindowStore = useAboutWindowStore();
+    aboutWindowStore.show = true;
 }
