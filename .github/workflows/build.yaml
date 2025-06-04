@@ -23,7 +23,7 @@ jobs:
   #         node-version: 22
 
   #     - name: Install Repo
-  #       run: yarn install
+  #       run: yarn install --non-interactive --network-timeout 100000
         
   #     - name: Build docs
   #       run: npm run docs:build
@@ -151,7 +151,7 @@ jobs:
       # END MACOS CERT PREP
 
       - name: Install
-        run: yarn install
+        run: yarn install --non-interactive --network-timeout 100000
 
       - name: Version
         run: |
