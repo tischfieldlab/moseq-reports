@@ -25,7 +25,7 @@ import { onMounted, watchPostEffect, useTemplateRef } from "vue";
 import ColorScaleLegend from "@render/components/Charts/Colors/ColorScaleLegendCanvas.vue";
 import MessageBox from "@render/components/Charts/CenteredMessage.vue";
 import { useCanvas } from '@render/components/Charts/Canvas';
-import { useHexBinPlotBase } from "./HexBinPlotBase.vue";
+import { useHexBinPlotBase } from "./HexBinPlotBase";
 import { HexBinPlotBaseProps, HexBinPlotBasePropsDefaults } from "./HexBinPlot.types";
 
 

@@ -79,7 +79,7 @@
 import { throttle } from '@render/util/Events';
 import ToolTip from '@render/components/Charts/ToolTip.vue';
 import MessageBox from '@render/components/Charts/CenteredMessage.vue';
-import { LinePlotBaseProps, LinePlotBasePropsDefaults, LinePlotBaseEmits, useLinePlotBase } from './LinePlotBase.vue';
+import { LinePlotBaseProps, LinePlotBasePropsDefaults, LinePlotBaseEmits, useLinePlotBase } from './LinePlotBase';
 
 
 

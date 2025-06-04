@@ -18,7 +18,7 @@
 import { debounce, throttle } from '@render/util/Events';
 import ToolTip from '@render/components/Charts/ToolTip.vue';
 import MessageBox from '@render/components/Charts/CenteredMessage.vue';
-import { LinePlotBaseEmits, LinePlotBaseProps, LinePlotBasePropsDefaults, useLinePlotBase } from './LinePlotBase.vue';
+import { LinePlotBaseEmits, LinePlotBaseProps, LinePlotBasePropsDefaults, useLinePlotBase } from './LinePlotBase';
 import { useCanvas } from '../Canvas';
 import { onMounted, watchPostEffect } from 'vue';
 

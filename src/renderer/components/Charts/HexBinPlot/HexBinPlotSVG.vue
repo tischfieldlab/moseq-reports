@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import ColorScaleLegend from '@render/components/Charts/Colors/ColorScaleLegendSVG.vue';
 import MessageBox from '@render/components/Charts/CenteredMessage.vue';
-import { useHexBinPlotBase } from "./HexBinPlotBase.vue";
+import { useHexBinPlotBase } from "./HexBinPlotBase";
 import { HexBinPlotBaseProps, HexBinPlotBasePropsDefaults } from "./HexBinPlot.types";
 
 const props = withDefaults(defineProps<HexBinPlotBaseProps>(), HexBinPlotBasePropsDefaults);

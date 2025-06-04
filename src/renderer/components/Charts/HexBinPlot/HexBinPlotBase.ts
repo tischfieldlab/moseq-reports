@@ -1,4 +1,3 @@
-<script lang="ts">
 import { ref, computed, onUnmounted, toRaw, watchEffect } from 'vue';
 import { hexbin } from 'd3-hexbin';
 import { scaleLinear, scaleSequential } from 'd3-scale';
@@ -99,15 +98,3 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
         hexHeight,
     };
 }
-</script>
-
-<style scoped>
-g.group {
-    border: 1px solid #666;
-}
-
-text.label,
-text.title {
-    text-anchor: middle;
-}
-</style>

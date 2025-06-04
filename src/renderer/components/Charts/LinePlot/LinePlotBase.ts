@@ -1,4 +1,3 @@
-<script lang="ts">
 import { scaleLinear, scalePoint, scaleOrdinal } from 'd3-scale';
 import { line, Line } from 'd3-shape';
 import { extent } from 'd3-array';
@@ -185,4 +184,3 @@ export function useLinePlotBase(props: LinePlotBaseProps) {
     };
 
 };
-</script>
