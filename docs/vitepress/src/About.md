@@ -15,6 +15,6 @@ MSQ Files are the format from which the moseq-reports program reads data includi
 
 ## Version Details
 
-{{ $var.commitRef}}
+{{ $COMMIT_REF }}
 
-{{ $var.commitHash}}
+{{ $COMMIT_HASH }}

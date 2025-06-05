@@ -33,9 +33,9 @@
     "build-release": "vue-tsc --noEmit && vite build && electron-builder --publish always",
     "preview": "vite preview",
     "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'",
-    "docs:dev": "vuepress dev docs/vuepress",
-    "docs:clean": "npx vuese gen && node ./docs/vuepress/vueseOrganize.js",
-    "docs:build": "npx vuese gen && node ./docs/vuepress/vueseOrganize.js && vuepress build docs/vuepress"
+    "docs:dev": "vitepress dev docs/vitepress",
+    "docs:build": "vitepress build docs/vitepress",
+    "docs:preview": "vitepress preview docs/vitepress"
   },
   "devDependencies": {
     "@electron/notarize": "^3.0.1",
@@ -50,6 +50,7 @@
     "electron-devtools-installer": "^4.0.0",
     "eslint": "^9.26.0",
     "eslint-plugin-vue": "^10.1.0",
+    "flexsearch": "^0.8.204",
     "globals": "^16.1.0",
     "pre-commit": "^1.2.2",
     "sass-embedded": "^1.80.7",
@@ -59,6 +60,9 @@
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-electron-renderer": "^0.14.5",
     "vite-plugin-vue-devtools": "^7.7.6",
+    "vitepress": "^1.6.3",
+    "vitepress-plugin-lightbox": "^1.0.2",
+    "vitepress-plugin-search": "^1.0.4-alpha.22",
     "vue": "^3.5.14",
     "vue-eslint-parser": "^10.1.3",
     "vue-timeago3": "^2.3.2",
@@ -114,7 +118,6 @@
     "vue-draggable-resizable": "^3.0.0",
     "vue-force-next-tick": "^1.2.0",
     "vue-object-merge": "^1.0.0",
-    "vuedraggable": "^4.1.0",
-    "vuepress": "^2.0.0-rc.23"
+    "vuedraggable": "^4.1.0"
   }
 }

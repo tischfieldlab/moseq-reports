@@ -9,4 +9,4 @@ Moseq reports exists to democratize moseq data. Computational biologists often p
 5. [Components](user_guide/Components.md)
 
 ## Gallery
-![Full Window](user_guide/Images/FullWindow.png)
+![Full Window](Images/FullWindow.png)

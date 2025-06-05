@@ -53,6 +53,8 @@ declare module 'vue' {
     IBiCloudDownload: typeof import('~icons/bi/cloud-download')['default']
     IBiDropletHalf: typeof import('~icons/bi/droplet-half')['default']
     IBiSearch: typeof import('~icons/bi/search')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
   }
   export interface GlobalDirectives {
     vBTooltip: typeof import('bootstrap-vue-next/directives/BTooltip')['vBTooltip']
