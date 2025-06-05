@@ -7,11 +7,19 @@
         </BRow>
 
         <BRow>
-            <BFormCheckbox v-model="onlySubclip" switch>Only syllable subclip</BFormCheckbox>
+            <BInputGroup prepend="Only syllable subclip">
+                <BInputGroupText>
+                    <BFormCheckbox v-model="onlySubclip" switch />
+                </BInputGroupText>
+            </BInputGroup>
         </BRow>
 
         <BRow>
-            <BFormCheckbox v-model="loop" switch>Loop playback</BFormCheckbox>
+            <BInputGroup prepend="Loop playback">
+                <BInputGroupText>
+                    <BFormCheckbox v-model="loop" switch />
+                </BInputGroupText>
+            </BInputGroup>
         </BRow>
 
         <BRow>
