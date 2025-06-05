@@ -50,7 +50,6 @@ export function LoadDataFile(filename: string) {
 
 async function beginLoadingProcess(filename: string) {
     const datasetStore = useDatasetsStore();
-    const historyStore = useHistoryStore();
     const filtersStore = useFiltersStore();
     const windowsStore = useWindowsStore();
 

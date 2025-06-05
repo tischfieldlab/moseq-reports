@@ -36,7 +36,7 @@ export const useDatasetsStore = defineStore('datasets', {
             if (mani) {
                 filename = mani;
             }
-            return path.join(state.bundle, filename);
+            return filename; //path.join(state.bundle, filename);
         },
         availableUsageModuleIds: (state) => {
             if (!state.label_map) {

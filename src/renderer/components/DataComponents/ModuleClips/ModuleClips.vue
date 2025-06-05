@@ -103,7 +103,7 @@ export default defineComponent({
             const item = currentItem.value;
             if (!item) return "";
             const base = item.base_name.replace("\\", "/");
-            return DataService.resolve(`/${base}.${settings.value.stream}.mp4`)
+            return DataService.resolveWithToken(`/${base}.${settings.value.stream}.mp4`)
         });
 
         const sizeCalculated = (payload: { width: number; height: number }) => {

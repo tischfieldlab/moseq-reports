@@ -10,15 +10,23 @@ import * as FileType from "file-type";
 import { readFileContents,readDataBundle  } from "./DataLoader/DataLoader.lib";
 import LoadData  from "./DataLoader/DataLoader";
 import { Operation } from "./DataLoader/DataLoader.types";
+import { v4 as uuidv4 } from 'uuid';
 
 const minSearchPort = 3000;
 const maxSearchPort = 4000;
+
+interface Session {
+    token: string;
+    filename: string;
+}
 
 export class DataServer {
     private app: Application;
     private server: http.Server | null = null;
     private port: number | null = null;
-    private currentFilename: string | null = null;
+
+    // holds active sessions with their tokens and filenames
+    private sessions = new Map<string, Session>();
 
     constructor() {
         this.app = express();
@@ -42,12 +50,20 @@ export class DataServer {
         });
         this.app.post("/api/load-file", async(req: Request, res: Response) => {
             try {
-                //console.log(req)
                 const { filename } = req.body;
-                this.currentFilename = filename;
                 console.log("File received:", filename);
                 const data = await readDataBundle(filename);
-                res.status(200).json(data);
+
+                const token = uuidv4();
+                this.sessions[token] = {
+                    token,
+                    filename
+                };
+
+                res.status(200).json({
+                    token,
+                    data
+                });
             } catch (error) {
                 console.error("Error receiving dataset:", error);
                 res.status(500).json({ message: "Failed to receive dataset." });
@@ -55,10 +71,17 @@ export class DataServer {
         });
         this.app.get("*file.mp4", async (req: Request, res: Response) =>{
             try{
-                //console.log("request got",req)
-                const url = decodeURI(req.url as string);
-                const fpath = `${this.currentFilename}/${url}`;
-                console.log("Resolved file path:", fpath)
+                const token = req.query.token || undefined;
+                if (!token || !this.sessions[token]) {
+                    console.warn("Invalid or missing token:", token);
+                    res.status(401).json({ error: "Unauthorized access. Invalid or missing token." });
+                    return;
+                }
+
+                const session = this.sessions[token];
+
+                const fpath = `${session.filename}/${decodeURI(req.path)}`;
+                //console.log("Resolved file path:", fpath)
                 const buffer = await readFileContents(fpath);
                 const fileType = await FileType.fileTypeFromBuffer(buffer);
 
@@ -66,7 +89,7 @@ export class DataServer {
                 const range = req.headers.range;
 
                 if (range) {
-                    console.log("Range request received:", range);
+                    //console.log("Range request received:", range);
                     const [rStart, rEnd] = range.replace(/bytes=/, "").split("-");
                     let start = parseInt(rStart, 10);
                     let end = rEnd ? parseInt(rEnd, 10) : size - 1;
@@ -96,7 +119,7 @@ export class DataServer {
                     });
                     res.end(buffer.slice(start, end + 1));
                 } else {
-                    console.log("Full content request for:", fpath);
+                    //console.log("Full content request for:", fpath);
                     res.writeHead(200, { "Content-Type": fileType?.mime || "application/octet-stream" });
                     res.end(buffer);
                 }
@@ -107,12 +130,18 @@ export class DataServer {
         });
         this.app.get("/load-data", async (req, res) => {
             try {
-                const { path, operations, debug } = req.query;
-            
+                const { path, operations, debug, token } = req.query;
+
+                if (!token || !this.sessions[token as string]) {
+                    console.warn("Invalid or missing token:", token);
+                    return res.status(401).json({ error: "Unauthorized access. Invalid or missing token." });
+                }
+                const session = this.sessions[token as string];
+
                 if (!path) {
                     return res.status(400).json({ error: "Missing required query parameter 'path'" });
                 }
-                const decodedPath = decodeURIComponent(path as string);
+                const fpath = `${session.filename}/${decodeURI(path)}`;
 
                 let parsedOperations: Operation[];
                 if (!operations) {
@@ -121,7 +150,7 @@ export class DataServer {
                     parsedOperations = typeof operations === "string" ? JSON.parse(decodeURIComponent(operations)) : operations;
                 }
 
-                const data = await LoadData(decodedPath, parsedOperations, JSON.parse(String(debug)));
+                const data = await LoadData(fpath, parsedOperations, JSON.parse(String(debug)));
                 res.json(data);
             } catch (error) {
                 console.error("Error handling /load-data request:", error);

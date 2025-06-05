@@ -62,7 +62,7 @@ export default defineComponent({
         const selected_syllable = computed(() => dataview.value.selectedSyllable);
         const count_method = computed(() => dataview.value.countMethod);
         const fetchMoviePath = async () => {
-            crowdMoviePath.value = DataService.resolve(`/crowd_movies/${encodeURIComponent(fname.value)}`)
+            crowdMoviePath.value = DataService.resolveWithToken(`/crowd_movies/${encodeURIComponent(fname.value)}`)
         };
 
         const sizeCalculated = (payload: { width: number; height: number }) => {
