@@ -3,16 +3,18 @@
         <Colormap :id="id" />
         <RowOrdering :id="id" :column_options="availableUUIDs" />
         <ColumnOrdering :id="id" :row_options="column_order_row_value_options" />
-        <BRow>
-            <BCol>
-                <BInputGroup prepend="Color Column Labels">
-                    <BFormSelect v-model="color_columns_data" :options="color_columns_data_options" :disabled="!color_columns" />
-                    <BInputGroupText is-text>
-                        <b-form-checkbox v-model="color_columns" switch />
-                    </BInputGroupText>
-                </BInputGroup>
-            </BCol>
-        </BRow>
+        <BContainer>
+            <BRow>
+                <BCol>
+                    <BInputGroup prepend="Color Column Labels">
+                        <BFormSelect v-model="color_columns_data" :options="color_columns_data_options" :disabled="!color_columns" />
+                        <BInputGroupText is-text>
+                            <b-form-checkbox v-model="color_columns" switch />
+                        </BInputGroupText>
+                    </BInputGroup>
+                </BCol>
+            </BRow>
+        </BContainer>
     </div>
 </template>
 
