@@ -13,25 +13,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Downloading version 14 of Node
-        uses: actions/setup-node@v1
+      - name: Downloading version 22 of Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 22
 
       - name: Install Repo
-        run: npm install
-        
+        run: yarn install --non-interactive --network-timeout 100000
+
       - name: Build docs
-        run: npm run docs:build
+        run: yarn run docs:build
         env:
           APP_COMMIT_HASH: ${{ github.sha }}
           APP_COMMIT_REF: ${{ github.ref }}
 
       - name: Init new repo in dist folder and commit generated files
         run: |
-          cd docs/.vuepress/dist
+          cd docs/.vitepress/dist
           git init
           git add -A
           git config --local user.email "action@github.com"
@@ -46,4 +46,4 @@ jobs:
           # change as neccessary
           branch: gh-pages
           force: true
-          directory: ./docs/.vuepress/dist
+          directory: ./docs/.vitepress/dist
