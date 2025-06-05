@@ -33,9 +33,9 @@
     "build-release": "vue-tsc --noEmit && vite build && electron-builder --publish always",
     "preview": "vite preview",
     "version": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\", ]//g'",
-    "docs:dev": "vitepress dev docs/vitepress",
-    "docs:build": "vitepress build docs/vitepress",
-    "docs:preview": "vitepress preview docs/vitepress"
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@electron/notarize": "^3.0.1",

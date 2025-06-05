@@ -43,7 +43,7 @@ import BiQuestionCircle from '~icons/bi/question-circle';
 
 const aboutWindowStore = useAboutWindowStore();
 
-const copyright = `© 2019-${new Date().getFullYear()} Jay A. Tischfield Lab`;
+const copyright = `© 2019-${new Date().getFullYear()} Tischfield Lab and Abraira Lab`;
 const versions = ['electron', 'chrome', 'node', 'v8'].map(e => [e, process.versions[e]]);
 
 </script>

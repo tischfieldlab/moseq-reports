@@ -1,5 +1,5 @@
 import DefaultTheme from 'vitepress/theme';
-import {homepage, version} from '../../../../package.json';
+import {homepage, version} from '../../../package.json';
 import type { Theme } from 'vitepress';
 import Layout from "./Layout.vue";
 import { redirects } from './redirects';

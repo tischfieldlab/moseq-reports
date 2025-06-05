@@ -1,7 +1,7 @@
-import { defineConfig, defineConfigWithTheme } from 'vitepress';
+import { defineConfig } from 'vitepress';
 import { SearchPlugin } from "vitepress-plugin-search";
 import lightbox from "vitepress-plugin-lightbox"
-import {homepage} from '../../../package.json';
+import {homepage} from '../../package.json';
 
 
 
@@ -49,6 +49,11 @@ export default defineConfig({
                 ],
             }
         ],
+
+        footer: {
+            message: 'Released under the A License.',  // to-do: change this to the license you want
+            copyright: 'Copyright © 2019-present, Tischfield Lab and Abraira Lab'
+        }
     },
     markdown: {
         config: (md) => {
