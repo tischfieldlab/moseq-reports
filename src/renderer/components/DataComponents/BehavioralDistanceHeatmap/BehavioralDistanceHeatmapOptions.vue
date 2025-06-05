@@ -1,12 +1,14 @@
 <template>
     <div>
-        <BRow>
-            <BCol>
-                <BInputGroup prepend="Behavioral Distance Metric">
-                    <BFormSelect v-model="distance_metric" :options="method_options" />
-                </BInputGroup>
-            </BCol>
-        </BRow>
+        <BContainer>
+            <BRow>
+                <BCol>
+                    <BInputGroup prepend="Behavioral Distance Metric">
+                        <BFormSelect v-model="distance_metric" :options="method_options" />
+                    </BInputGroup>
+                </BCol>
+            </BRow>
+        </BContainer>
         <Colormap :id="id" />
         <RowOrdering :id="id" :column_options="syllable_options" />
         <ColumnOrdering :id="id" :row_options="syllable_options" />
@@ -61,7 +63,5 @@ watchEffect(async () => {
 </script>
 
 <style scoped>
-.row{
-    margin:10px 0;
-}
+
 </style>
