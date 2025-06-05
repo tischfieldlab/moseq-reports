@@ -12,6 +12,10 @@ export default defineConfig({
         ],
     },
 
+    head: [
+        ['link', { rel: 'icon', href: '/moseq-reports/favicon.ico' }]
+    ],
+
     // site-level options
     title: 'moseq-reports',
     titleTemplate: 'moseq-reports .::. :title',
@@ -23,7 +27,11 @@ export default defineConfig({
 
     themeConfig: {
         // theme-level options
-        logo: '/winapp256x256.svg',
+        logo: {
+            dark: '/winapp256x256.dark.svg',
+            light: '/winapp256x256.svg',
+            alt: 'Moseq Reports Logo',
+        },
 
         socialLinks: [
             { icon: 'github', link: homepage },
@@ -37,6 +45,7 @@ export default defineConfig({
                     { text: 'Installation', link: '/Installation' },
                     { text: 'Getting Started', link: '/UsingMoseq' },
                     { text: 'Tool Library', link: '/Tools' },
+                    { text: 'Syllable Annotation', link: '/SyllableAnnotation' },
                 ],
             }
         ],

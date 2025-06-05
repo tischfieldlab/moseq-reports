@@ -2,6 +2,8 @@ import DefaultTheme from 'vitepress/theme';
 import {homepage, version} from '../../../../package.json';
 import type { Theme } from 'vitepress';
 import Layout from "./Layout.vue";
+import { redirects } from './redirects';
+import { withBase } from 'vitepress'
 
 
 
@@ -27,9 +29,23 @@ try {
 export default {
     extends: DefaultTheme,
     Layout,
-    enhanceApp({ app }) {
+    enhanceApp({ app, router, siteData }) {
+        // inject global properties
         app.config.globalProperties.$COMMIT_REF = COMMIT_REF;
         app.config.globalProperties.$COMMIT_HASH = COMMIT_HASH;
         app.config.globalProperties.$APP_VERSION = version;
+
+        // handle redirects
+        router.onBeforeRouteChange = (to: string) => {
+            const path = to.replace(/\.html$/i, '').replace(siteData.value.base, '/'),
+                toPath = redirects[path];
+
+            if (toPath) {
+                setTimeout(() => { router.go(withBase(toPath)); })
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 } satisfies Theme;

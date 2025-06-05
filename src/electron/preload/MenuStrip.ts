@@ -48,7 +48,9 @@ function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.Me
     }, {
         id: "menu-tools",
         label: "Tools",
-        submenu: menuBarManager.getRegisteredComponents().map((cr) => {
+        submenu: menuBarManager.getRegisteredComponents()
+                               .sort((a, b) => a.friendly_name.localeCompare(b.friendly_name))
+                               .map((cr) => {
             return {
                 label: cr.friendly_name,
                 type: "normal",

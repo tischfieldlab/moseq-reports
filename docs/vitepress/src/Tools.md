@@ -2,7 +2,7 @@
 The heart of `moseq-reports` are its tools, or predefined visualizations, available from the `Tools` menu in the application menu bar. Here we describe the tools and related functionality. Further below, the specifics for each tool are described.
 To access options for a certain module click the gear icon in the upper right of that module.
 
-## Tool Settings
+## General Tool Settings
 Specific Settings can be accessed by clicking the gear icon in the title bar of the component. After clicking this button, a modal dialog will appear that offers settings for this component instance. There are a number of common tabs within this dialog:
 
 ### Layout
@@ -46,7 +46,6 @@ There are several available underlying metrics available.
 - `scalars[**]` looks at the underlying scalar data, such as height or velocity to compute the distance.
 
 
-
 ### Settings
 Setting|Description
 :--|:--
@@ -61,8 +60,7 @@ Row and Column Ordering|Allow you to change how the rows or columns are ordered.
 
 ## Crowd Movies
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/CM.png" data-zoomable="true">
-This component displays “crowd movies”, or videos where many examples of a given moseq syllable which are synchronized to the syllable start and overlaid. A red dot over each mouse indicates the active performance of the current syllable.
- 
+This tool displays “crowd movies”, or videos where many examples of a given moseq syllable which are synchronized to the syllable start and overlaid. A red dot over each mouse indicates the active performance of the current syllable.
 
 ### Settings
 Setting|Description
@@ -73,157 +71,216 @@ Playback Rate|Sets the playback rate of the video. A value of one (1.0) results 
 ![](Images/ToolOptions/CMOptions.png)
 
 
+
+## Data Query
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/UD.png" data-zoomable="true">
+
+This tool allows you to make arbitrary queries into the underlying data system to return new datasets. These datasets can be then downloaded or published to a data filter to enable consumption by other tools that support Datasets. This tool provides no additional settings in the component settings tab, all manipulations occur in the tool window.
+
+Begin by selecting a dataset to be loaded under the header `Data Source`. Once selected the results of that operation are available below by expanding the header `Results at this stage`.
+
+Add another `Operation` to the chain by selecting a new operation from the `Add Operation` menu.
+
+Operation|Description
+:--|:--
+Map|Map the data to another format, or select only a subset of columns.
+Filter|Filter values by column values
+Aggregate|Aggregate data
+Sort|Sort data
+Pluck|take the value of a single column
+Keys|Take the keys
+Values|Take the values
+
+Finally, the `Publish Dataset` block allows you to download the final result of your operations by clicking the cloud download button. You may also publish your dataset to the bound data filter by toggling the switch next to the `Dataset Name` field. Publishing your dataset makes the data available for consumption by other components. You can affect the name under which your dataset is pubilished using the `Dataset Name` Field.
+
+
+
 ## Individual Usage Heatmap
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/IUH.png" data-zoomable="true">
-Displays a Heatmap of the magnitude of distance for one specific group inside a moseq module. This component inherits all settings from the Usage Heatmap.
+This tool visualizes the how often each syllable is used by each individual mouse/session.
+<br /><br /><br /><br />
 
-![](Images/ToolOptions/IUH.png)|![](Images/ToolOptions/IUHOptions.png)
-:-------------------------:|:-------------------------:
-Heatmap|Options
+### Settings
+Setting|Description
+:--|:--
+Colormap|Changes the color scheme of the heatmap.
+vMin and vMax|Changes the minimum and maximum values displayed on heatmap. In the mapping from numbers to color, vMin and vMax are the maximum color anything past those values wil be that color.
+Row and Column Ordering|Allow you to change how the rows or columns are ordered. The value `ID` will sort by the syllable ID. The value `Value` will allow you to sort by the value of one specific syllable. The value `Hierarchical Cluster` will perform hierarchical clustering on the data. In this case, you also have a choice of distance metric and linkage method, which both affect the displayed dendrogram. The value `K-means Cluster` will perform k-means clustering on the data, and the data is displayed with breaks indicating the group boundaries. In this case you also have the parameter K which controls the number of clusters produced. The value `Dataset` allows you to sort by the order given by a dataset produced by another tool in the current window.
+Color Column Labels|Enabling this setting allows you to color the column label text by the value in the dropdown box. Currently, coloring by group name is supported.
 
-### Colormap
-Changes the color spectrum for which cells are shaded.
-### vMin and vMax
-Changes the minimum and maximum values displayed on heatmap.
-### Row and Column Ordering
-#### ID
-Sort by ordering of module labels, most used animal
-#### Value
-Sort by values
-#### Hierarchical Cluster
-Uses hierarchical clustering to define the order. Organizes rows such that close together are physically close and vice versa.
-#### K-Means Cluster
-Performs k means clustering over data and ordering is used. Shows breaks between clusters.
-#### Dataset
-Use an arbitrary dataset to define the order. Allows order from different comonents to be used. Datasets are generated by other heatmaps. 
-### Color Column Labels
+![](Images/ToolOptions/IUHOptions.png)
 
-## Module Clips
-![](Images/ToolOptions/MC.png)|![](Images/ToolOptions/MCOptions.png)
-:-------------------------:|:-------------------------:
-Clip|Options
 
-### Video Stream
-Allows the clip to be shown in RGB, as a depthmap, or both side by side.
-### Only Module Subclip
-Excludes context of pre and post behavior.
-### Loop Playback
-Loops the current clip.
-### Playback Rate
-Changes the speed at which the clip is running.
+
+## Mutation Plot
+<img style="float: left; width:250px; margin-right:20px;" src="./Images/ToolOptions/MP.png" data-zoomable="true">
+This tool provides a way to visualize the frequency of syllable emissions as a line plot. It also features a clever way to sort the syllables by the difference in syllable usage between two groups
+
+
+Setting|Description
+:--|:--
+Syllable Ordering|This setting affects the order of syllables across the x-axis. The value `ID` will plot the syllables in ascending order across the x-axis. The value `Value` will plot the syllables based on their values. In this case, the additional settings `Sort By` allows you to select the group from which the values will be taken for computing the sort order, and the `Direction` allow you to choose whether to sort in ascending or descending order. The value `Value Difference` allows you to sort the syllables by the difference in usage between groups, calculated as `minuend - subtracted`. The value `Dataset` allows you to sort by the order given by a dataset produced by another tool in the current window.
+Point Size|If enabled, the plot will draw points, and if disabled, the points will be hidden. The numerical value affects the size of the drawn points, with larger values resulting in larger points.
+Line Weight|If enabled, draw lines connecting adjacent points within a group, and if disabled, will hide the lines. The numerical value affects the weight of the drawn lines.
+Error Bars|If enabled, draw error bars for each point, and if disabled, hides the error bars. The dropdown allows you to select the method used for calculation of the error bar data. The value `SEM` will use the standard error of the mean, which the value `95% CI` will use a 95% confidence interval.
+
+![](Images/ToolOptions/MPOptions.png)
+
+
 
 ## Position Plot
-![](Images/ToolOptions/PP.png)|![](Images/ToolOptions/PPOptions.png)
-:-------------------------:|:-------------------------:
-Plot|Options
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/PP.png" data-zoomable="true">
 
-### Display Mode
-Changes whether position plot for all data groups combined(Overall) or individually(Grouped).
-### Colormap
-Changes the color spectrum for which cells are shaded.
-### Resoution
-Increases(lower value) or decreases(higher value) the resolution of the plot. 
+Displays the relative occupancy of animals in the arena during performance of the current moseq syllable as a normalized 2D histogram using hexagon tiles. You can view the overall occupancy across all groups, or you can view occupancy within individual groups.
+
+### Settings
+Setting|Description
+:--|:--
+Display Mode|Affect how the data grouped and plotted. The value `Overall` will group all data together and show occupancy across all groups. The value `Grouped` will split data by group membership and display a visualization for each group.
+Colormap|Changes the color scheme of the heatmap.
+Resolution|Changes the spatial resolution of the underlying histogram. Smaller values increase the resolution of the plot while higher values decrease the resolution of the plot.
+
+![](Images/ToolOptions/PPOptions.png)
+
+
 
 ## Sample Viewer
-This component displays general information such as UUID, Group, Apparatus, Session Name, Subject Name, and Acquisition Time of the groups in the dataset while also allowing this data to be filtered by any of this information. This component has no additional settings.
+This tool displays general information such as UUID, Group, Apparatus, Session Name, Subject Name, and Acquisition Time of the groups in the dataset while also allowing this data to be filtered by any of this information. This tool has no additional settings.
 
 ![](Images/ToolOptions/SV.png)
 
-## Scalar Data
-![](Images/ToolOptions/SD.png)|![](Images/ToolOptions/SDOptions.png)
-:-------------------------:|:-------------------------:
-Data|Options
 
-### Metric
-Selection of metrics for the given data to be displayed.
-### Point Size
-Changes the size of the point.
-### Boxplot Whiskers
-Select between Tukey and Min/Max boxplot whiskers.
-### Violin KDE Scale
-Modifies the scale of the Violin KDE.
+
+## Scalar Data
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/SD.png" data-zoomable="true">
+This tool allow you visualize several "scalar metrics", such as height or velocity, while animals perform the current syllable.  displays the magnitude of the selected units of measurements for each group in a moseq module.
+<br /><br /><br />
+
+### Settings
+Setting|Description
+:--|:--
+Metric|Changes the scalar metric to visualize in the plot to one of the following: Angle, Velocity 2D, Velocity 3D, Velocity Theta, Width, Height, or Area
+Point Size|Enabling this option will display individual data points on the plot, while disabling this option will hide the points. Changing the numerical value affects the size of the points, with larger values producing larger points.
+Boxplot Whiskers|Enabling this option will display the data distribution as a box plot, while disabling this option will hide the box plots. The dropdown allows you to select the methodology used for drawing the box plot whiskers. The value `Tukey` will draw Tukey-style whiskers where the whiskers will extend up to `1.5 * IQR` from 25th and 75th percentile. The value `Min/Max` will draw whiskers that extend to the minimum and maximum values of the data.
+Violin KDE Scale|Enabling this option will display the data distribution as a violin plot, while disableing this option will hide the violin plot. Changing the numerical value affect the scale of the kernel density estimation (KDE) used to generate the violin plot. Larger values produce a more coarse violin while smaller values produce a more fine violin.
+
+![](Images/ToolOptions/SDOptions.png)
+
+
 
 ## Selected Syllable
+This tool displays the currently selected Moseq Syllable. This tool has no additional settings.
 ![](Images/ToolOptions/SelectedSyllable.png)
 
-## Spinogram
-![](Images/ToolOptions/Spinogram.png)|![](Images/ToolOptions/SpinogramOptions.png)
-:-------------------------:|:-------------------------:
-Spinogram|Options
 
-### Line Weight and Color
-Changes the thickness and color of the displayed lines.
+
+## Spinogram
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/Spinogram.png" data-zoomable="true">
+This tool displays “spinograms”, or a visualization of the height of a mouse’s spine (really the
+axial midline) over the time course of the expression of the current moseq syllable. Spinograms were first shown in [`Wiltschko et al. 2015. DOI: 10.1016/j.neuron.2015.11.031`](https://doi.org/10.1016/j.neuron.2015.11.031). Essentially, the mouse spine height is sampled at multiple points across the syllable performance. If the mouse translates in the x/y position, the line for that time point is also translated accordingly. Samples earlier in the performance are drawn with more transparency than samples later in the performance.
+
+
+### Settings
+Setting|Description
+:--|:--
+Line Weight|Allows you to change the thickness of the plotted lines.
+Line Color|Allows you to change the color of the plotted lines
+
+![](Images/ToolOptions/SpinogramOptions.png)
+
+
 
 ## State Map
-![](Images/ToolOptions/SM.png)|![](Images/ToolOptions/SMOptions.png)
-:-------------------------:|:-------------------------:
-Map|Options
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/SM.png" data-zoomable="true">
 
-### Group to Plot
-Select the group to display.
-### Show Relative Differences
-Subracts values of group B from group A. Plot those relative differences.
-### Prune Transition Threshold
-Value indicates which values to be excluded from plot, can get busy at very low values.
-### Layout
-Select the layout the map should be displayed in.
-### Colormap
-Changes the color spectrum for which lines are shaded.
-### Use Transparancy
+This tool provides a way to visualize transition probabilities as a graph consisting of nodes (representing the syllables, the size of which indicates the frequency they are emitted) connected by directed edges/links (representing the probability of a transition from one syllable to another, the weight and color of which indicate the probability magnitude). The tool can be used to visualize one group at a time, or to compare the difference in transition probabilities between two groups. Several layouts are available to affect how nodes and edges are drawn.
+
+
+### Settings
+Setting|Description
+:--|:--
+Group to Plot|Allows you to select the group to be plotted.
+Show Relative Differences|If disabled, will only plot the transition probabilities of the group selected in `Group to Plot`. If enabled, will compute the relative difference between two groups, calculated as `TP(Group to Plot) - TP(Relative To Group)`. When using this option, it is recommended to choose a diverging colormap.
+Prune Transition Threshold|Allows you to set a threshold for pruning transitions from the graph. Transitions with probability lower than this threshold will be pruned, preventing them from appearing on the plot. Lower values will result in more edges being drawn, and very low values can result in quite busy looking plots. A value of `0` effectively disables this functionality.
+Layout|Allows you to select a layout algorithm for organizing the plotted nodes and edges. Most of the layout algorithms have additional options that effect how nodes and edges are placed.
+Colormap|Changes the color scheme of the drawn graph edges. If using `Show Relative Differences`, it's suggested to choose a diverging colormap, otherwise a non-diverging colormap is more suitable.
+Use Transparency|Turns on or off transparency of the edges. When enabled, the opacity of a given edge is proportional to the value of that transition. Enabling this option typically results in a better looking visualization.
+
+
+![](Images/ToolOptions/SMOptions.png)
+
+
+
+## Syllable Clips
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/MC.png" data-zoomable="true">
+This component displays “module clips”, or specific single examples of a given moseq syllable using RGB, depth, or composed (both) video streams. A red dot is displayed in the upper left hand corner of each video indicating when the current module is being actively performed.
+
+### Settings
+Setting|Description
+:--|:--
+Video Stream|Allows you to select which video stream is displayed. Options are RGB (color video), Depth (false-color depth video), or Composed (both RGB and Depth are displayed side by side).
+Only Module Subclip|The videos displayed by this tool typically include 2 seconds prior and 2 seconds post the current syllable performance. If this option is disabled, the full clip (including before and after syllable performance) will be displayed. If this option is enabled, only the subclip showing performance of the current module is displayed. Be aware that due to video player limitations, the precision of this temporal cropping may not be ideal!
+Loop Playback|Enabling this setting will cause the movie to loop back to the beginning and play again once the video has completed playing. Disabling this setting will cause the video to stop once it has completed playing.
+Playback Rate|Sets the playback rate of the video. A value of one (1.0) results in normal playback speed. Values greater than 1.0 result in faster playback, and values less than 1.0 (but greater than zero) result in slower playback. For example, a value of 0.5 will cause the video to play at half the normal speed.
+
+![](Images/ToolOptions/MCOptions.png)
+
+
 
 ## Syllable Flow
-![](Images/ToolOptions/SF.png)|![](Images/ToolOptions/SFOptions.png)
-:-------------------------:|:-------------------------:
-Syllable Flow|Options
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/SF.png" data-zoomable="true">
 
-### Group to Plot
-Select the group to display.
-### Show Relative Differences
-### Prune Transition Threshold
-### Node Alignment
-### Node Width and Padding
-Changes the width of each node and the space between them.
+This tool provides a way to visualize incoming or outgoing transition probabilities relative to the currently selected syllable as a [sankey diagram](https://en.wikipedia.org/wiki/Sankey_diagram).
+
+The plot is arranged as a series of nodes representing syllables, connected by edges representing the probability of transition between the incoming or outgoing syllable and the currently selected syllable (rooted in the center of th diagram). The width (and possibly the color, if using the setting `Show Relative Differences` is enabled) are proportional to the probability of a transition.
+
+
+### Settings
+Setting|Description
+:--|:--
+Group to Plot|Allows you to select the group to be plotted.
+Show Relative Differences|If disabled, will only plot the transition probabilities of the group selected in `Group to Plot`. If enabled, will compute the relative difference between two groups, calculated as `TP(Group to Plot) - TP(Relative To Group)`. When using this option, it is recommended to choose a diverging colormap.
+Prune Transition Threshold|Allows you to set a threshold for pruning transitions from the graph. Transitions with probability lower than this threshold will be pruned, preventing them from appearing on the plot. Lower values will result in more edges being drawn, and very low values can result in quite busy looking plots. A value of `0` effectively disables this functionality.
+Node Alignment|Affects the alignment of the sankey nodes.
+Node Width|Affects the width of the sankey nodes.
+Node Padding|Affects the spacing between adjacent sankey nodes.
+
+![](Images/ToolOptions/SFOptions.png)
+
+
 
 ## Usage Details
-![](Images/ToolOptions/UD.png)|![](Images/ToolOptions/UDOptions.png)
-:-------------------------:|:-------------------------:
-Usage Details|Options
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/UD.png" data-zoomable="true">
 
-### Group Ordering
-Change order of groups by filter order or by dataset.
-### Point Size
-Changes the size of the point.
-### Boxplot Whiskers
-Select between Tukey and Min/Max boxplot whiskers.
-### Violin KDE Scale
-Modifies the scale of the Violin KDE.
+This tool allow you visualize the frequency of syllable emissions across different groups, displaying data using box plots, violin plots, or swarm plots.
+<br /><br /><br />
+
+
+### Settings
+Setting|Description
+:--|:--
+Group Ordering|Allows you to select the ordering of the groups across the x-axis. The value `Filter Order` will use the ordering as specified by the bound data filter. The value `Dataset` will use the order from a published dataset.
+Point Size|Enabling this option will display individual data points on the plot, while disabling this option will hide the points. Changing the numerical value affects the size of the points, with larger values producing larger points.
+Boxplot Whiskers|Enabling this option will display the data distribution as a box plot, while disabling this option will hide the box plots. The dropdown allows you to select the methodology used for drawing the box plot whiskers. The value `Tukey` will draw Tukey-style whiskers where the whiskers will extend up to `1.5 * IQR` from 25th and 75th percentile. The value `Min/Max` will draw whiskers that extend to the minimum and maximum values of the data.
+Violin KDE Scale|Enabling this option will display the data distribution as a violin plot, while disableing this option will hide the violin plot. Changing the numerical value affect the scale of the kernel density estimation (KDE) used to generate the violin plot. Larger values produce a more coarse violin while smaller values produce a more fine violin.
+
+![](Images/ToolOptions/UDOptions.png)
+
+
 
 ## Usage Heatmap
-Displays a heatmap, describing the magnitude of distance of different groups, of the current dataset. The heatmap can be clicked to change the current Selected Syllable, affecting the rest of the component's data. This component has the following settings:
-* Colormap - Changes color scheme of Heatmap
-* Syllable Ordering - Ability to toggle ordering of modules between:
-    * Syllable ID
-    * Syllable Value
-    * Clustered
-    * Dataset
-* Group Ordering - Changes order of the groups, can be set to the data source order or clustered, which lets distance and linkage be taken into account.
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/UH.png" data-zoomable="true">
 
-![](Images/ToolOptions/UH.png)|![](Images/ToolOptions/UHOptions.png)
-:-------------------------:|:-------------------------:
-Heatmap|Options
+This tool allows you to visualize the frequency of syllable emissions across different groups as a heatmap. Groups are arranged as columns of the heatmap, and syllables as the rows. The color in any given cell is proportional to how often the syllable is used by a particular group. The heatmap allows hierarchical or k-means clustering, as well as other sorting methods. Clicking on a cell in the heatmap updates the bound data filter's currently selected syllable.
 
-### Colormap
-Changes the color spectrum for which cells are shaded.
-### vMin and vMax
-Changes the minimum and maximum values displayed on heatmap.
-### Row and Column Ordering
-#### ID
-Sort by ordering of module labels, most used animal
-#### Value
-Sort by values
-#### Hierarchical Cluster
-Uses hierarchical clustering to define the order. Organizes rows such that close together are physically close and vice versa.
-#### K-Means Cluster
-Performs k means clustering over data and ordering is used. Shows breaks between clusters.
-#### Dataset
-Use an arbitrary dataset to define the order. Allows order from different comonents to be used. Datasets are generated by other heatmaps. 
+
+Setting|Description
+:--|:--
+Colormap|Changes the color scheme of the heatmap.
+vMin and vMax|Changes the minimum and maximum values displayed on heatmap. In the mapping from numbers to color, vMin and vMax are the maximum color anything past those values wil be that color.
+Row and Column Ordering|Allow you to change how the rows or columns are ordered. The value `ID` will sort by the syllable ID. The value `Value` will allow you to sort by the value of one specific syllable. The value `Hierarchical Cluster` will perform hierarchical clustering on the data. In this case, you also have a choice of distance metric and linkage method, which both affect the displayed dendrogram. The value `K-means Cluster` will perform k-means clustering on the data, and the data is displayed with breaks indicating the group boundaries. In this case you also have the parameter K which controls the number of clusters produced. The value `Dataset` allows you to sort by the order given by a dataset produced by another tool in the current window.
+
+![](Images/ToolOptions/UHOptions.png)
+
+
+
