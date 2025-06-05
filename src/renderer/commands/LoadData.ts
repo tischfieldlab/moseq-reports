@@ -10,15 +10,19 @@ import { useFiltersStore } from "@store/filters.store";
 import { useDataViewStore } from "@store/dataview.store";
 import { useWindowsStore } from "@store/windows.store";
 import DataService from "@api";
-import { app_root } from '..';
-import { BSpinner } from 'bootstrap-vue-next';
 import { showLoadErrorToast, showLoadSuccessToast, showStartLoadingToast } from '@render/components/Core/IO/Toasts';
 
 
+// NOTE: Event for loading file for file association sent by the main proc
+ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent, data: string) => {
+    console.log("Received data file to load:", data);
+    if (data == null || data === '' || data === undefined) {
+        return;
+    }
 
-ipcRenderer.on('ready-to-load-file', (event: IpcRendererEvent) => {
-    LoadData();
+    LoadDataFile(data);
 });
+
 
 export const DataFileExt = 'msq';
 

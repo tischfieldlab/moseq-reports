@@ -13,6 +13,7 @@ import { DiscoverDataComponents } from "@render/components/Core";
 import { createPinia } from 'pinia'
 import { ToastPlugin } from "./util/Toasts";
 import { D3AxisDirective } from "@render/components/Charts/D3Axis";
+import { ipcRenderer } from "electron";
 
 
 const pinia = createPinia()
@@ -31,8 +32,11 @@ app.use(timeago, {
 const app_root = app.mount("#app");
 app_root.$nextTick(() => {
     postMessage({ payload: "removeLoading" }, "*");
+    ipcRenderer.send('app-ready');
 });
 DiscoverDataComponents(app);
+
+
 
 export default app;
 export {app_root}

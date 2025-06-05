@@ -31,10 +31,17 @@ if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
-// Prevent multiple instances of the app
-if (!app.requestSingleInstanceLock()) {
-  app.quit();
-  process.exit(0);
+const instances: BrowserWindow[] = [];
+const instanceArgs = {} as {[id:string]: string[]};
+// Keep a global reference of the window object, if you don't, the window will
+// be closed automatically when the JavaScript object is garbage collected.
+// let win: BrowserWindow | null;
+
+
+// Bootstrap App
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+    app.quit();
 }
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
@@ -45,14 +52,13 @@ export const ROOT_PATH = {
   public: join(__dirname, app.isPackaged ? "../.." : "../../../public"), 
 };
 
-let win: BrowserWindow | null = null;
 
 const preload = join(__dirname, "../preload/index.mjs");
 const url = process.env["VITE_DEV_SERVER_URL"] || "localhost";
 const indexHtml = join(ROOT_PATH.dist, "index.html");
 
-async function createWindow() {
-    win = new BrowserWindow({
+async function createWindow(argv: string[]) {
+    const win = new BrowserWindow({
         icon: join(ROOT_PATH.public, "img", "msq.ico"),
         frame: false,
         titleBarStyle: "hidden",
@@ -65,6 +71,15 @@ async function createWindow() {
         },
         width: 1280,
         height: 720,
+    });
+
+    const identifier = win.webContents.id;
+    instanceArgs[identifier] = argv;
+    instances.push(win);
+
+    win.on('closed', () => {
+        delete instanceArgs[identifier];
+        instances.splice(instances.indexOf(win), 1);
     });
 
     remoteMain.enable(win.webContents);
@@ -85,6 +100,8 @@ async function createWindow() {
     });
 
     attachTitlebarToWindow(win);
+
+    return win;
 }
 
 app.whenReady()
@@ -105,33 +122,39 @@ app.whenReady()
             console.error("Failed to start DataServer:", error);
         }
     })
-    .then(createWindow);
+    .then(() => createWindow(process.argv));
 
 app.on("window-all-closed", async () => {
-    win = null;
     if (dataServer) {
         await dataServer.shutdown();
     }
-    app.quit();
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
 });
 
 
-app.on("second-instance", () => {
-    if (win) {
-        if (win.isMinimized())
-            win.restore();
-        win.focus();
-    }
+app.on("second-instance", (event, argv, workingDirectory) => {
+    createWindow(argv);
 });
 
 app.on("activate", async () => {
     if (BrowserWindow.getAllWindows().length) {
         BrowserWindow.getAllWindows()[0].focus();
     } else {
-        createWindow();
+        createWindow(process.argv);
         if (dataServer && !dataServer.isServerRunning()) {
             await dataServer.start();
         }
+    }
+});
+
+ipcMain.on('app-ready', (event) => {
+    const args = instanceArgs[event.sender.id];
+    const filepath = args[args.length - 1];
+    console.log("App is ready, filepath:", filepath, args);
+    if (filepath.endsWith('.msq')) {
+        event.sender.send('ready-to-load-file', filepath);
     }
 });
 
