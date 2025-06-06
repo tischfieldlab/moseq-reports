@@ -1,6 +1,7 @@
 {
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "cSpell.words": [
+        "Abraira",
         "abstrans",
         "accum",
         "autoregressive",
@@ -20,17 +21,21 @@
         "eattr",
         "fcose",
         "finfo",
+        "fpath",
         "groupby",
         "hclust",
         "hcluster",
+        "hugeicons",
         "kcluster",
         "kmeans",
         "linearscale",
         "lineplot",
+        "Markowitz",
         "maxticks",
         "minticks",
         "mldistance",
         "moseq",
+        "portscanner",
         "pubilished",
         "relval",
         "rlink",
@@ -43,6 +48,9 @@
         "Subclip",
         "tickformat",
         "timeago",
+        "Tischfield",
+        "titlebar",
+        "Tukey",
         "uuidv",
         "Verdana",
         "viridis",
@@ -51,9 +59,12 @@
         "vnode",
         "vnodes",
         "vues",
+        "Wiltschko",
+        "winapp",
         "wpgma",
         "wstate",
         "xaxis",
-        "yaxis"
+        "yaxis",
+        "zoomable"
     ]
 }

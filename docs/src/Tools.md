@@ -35,7 +35,7 @@ Finally, there is a button which allows you to take a snapshot of the tool. Alte
 Below we describe the different tools and give an explanation for their various settings.
 
 
-## Behvioral Distance Heatmap
+## Behavioral Distance Heatmap
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/BDH.png" data-zoomable="true">
 
 This tool displays a heatmap visualizing the "behavioral distance" between any two moseq syllables. The moseq behavioral distance was first described in [`Markowitz et al. 2018. DOI: 10.1016/j.cell.2018.04.019`](https://doi.org/10.1016/j.cell.2018.04.019), but briefly the metric estimates the similarity between any two given syllables.
@@ -162,7 +162,7 @@ Setting|Description
 Metric|Changes the scalar metric to visualize in the plot to one of the following: Angle, Velocity 2D, Velocity 3D, Velocity Theta, Width, Height, or Area
 Point Size|Enabling this option will display individual data points on the plot, while disabling this option will hide the points. Changing the numerical value affects the size of the points, with larger values producing larger points.
 Boxplot Whiskers|Enabling this option will display the data distribution as a box plot, while disabling this option will hide the box plots. The dropdown allows you to select the methodology used for drawing the box plot whiskers. The value `Tukey` will draw Tukey-style whiskers where the whiskers will extend up to `1.5 * IQR` from 25th and 75th percentile. The value `Min/Max` will draw whiskers that extend to the minimum and maximum values of the data.
-Violin KDE Scale|Enabling this option will display the data distribution as a violin plot, while disableing this option will hide the violin plot. Changing the numerical value affect the scale of the kernel density estimation (KDE) used to generate the violin plot. Larger values produce a more coarse violin while smaller values produce a more fine violin.
+Violin KDE Scale|Enabling this option will display the data distribution as a violin plot, while disabling this option will hide the violin plot. Changing the numerical value affect the scale of the kernel density estimation (KDE) used to generate the violin plot. Larger values produce a more coarse violin while smaller values produce a more fine violin.
 
 ![](Images/ToolOptions/SDOptions.png)
 
@@ -262,7 +262,7 @@ Setting|Description
 Group Ordering|Allows you to select the ordering of the groups across the x-axis. The value `Filter Order` will use the ordering as specified by the bound data filter. The value `Dataset` will use the order from a published dataset.
 Point Size|Enabling this option will display individual data points on the plot, while disabling this option will hide the points. Changing the numerical value affects the size of the points, with larger values producing larger points.
 Boxplot Whiskers|Enabling this option will display the data distribution as a box plot, while disabling this option will hide the box plots. The dropdown allows you to select the methodology used for drawing the box plot whiskers. The value `Tukey` will draw Tukey-style whiskers where the whiskers will extend up to `1.5 * IQR` from 25th and 75th percentile. The value `Min/Max` will draw whiskers that extend to the minimum and maximum values of the data.
-Violin KDE Scale|Enabling this option will display the data distribution as a violin plot, while disableing this option will hide the violin plot. Changing the numerical value affect the scale of the kernel density estimation (KDE) used to generate the violin plot. Larger values produce a more coarse violin while smaller values produce a more fine violin.
+Violin KDE Scale|Enabling this option will display the data distribution as a violin plot, while disabling this option will hide the violin plot. Changing the numerical value affect the scale of the kernel density estimation (KDE) used to generate the violin plot. Larger values produce a more coarse violin while smaller values produce a more fine violin.
 
 ![](Images/ToolOptions/UDOptions.png)
 
