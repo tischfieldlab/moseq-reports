@@ -1,3 +1,7 @@
+<script setup>
+import { data } from './../.vitepress/theme/release.data'
+</script>
+
 # About Moseq Reports
 Interactive interrogation of Moseq models.
 
@@ -16,7 +20,8 @@ A syllable is a stereotyped, reusable, action performed by an animal. Syllables 
 MSQ Files are the format from which the moseq-reports program reads data including video clips, usage data, transitions data, and other data. Think of it as a word document which requires the Microsoft Word program to access. Should you want to access the data stored in the msq file directly, you can change the extension from .msq to .zip and open it using a file archiver such as 7-Zip. For specific information on MSQ files, referenced the [Developer Guide](user_guide/DeveloperGuide.md#msq-files).
 
 ## Version Details
-
-{{ $COMMIT_REF }}
-
-{{ $COMMIT_HASH }}
+|Identifier|Value|
+|:--|:--|
+|App Version|{{ data.appVersion }}|
+|Branch/Tag|{{ data.commitRef }}|
+|Commit Hash|{{ data.commitHash }}|

@@ -45,7 +45,9 @@ export default defineConfig({
                     { text: 'Installation', link: '/Installation' },
                     { text: 'Getting Started', link: '/UsingMoseq' },
                     { text: 'Tool Library', link: '/Tools' },
-                    { text: 'Syllable Annotation', link: '/SyllableAnnotation' },
+                    { text: 'Protocols', items: [
+                        { text: 'Syllable Annotation', link: '/SyllableAnnotation' },
+                    ]},
                 ],
             }
         ],
