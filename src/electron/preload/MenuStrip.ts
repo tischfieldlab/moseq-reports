@@ -1,8 +1,8 @@
-import { Menu } from "@electron/remote";
+import { Menu, shell } from "@electron/remote";
 import { MenuComponentRegistration, IMenuAPI, IMenuAPIPreload } from "../shared/menuAPI";
 import { Titlebar, TitlebarColor } from "custom-electron-titlebar";
 // Future: import { CheckUpdates } from "../../renderer/commands/LoadUpdates";
-// Future: import { documentation } from "../../../package.json";
+import { documentation } from "../../../package.json";
 
 
 
@@ -138,15 +138,15 @@ function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.Me
             },
             { type: "separator" },
             {
+              label: "User Guide",
+              type: "normal",
+              click: () => shell.openExternal(documentation),
+            },
+            {
                 label: "About",
                 type: "normal",
                 click: () => window.menuAPI.renderer.showAboutWindow(),
             },
-            // {
-            //   label: "User Guide",
-            //   type: "normal",
-            //   click: () => shell.openExternal(documentation),
-            // },
         ],
     },
     ];
