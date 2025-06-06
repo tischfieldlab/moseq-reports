@@ -25,5 +25,5 @@ release
 *.sw?
 
 # Vuepress build directories
-docs/vuepress/.vuepress/.cache
-docs/vuepress/.vuepress/.temp
+docs/.vitepress/cache
+docs/.vitepress/dist
