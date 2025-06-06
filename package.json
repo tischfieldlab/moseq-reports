@@ -73,8 +73,6 @@
     "@electron/remote": "^2.1.2",
     "@popperjs/core": "^2.11.8",
     "@vue/devtools": "^7.6.8",
-    "@vuepress/bundler-vite": "^2.0.0-rc.23",
-    "@vuepress/theme-default": "^2.0.0-rc.108",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
