@@ -108,7 +108,7 @@ async function beginLoadingProcess(filename: string) {
             console.error("Error during data load process:", reason);
 
             // destroy the loading toast
-            loading_toast.destroy();
+            loading_toast.hide();
 
             // show error toast and add an entry to the history store
             showLoadErrorToast(reason, 'data');

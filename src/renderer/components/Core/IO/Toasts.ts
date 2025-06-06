@@ -4,11 +4,12 @@ import { app_root } from '@render/index';
 import { h } from 'vue';
 import {useHistoryStore} from '@store/history.store';
 import { BaseColorVariant, BSpinner } from 'bootstrap-vue-next';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export function showStartSavingToast(title: string = 'Saving', message: string = 'Hang tight...') {
     return app_root.$showToast({
-        id: 'saving-toast',
+        id: `saving-toast-${uuidv4()}`,
         title: title,
         variant: 'info',
         isStatus: true,
@@ -164,7 +165,7 @@ export function showLoadErrorToast(err: Error|string|any, noun: string) {
 
 export function showStartLoadingToast(title: string = 'Loading', message: string = 'Hang tight...') {
     return app_root.$showToast({
-        id: 'loading-toast',
+        id: `loading-toast-${uuidv4()}`,
         title: title,
         variant: 'info',
         isStatus: true,

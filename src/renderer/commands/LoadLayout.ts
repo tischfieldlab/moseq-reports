@@ -37,21 +37,21 @@ export default function () {
 export async function LoadDefaultLayout(showNotifications = true) {
     const windowsStore = useWindowsStore();
     let loading_toast;
-    if (showNotifications) {
-        loading_toast = showStartLoadingToast("Loading Layout", 'Hang tight... We\'re getting your layout ready.');
-    }
+    //if (showNotifications) {
+    //    loading_toast = showStartLoadingToast("Loading Layout", 'Hang tight... We\'re getting your layout ready.');
+    //}
     try {
         const response = await fetch(`/default_layout.${LayoutFileExt}`);
         const data = await response.json();
         await windowsStore.loadLayout(data);
 
         if (showNotifications) {
-            loading_toast.destroy();
+            //loading_toast.hide();
             showLoadSuccessToastSimple('Layout loaded successfully!', "Default layout was loaded successfully.");
         }
     } catch (error) {
         if (showNotifications) {
-            loading_toast.destroy();
+            //loading_toast.hide();
             showLoadErrorToast(error, "default layout.");
         }
     }
@@ -95,12 +95,12 @@ export async function LoadLayoutFile(filename: string, showNotifications = true)
         }
 
         if (showNotifications) {
-            loading_toast.destroy();
+            loading_toast.hide();
             showLoadSuccessToast(filename, "layout");
         }
     } catch (error) {
         if (showNotifications) {
-            loading_toast.destroy();
+            loading_toast.hide();
             showLoadErrorToast(error, "layout file");
         }
     }

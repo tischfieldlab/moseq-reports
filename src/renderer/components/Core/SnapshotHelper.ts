@@ -84,11 +84,11 @@ export default async function Snapshot(target: ComponentPublicInstance, basename
             });
         })
         .then((dest) => {
-            loading_toast.destroy();
+            loading_toast.hide();
             showSaveSuccessToast(dest as string, "snapshot");
         })
         .catch((err) => {
-            loading_toast.destroy();
+            loading_toast.hide();
             if (err instanceof SaveCancelledError) {
                 return; // don't care the user cancelled of their own accord
             }
@@ -158,11 +158,11 @@ export async function SnapshotWorkspace() {
             });
         })
         .then((dest) => {
-            loading_toast.destroy();
+            loading_toast.hide();
             showSaveSuccessToast(dest as string, "workspace snapshot");
         })
         .catch((err) => {
-            loading_toast.destroy();
+            loading_toast.hide();
             if (err instanceof SaveCancelledError) {
                 return; // don't care the user cancelled of their own accord
             }
