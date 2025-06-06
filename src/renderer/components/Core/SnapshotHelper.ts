@@ -416,12 +416,12 @@ export async function targetToDataURI(target: ComponentPublicInstance, options: 
 
 async function videoToDataUri(el: HTMLVideoElement, options: SnapshotOptions) {
     if (options.format === "video") {
-        return await fetch(el.src).then(async (response) => {
-            const blob = await response.blob();
-            const mimeType = mime.lookup(el.src);
-
-            return `data:${mimeType};base64,${encode(await blob.arrayBuffer())}`;
-        });
+        return await fetch(el.src)
+            .then(async (response) => {
+                const blob = await response.blob();
+                const mimeType = mime.lookup(new URL(el.src).pathname);
+                return `data:${mimeType};base64,${encode(new Uint8Array(await blob.arrayBuffer()))}`;
+            });
     } else {
         const canvas = document.createElement("canvas");
         const width = el.clientWidth;
@@ -443,7 +443,7 @@ async function videoToDataUri(el: HTMLVideoElement, options: SnapshotOptions) {
 }
 
 // public method for encoding an Uint8Array to base64
-function encode(input: ArrayBuffer): string {
+function encode(input: Uint8Array<ArrayBuffer>): string {
     const keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     let output = "";
     let chr1;
