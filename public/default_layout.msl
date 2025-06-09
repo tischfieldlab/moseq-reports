@@ -1,12 +1,64 @@
 [{
-    "type": "SelectedSyllable",
-    "title": "Selected Syllable",
+    "type": "UsageHeatmap",
+    "title": "Usage Heatmap",
+    "layout": {
+        "width": 350,
+        "height": 500,
+        "position": {
+            "x": 60,
+            "y": 5
+        }
+    },
+    "settings": {}
+},
+{
+    "type": "DetailedUsage",
+    "title": "Usage Details",
+    "layout": {
+        "width": 430,
+        "height": 500,
+        "position": {
+            "x": 420,
+            "y": 5
+        }
+    },
+    "settings": {}
+},
+{
+    "type": "Spinogram",
+    "title": "Spinogram",
     "layout": {
         "width": 400,
         "height": 300,
         "position": {
-            "x": 900,
-            "y": 200
+            "x": 860,
+            "y": 5
+        }
+    },
+    "settings": {}
+},
+{
+    "type": "SelectedSyllable",
+    "title": "Selected Syllable",
+    "layout": {
+        "width": 292,
+        "height": 155,
+        "position": {
+            "x": 60,
+            "y": 553
+        }
+    },
+    "settings": {}
+},
+{
+    "type": "CrowdMovies",
+    "title": "Crowd Movies",
+    "layout": {
+        "width": 360,
+        "height": 360,
+        "position": {
+            "x": 860,
+            "y": 350
         }
     },
     "settings": {}
