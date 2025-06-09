@@ -31,7 +31,7 @@
         <b-row>
             <b-col>
                 <b-input-group prepend="Background Color">
-                    <chrome-picker v-model="backgroundColor" @update:modelValue="backgroundColorChanged" />
+                    <chrome-picker v-model="backgroundColor" />
                 </b-input-group>
             </b-col>
         </b-row>
