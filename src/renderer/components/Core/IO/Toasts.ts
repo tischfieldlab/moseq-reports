@@ -212,3 +212,25 @@ export function showGenericSimpleToast(title: string, message: string, variant: 
         details: message,
     });
 }
+
+function waitForElement(id: string): Promise<void> {
+    return new Promise(resolve => {
+        if (document.getElementById(id)) {
+            console.log('immediate', document.getElementById(id));
+            return resolve();
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.getElementById(id)) {
+                console.log('deferred', document.getElementById(id));
+                resolve();
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
