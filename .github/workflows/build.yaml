@@ -43,7 +43,7 @@ jobs:
           path: ${{ env.ARTIFACT_DEST }}
 
       - name: Init new repo in dist folder and commit generated files
-        if: ${{ endsWith(github.ref, 'master') }}
+      #  if: ${{ endsWith(github.ref, 'master') }}
         run: |
           cd docs/.vitepress/dist
           git init
@@ -54,7 +54,7 @@ jobs:
           cd -
 
       - name: Force push to destination branch
-        if: ${{ endsWith(github.ref, 'master') }}
+      #  if: ${{ endsWith(github.ref, 'master') }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
