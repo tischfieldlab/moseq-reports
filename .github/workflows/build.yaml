@@ -12,7 +12,9 @@ jobs:
   buildDocs:
     runs-on: ubuntu-latest
     needs: build
-    if: ${{ endsWith(github.ref, 'master') }}
+    env:
+      ARTIFACT_NAME: "docs-build"
+      ARTIFACT_DEST: "docs-build.zip"
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
@@ -31,7 +33,17 @@ jobs:
           APP_COMMIT_HASH: ${{ github.sha }}
           APP_COMMIT_REF: ${{ github.ref }}
 
+      - name: Zip package
+        run: 7z a ${{ env.ARTIFACT_DEST }} ./docs/.vitepress/dist/*
+  
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_DEST }}
+
       - name: Init new repo in dist folder and commit generated files
+        if: ${{ endsWith(github.ref, 'master') }}
         run: |
           cd docs/.vitepress/dist
           git init
@@ -42,6 +54,7 @@ jobs:
           cd -
 
       - name: Force push to destination branch
+        if: ${{ endsWith(github.ref, 'master') }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
