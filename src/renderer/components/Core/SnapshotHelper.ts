@@ -201,12 +201,19 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
     );
 
     const canvas = document.createElement("canvas");
+    const pxl_scale = window.devicePixelRatio || 1;
     canvas.style.width = `${dims.maxX * opts.scale}px`;
     canvas.style.height = `${dims.maxY * opts.scale}px`;
-    canvas.width = dims.maxX * opts.scale;
-    canvas.height = dims.maxY * opts.scale;
+    canvas.width = dims.maxX * opts.scale * pxl_scale;
+    canvas.height = dims.maxY * opts.scale * pxl_scale;
     document.body.appendChild(canvas);
+
     const ctx = canvas.getContext("2d");
+    if (ctx === null) {
+        return Promise.reject("got null canvas context!");
+    }
+    ctx.resetTransform();
+    ctx.scale(pxl_scale, pxl_scale);
 
     const drawers = images
         .sort((a, b) => a.z_index - b.z_index)
@@ -228,11 +235,15 @@ export function composite_images(images: SubImage[], opts: SnapshotOptions): Pro
                             img,
                             item.pos_x * opts.scale,
                             item.pos_y * opts.scale,
-                            img.width * opts.scale,
-                            img.height * opts.scale
+                            img.width * opts.scale / pxl_scale,
+                            img.height * opts.scale / pxl_scale
                         );
                     } else {
-                        ctx.drawImage(img, item.pos_x * opts.scale, item.pos_y * opts.scale, img.width, img.height);
+                        ctx.drawImage(img,
+                                      item.pos_x * opts.scale,
+                                      item.pos_y * opts.scale,
+                                      img.width / pxl_scale,
+                                      img.height / pxl_scale);
                     }
                     // draw the title if it exists
                     if (item.title !== undefined) {
