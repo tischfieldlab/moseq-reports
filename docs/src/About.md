@@ -16,8 +16,8 @@ Moseq is short for motion sequencing. Using a depth camera, mice are recorded fr
 ### What is a syllable
 A syllable is a stereotyped, reusable, action performed by an animal. Syllables are concatenated in time (through transitions) to build up larger and more complex behaviors. Syllables are described by a linear dynamical system using 3D pose information (like that provided by a depth camera)  Along with syllables, there is a grammar which dictates the way in which these syllables are put together (transitions).
 
-### msq Files
-MSQ Files are the format from which the moseq-reports program reads data including video clips, usage data, transitions data, and other data. Think of it as a word document which requires the Microsoft Word program to access. Should you want to access the data stored in the msq file directly, you can change the extension from .msq to .zip and open it using a file archiver such as 7-Zip. For specific information on MSQ files, referenced the [Developer Guide](user_guide/DeveloperGuide.md#msq-files).
+### `*.msq` Files
+MSQ Files are the format from which the moseq-reports program reads data including video clips, usage data, transitions data, and other data. Think of it as a word document which requires the Microsoft Word program to access. Should you want to access the data stored in the msq file directly, you can change the extension from `.msq` to `.zip` and open it using a file archiver such as 7-Zip. For specific information on MSQ files, referenced the [Developer Guide](dev_guide/MSQInternals.md).
 
 ## Version Details
 |Identifier|Value|

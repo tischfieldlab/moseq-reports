@@ -23,7 +23,7 @@ export default defineConfig({
     lang: 'en-US',
     base: '/moseq-reports/',
     srcDir: './src/',
-    ignoreDeadLinks: true,
+    //ignoreDeadLinks: true,
 
     themeConfig: {
         // theme-level options
@@ -49,7 +49,14 @@ export default defineConfig({
                         { text: 'Syllable Annotation', link: '/SyllableAnnotation' },
                     ]},
                 ],
-            }
+            }, {
+                text: 'Developer Guide',
+                items: [
+                    { text: 'Getting Started', link: '/dev_guide/GettingStarted' },
+                    { text: 'Data Components', link: '/dev_guide/DataComponents' },
+                    { text: 'MSQ Internals', link: '/dev_guide/MSQInternals' },
+                ],
+            },
         ],
 
         footer: {
