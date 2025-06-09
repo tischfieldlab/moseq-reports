@@ -29,7 +29,7 @@ export const useFiltersStore = defineStore("filters", {
             try {
                 const dehydrated = this.items.map(async (id) => {
                     return [
-                        id.split("/")[1],
+                        id,
                         await useDataViewStore(id).serialize()
                     ] as [string, DataViewRecord];
                 });
