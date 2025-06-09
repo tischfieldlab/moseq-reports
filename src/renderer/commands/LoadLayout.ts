@@ -5,6 +5,8 @@ import { useWindowsStore } from "@store/windows.store"
 import { useFiltersStore } from "@store/filters.store";
 import { DataViewRecord } from "@render/store/dataview.types";
 import { showGenericSimpleToast, showLoadErrorToast, showLoadSuccessToast, showLoadSuccessToastSimple, showSaveErrorToast, showSaveSuccessToast, showStartLoadingToast } from "@render/components/Core/IO/Toasts";
+import { PromiseWithToast } from "bootstrap-vue-next";
+import { nextTick } from "vue";
 
 
 
@@ -36,22 +38,23 @@ export default function () {
  */
 export async function LoadDefaultLayout(showNotifications = true) {
     const windowsStore = useWindowsStore();
-    let loading_toast;
-    //if (showNotifications) {
-    //    loading_toast = showStartLoadingToast("Loading Layout", 'Hang tight... We\'re getting your layout ready.');
-    //}
+    let loading_toast: PromiseWithToast | undefined;
+    if (showNotifications) {
+        loading_toast = showStartLoadingToast("Loading Layout", 'Hang tight... We\'re getting your layout ready.');
+        await nextTick();
+    }
     try {
         const response = await fetch(`/default_layout.${LayoutFileExt}`);
         const data = await response.json();
         await windowsStore.loadLayout(data);
 
         if (showNotifications) {
-            //loading_toast.hide();
+            loading_toast?.hide();
             showLoadSuccessToastSimple('Layout loaded successfully!', "Default layout was loaded successfully.");
         }
     } catch (error) {
         if (showNotifications) {
-            //loading_toast.hide();
+            loading_toast?.hide();
             showLoadErrorToast(error, "default layout.");
         }
     }
@@ -63,9 +66,10 @@ export async function LoadDefaultLayout(showNotifications = true) {
  * @param showNotifications - Whether to show notifications for the operation.
  */
 export async function LoadLayoutFile(filename: string, showNotifications = true) {
-    let loading_toast;
+    let loading_toast: PromiseWithToast | undefined;;
     if (showNotifications) {
         loading_toast = showStartLoadingToast("Loading Layout", 'Hang tight... We\'re getting your layout ready.');
+        await nextTick();
     }
 
     const windowsStore = useWindowsStore();
@@ -95,12 +99,12 @@ export async function LoadLayoutFile(filename: string, showNotifications = true)
         }
 
         if (showNotifications) {
-            loading_toast.hide();
+            loading_toast?.hide();
             showLoadSuccessToast(filename, "layout");
         }
     } catch (error) {
         if (showNotifications) {
-            loading_toast.hide();
+            loading_toast?.hide();
             showLoadErrorToast(error, "layout file");
         }
     }

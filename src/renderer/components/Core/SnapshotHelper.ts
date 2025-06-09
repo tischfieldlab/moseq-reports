@@ -13,6 +13,7 @@ import WindowManager from "@render/components/Core/Window/WindowManager";
 import {ComponentPublicInstance, getCurrentInstance } from "vue";
 import {useDataWindowStore} from '@store/datawindow.store'
 import { ComponentRegistration } from "@render/store/component_registry.store";
+import { nextTick } from "vue";
 
 export interface SnapshotOptions {
     format: string;
@@ -56,6 +57,7 @@ export function ensureDefaults(target: ComponentPublicInstance) {
 
 export default async function Snapshot(target: ComponentPublicInstance, basename: string, options: SnapshotOptions) {
     const loading_toast = showStartSavingToast("Saving Snapshot", 'Hang tight... We\'re getting your snapshot ready.');
+    await nextTick();
     return targetToDataURI(target, options)
         .then((data) => dataUriToFile(data as string))
         .then((finfo) => {
@@ -98,6 +100,7 @@ export default async function Snapshot(target: ComponentPublicInstance, basename
 
 export async function SnapshotWorkspace() {
     const loading_toast = showStartSavingToast("Saving Workspace Snapshot", 'Hang tight... We\'re getting your snapshot ready.');
+    await nextTick();
 
     const opts = defaultOptions(app_root);
     opts.backgroundColor = "#FFFFFFFF"; // opaque white background
