@@ -1,12 +1,12 @@
 <template>
     <div>
         <BInputGroup prepend="Group By" size="sm">
-            <ColumnSelector v-model="operation.groupby" :options="columnOptions" />
+            <ColumnSelector v-model="modelValue.groupby" :options="columnOptions" />
         </BInputGroup>
 
         <BDropdown text="Add Aggregation" class="add-agg-button mx-auto" size="sm">
             <template v-for="col in columnOptions" :key="col">
-                <BDropdownItem v-if="!columnAlreadyIncluded(col)" @click="addAggregate(col)">
+                <BDropdownItem v-if="!columnAlreadyInAggregation(col)" @click="addAggregate(col)">
                     {{ col }}
                 </BDropdownItem>
             </template>
@@ -14,9 +14,13 @@
 
         <template v-for="(value, key) in localAggs" :key="key">
             <BInputGroup :prepend="key" size="sm">
-                <ColumnSelector v-model="localAggs[key]" icon="calculator" noun="Statistic" :options="statOptions" />
+                <ColumnSelector v-model="(localAggs[key] as string[])" :icon="BiCalculator" noun="Statistic" :options="statOptions">
+                    <template #icon>
+                        <BiCalculator />
+                    </template>
+                </ColumnSelector>
                 <BInputGroupText is-text>
-                    <BButton @click="removeAggregate(key)" class="btn-close ms-auto" aria-label="Close" />
+                    <BButton @click="removeAggregate(key as string)" class="btn-close ms-auto" aria-label="Close" />
                 </BInputGroupText>
             </BInputGroup>
         </template>
@@ -24,25 +28,21 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import ColumnSelector from './ColumnSelector.vue';
 import type { AggregateOperation, Statistic } from '@api';
+import BiCalculator from '~icons/bi/calculator'
+
 const props = defineProps<{
-    operation: {
-        groupby: string[];
-        aggregate: Record<string, string[]>;
-    };
     previousResult: any;
     owner: string;
 }>();
 
-const localAggs = reactive(props.operation.aggregate);
+const modelValue = defineModel<AggregateOperation>({required: true});
 
-watch(
-    () => localAggs,
-    () => {
-        props.operation.aggregate = localAggs;
-    },
+const localAggs = ref(modelValue.value.aggregate !== undefined ? {...modelValue.value.aggregate} : {});
+watch(localAggs,
+    () => { modelValue.value.aggregate = localAggs.value; },
     { deep: true }
 );
 
@@ -73,15 +73,15 @@ const statOptions: Statistic[] = [
 ];
 
 function addAggregate(colName: string) {
-    localAggs[colName] = [];
+    localAggs.value[colName] = [];
 }
 
 function removeAggregate(colName: string) {
-    delete localAggs[colName];
+    delete localAggs.value[colName];
 }
 
-function columnAlreadyIncluded(colName: string) {
-    return Object.prototype.hasOwnProperty.call(localAggs, colName);
+function columnAlreadyInAggregation(colName: string) {
+    return Object.prototype.hasOwnProperty.call(localAggs.value, colName);
 }
 </script>
 
