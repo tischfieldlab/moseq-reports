@@ -1,5 +1,5 @@
 <template>
-    <div class="wrapper">
+    <div class="wrapper" :style="{width: layout.width + 'px', height: layout.height + 'px'}">
         <BCard no-body>
             <template #header>
                 <BDropdown text="Add Operation" class="float-end add-op-button" size="sm">
@@ -330,11 +330,14 @@ export default defineComponent({
     color: #555;
     font-style: italic;
 }
-.wrapper:deep() h6 {
+.wrapper :deep(h6) {
     display: inline-block;
     line-height: 26px;
 }
-.wrapper:deep() .card-header {
+.wrapper :deep(.card-header) {
     padding: 0.5rem 1.25rem;
+}
+.wrapper {
+    overflow: auto;
 }
 </style>
