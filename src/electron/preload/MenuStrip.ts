@@ -129,14 +129,14 @@ function createMainMenuStripOptions(menuBarManager: MenuBarManager): Electron.Me
     {
         label: "Help",
         submenu: [
-            {
+            /*{
                 label: "Check for Updates...",
                 type: "normal",
                 click: () => {
                     // CheckUpdates();
                 },
             },
-            { type: "separator" },
+            { type: "separator" },*/
             {
               label: "User Guide",
               type: "normal",
