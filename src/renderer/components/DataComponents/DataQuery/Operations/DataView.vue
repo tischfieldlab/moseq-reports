@@ -16,7 +16,6 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-//import { BButton, BIcon, BCollapse, BFormTextarea } from 'bootstrap-vue-next';
 
 const props = defineProps<{
     Dataset?: any;
@@ -50,7 +49,8 @@ const dataHint = computed(() => {
 
 <style scoped>
 .dataview-container {
-    margin: 0.75rem 1.0rem;
+    padding: 0.75rem 1.0rem;
+    background-color: #dfdfdf;
 }
 
 .collapse-button {
