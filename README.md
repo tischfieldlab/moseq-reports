@@ -1,79 +1,98 @@
-# electron-vite-vue
+# moseq-reports
+### Interactive interrogation of Moseq models.
+In short, moseq reports exists to democratize moseq data. Computational biologists often produce data which is difficult to parse without the proper tools or context making, increasing barriers to access for others to simply pick up and use. Moseq reports allows wet-lab researchers to easily understand moseq models without having to reference outside sources or learn programming languages and manage complex software environments. This program reports data in a form which can be quickly understood by researchers while also providing a set of robust tools to reformat that data in such a way that would be most beneficial to their research.
 
-🥳 Really simple `Electron` + `Vue` + `Vite` boilerplate.
 
-<!-- [![awesome-vite](https://awesome.re/mentioned-badge.svg)](https://github.com/vitejs/awesome-vite) -->
-<!-- [![Netlify Status](https://api.netlify.com/api/v1/badges/ae3863e3-1aec-4eb1-8f9f-1890af56929d/deploy-status)](https://app.netlify.com/sites/electron-vite/deploys) -->
-<!-- [![GitHub license](https://img.shields.io/github/license/caoxiemeihao/electron-vite-vue)](https://github.com/electron-vite/electron-vite-vue/blob/main/LICENSE) -->
-<!-- [![GitHub stars](https://img.shields.io/github/stars/caoxiemeihao/electron-vite-vue?color=fa6470)](https://github.com/electron-vite/electron-vite-vue) -->
-<!-- [![GitHub forks](https://img.shields.io/github/forks/caoxiemeihao/electron-vite-vue)](https://github.com/electron-vite/electron-vite-vue) -->
-[![GitHub Build](https://github.com/electron-vite/electron-vite-vue/actions/workflows/build.yml/badge.svg)](https://github.com/electron-vite/electron-vite-vue/actions/workflows/build.yml)
-[![GitHub Discord](https://img.shields.io/badge/chat-discord-blue?logo=discord)](https://discord.gg/sRqjYpEAUK)
+
+[![Build Moseq-Reports](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml/badge.svg)](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml)
+[![Build Moseq-Reports](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml/badge.svg)](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/tischfieldlab/moseq-reports/latest/total)
+![Static Badge](https://img.shields.io/badge/https%3A%2F%2Ftischfieldlab.github.io%2Fmoseq-reports%2F?style=flat&label=moseq-reports%20docs)
+[![GitHub stars](https://img.shields.io/github/stars/tischfieldlab/moseq-reports?color=fa6470)](https://github.com/tischfieldlab/moseq-reports)
+
+
 
 ## Features
 
-📦 Out of the box  
-🎯 Based on the official [template-vue-ts](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-vue-ts), less invasive  
-🌱 Extensible, really simple directory structure  
-💪 Support using Node.js API in Electron-Renderer  
-🔩 Support C/C++ native addons  
-🖥 It's easy to implement multiple windows  
+📦 Out of the box - no environment setup, no wrangling of dependencies  
+💪 Easy, no-code, GUI interface for visualizing your moseq data  
+🎯 Export publication-quality renderings of your visualizations  
+🌱 Over 15 pre-built, customizable, visualizations to choose from  
+🔩 Feel the power of interactivity during exploratory data analysis  
 
-## Quick Setup
+
+## Quick Setup for end-users
+
+Download and install the [latest release](https://github.com/tischfieldlab/moseq-reports/releases).
+
+Consult the [documentation](https://tischfieldlab.github.io/moseq-reports/).
+
+Have a problem or found a bug? Please [post an issue](https://github.com/tischfieldlab/moseq-reports/issues).
+
+## Quick Setup for Development
+
+### Prerequisites
+In order to run this repository locally, you must ensure you have the correct versions of both Node and yarn installed on your machine.
+
+The supported versions are:
+
+- Node: `22.14.0`
+- NPM: `v10.9.2`
+- Yarn: `v1.22.22`
+
+If you need to install yarn, please run 
 
 ```sh
+npm install -g yarn
+```
+
+To clone and setup the project for development:
+```sh
 # clone the project
-git clone https://github.com/electron-vite/electron-vite-vue.git
+git clone https://github.com/tischfieldlab/moseq-reports.git
 
 # enter the project directory
-cd electron-vite-vue
+cd moseq-reports
 
 # install dependency
-npm install
+yarn
 
 # develop
-npm run dev
+yarn dev
+```
+### Commands
+To interact with the application, please refer to the `package.json` file to see the full list of supported scripts. Below is a list of the useful commands that you will run and build the app on your machine.
+
+#### Installing the Dependencies
+```sh
+yarn
 ```
 
-## Debug
+#### Running the App for Development
+To run the application for development, type the following command:
 
-![electron-vite-react-debug.gif](https://github.com/electron-vite/electron-vite-react/blob/main/electron-vite-react-debug.gif?raw=true)
-
-## Directory
-
-```diff
-+ ├─┬ electron
-+ │ ├─┬ main
-+ │ │ └── index.ts    entry of Electron-Main
-+ │ └─┬ preload
-+ │   └── index.ts    entry of Preload-Scripts
-  ├─┬ src
-  │ └── main.ts       entry of Electron-Renderer
-  ├── index.html
-  ├── package.json
-  └── vite.config.ts
+```sh
+yarn dev
 ```
 
-<!--
-## Be aware
+#### Build the App for production
+To build the application, type the following command:
 
-🚨 By default, this template integrates Node.js in the Renderer process. If you don't need it, you just remove the option below. [Because it will modify the default config of Vite](https://github.com/electron-vite/vite-plugin-electron-renderer#config-presets-opinionated).
-
-```diff
-# vite.config.ts
-
-export default {
-  plugins: [
--   // Use Node.js API in the Renderer-process
--   renderer({
--     nodeIntegration: true,
--   }),
-  ],
-}
+```sh
+yarn build
 ```
--->
 
-## FAQ
+#### Running the Docs for Development
+To run the docs for development, type the following command:
 
-- [C/C++ addons, Node.js modules - Pre-Bundling](https://github.com/electron-vite/vite-plugin-electron-renderer#dependency-pre-bundling)
-- [dependencies vs devDependencies](https://github.com/electron-vite/vite-plugin-electron-renderer#dependencies-vs-devdependencies)
+```sh
+yarn docs:dev
+```
+
+#### Build the App
+To build the docs for production, type the following command:
+
+```sh
+yarn docs:build
+```
+
