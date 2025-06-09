@@ -1,19 +1,18 @@
 import { toPng, toSvg } from "html-to-image";
 import { svgAsDataUri, svgAsPngUri } from "save-svg-as-png";
-// import { Store } from "vuex";
-// import { unnest } from "@render/util/Vuex";
-import {app_root} from "@render/index";
+import { app_root } from "@render/index";
 import { dialog } from "@electron/remote";
 import fs from "fs";
 import mime from "mime-types";
-import { DataWindowState, RenderMode } from "@store/datawindow.types";
+import { RenderMode } from "@store/datawindow.types";
 import { SaveCancelledError } from "@render/components/Core/IO/types";
 import { showSaveErrorToast, showSaveSuccessToast, showStartSavingToast } from "@render/components/Core/IO/Toasts";
 import WindowManager from "@render/components/Core/Window/WindowManager";
-import {ComponentPublicInstance, getCurrentInstance } from "vue";
+import {ComponentPublicInstance } from "vue";
 import {useDataWindowStore} from '@store/datawindow.store'
 import { ComponentRegistration } from "@render/store/component_registry.store";
 import { nextTick } from "vue";
+
 
 export interface SnapshotOptions {
     format: string;
@@ -99,9 +98,6 @@ export default async function Snapshot(target: ComponentPublicInstance, basename
 }
 
 export async function SnapshotWorkspace() {
-    const loading_toast = showStartSavingToast("Saving Workspace Snapshot", 'Hang tight... We\'re getting your snapshot ready.');
-    await nextTick();
-
     const opts = defaultOptions(app_root);
     opts.backgroundColor = "#FFFFFFFF"; // opaque white background
 
@@ -114,9 +110,13 @@ export async function SnapshotWorkspace() {
     });
 
     if (toSnapshot.length <= 0) {
-        showSaveErrorToast("There are not any items to snapshot!", "workspace snapshot");
+        showSaveErrorToast("There are no items to be snapshot!", "workspace snapshot");
         return;
     }
+
+    const loading_toast = showStartSavingToast("Saving Workspace Snapshot", 'Hang tight... We\'re getting your snapshot ready.');
+
+    await nextTick();
 
     Promise.all(
         toSnapshot.map(async (item) => {
