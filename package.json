@@ -1,6 +1,6 @@
 {
   "name": "moseq-reports",
-  "version": "28.1.0",
+  "version": "2.1.0",
   "main": "dist/electron/main/index.js",
   "description": "Interactive interrogation of Moseq models",
   "author": {
