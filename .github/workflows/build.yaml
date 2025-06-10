@@ -32,8 +32,8 @@ jobs:
       - name: Build docs
         run: yarn run docs:build
         env:
-          APP_COMMIT_HASH: ${{ github.sha }}
-          APP_COMMIT_REF: ${{ github.ref }}
+          VITE_APP_COMMIT_HASH: ${{ github.sha }}
+          VITE_APP_COMMIT_REF: ${{ github.ref }}
 
       - name: Zip package
         run: 7z a ${{ env.ARTIFACT_DEST }} ./docs/.vitepress/dist/*

@@ -18,7 +18,7 @@ export default defineLoader({
     async load(): Promise<Data> {
         return {
             commitHash: child.execSync("git rev-parse --short HEAD").toString(),
-            commitRef: process?.env?.APP_COMMIT_REF || "unknown",
+            commitRef: process?.env?.VITE_APP_COMMIT_REF || "unknown",
             appVersion: version || "unknown"
         };
     }
