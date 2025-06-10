@@ -1,17 +1,10 @@
 import { defineConfig } from 'vitepress';
-import { SearchPlugin } from "vitepress-plugin-search";
 import lightbox from "vitepress-plugin-lightbox"
 import {homepage} from '../../package.json';
 
 
 
 export default defineConfig({
-    vite: {
-        plugins: [
-            SearchPlugin({})
-        ],
-    },
-
     head: [
         ['link', { rel: 'icon', href: '/moseq-reports/favicon.ico' }]
     ],
@@ -58,6 +51,10 @@ export default defineConfig({
                 ],
             },
         ],
+
+        search: {
+            provider: 'local',
+        },
 
         footer: {
             message: 'Released under the A License.',  // to-do: change this to the license you want
