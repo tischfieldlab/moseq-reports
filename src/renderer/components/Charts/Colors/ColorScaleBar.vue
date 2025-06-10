@@ -25,6 +25,7 @@ import { defineComponent, computed } from "vue";
 import { scaleSequential } from "d3-scale";
 import { GetScale } from "./D3ColorProvider";
 import { range } from "d3-array";
+import { v4 as uuidv4 } from 'uuid';
 
 export default defineComponent({
     name: "ColorScaleBar",
@@ -49,7 +50,7 @@ export default defineComponent({
     },
 
     setup(props) {
-        const gradientId = computed(() => `color-gradient-${props.interpolator}`);
+        const gradientId = computed(() => `color-gradient-${props.interpolator}-${uuidv4()}`);
         const offsets = computed(() => {
             return props.orientation === "horizontal"
                 ? { x1: "0%", x2: "100%", y1: "0%", y2: "0%" }
