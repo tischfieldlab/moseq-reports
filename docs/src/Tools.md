@@ -248,6 +248,24 @@ Node Padding|Affects the spacing between adjacent sankey nodes.
 ![](Images/ToolOptions/SFOptions.png)
 
 
+## Transitions Heatmap
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/TH.png" data-zoomable="true">
+
+This tool provides a way to visualize the transition probability matrix as a heatmap. You have the option to display the overall transition probability matrix across all animals, of for a single particular group. You may also choose to normalize the data using bigram, row, or column normalization.
+
+
+### Settings
+Setting|Description
+:--|:--
+Mode|Choose from `Overall` to plot across all groups, or `Single Group` to plot the transitions from one single group. In the case of the latter, you have the opportunity to select the specific group to be plotted via the `Group to Plot` field.
+Normalization|Choose from `Bigram`, `Rows` or `Cols`
+Colormap|Changes the color scheme of the heatmap.
+vMin and vMax|Changes the minimum and maximum values displayed on heatmap. In the mapping from numbers to color, vMin and vMax are the maximum color anything past those values wil be that color.
+Row and Column Ordering|Allow you to change how the rows or columns are ordered. The value `ID` will sort by the syllable ID. The value `Value` will allow you to sort by the value of one specific syllable. The value `Hierarchical Cluster` will perform hierarchical clustering on the data. In this case, you also have a choice of distance metric and linkage method, which both affect the displayed dendrogram. The value `K-means Cluster` will perform k-means clustering on the data, and the data is displayed with breaks indicating the group boundaries. In this case you also have the parameter K which controls the number of clusters produced. The value `Dataset` allows you to sort by the order given by a dataset produced by another tool in the current window.
+
+![](Images/ToolOptions/THOptions.png)
+
+
 
 ## Usage Details
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/UD.png" data-zoomable="true">
