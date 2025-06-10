@@ -17,6 +17,7 @@ export default defineConfig({
     base: '/moseq-reports/',
     srcDir: './src/',
     //ignoreDeadLinks: true,
+    lastUpdated: true,
 
     themeConfig: {
         // theme-level options
