@@ -6,8 +6,8 @@ In short, moseq reports exists to democratize moseq data. Computational biologis
 
 [![Build Moseq-Reports](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml/badge.svg)](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml)
 [![Build Moseq-Reports](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml/badge.svg)](https://github.com/tischfieldlab/moseq-reports/actions/workflows/build.yaml)
-![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/tischfieldlab/moseq-reports/latest/total)
-![Static Badge](https://img.shields.io/badge/https%3A%2F%2Ftischfieldlab.github.io%2Fmoseq-reports%2F?style=flat&label=moseq-reports%20docs)
+[![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/tischfieldlab/moseq-reports/latest/total)](https://github.com/tischfieldlab/moseq-reports/releases)
+[![Static Badge](https://img.shields.io/badge/https%3A%2F%2Ftischfieldlab.github.io%2Fmoseq-reports%2F?style=flat&label=moseq-reports%20docs)](https://tischfieldlab.github.io/moseq-reports/)
 [![GitHub stars](https://img.shields.io/github/stars/tischfieldlab/moseq-reports?color=fa6470)](https://github.com/tischfieldlab/moseq-reports)
 
 
