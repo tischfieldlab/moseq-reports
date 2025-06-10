@@ -14,7 +14,7 @@
         :columnClusterK="settings.column_cluster_k"
         :columnOrderValue="settings.column_order_row_value"
         :columnOrderDirection="settings.column_order_direction"
-        :columnOrderDataset="rowOrderDataset"
+        :columnOrderDataset="columnOrderDataset"
 
         :rowOrderType="settings.row_order_type"
         :rowClusterDistance="settings.row_cluster_distance"
