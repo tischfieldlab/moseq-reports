@@ -58,9 +58,14 @@ export default defineConfig({
         },
 
         footer: {
-            message: 'Released under the A License.',  // to-do: change this to the license you want
-            copyright: 'Copyright © 2019-present, Tischfield Lab and Abraira Lab'
-        }
+            message: 'Released under A License.',  // to-do: change this to the license you want
+            copyright: 'Copyright © 2019-present, Tischfield Lab and Abraira Lab',
+        },
+
+        editLink: {
+            text: 'Edit this page on GitHub',
+            pattern: 'https://github.com/tischfieldlab/moseq-reports/edit/docs/src/:path',
+        },
     },
     markdown: {
         config: (md) => {
