@@ -1,5 +1,5 @@
 # Syllable Annotation Guide
-This guide presents a general protocol for annotating moseq syllables.
+This guide presents a general protocol for annotating MoSeq syllables.
 
 ## Considerations for Annotations
 Try to annotate using a set of simplified and reusable tags that describe multiple instance of each
@@ -19,7 +19,7 @@ Examples: paused, scanning, sniff; or nose-down, dart; or rear-up; etc.
 <br>
 <img src="https://i.imgur.com/UjpfL94.png"> 
 
-5. Now, for each moseq syllable do the following:
+5. Now, for each MoSeq syllable do the following:
     1. Select the current syllable by changing the Selected Syllable to the next syllable to be annotated. (If this is the first syllable to be annotated, you may leave this set to 0).
     2. Examine the Crowd Movies, Syllable Clips, and Spinogram components in order to garner an understanding of the behavioral ethology of the current syllable.
         - Be sure to look at multiple individuals within the Crowd Movie. Reduce the playback speed if this is helpful.

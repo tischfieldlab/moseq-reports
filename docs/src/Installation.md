@@ -4,7 +4,7 @@ import { data } from './../.vitepress/theme/release.data'
 
 # Installation and Updating
 ## Installation
-To install Moseq Reports Download and run the latest release of moseq-reports for your computers specifications [here](https://github.com/tischfieldlab/moseq-reports/releases) and run the installer.
+To install Moseq-Reports Download and run the latest release of moseq-reports for your computers specifications [here](https://github.com/tischfieldlab/moseq-reports/releases) and run the installer.
 ### Windows
 Download `moseq-reports-Setup-{{ data.appVersion }}.exe` and run the file.
 ### MacOS

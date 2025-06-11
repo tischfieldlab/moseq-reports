@@ -38,10 +38,10 @@ Below we describe the different tools and give an explanation for their various 
 ## Behavioral Distance Heatmap
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/BDH.png" data-zoomable="true">
 
-This tool displays a heatmap visualizing the "behavioral distance" between any two moseq syllables. The moseq behavioral distance was first described in [`Markowitz et al. 2018. DOI: 10.1016/j.cell.2018.04.019`](https://doi.org/10.1016/j.cell.2018.04.019), but briefly the metric estimates the similarity between any two given syllables.
+This tool displays a heatmap visualizing the "behavioral distance" between any two MoSeq syllables. The MoSeq behavioral distance was first described in [`Markowitz et al. 2018. DOI: 10.1016/j.cell.2018.04.019`](https://doi.org/10.1016/j.cell.2018.04.019), but briefly the metric estimates the similarity between any two given syllables.
 
 There are several available underlying metrics available.
-- `ar[init]` and `ar[dtw]` both use the autoregressive data learned by moseq during model training and estimate the similarity in the trajectory through behavioral space between syllables. The `dtw` variant uses dynamic time warping to try to improve alignment between syllable trajectories.
+- `ar[init]` and `ar[dtw]` both use the autoregressive data learned by MoSeq during model training and estimate the similarity in the trajectory through behavioral space between syllables. The `dtw` variant uses dynamic time warping to try to improve alignment between syllable trajectories.
 - `pca[dtw]` looks at the PCA embedding between syllables, and also uses dynamic time warping.
 - `scalars[**]` looks at the underlying scalar data, such as height or velocity to compute the distance.
 
@@ -49,7 +49,7 @@ There are several available underlying metrics available.
 ### Settings
 Setting|Description
 :--|:--
-Behavioral Distance Metric|Changes the moseq behavioral distance metric being visualized.
+Behavioral Distance Metric|Changes the MoSeq behavioral distance metric being visualized.
 Colormap|Changes the color scheme of the heatmap.
 vMin and vMax|Changes the minimum and maximum values displayed on heatmap. In the mapping from numbers to color, vMin and vMax are the maximum color anything past those values wil be that color.
 Row and Column Ordering|Allow you to change how the rows or columns are ordered. The value `ID` will sort by the syllable ID. The value `Value` will allow you to sort by the value of one specific syllable. The value `Hierarchical Cluster` will perform hierarchical clustering on the data. In this case, you also have a choice of distance metric and linkage method, which both affect the displayed dendrogram. The value `K-means Cluster` will perform k-means clustering on the data, and the data is displayed with breaks indicating the group boundaries. In this case you also have the parameter K which controls the number of clusters produced. The value `Dataset` allows you to sort by the order given by a dataset produced by another tool in the current window.
@@ -60,7 +60,7 @@ Row and Column Ordering|Allow you to change how the rows or columns are ordered.
 
 ## Crowd Movies
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/CM.png" data-zoomable="true">
-This tool displays “crowd movies”, or videos where many examples of a given moseq syllable which are synchronized to the syllable start and overlaid. A red dot over each mouse indicates the active performance of the current syllable.
+This tool displays “crowd movies”, or videos where many examples of a given MoSeq syllable which are synchronized to the syllable start and overlaid. A red dot over each mouse indicates the active performance of the current syllable.
 
 ### Settings
 Setting|Description
@@ -131,7 +131,7 @@ Error Bars|If enabled, draw error bars for each point, and if disabled, hides th
 ## Position Plot
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/PP.png" data-zoomable="true">
 
-Displays the relative occupancy of animals in the arena during performance of the current moseq syllable as a normalized 2D histogram using hexagon tiles. You can view the overall occupancy across all groups, or you can view occupancy within individual groups.
+Displays the relative occupancy of animals in the arena during performance of the current MoSeq syllable as a normalized 2D histogram using hexagon tiles. You can view the overall occupancy across all groups, or you can view occupancy within individual groups.
 
 ### Settings
 Setting|Description
@@ -153,7 +153,7 @@ This tool displays general information such as UUID, Group, Apparatus, Session N
 
 ## Scalar Data
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/SD.png" data-zoomable="true">
-This tool allow you visualize several "scalar metrics", such as height or velocity, while animals perform the current syllable.  displays the magnitude of the selected units of measurements for each group in a moseq module.
+This tool allow you visualize several "scalar metrics", such as height or velocity, while animals perform the current syllable.  displays the magnitude of the selected units of measurements for each group in a MoSeq module.
 <br /><br /><br />
 
 ### Settings
@@ -177,7 +177,7 @@ This tool displays the currently selected Moseq Syllable. This tool has no addit
 ## Spinogram
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/Spinogram.png" data-zoomable="true">
 This tool displays “spinograms”, or a visualization of the height of a mouse’s spine (really the
-axial midline) over the time course of the expression of the current moseq syllable. Spinograms were first shown in [`Wiltschko et al. 2015. DOI: 10.1016/j.neuron.2015.11.031`](https://doi.org/10.1016/j.neuron.2015.11.031). Essentially, the mouse spine height is sampled at multiple points across the syllable performance. If the mouse translates in the x/y position, the line for that time point is also translated accordingly. Samples earlier in the performance are drawn with more transparency than samples later in the performance.
+axial midline) over the time course of the expression of the current MoSeq syllable. Spinograms were first shown in [`Wiltschko et al. 2015. DOI: 10.1016/j.neuron.2015.11.031`](https://doi.org/10.1016/j.neuron.2015.11.031). Essentially, the mouse spine height is sampled at multiple points across the syllable performance. If the mouse translates in the x/y position, the line for that time point is also translated accordingly. Samples earlier in the performance are drawn with more transparency than samples later in the performance.
 
 
 ### Settings
@@ -213,7 +213,7 @@ Use Transparency|Turns on or off transparency of the edges. When enabled, the op
 
 ## Syllable Clips
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/MC.png" data-zoomable="true">
-This component displays “module clips”, or specific single examples of a given moseq syllable using RGB, depth, or composed (both) video streams. A red dot is displayed in the upper left hand corner of each video indicating when the current module is being actively performed.
+This component displays “module clips”, or specific single examples of a given MoSeq syllable using RGB, depth, or composed (both) video streams. A red dot is displayed in the upper left hand corner of each video indicating when the current module is being actively performed.
 
 ### Settings
 Setting|Description
