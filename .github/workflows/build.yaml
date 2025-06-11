@@ -184,7 +184,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.SERVICE_ACCOUNT_TOKEN }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PSWD_MOSEQ_REPORTS: ${{ secrets.APPLE_ID_PSWD_MOSEQ_REPORTS }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PSWD_MOSEQ_REPORTS }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           yarn build-release
@@ -193,7 +193,7 @@ jobs:
         if: ${{ !endsWith(github.ref, 'master') }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PSWD_MOSEQ_REPORTS: ${{ secrets.APPLE_ID_PSWD_MOSEQ_REPORTS }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PSWD_MOSEQ_REPORTS }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: yarn build
 

@@ -71,5 +71,5 @@
         repo: "moseq-reports",
         private: true,
     },
-    afterSign: "buildfiles/notarize.js"
+    // afterSign: "buildfiles/notarize.js"
 }
