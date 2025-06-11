@@ -2,7 +2,7 @@ import { ref, computed, watch, onMounted, onUnmounted, watchSyncEffect, WatchEff
 import { OrderingType, HClusterDistance, HClusterLinkage } from './ClusteredHeatmap.types';
 import { cluster, hierarchy, HierarchyNode } from 'd3-hierarchy';
 import { min, max } from 'd3-array';
-import { scaleBand, ScaleOrdinal, scaleOrdinal, scaleSequential } from 'd3-scale';
+import { scaleBand, ScaleDiverging, scaleDiverging, ScaleOrdinal, scaleOrdinal, ScaleSequential, scaleSequential } from 'd3-scale';
 import { GetScale } from '@render/components/Charts/Colors/D3ColorProvider';
 import { getDendrogramOrder, elbowH, elbowV, hydrateCluster } from '@render/components/Charts/D3Clustering';
 import { DefinedScaleBand } from '../D3Scale';
@@ -37,7 +37,8 @@ export interface ClusteredHeatmapBaseProps {
     rowOrderDirection: string;
     rowOrderDataset?: number[];
     rowLabelColor?: {[column: string]: string};
-    groupLabels: string[];
+    columnLabels?: string[];
+    rowLabels?: string[];
     xAxisTitle?: string;
     yAxisTitle?: string;
     legendTitle?: string;
@@ -215,7 +216,11 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
 
             case OrderingType.Natural:
             default:
-                return props.groupLabels as string[];
+                if (props.columnLabels !== undefined) {
+                    return props.columnLabels as string[];
+                } else {
+                    return [...new Set(props.data.map((u) => u[props.columnKey]))].sort((a, b) => a - b);
+                }
         }
     });
     const rowOrder = computed(() => {
@@ -240,7 +245,11 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
 
             case OrderingType.Natural:
             default:
-                return [...new Set(props.data.map((u) => u[props.rowKey]))].sort((a, b) => a - b);
+                if (props.rowLabels !== undefined) {
+                    return props.rowLabels as string[];
+                } else {
+                    return [...new Set(props.data.map((u) => u[props.rowKey]))].sort((a, b) => a - b);
+                }
         }
     });
     const scale = computed(() => {
@@ -257,8 +266,14 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
             props.vmin || min(vals) || 0,
             props.vmax || max(vals) || 0,
         ];
-        const z = scaleSequential(GetScale(props.colorscale))
-            .domain(ext);
+        let z: ScaleDiverging<string, string> | ScaleSequential<string, string>;
+        if (ext[0] < 0 && ext[1] > 0) {
+            z = scaleDiverging(GetScale(props.colorscale))
+                .domain([ext[0], 0, ext[1]]);
+        } else {
+            z = scaleSequential(GetScale(props.colorscale))
+                .domain(ext);
+        }
         const clc = scaleOrdinal<string>()
             .unknown('#000000')
             .domain(Object.keys(props.columnLabelColor || {}))

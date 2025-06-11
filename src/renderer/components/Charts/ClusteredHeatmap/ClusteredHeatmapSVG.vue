@@ -86,7 +86,7 @@ const overrides: ClusteredHeatmapBaseOverrides = {
         }
     },
     label_stats: computed<LabelStats>(() => {
-        const labels = props.groupLabels;
+        const labels = columnOrder.value;
         if (!canvas.value) {
             return{
                 count: 0,
@@ -114,7 +114,7 @@ const overrides: ClusteredHeatmapBaseOverrides = {
 
 const props = withDefaults(defineProps<ClusteredHeatmapBaseProps>(), ClusteredHeatmapBasePropsDefaults());
 const emit = defineEmits<ClusteredHeatmapBaseEmits>();
-const { dims, scale, has_data, tooltip_text, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, elbowH, elbowV, shouldHideLabel } = useClusteredHeatmapBase(props, emit, overrides);
+const { dims, scale, has_data, tooltip_text, tooltipPosition, hoverItem, isColumnsHClustered, isRowsHClustered, rowLinks, columnLinks, elbowH, elbowV, shouldHideLabel, columnOrder } = useClusteredHeatmapBase(props, emit, overrides);
 
 const canvas = useTemplateRef('canvas');
 

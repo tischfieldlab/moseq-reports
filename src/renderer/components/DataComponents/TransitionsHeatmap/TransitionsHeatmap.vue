@@ -3,7 +3,7 @@
         :width="layout.width"
         :height="layout.height"
         :data="normalizedAggregateView"
-        :groupLabels="includeSyllables"
+        :columnLabels="dataview.selectedSyllables.map((s) => s.toString())"
         :colorscale="settings.colormap"
         :vmin="settings.auto_vmin ? undefined : settings.vmin"
         :vmax="settings.auto_vmax ? undefined : settings.vmax"
@@ -110,21 +110,23 @@ const columnOrderDataset = computed((): any[] => {
     }
     return [];
 });
-const includeSyllables = computed((): any[] => {
-    if (dataview.value.moduleIdFilter.length === 0) {
-        return dataview.value.availableModuleIds;
-    } else {
-        return dataview.value.moduleIdFilter;
-    }
-});
 
 const dataset = computed((): Operation[] =>{
-    let syllables;
-    if (dataview.value.moduleIdFilter.length === 0) {
-        syllables = dataview.value.availableModuleIds;
+
+    let groups: string[] = [];
+    if ($wstate.settings.mode === TransitionsHeatmapMode.Overall) {
+        // no filtering needed, we want all data
+    } else if ($wstate.settings.mode === TransitionsHeatmapMode.SingleGroup) {
+        groups.push($wstate.settings.selected_group);
+
+    } else if ($wstate.settings.mode === TransitionsHeatmapMode.GroupDifference) {
+        groups.push($wstate.settings.selected_group);
+        groups.push($wstate.settings.relative_group);
+
     } else {
-        syllables = dataview.value.moduleIdFilter;
+        console.error('Invalid TransitionsHeatmapMode', $wstate.settings.mode);
     }
+
     const ops: Operation[] = [
         {
             type: 'map',
@@ -135,32 +137,50 @@ const dataset = computed((): Operation[] =>{
                 'raw',
             ]
         }];
-    if ($wstate.settings.mode === TransitionsHeatmapMode.Overall) {
-        // no filtering needed, we want all data
-    } else if ($wstate.settings.mode === TransitionsHeatmapMode.SingleGroup) {
+    if (groups.length > 0) {
         ops.push({
             type: 'filter',
             filters: {
-                group: [$wstate.settings.selected_group],
+                group: groups,
             },
         });
-
+        ops.push({
+            type: 'aggregate',
+            groupby: [
+                'group',
+                'row_id',
+                'col_id',
+            ],
+            aggregate: {
+                raw: 'sum'
+            },
+        });
+        if (groups.length === 2) {
+            ops.push({
+                type: 'sort',
+                columns: [
+                    ['row_id', 'asc'],
+                    ['col_id', 'asc'],
+                ],
+            });
+        }
     } else {
-        console.error('Invalid TransitionsHeatmapMode', $wstate.settings.mode);
+        ops.push({
+            type: 'aggregate',
+            groupby: [
+                'row_id',
+                'col_id',
+            ],
+            aggregate: {
+                raw: 'sum'
+            },
+        });
     }
 
-    ops.push({
-        type: 'aggregate',
-        groupby: [
-            'row_id',
-            'col_id',
-        ],
-        aggregate: {
-            raw: 'sum'
-        },
-    });
     return ops;
 });
+
+
 
 function BigramNormalize(data: TransData[]): TransData[] {
     const normalized: TransData[] = [];
@@ -211,16 +231,42 @@ watchEffect(async () => {
     aggregateView.value = await DataService.fetchData<TransData[]>('transitions', dataset.value);
 });
 
-watchEffect(() => {
-    const data = aggregateView.value;
+function normalize(data: TransData[]): TransData[] {
     if ($wstate.settings.normalization === TransitionsNormalization.Bigram) {
-        normalizedAggregateView.value = BigramNormalize(data);
+        return BigramNormalize(data);
     } else if ($wstate.settings.normalization === TransitionsNormalization.Rows) {
-        normalizedAggregateView.value = RowNormalize(data);
+        return RowNormalize(data);
     } else if ($wstate.settings.normalization === TransitionsNormalization.Columns) {
-        normalizedAggregateView.value = ColumnNormalize(data);
+        return ColumnNormalize(data);
     } else {
         console.error('Invalid TransitionsNormalization', $wstate.settings.normalization);
+        return [];
+    }
+}
+
+function subtract(a: TransData[], b: TransData[]): TransData[] {
+    a.forEach((item, idx) => {
+        const other = b[idx];
+        if (other !== undefined) {
+            if (item.col_id !== other.col_id || item.row_id !== other.row_id){
+                console.warn(`Mismatch: A[${item.row_id}, ${item.col_id}] vs B[${other.row_id}, ${other.col_id}]`);
+            }
+            item.raw -= other.raw;
+        }
+    })
+    return a;
+}
+
+watchEffect(() => {
+    const selected_group = $wstate.settings.selected_group;
+    const relative_group = $wstate.settings.relative_group;
+
+    if ($wstate.settings.mode == TransitionsHeatmapMode.GroupDifference) {
+        const main_vals = normalize(aggregateView.value.filter((row) => row.group === selected_group));
+        const rel_vals = normalize(aggregateView.value.filter((row) => row.group === relative_group));
+        normalizedAggregateView.value = subtract(main_vals, rel_vals);
+    } else {
+        normalizedAggregateView.value = normalize(aggregateView.value);
     }
 });
 
@@ -248,9 +294,10 @@ function colOrderChanged(event) {
     });
 }
 function heatmap_node_tooltip(item: TransData) {
+    const delta = $wstate.settings.mode == TransitionsHeatmapMode.GroupDifference ? "Δ " : "";
     return `<div style="text-align:left;">
                 Transition: ${item.row_id} → ${item.col_id}<br />
-                TP: ${item.raw?.toExponential(3)}
+                ${delta}TP: ${item.raw?.toExponential(3)}
             </div>`;
 }
 </script>

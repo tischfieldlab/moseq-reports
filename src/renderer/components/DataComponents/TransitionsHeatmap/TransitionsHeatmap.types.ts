@@ -3,6 +3,7 @@ import { ColormapSettings, ColumnOrderingSettings, RowOrderingSettings } from "@
 export enum TransitionsHeatmapMode {
     Overall = "Overall",
     SingleGroup = "SingleGroup",
+    GroupDifference = "GroupDifference",
 }
 
 export enum TransitionsNormalization {
@@ -15,5 +16,6 @@ export enum TransitionsNormalization {
 export interface TransitionsHeatmapSettings extends ColormapSettings, ColumnOrderingSettings, RowOrderingSettings {
     mode: TransitionsHeatmapMode;
     selected_group: string;
+    relative_group: string;
     normalization: TransitionsNormalization;
 }

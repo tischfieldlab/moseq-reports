@@ -3,7 +3,7 @@
         :width="layout.width"
         :height="layout.height"
         :data="aggregateView"
-        :groupLabels="selectedGroups"
+        :columnLabels="selectedGroups"
         :colorscale="settings.colormap"
         :vmin="settings.auto_vmin ? undefined : settings.vmin"
         :vmax="settings.auto_vmax ? undefined : settings.vmax"

@@ -1,4 +1,4 @@
-import { scaleLinear, ScaleSequential } from "d3-scale";
+import { ScaleDiverging, scaleLinear, ScaleSequential } from "d3-scale";
 import { range } from "d3-array";
 import { Orientation } from "./Colors.types";
 import { computed } from "vue";
@@ -6,7 +6,7 @@ import { computed } from "vue";
 
 
 export interface ColorScaleLegendProps {
-    scale: ((value: number) => string) & ScaleSequential<string>;
+    scale: ScaleSequential<string, any> | ScaleDiverging<string, any>;
     width: number;
     height: number;
     title?: string;

@@ -8,11 +8,19 @@
                     </BInputGroup>
                 </BCol>
             </BRow>
-            <BRow v-show="plot_mode === TransitionsHeatmapMode.SingleGroup">
+            <BRow v-show="[TransitionsHeatmapMode.SingleGroup, TransitionsHeatmapMode.GroupDifference].includes(plot_mode)">
                 <BCol cols="1" />
                 <BCol>
                     <BInputGroup prepend="Group To Plot">
                         <BFormSelect v-model="group_to_plot" :options="group_options" />
+                    </BInputGroup>
+                </BCol>
+            </BRow>
+            <BRow v-show="plot_mode === TransitionsHeatmapMode.GroupDifference">
+                <BCol cols="1" />
+                <BCol>
+                    <BInputGroup prepend="Relative to Group">
+                        <BFormSelect v-model="relative_group" :options="relative_group_options" />
                     </BInputGroup>
                 </BCol>
             </BRow>
@@ -35,6 +43,7 @@ import { computed, onMounted } from "vue";
 import { Colormap, ColumnOrdering, RowOrdering } from '@render/components/Charts/ClusteredHeatmap';
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import { TransitionsHeatmapMode, TransitionsHeatmapSettings, TransitionsNormalization } from "./TransitionsHeatmap.types";
+import { Value } from "sass-embedded";
 
 
 const props = defineProps<{
@@ -46,6 +55,7 @@ const {$wstate, dataview} = useWindowMixin<TransitionsHeatmapSettings>(props.id)
 const mode_options = [
     { text: "Overall", value: TransitionsHeatmapMode.Overall },
     { text: "Single Group", value: TransitionsHeatmapMode.SingleGroup },
+    { text: "Group Difference", value: TransitionsHeatmapMode.GroupDifference },
 ];
 const plot_mode = computed({
     get(): TransitionsHeatmapMode {
@@ -71,6 +81,22 @@ const group_to_plot = computed({
         if (value !== $wstate.settings.selected_group) {
             $wstate.updateComponentSettings({
                 settings: { selected_group: value },
+            });
+        }
+    },
+});
+
+const relative_group_options = computed((): {text: string, value: string}[] => {
+    return dataview.value.selectedGroups.filter((g) => g !== group_to_plot.value).map((g) => ({text: g.toString(), value: g.toString()}));
+});
+const relative_group = computed({
+    get(): string {
+        return $wstate.settings.relative_group;
+    },
+    set(value: string) {
+        if (value !== $wstate.settings.relative_group) {
+            $wstate.updateComponentSettings({
+                settings: { relative_group: value },
             });
         }
     },
@@ -104,6 +130,11 @@ onMounted(() => {
     if ($wstate.settings.selected_group === '') {
         $wstate.updateComponentSettings({
             settings: { selected_group: dataview.value.selectedGroups[0] || '' },
+        });
+    }
+    if ($wstate.settings.relative_group === '') {
+        $wstate.updateComponentSettings({
+            settings: { relative_group: relative_group_options.value[0].value || '' },
         });
     }
 });
