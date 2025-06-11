@@ -26,6 +26,7 @@ export default async function(params) {
             appPath: appPath,
             appleId: process.env.APPLE_ID,
             appleIdPassword: process.env.APPLE_ID_PSWD_MOSEQ_REPORTS,
+            teamId: process.env.APPLE_TEAM_ID,
         });
     } catch (error) {
         console.error(error);

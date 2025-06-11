@@ -150,6 +150,7 @@ jobs:
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
           echo CSC_IDENTITY_AUTO_DISCOVERY=true >> $GITHUB_ENV
           echo CSC_KEYCHAIN=${KEYCHAIN_PATH} >> $GITHUB_ENV
+          echo CSC_FOR_PULL_REQUEST=true >> $GITHUB_ENV
 
           security create-keychain -p "$KEYCHAIN_PSWD" $KEYCHAIN_PATH
           security default-keychain -s $KEYCHAIN_PATH
@@ -184,6 +185,7 @@ jobs:
           GH_TOKEN: ${{ secrets.SERVICE_ACCOUNT_TOKEN }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PSWD_MOSEQ_REPORTS: ${{ secrets.APPLE_ID_PSWD_MOSEQ_REPORTS }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           yarn build-release
 
@@ -192,6 +194,7 @@ jobs:
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PSWD_MOSEQ_REPORTS: ${{ secrets.APPLE_ID_PSWD_MOSEQ_REPORTS }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: yarn build
 
       - name: Zip package
