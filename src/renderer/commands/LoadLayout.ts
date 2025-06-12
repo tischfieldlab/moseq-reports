@@ -44,7 +44,7 @@ export async function LoadDefaultLayout(showNotifications = true) {
         await nextTick();
     }
     try {
-        const response = await fetch(`/default_layout.${LayoutFileExt}`);
+        const response = await fetch(`./default_layout.${LayoutFileExt}`);
         const data = await response.json();
         await windowsStore.loadLayout(data);
 

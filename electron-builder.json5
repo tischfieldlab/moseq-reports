@@ -7,10 +7,9 @@
     "directories": {
         "output": "release/${version}"
     },
-    "files": [
-        "dist",
-        "dist-electron"
-    ],
+    /*"files": [
+        "dist/**",
+    ],*/
     fileAssociations: [
         {
             ext: "msq",

@@ -2,7 +2,7 @@
     <div class="has-no-data-container" draggable="false">
         <BImg
             :style="{ visibility: show_background ? 'visible' : 'hidden' }"
-            src="/img/mouse.png"
+            src="./img/mouse.png"
             fluid
             draggable="false"
             class="no-data-img" />
@@ -67,7 +67,6 @@ export default defineComponent({
     -webkit-user-select: none;
     user-select: none;
     -webkit-user-drag: none;
-    user-drag: none;
 }
 
 .no-data-img {
@@ -77,7 +76,6 @@ export default defineComponent({
     -webkit-user-select: none;
     user-select: none;
     -webkit-user-drag: none;
-    user-drag: none;
     max-width: 50%; /* Ensures the image scales responsively */
 }
 
