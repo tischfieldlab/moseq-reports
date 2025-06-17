@@ -14,7 +14,7 @@ import { mean, median, sum, min, max, extent, variance, deviation } from "d3-arr
 import { tsvParse, csvParse } from "d3-dsv";
 import StreamZip from "node-stream-zip";
 import fs from "fs";
-import path from "path";
+import path, { resolve } from "path";
 
 export function readDataBundle(filename: string): Promise<any> {
   const normalizedFilename = path.normalize(filename);
@@ -190,6 +190,35 @@ export function jsonParseZipEntryContainingNaN(data: string) {
   return JSON.parse(data.replace(/\bNaN\b/g, '"***NaN***"'), (key, value) => {
     return value === "***NaN***" ? NaN : value;
   });
+}
+
+export function fileExists(path: string): Promise<boolean> {
+  const match = path.match(/(.*\.msq)(.*)/);
+  if (match) {
+    const entryname = match[2].replace(/^[\\\/]+/, "").replace(/\\/, "/");
+    return new Promise<boolean>((resolve, reject) => {
+      const zip = new StreamZip({
+        file: match[1],
+        storeEntries: true,
+      });
+      zip.on("error", (err) => {
+        zip.close();
+        resolve(false);
+      });
+      zip.on("ready", async () => {
+        const entries = zip.entries();
+        for (const entry of Object.values(entries)) {
+          if (entry.name === entryname) {
+            resolve(true);
+          }
+        }
+        resolve(false);
+        zip.close();
+      });
+    });
+  } else {
+    return Promise.resolve(fs.existsSync(path));
+  }
 }
 
 export function readFileContents(path: string) {

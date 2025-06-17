@@ -85,6 +85,9 @@ export default defineComponent({
         const hideVideo = () => {
             videoLoaded.value = false;
         };
+        const raiseError = (error: Event) => {
+            emit("error", error);
+        };
 
         const updateCurrentTime = () => {
             if (video.value) {
@@ -113,6 +116,7 @@ export default defineComponent({
         onMounted(() => {
             if (video.value) {
                 video.value.addEventListener("error", hideVideo);
+                video.value.addEventListener("error", raiseError);
                 video.value.addEventListener("loadedmetadata", showVideo);
                 video.value.addEventListener("timeupdate", updateCurrentTime);
                 video.value.addEventListener("ended", handleVideoEnded);
@@ -122,6 +126,7 @@ export default defineComponent({
         onUnmounted(() => {
             if (video.value) {
                 video.value.removeEventListener("error", hideVideo);
+                video.value.removeEventListener("error", raiseError);
                 video.value.removeEventListener("loadedmetadata", showVideo);
                 video.value.removeEventListener("timeupdate", updateCurrentTime);
                 video.value.removeEventListener("ended", handleVideoEnded);
@@ -179,7 +184,7 @@ video:focus {
     display: block;
 }
 
-.no-syllable .card {
+.no-syllable {
     width: 75%;
     position: absolute;
     top: 50%;

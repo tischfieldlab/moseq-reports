@@ -7,8 +7,8 @@ import express, { Application, Request, Response } from "express";
 import http from "http";
 import portscanner from "portscanner";
 import * as FileType from "file-type";
-import { readFileContents,readDataBundle  } from "./DataLoader/DataLoader.lib";
-import LoadData  from "./DataLoader/DataLoader";
+import { readFileContents, readDataBundle, fileExists } from "./DataLoader/DataLoader.lib";
+import LoadData from "./DataLoader/DataLoader";
 import { Operation } from "./DataLoader/DataLoader.types";
 import { v4 as uuidv4 } from 'uuid';
 
