@@ -81,6 +81,10 @@ export class DataServer {
                 const session = this.sessions[token];
 
                 const fpath = `${session.filename}/${decodeURI(req.path)}`;
+                if (!await fileExists(fpath)) {
+                    res.status(404).json({ error: "File not found." });
+                    return;
+                }
                 //console.log("Resolved file path:", fpath)
                 const buffer = await readFileContents(fpath);
                 const fileType = await FileType.fileTypeFromBuffer(buffer);
