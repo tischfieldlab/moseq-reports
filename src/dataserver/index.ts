@@ -166,52 +166,52 @@ export class DataServer {
         });
     }
 
-public async start(): Promise<void> {
-    if (this.server) {
-        console.warn("DataServer is already running.");
-        throw new Error("DataServer is already running.");
-    }
-
-    try {
-        this.port = await portscanner.findAPortNotInUse(minSearchPort, maxSearchPort);
-        this.server = this.app.listen(this.port, () => {
-            console.log(`DataServer started on port ${this.port}`);
-        });
-    } catch (error) {
-        console.error("Failed to start DataServer:", error);
-        throw new Error("Failed to start DataServer.");
-    }
-}
-
-public async shutdown(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    public async start(): Promise<void> {
         if (this.server) {
-            this.server.close((err) => {
-            if (err) {
-                console.error("Error shutting down DataServer:", err);
-                return reject(err);
-            }
-
-            console.log("DataServer successfully shut down.");
-            this.server = null;
-            this.port = null;
-            resolve();
-            });
-        } else {
-            console.warn("Shutdown called, but DataServer is not running.");
-            resolve();
+            console.warn("DataServer is already running.");
+            throw new Error("DataServer is already running.");
         }
-    });
-}
 
-public isServerRunning(): boolean {
-    return !!this.server;
-}
-
-public getAddress(): string {
-    if (this.server && this.port) {
-      return `http://localhost:${this.port}`;
+        try {
+            this.port = await portscanner.findAPortNotInUse(minSearchPort, maxSearchPort);
+            this.server = this.app.listen(this.port, () => {
+                console.log(`DataServer started on port ${this.port}`);
+            });
+        } catch (error) {
+            console.error("Failed to start DataServer:", error);
+            throw new Error("Failed to start DataServer.");
+        }
     }
-    return "Server not running.";
-  }
+
+    public async shutdown(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (this.server) {
+                this.server.close((err) => {
+                    if (err) {
+                        console.error("Error shutting down DataServer:", err);
+                        return reject(err);
+                    }
+
+                    console.log("DataServer successfully shut down.");
+                    this.server = null;
+                    this.port = null;
+                    resolve();
+                });
+            } else {
+                console.warn("Shutdown called, but DataServer is not running.");
+                resolve();
+            }
+        });
+    }
+
+    public isServerRunning(): boolean {
+        return !!this.server;
+    }
+
+    public getAddress(): string {
+        if (this.server && this.port) {
+            return `http://localhost:${this.port}`;
+        }
+        return "Server not running.";
+    }
 }
