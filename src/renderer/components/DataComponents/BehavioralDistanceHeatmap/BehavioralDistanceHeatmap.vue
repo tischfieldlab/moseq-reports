@@ -3,7 +3,7 @@
         :width="layout.width"
         :height="layout.height"
         :data="aggregateView"
-        :columnLabels="includeSyllables"
+        :columnLabels="dataview.selectedSyllables as any[]"
         :colorscale="settings.colormap"
         :vmin="settings.auto_vmin ? undefined : settings.vmin"
         :vmax="settings.auto_vmax ? undefined : settings.vmax"
@@ -106,13 +106,7 @@ const columnOrderDataset = computed((): any[] => {
     }
     return [];
 });
-const includeSyllables = computed((): any[] => {
-    if (dataview.value.moduleIdFilter.length === 0) {
-        return dataview.value.availableModuleIds;
-    } else {
-        return dataview.value.moduleIdFilter;
-    }
-});
+
 
 const dataset = computed((): Operation[] =>{
     let syllables;
@@ -129,18 +123,18 @@ const dataset = computed((): Operation[] =>{
                 [`col_id_${dataview.value.countMethod.toLowerCase()}`, 'sink'],
                 [$wstate.settings.distance_metric, 'value'],
             ],
-        },
+        }, {
+            type: 'filter',
+            filters: {
+                source: dataview.value.selectedSyllables,
+                sink: dataview.value.selectedSyllables,
+            }
+        }
     ];
 });
 
 watchEffect(async () => {
-    await DataService.fetchData<BehavioralDistanceData[]>('behave_dist', dataset.value)
-        .then((data) => {
-            aggregateView.value = data.filter((v) => {
-                return includeSyllables.value.includes(v.source)
-                    && includeSyllables.value.includes(v.sink);
-            });
-        });
+    aggregateView.value = await DataService.fetchData<BehavioralDistanceData[]>('behave_dist', dataset.value);
 });
 
 
