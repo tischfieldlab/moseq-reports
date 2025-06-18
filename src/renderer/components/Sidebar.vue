@@ -140,7 +140,8 @@ export default defineComponent({
 }
 
 .offcanvas {
-    width: 330px !important;
+    width: 335px !important;
+    margin-top: 30px;
 }
 .offcanvas.offcanvas-start {
     left: 48px !important;
@@ -149,7 +150,6 @@ export default defineComponent({
     right: 48px !important;
 }
 .offcanvas-body {
-    padding-top: 36px !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
     background-color: #f8f9fa !important;

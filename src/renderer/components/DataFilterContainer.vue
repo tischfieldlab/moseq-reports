@@ -61,6 +61,6 @@ h3 {
 }
 .filters_container {
     clear: both;
-    padding: 0 12px 0 6px;
+    padding: 0 6px 0 0;
 }
 </style>
