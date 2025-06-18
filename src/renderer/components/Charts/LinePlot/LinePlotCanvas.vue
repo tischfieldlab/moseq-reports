@@ -59,7 +59,7 @@ function draw() {
 function drawSeries(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.translate(margin.left, margin.top);
-    for (const [g, sdata] of Object.entries(groupedData)) {
+    for (const [g, sdata] of Object.entries(groupedData.value)) {
         drawSeriesLine(ctx, g, sdata);
         drawSeriesErrors(ctx, sdata);
         drawSeriesPoints(ctx, sdata);
@@ -72,7 +72,7 @@ function drawSeriesLine(ctx: CanvasRenderingContext2D, g: string, sdata: object[
     }
     ctx.save();
     ctx.beginPath();
-    ctx.strokeStyle = scale.value.c(g);
+    ctx.strokeStyle = scale.value.c(g) as string;
     ctx.lineWidth = props.lineWeight;
     ctx.stroke(new Path2D(seriesPath.value(sdata as any) as string));
     ctx.restore();
@@ -84,11 +84,11 @@ function drawSeriesPoints(ctx: CanvasRenderingContext2D, sdata: object[]) {
     ctx.save();
     for (const node of sdata) {
         ctx.beginPath();
-        ctx.arc(scale.value.x(node[props.varKey]),
+        ctx.arc(scale.value.x(node[props.varKey]) as number,
                 scale.value.y(node[props.valueKey]),
                 props.pointSize,
                 0, 2 * Math.PI);
-        ctx.fillStyle = scale.value.c(node[props.seriesKey]);
+        ctx.fillStyle = scale.value.c(node[props.seriesKey]) as string;
         ctx.fill();
         ctx.stroke();
     }
@@ -102,18 +102,18 @@ function drawSeriesErrors(ctx: CanvasRenderingContext2D, sdata: object[]) {
     const offset = scale.value.x.step() / 8;
     for (const node of sdata) {
         // vertical
-        ctx.moveTo(scale.value.x(node[props.varKey]), scale.value.y(node[props.valueKey] - node[props.errorKey]));
-        ctx.lineTo(scale.value.x(node[props.varKey]), scale.value.y(node[props.valueKey] + node[props.errorKey]));
+        ctx.moveTo(scale.value.x(node[props.varKey]) as number, scale.value.y(node[props.valueKey] - node[props.errorKey]));
+        ctx.lineTo(scale.value.x(node[props.varKey]) as number, scale.value.y(node[props.valueKey] + node[props.errorKey]));
 
         // upper fence
-        ctx.moveTo(scale.value.x(node[props.varKey]) - offset, scale.value.y(node[props.valueKey] + node[props.errorKey]));
-        ctx.lineTo(scale.value.x(node[props.varKey]) + offset, scale.value.y(node[props.valueKey] + node[props.errorKey]));
+        ctx.moveTo(scale.value.x(node[props.varKey]) as number - offset, scale.value.y(node[props.valueKey] + node[props.errorKey]));
+        ctx.lineTo(scale.value.x(node[props.varKey]) as number + offset, scale.value.y(node[props.valueKey] + node[props.errorKey]));
 
         // lower fence
-        ctx.moveTo(scale.value.x(node[props.varKey]) - offset, scale.value.y(node[props.valueKey] - node[props.errorKey]));
-        ctx.lineTo(scale.value.x(node[props.varKey]) + offset, scale.value.y(node[props.valueKey] - node[props.errorKey]));
+        ctx.moveTo(scale.value.x(node[props.varKey]) as number - offset, scale.value.y(node[props.valueKey] - node[props.errorKey]));
+        ctx.lineTo(scale.value.x(node[props.varKey]) as number + offset, scale.value.y(node[props.valueKey] - node[props.errorKey]));
 
-        ctx.strokeStyle = scale.value.c(node[props.seriesKey]);
+        ctx.strokeStyle = scale.value.c(node[props.seriesKey]) as string;
         ctx.lineWidth = props.lineWeight / 2;
         ctx.stroke();
     }
@@ -131,8 +131,8 @@ function drawAxisX(ctx: CanvasRenderingContext2D) {
     // iterate over our x domain values
     scale.value.x.domain().forEach((d) => {
         // tell canvas to draw lines at the bottom of our bars
-        ctx.moveTo(scale.value.x(d) + (scale.value.x.bandwidth() / 2), 0);
-        ctx.lineTo(scale.value.x(d) + (scale.value.x.bandwidth() / 2), 6);
+        ctx.moveTo(scale.value.x(d) as number + (scale.value.x.bandwidth() / 2), 0);
+        ctx.lineTo(scale.value.x(d) as number + (scale.value.x.bandwidth() / 2), 6);
     });
 
     // set our stroke style to black & draw it
@@ -143,7 +143,7 @@ function drawAxisX(ctx: CanvasRenderingContext2D) {
     if  (rotate_labels.value) {
         scale.value.x.domain().forEach((d) => {
             ctx.save();
-            ctx.translate(scale.value.x(d) + (scale.value.x.bandwidth() / 2), 6);
+            ctx.translate(scale.value.x(d) as number + (scale.value.x.bandwidth() / 2), 6);
             ctx.rotate(-Math.PI / 4);
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
@@ -158,7 +158,7 @@ function drawAxisX(ctx: CanvasRenderingContext2D) {
 
         scale.value.x.domain().forEach((d) => {
             ctx.fillText(d,
-                        scale.value.x(d) + (scale.value.x.bandwidth() / 2),
+                        scale.value.x(d) as number + (scale.value.x.bandwidth() / 2),
                         6);
         });
     }
@@ -168,7 +168,7 @@ function drawAxisX(ctx: CanvasRenderingContext2D) {
     ctx.textBaseline = 'middle';
     ctx.fillStyle = 'black';
     ctx.font = '13px Verdana';
-    ctx.fillText(props.xAxisTitle, (props.width - margin.right) / 2, margin.bottom / 2);
+    ctx.fillText(props.xAxisTitle, (props.width - margin.right - margin.left) / 2, xAxisLabelYPos.value);
     ctx.restore();
 
     ctx.restore();
@@ -185,6 +185,7 @@ function drawAxisY(ctx: CanvasRenderingContext2D) {
     ctx.stroke();
 
     // apply y-axis labels and ticks
+    const tick_formatter = scale.value.y.tickFormat();
     scale.value.y.ticks().forEach((d) => {
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 1;
@@ -197,7 +198,7 @@ function drawAxisY(ctx: CanvasRenderingContext2D) {
         ctx.lineTo(0, scale.value.y(d));
         ctx.stroke();
         ctx.textAlign = 'right';
-        ctx.fillText(d, -9, scale.value.y(d));
+        ctx.fillText(tick_formatter(d), -9, scale.value.y(d));
     });
 
     ctx.save();
@@ -212,9 +213,9 @@ function drawAxisY(ctx: CanvasRenderingContext2D) {
 }
 function handleClick(event: MouseEvent) {
     for (const node of props.data as object[]) {
-        const x1 = margin.left + scale.value.x(node[props.varKey]) - props.pointSize;
+        const x1 = margin.left + (scale.value.x(node[props.varKey]) as number) - props.pointSize;
         const y1 = margin.top + scale.value.y(node[props.valueKey]) - props.pointSize;
-        const x2 = margin.left + scale.value.x(node[props.varKey]) + props.pointSize;
+        const x2 = margin.left + (scale.value.x(node[props.varKey]) as number) + props.pointSize;
         const y2 = margin.top + scale.value.y(node[props.valueKey]) + props.pointSize;
 
         if (event.offsetX > x1 && event.offsetX <= x2
@@ -233,9 +234,9 @@ function handleClick(event: MouseEvent) {
 }
 const handleHover = throttle((event: MouseEvent) => {
     for (const node of props.data as object[]) {
-        const x1 = margin.left + scale.value.x(node[props.varKey]) - props.pointSize;
+        const x1 = margin.left + (scale.value.x(node[props.varKey]) as number) - props.pointSize;
         const y1 = margin.top + scale.value.y(node[props.valueKey]) - props.pointSize;
-        const x2 = margin.left + scale.value.x(node[props.varKey]) + props.pointSize;
+        const x2 = margin.left + (scale.value.x(node[props.varKey]) as number) + props.pointSize;
         const y2 = margin.top + scale.value.y(node[props.valueKey]) + props.pointSize;
 
         if (event.offsetX > x1 && event.offsetX <= x2

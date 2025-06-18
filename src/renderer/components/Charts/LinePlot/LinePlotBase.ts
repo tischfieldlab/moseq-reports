@@ -91,7 +91,7 @@ export function useLinePlotBase(props: LinePlotBaseProps) {
     const seriesPath = computed((): Line<{}> =>{
         return line<{}>()
             .defined((d) => isPointValid(d))
-            .x((d) => scale.value.x(d[props.varKey]))
+            .x((d) => scale.value.x(d[props.varKey]) as number)
             .y((d) => scale.value.y(d[props.valueKey]))
     });
     const groupedData = computed((): {[series: string]: {}[] } => {
@@ -118,7 +118,7 @@ export function useLinePlotBase(props: LinePlotBaseProps) {
     const dataVars = computed((): any[] => {
         return [...new Set(props.data.map(d => d[props.varKey]))]
     });
-    const scale = computed((): any => {
+    const scale = computed(() => {
         if (!has_data.value) {
             return { x: scalePoint(), y: scaleLinear(), c: scaleOrdinal() };
         }
@@ -141,13 +141,13 @@ export function useLinePlotBase(props: LinePlotBaseProps) {
             .domain(ext as [number, number])
             .range([innerHeight.value, 0]);
 
-        const c = scaleOrdinal()
+        const c = scaleOrdinal<string, string, string>()
             .domain(props.seriesLabels as string[])
             .range(props.seriesColors as string[]);
 
         return { x, y, c };
     });
-    const tooltip_text = computed((): string =>{
+    const tooltip_text = computed((): string => {
         if (hoverItem.value !== undefined){
             return props.tooltipFormatter(hoverItem.value);
         }
