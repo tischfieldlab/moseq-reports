@@ -1,6 +1,6 @@
 # Tools
 The heart of `moseq-reports` are its tools, or predefined visualizations, available from the `Tools` menu in the application menu bar. Here we describe the tools and related functionality. Further below, the specifics for each tool are described.
-To access options for a certain module click the gear icon in the upper right of that module.
+To access options for a certain tool click the gear icon in the upper right of that tool window.
 
 ## General Tool Settings
 Specific Settings can be accessed by clicking the gear icon in the title bar of the component. After clicking this button, a modal dialog will appear that offers settings for this component instance. There are a number of common tabs within this dialog:
@@ -95,9 +95,23 @@ Finally, the `Publish Dataset` block allows you to download the final result of 
 
 
 
+## Entropy
+<img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/IUH.png" data-zoomable="true">
+This tool can be used to visualize entropy or entropy rate across animals in the dataset, displaying data using box plots, violin plots, or swarm plots. Computations are performed by the `entropy` and `entropy_rate` functions of the moseq2-viz package.
+
+### Settings
+Setting|Description
+:--|:--
+Metric|Choose the metric to display. Choices include `Entropy`, `Bigram Entropy Rate`, `Outgoing Entropy Rate`, or `Incoming Entropy Rate`.
+roup Ordering|Allows you to select the ordering of the groups across the x-axis. The value `Filter Order` will use the ordering as specified by the bound data filter. The value `Dataset` will use the order from a published dataset.
+Point Size|Enabling this option will display individual data points on the plot, while disabling this option will hide the points. Changing the numerical value affects the size of the points, with larger values producing larger points.
+Boxplot Whiskers|Enabling this option will display the data distribution as a box plot, while disabling this option will hide the box plots. The dropdown allows you to select the methodology used for drawing the box plot whiskers. The value `Tukey` will draw Tukey-style whiskers where the whiskers will extend up to `1.5 * IQR` from 25th and 75th percentile. The value `Min/Max` will draw whiskers that extend to the minimum and maximum values of the data.
+Violin KDE Scale|Enabling this option will display the data distribution as a violin plot, while disabling this option will hide the violin plot. Changing the numerical value affect the scale of the kernel density estimation (KDE) used to generate the violin plot. Larger values produce a more coarse violin while smaller values produce a more fine violin.
+
+
 ## Individual Usage Heatmap
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/IUH.png" data-zoomable="true">
-This tool visualizes the how often each syllable is used by each individual mouse/session.
+This tool visualizes how often each syllable is used by each individual mouse/session as a heatmap. Columns are labeled by the mouse identifier and can also be colored by group. 
 <br /><br /><br /><br />
 
 ### Settings
@@ -153,7 +167,7 @@ This tool displays general information such as UUID, Group, Apparatus, Session N
 
 ## Scalar Data
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/SD.png" data-zoomable="true">
-This tool allow you visualize several "scalar metrics", such as height or velocity, while animals perform the current syllable.  displays the magnitude of the selected units of measurements for each group in a MoSeq module.
+This tool allows you to visualize several "scalar metrics", such as height or velocity, while animals perform the current syllable.  displays the magnitude of the selected units of measurements for each group in a MoSeq syllable.
 <br /><br /><br />
 
 ### Settings
@@ -213,13 +227,13 @@ Use Transparency|Turns on or off transparency of the edges. When enabled, the op
 
 ## Syllable Clips
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/MC.png" data-zoomable="true">
-This component displays “module clips”, or specific single examples of a given MoSeq syllable using RGB, depth, or composed (both) video streams. A red dot is displayed in the upper left hand corner of each video indicating when the current module is being actively performed.
+This tool displays "syllable clips", or specific single examples of a given MoSeq syllable using RGB, depth, or composed (both) video streams. A red dot is displayed in the upper left hand corner of each video indicating when the current syllable is being actively performed.
 
 ### Settings
 Setting|Description
 :--|:--
 Video Stream|Allows you to select which video stream is displayed. Options are RGB (color video), Depth (false-color depth video), or Composed (both RGB and Depth are displayed side by side).
-Only Module Subclip|The videos displayed by this tool typically include 2 seconds prior and 2 seconds post the current syllable performance. If this option is disabled, the full clip (including before and after syllable performance) will be displayed. If this option is enabled, only the subclip showing performance of the current module is displayed. Be aware that due to video player limitations, the precision of this temporal cropping may not be ideal!
+Only Module Subclip|The videos displayed by this tool typically include 2 seconds prior and 2 seconds post the current syllable performance. If this option is disabled, the full clip (including before and after syllable performance) will be displayed. If this option is enabled, only the subclip showing performance of the current syllable is displayed. Be aware that due to video player limitations, the precision of this temporal cropping may not be ideal!
 Loop Playback|Enabling this setting will cause the movie to loop back to the beginning and play again once the video has completed playing. Disabling this setting will cause the video to stop once it has completed playing.
 Playback Rate|Sets the playback rate of the video. A value of one (1.0) results in normal playback speed. Values greater than 1.0 result in faster playback, and values less than 1.0 (but greater than zero) result in slower playback. For example, a value of 0.5 will cause the video to play at half the normal speed.
 
@@ -232,7 +246,7 @@ Playback Rate|Sets the playback rate of the video. A value of one (1.0) results 
 
 This tool provides a way to visualize incoming or outgoing transition probabilities relative to the currently selected syllable as a [sankey diagram](https://en.wikipedia.org/wiki/Sankey_diagram).
 
-The plot is arranged as a series of nodes representing syllables, connected by edges representing the probability of transition between the incoming or outgoing syllable and the currently selected syllable (rooted in the center of th diagram). The width (and possibly the color, if using the setting `Show Relative Differences` is enabled) are proportional to the probability of a transition.
+The plot is arranged as a series of nodes representing syllables, connected by edges representing the probability of transition between the incoming or outgoing syllable and the currently selected syllable (rooted in the center of the diagram). The width (and possibly the color, if using the setting `Show Relative Differences` is enabled) are proportional to the probability of a transition.
 
 
 ### Settings
@@ -251,7 +265,7 @@ Node Padding|Affects the spacing between adjacent sankey nodes.
 ## Transitions Heatmap
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/TH.png" data-zoomable="true">
 
-This tool provides a way to visualize the transition probability matrix as a heatmap. You have the option to display the overall transition probability matrix across all animals, of for a single particular group. You may also choose to normalize the data using bigram, row, or column normalization.
+This tool provides a way to visualize the transition probability matrix as a heatmap. You have the option to display the overall transition probability matrix across all animals, or for a single particular group. You may also choose to normalize the data using bigram, row, or column normalization.
 
 
 ### Settings
@@ -270,7 +284,7 @@ Row and Column Ordering|Allow you to change how the rows or columns are ordered.
 ## Usage Details
 <img style="float: left; width:100px; margin-right:20px;" src="./Images/ToolOptions/UD.png" data-zoomable="true">
 
-This tool allow you visualize the frequency of syllable emissions across different groups, displaying data using box plots, violin plots, or swarm plots.
+This tool allows you to visualize the frequency of syllable emissions across different groups, displaying data using box plots, violin plots, or swarm plots.
 <br /><br /><br />
 
 
