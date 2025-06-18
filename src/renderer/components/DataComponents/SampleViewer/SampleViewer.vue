@@ -49,7 +49,7 @@ const props = defineProps<{
 interface SampleViewerSettings {
     // Define any specific settings for the SampleViewer if needed
 }
-const {layout} = useWindowMixin<SampleViewerSettings>(props.id);
+const {layout, dataview} = useWindowMixin<SampleViewerSettings>(props.id);
 
 
 
@@ -83,6 +83,11 @@ watchEffect(() => {
         {
             type: 'map',
             columns: undefined,
+        }, {
+            type: 'filter',
+            filters: {
+                default_group: dataview.value.selectedGroups,
+            },
         },
     ];
     DataService.fetchData<DataItem[]>('samples', operations, false)
