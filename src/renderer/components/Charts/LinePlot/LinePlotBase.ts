@@ -58,7 +58,7 @@ export function useLinePlotBase(props: LinePlotBaseProps) {
         bottom: 50,
         left: 60,
     });
-    const xAxisLabelYPos = ref(45);
+    const xAxisLabelYPos = ref(40);
     const watchers = ref<Array<(() => void)>>([]);
     const rotate_labels = ref(false);
     const label_stats = ref({count: 0, total: 0, longest: 0});
@@ -73,13 +73,13 @@ export function useLinePlotBase(props: LinePlotBaseProps) {
     const innerWidth = computed((): number => {
         const width = props.width - margin.left - margin.right;
         rotate_labels.value = label_stats.value.longest > width / label_stats.value.count;
-        if (rotate_labels) {
+        if (rotate_labels.value) {
             const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * label_stats.value.longest;
             xAxisLabelYPos.value = rotatedHeight + 20;
         } else {
-            xAxisLabelYPos.value = 45;
+            xAxisLabelYPos.value = 40;
         }
-        margin.bottom = xAxisLabelYPos.value + 20;
+        margin.bottom = xAxisLabelYPos.value + 10;
         return width;
     });
     const innerHeight = computed((): number =>{
