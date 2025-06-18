@@ -2,14 +2,15 @@
     <BCard>
         <template #header>
             <span>Filter Syllable ID</span>
-            <button
+            <BButton
+                variant="link"
                 v-if="tags.length > 0"
-                class="btn btn-link p-0 text"
+                class="clear-all-tags"
                 @click="clearAllTags"
-                title="Clear all IDs">
+                title="Clear all syllable filters">
 
-                <i class="bi-x-circle-fill"></i>
-            </button>
+                <i class="bi-x-circle"></i>
+            </BButton>
         </template>
         <BFormTags
             id="filter-module-id"
@@ -45,7 +46,7 @@ export default defineComponent({
         });
 
         function clearAllTags() {
-            tags.value.splice(0, tags.value.length); // Clear all tags
+            tags.value = []; // Clear all tags
         }
         function tagValidator(tag: string) {
             const ids = parsePart(tag) as number[];
@@ -75,6 +76,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.clear-all-tags {
+    float: right;
+    padding: 0;
+}
 :deep(.card-body) {
     padding: 0;
 }
