@@ -4,6 +4,7 @@
         :height="layout.height"
         :data="normalizedAggregateView"
         :columnLabels="dataview.selectedSyllables.map((s) => s.toString())"
+        :rowLabels="dataview.selectedSyllables.map((s) => s.toString())"
         :colorscale="settings.colormap"
         :vmin="settings.auto_vmin ? undefined : settings.vmin"
         :vmax="settings.auto_vmax ? undefined : settings.vmax"
