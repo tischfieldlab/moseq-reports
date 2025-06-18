@@ -320,7 +320,7 @@ const drawAxisY = (ctx: CanvasRenderingContext2D) => {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = '13px Verdana';
-    ctx.fillText(props.yAxisTitle, -innerHeight / 2, -50);
+    ctx.fillText(props.yAxisTitle, -innerHeight.value / 2, -50);
     ctx.restore();
 }
 const compute_label_stats = (labels: string[]) => {
