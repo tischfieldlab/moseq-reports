@@ -111,6 +111,9 @@ watchEffect(() => {
     const rID = dataview.value.selectedSyllableAs(CountMethod.Raw);
     DataService.fetchData<any>(`scalars/${rID}`, dataspec.value)
         .then((data) => individualUseageData.value = data)
+        .catch((err) => {
+            individualUseageData.value = [];
+        });
 });
 
 
