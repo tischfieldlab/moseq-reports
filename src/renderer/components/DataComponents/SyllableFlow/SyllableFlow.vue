@@ -200,7 +200,6 @@ export default defineComponent({
                         }
                     }
                 });
-            console.log(graph,g)
             return g;
         });
 
