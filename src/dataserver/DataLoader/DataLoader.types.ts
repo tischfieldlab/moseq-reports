@@ -1,58 +1,58 @@
 export interface DataObject {
-  columns: string[];
-  data: any[];
+    columns: string[];
+    data: any[];
 }
 export const SortDirection = {
-  Asc: "asc",
-  Desc: "desc",
+    Asc: "asc",
+    Desc: "desc",
 } as const;
 export type SortDirection = typeof SortDirection[keyof typeof SortDirection];
 
 export type Operation =
-  | KeysOperation
-  | ValuesOperation
-  | PluckOperation
-  | SortOperation
-  | FilterOperation
-  | MapOperation
-  | AggregateOperation;
+    | KeysOperation
+    | ValuesOperation
+    | PluckOperation
+    | SortOperation
+    | FilterOperation
+    | MapOperation
+    | AggregateOperation;
 
 export interface PluckOperation {
-  type: "pluck";
-  column: string;
+    type: "pluck";
+    column: string;
 }
 export interface KeysOperation {
-  type: "keys";
+    type: "keys";
 }
 export interface ValuesOperation {
-  type: "values";
+    type: "values";
 }
 export interface SortOperation {
-  type: "sort";
-  columns: [string, SortDirection][];
+    type: "sort";
+    columns: [string, SortDirection][];
 }
 export interface FilterOperation {
-  type: "filter";
-  filters: { [key: string]: any[] };
+    type: "filter";
+    filters: { [key: string]: any[] };
 }
 export interface MapOperation {
-  type: "map";
-  columns?: ([string, string] | string)[];
+    type: "map";
+    columns?: ([string, string] | string)[];
 }
 export interface AggregateOperation {
-  type: "aggregate";
-  groupby: string[];
-  aggregate: { [key: string]: Statistic | Statistic[] };
+    type: "aggregate";
+    groupby: string[];
+    aggregate: { [key: string]: Statistic | Statistic[] };
 }
 export type Statistic =
-  | "mean"
-  | "median"
-  |'mode'
-  | "sum"
-  |'cumsum'
-  | "min"
-  | "max"
-  | "extent"
-  | "variance"
-  | "deviation"
-  | "count";
+    | "mean"
+    | "median"
+    | 'mode'
+    | "sum"
+    | 'cumsum'
+    | "min"
+    | "max"
+    | "extent"
+    | "variance"
+    | "deviation"
+    | "count";

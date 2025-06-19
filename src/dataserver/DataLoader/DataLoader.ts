@@ -7,15 +7,15 @@ import sizeof from "object-sizeof";
 
 
 import {
-  readFileContents,
-  mapColumns,
-  filterBy,
-  sortBy,
-  aggregate,
-  getParser,
-  pluck,
-  keys,
-  values,
+    readFileContents,
+    mapColumns,
+    filterBy,
+    sortBy,
+    aggregate,
+    getParser,
+    pluck,
+    keys,
+    values,
 } from "./DataLoader.lib";
 
 
@@ -29,11 +29,11 @@ const numWorkers = os.cpus().length - 1 || 1; // Number of workers to use
 //console.log("pool initialized", pool);
 //console.log("pool",pool)
 function createCache() {
-  return new LRU<string, any>({
-    maxSize: 1024 * 1024 * 1024, // 1GB
-    sizeCalculation: (item) => sizeof(item),
-    allowStale: true,
-  });
+    return new LRU<string, any>({
+        maxSize: 1024 * 1024 * 1024, // 1GB
+        sizeCalculation: (item) => sizeof(item),
+        allowStale: true,
+    });
 }
 
 let cache = createCache();
@@ -46,89 +46,89 @@ let cache = createCache();
  * @returns A Promise resolving to the processed data.
  */
 export default async function LoadData(
-  path: string,
-  operations: Operation[],
-  debug?: boolean
+    path: string,
+    operations: Operation[],
+    debug?: boolean
 ): Promise<any> {
 
-  //const cacheKey = JSON.stringify(arguments);
-  /*const cacheKey = JSON.stringify({
-    path,
-    operations: operations.map((op) => {
-      if (op.type === "filter") {
-        // Ensure syllable remains consistent in the cache key
-        op.filters.syllable = op.filters.syllable.map(Number);
-      }
-      return op;
-    }),
-    debug,
-  });*/
-  //console.log("Cache key:", cacheKey);
-  //debug = true;
-  //if (cache.has(cacheKey)) {
-  //  console.log("Cache hit for key:", cacheKey);
-  //  return cache.get(cacheKey);
-  //}
+    //const cacheKey = JSON.stringify(arguments);
+    /*const cacheKey = JSON.stringify({
+      path,
+      operations: operations.map((op) => {
+        if (op.type === "filter") {
+          // Ensure syllable remains consistent in the cache key
+          op.filters.syllable = op.filters.syllable.map(Number);
+        }
+        return op;
+      }),
+      debug,
+    });*/
+    //console.log("Cache key:", cacheKey);
+    //debug = true;
+    //if (cache.has(cacheKey)) {
+    //  console.log("Cache hit for key:", cacheKey);
+    //  return cache.get(cacheKey);
+    //}
 
-  try {
-    // Read and parse the file
-    const parsedData = await readFileContents(path)
-      .then((buffer) => buffer.toString())
-      .then((data) => getParser(path)(data));
-      //console.log("Parsed Data:", parsedData);
-    if (debug) {
-      console.log("Parsed data:", parsedData);
+    try {
+        // Read and parse the file
+        const parsedData = await readFileContents(path)
+            .then((buffer) => buffer.toString())
+            .then((data) => getParser(path)(data));
+        //console.log("Parsed Data:", parsedData);
+        if (debug) {
+            console.log("Parsed data:", parsedData);
+        }
+        // Process operations
+        let result = Promise.resolve(parsedData);
+
+        for (const operation of operations) {
+            if (debug) {
+                console.log("Applying operation:", operation.type);
+            }
+
+            switch (operation.type) {
+                case "pluck":
+                    result = result.then((obj) => pluck(obj, operation));
+                    break;
+                case "keys":
+                    result = result.then((obj) => keys(obj, operation));
+                    break;
+                case "values":
+                    result = result.then((obj) => values(obj, operation));
+                    break;
+                case "map":
+                    result = result.then((obj) => mapColumns(obj, operation));
+                    break;
+                case "filter":
+                    result = result.then((obj) => filterBy(obj, operation));
+                    break;
+                case "sort":
+                    result = result.then((obj) => sortBy(obj, operation));
+                    break;
+                case "aggregate":
+                    result = result.then((obj) => aggregate(obj, operation));
+                    break;
+                default:
+                    throw new Error(`Unsupported operation '${operation}'`);
+            }
+
+            if (debug) {
+                result = result.then((data) => {
+                    console.log("Result after operation:", operation.type, data);
+                    return data;
+                });
+            }
+        }
+
+        // Cache and return the final result
+        const finalResult = await result;
+        //cache.set(cacheKey, Object.freeze(finalResult));
+        return finalResult;
+    } catch (error) {
+        console.error("Error loading data:", error);
+        throw error;
     }
-    // Process operations
-    let result = Promise.resolve(parsedData);
-
-    for (const operation of operations) {
-      if (debug) {
-        console.log("Applying operation:", operation.type);
-      }
-
-      switch (operation.type) {
-        case "pluck":
-          result = result.then((obj) => pluck(obj, operation));
-          break;
-        case "keys":
-          result = result.then((obj) => keys(obj, operation));
-          break;
-        case "values":
-          result = result.then((obj) => values(obj, operation));
-          break;
-        case "map":
-          result = result.then((obj) => mapColumns(obj, operation));
-          break;
-        case "filter":
-          result = result.then((obj) => filterBy(obj, operation));
-          break;
-        case "sort":
-          result = result.then((obj) => sortBy(obj, operation));
-          break;
-        case "aggregate":
-          result = result.then((obj) => aggregate(obj, operation));
-          break;
-        default:
-          throw new Error(`Unsupported operation '${operation}'`);
-      }
-
-      if (debug) {
-        result = result.then((data) => {
-          console.log("Result after operation:", operation.type, data);
-          return data;
-        });
-      }
-    }
-
-    // Cache and return the final result
-    const finalResult = await result;
-    //cache.set(cacheKey, Object.freeze(finalResult));
-    return finalResult;
-  } catch (error) {
-    console.error("Error loading data:", error);
-    throw error;
-  }
 }
 
 
