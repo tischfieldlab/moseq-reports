@@ -7,7 +7,7 @@ import {
   setupTitlebar,
   attachTitlebarToWindow,
 } from "custom-electron-titlebar/main";
-import { DataServer } from "../../dataserver/index";
+import { DataServerProxy } from "../../dataserver/proxy";
 
 remoteMain.initialize();
 
@@ -23,7 +23,7 @@ setupTitlebar();
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-let dataServer: DataServer | null = null;
+let dataServer: DataServerProxy | null = null;
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
@@ -115,7 +115,7 @@ app.whenReady()
         try {
             console.log("Initializing DataServer...");
             console.log(url)
-            dataServer = new DataServer();
+            dataServer = DataServerProxy.getInstance();
             await dataServer.start();
             console.log(`DataServer started at ${dataServer.getAddress()}`);
         } catch (error) {

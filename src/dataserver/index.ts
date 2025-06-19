@@ -31,6 +31,21 @@ export class DataServer {
     constructor() {
         this.app = express();
         this.configureRoutes();
+        process.on("message", (msg: any) => {
+            if (msg.type == "start") {
+                this.start().then(() => {
+                    if (process.send) {
+                        process.send({ type: "address", address: this.getAddress() });
+                    }
+                }).catch((err) => {
+                    if (process.send) {
+                        process.send({ type: "error", error: err.message });
+                    }
+                });
+            } else if (msg.type === "shutdown") {
+                this.shutdown();
+            }
+        });
     }
 
     /**
@@ -168,17 +183,13 @@ export class DataServer {
 
     public async start(): Promise<void> {
         if (this.server) {
-            console.warn("DataServer is already running.");
             throw new Error("DataServer is already running.");
         }
 
         try {
             this.port = await portscanner.findAPortNotInUse(minSearchPort, maxSearchPort);
-            this.server = this.app.listen(this.port, () => {
-                console.log(`DataServer started on port ${this.port}`);
-            });
+            this.server = this.app.listen(this.port);
         } catch (error) {
-            console.error("Failed to start DataServer:", error);
             throw new Error("Failed to start DataServer.");
         }
     }
@@ -215,3 +226,4 @@ export class DataServer {
         return "Server not running.";
     }
 }
+const dataServer = new DataServer();

@@ -45,7 +45,10 @@ export default defineConfig(({ command }) => {
       electron({
         main: {
           // Shortcut of `build.lib.entry`
-          entry: 'src/electron/main/index.ts',
+          entry: {
+            index: 'src/electron/main/index.ts',
+            dataserver: 'src/dataserver/index.ts',
+          },
           onstart({ startup }) {
             if (process.env.VSCODE_DEBUG) {
               console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App')
