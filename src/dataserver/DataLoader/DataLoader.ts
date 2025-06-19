@@ -3,18 +3,6 @@ import os from "os";
 import LRU from "lru-cache";
 import sizeof from "object-sizeof";
 import workerpool from "workerpool";
-
-import {
-    readFileContents,
-    mapColumns,
-    filterBy,
-    sortBy,
-    aggregate,
-    getParser,
-    pluck,
-    keys,
-    values,
-} from "./DataLoader.lib";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { DataLoaderWorker } from "./Worker";
@@ -22,14 +10,13 @@ import { DataLoaderWorker } from "./Worker";
 
 
 const numWorkers = os.cpus().length - 1 || 1; // Number of workers to use
-console.log(`Creating pool with ${numWorkers} workers.`);
 const pool = workerpool.pool(join(dirname(fileURLToPath(import.meta.url)), "dataserverWorker.js"), {
     minWorkers: 3,
     maxWorkers: numWorkers,
     workerType: "thread",
 
 });
-console.log(pool.stats());
+console.log("Created worker pool:", pool.stats());
 
 function createCache() {
     return new LRU<string, any>({
@@ -56,7 +43,7 @@ export default async function LoadData(
 
     const cacheKey = JSON.stringify(arguments);
     if (cache.has(cacheKey)) {
-        console.log("Cache hit for key:", cacheKey);
+        //console.log("Cache hit for key:", cacheKey);
         return cache.get(cacheKey);
     }
 
