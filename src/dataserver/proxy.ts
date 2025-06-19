@@ -29,7 +29,7 @@ export class DataServerProxy {
                     resolve();
                 }
             });
-            this.child.on('error', (err) => {
+            this.child.once('error', (err) => {
                 reject(err);
             });
             this.child.on('exit', (code) => {
@@ -39,8 +39,24 @@ export class DataServerProxy {
             this.child.send({ type: 'start' });
         });
     }
-    public shutdown() {
-        this.child?.send({ type: 'shutdown' });
+    public async shutdown() {
+        return new Promise<void>((resolve, reject) => {
+            if (this.child) {
+                this.child.once('message', (msg: any) => {
+                    if (msg.type === 'shutdown-complete') {
+                        this.child = null;
+                        this.address = null;
+                        resolve();
+                    }
+                });
+                this.child.once('error', (err) => {
+                    reject(err);
+                });
+            } else {
+                resolve();
+            }
+            this.child?.send({ type: 'shutdown' });
+        });
     }
     public isServerRunning(): boolean {
         return this.child !== null && !this.child.killed;

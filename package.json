@@ -114,6 +114,7 @@
     "vue-draggable-resizable": "^3.0.0",
     "vue-force-next-tick": "^1.2.0",
     "vue-object-merge": "^1.0.0",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "workerpool": "^9.3.2"
   }
 }

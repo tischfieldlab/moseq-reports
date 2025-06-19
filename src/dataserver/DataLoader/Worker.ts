@@ -1,4 +1,4 @@
-import { expose } from "threads/worker";
+import workerpool from "workerpool";
 import { Operation } from "./DataLoader.types";
 import {
     readFileContents,
@@ -20,11 +20,11 @@ const cache: any = new LRU({
     allowStale: true,
 });
 
+
 const exposedMethods = {
-    async LoadJson(path: string, operations: Operation[], debug?: boolean) {
+    async LoadData(path: string, operations: Operation[], debug?: boolean) {
         const cacheName = path;
         let hit = true;
-        console.log(cacheName)
         if (!cache.has(cacheName)) {
             hit = false;
             const loader = readFileContents(path)
@@ -83,9 +83,7 @@ const exposedMethods = {
     },
 };
 
-console.log("Worker initialized...");
-expose(exposedMethods);
-console.log("Worker exposed...");
+workerpool.worker(exposedMethods);
 
 
 export type DataLoaderWorker = typeof exposedMethods;

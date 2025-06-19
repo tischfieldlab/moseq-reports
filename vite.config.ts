@@ -48,6 +48,7 @@ export default defineConfig(({ command }) => {
           entry: {
             index: 'src/electron/main/index.ts',
             dataserver: 'src/dataserver/index.ts',
+            dataserverWorker: 'src/dataserver/DataLoader/Worker.ts',
           },
           onstart({ startup }) {
             if (process.env.VSCODE_DEBUG) {

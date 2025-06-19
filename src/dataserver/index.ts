@@ -43,7 +43,15 @@ export class DataServer {
                     }
                 });
             } else if (msg.type === "shutdown") {
-                this.shutdown();
+                this.shutdown().then(() => {
+                    if (process.send) {
+                        process.send({ type: "shutdown-complete" });
+                    }
+                }).catch((err) => {
+                    if (process.send) {
+                        process.send({ type: "error", error: err.message });
+                    }
+                });
             }
         });
     }
