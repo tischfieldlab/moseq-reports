@@ -8,7 +8,7 @@
                         <path
                             :data-series="g"
                             :d="seriesPath(sdata) as string"
-                            :stroke="scale.c(g)"
+                            :stroke="scale.c(g as string) as string"
                             :stroke-width="lineWeight"
                             fill="none" />
                     </g>
@@ -21,23 +21,23 @@
                                         :x2="scale.x(p[varKey])"
                                         :y1="scale.y(p[valueKey] - p[errorKey])"
                                         :y2="scale.y(p[valueKey] + p[errorKey])"
-                                        :stroke="scale.c(g)"
+                                        :stroke="scale.c(g as string) as string"
                                         :stroke-width="lineWeight / 2"
                                         />
                                     <line class="error"
-                                        :x1="scale.x(p[varKey]) - (scale.x.step() / 8)"
-                                        :x2="scale.x(p[varKey]) + (scale.x.step() / 8)"
+                                        :x1="scale.x(p[varKey]) as number - (scale.x.step() / 8)"
+                                        :x2="scale.x(p[varKey]) as number + (scale.x.step() / 8)"
                                         :y1="scale.y(p[valueKey] + p[errorKey])"
                                         :y2="scale.y(p[valueKey] + p[errorKey])"
-                                        :stroke="scale.c(g)"
+                                        :stroke="scale.c(g as string) as string"
                                         :stroke-width="lineWeight / 2"
                                         />
                                     <line class="error"
-                                        :x1="scale.x(p[varKey]) - (scale.x.step() / 8)"
-                                        :x2="scale.x(p[varKey]) + (scale.x.step() / 8)"
+                                        :x1="scale.x(p[varKey]) as number - (scale.x.step() / 8)"
+                                        :x2="scale.x(p[varKey]) as number + (scale.x.step() / 8)"
                                         :y1="scale.y(p[valueKey] - p[errorKey])"
                                         :y2="scale.y(p[valueKey] - p[errorKey])"
-                                        :stroke="scale.c(g)"
+                                        :stroke="scale.c(g as string) as string"
                                         :stroke-width="lineWeight / 2"
                                         />
                                 </g>
@@ -50,7 +50,7 @@
                                     :r="pointSize"
                                     :cx="scale.x(p[varKey])"
                                     :cy="scale.y(p[valueKey])"
-                                    :style="{'fill': scale.c(p[seriesKey]), stroke: '#000000'}" />
+                                    :style="{'fill': scale.c(p[seriesKey]) as string, stroke: '#000000'}" />
                             </g>
                         </template>
                     </g>
