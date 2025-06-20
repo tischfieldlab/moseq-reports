@@ -48,7 +48,7 @@
         </template>
 
         <BOverlay :show="is_loading" no-fade class="overlay-container">
-            <component ref="body" :id="id" :is="spec.component_type" />
+            <component ref="body" :id="id" :is="spec.component_type" @start-loading="onStartLoading" @finish-loading="onFinishLoading" />
         </BOverlay>
 
         <BModal
@@ -170,19 +170,16 @@ export default defineComponent({
             }
         };
 
+        function onStartLoading() {
+            component_loading.value++;
+        }
+        function onFinishLoading() {
+            component_loading.value = clamp(component_loading.value - 1, 0);
+        }
+
         onMounted(() => {
             if (bodyRef.value !== null) {
                 WindowManager.addWindow(props.id, bodyRef.value);
-                // Ensure defaults
-                //ensureDefaults(bodyRef.value);
-
-                bodyRef.value.$el.addEventListener("start-loading", () => {
-                    component_loading.value++;
-                });
-
-                bodyRef.value.$el.addEventListener("finish-loading", () => {
-                    component_loading.value = clamp(component_loading.value - 1, 0);
-                });
             }
         });
 
@@ -214,6 +211,8 @@ export default defineComponent({
             onClosed,
             onWindowFocused,
             onShowHideToggle,
+            onStartLoading,
+            onFinishLoading,
         };
     }
 });
