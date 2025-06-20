@@ -28,6 +28,7 @@ import { useWindowMixin }  from "@render/components/Core/Window/WindowMixin";
 import DataService, { Operation } from "@api";
 import { EntropySettings, availableMetrics } from "./Entropy.types";
 import { watchEffect } from "vue";
+import { useLoadingMixin } from "@render/components/Core/LoadingMixin";
 
 
 RegisterDataComponent({
@@ -66,6 +67,7 @@ export default defineComponent({
 
         const entropyData = shallowRef([]);
         const { layout, dataview, settings, $wstate} = useWindowMixin<EntropySettings>(props.id);
+        const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
         const metricDisplayName = computed((): string => {
             const metric_info = availableMetrics[settings.value.entropy_metric];
@@ -160,8 +162,10 @@ export default defineComponent({
         };
   
         watchEffect(async () => {
+            emitStartLoading();
             const [source, ops] = dataset.value;
-            entropyData.value = await DataService.fetchData<any>(source, ops)
+            entropyData.value = await DataService.fetchData<any>(source, ops);
+            emitFinishLoading();
         });
   
         return {

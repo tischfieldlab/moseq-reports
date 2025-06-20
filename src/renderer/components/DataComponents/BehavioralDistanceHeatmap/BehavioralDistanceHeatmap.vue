@@ -65,6 +65,7 @@ import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import { BehavioralDistanceHeatmapSettings } from './BehavioralDistanceHeatmap.types';
 import DataService, {Operation} from '@render/api';
 import RegisterDataComponent from '@render/components/Core';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 interface BehavioralDistanceData {
     source: string;
@@ -77,6 +78,7 @@ const props = defineProps<{
 }>();
 
 const {$wstate, dataview, layout, settings} = useWindowMixin<BehavioralDistanceHeatmapSettings>(props.id);
+const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
 const aggregateView = shallowRef<BehavioralDistanceData[]>([]);
 
@@ -134,7 +136,9 @@ const dataset = computed((): Operation[] =>{
 });
 
 watchEffect(async () => {
+    emitStartLoading();
     aggregateView.value = await DataService.fetchData<BehavioralDistanceData[]>('behave_dist', dataset.value);
+    emitFinishLoading();
 });
 
 

@@ -46,6 +46,7 @@ import { RenderMode } from '@store/datawindow.types';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import { ScalarDataSettings, availableMetrics as _availableMetrics } from './ScalarData.types';
 import DataService, {Operation} from '@render/api';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 const props = defineProps<{
     id: string;
@@ -53,7 +54,7 @@ const props = defineProps<{
 
 
 const {$wstate, layout, dataview, settings} = useWindowMixin<ScalarDataSettings>(props.id);
-
+const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
 const availableMetrics = ref(_availableMetrics);
 const individualUseageData = shallowRef<DataPoint[]>([]);
@@ -108,11 +109,16 @@ const dataspec = computed((): Operation[] => {
 });
 
 watchEffect(() => {
+    emitStartLoading();
     const rID = dataview.value.selectedSyllableAs(CountMethod.Raw);
     DataService.fetchData<any>(`scalars/${rID}`, dataspec.value)
-        .then((data) => individualUseageData.value = data)
+        .then((data) => {
+            individualUseageData.value = data;
+            emitFinishLoading();
+        })
         .catch((err) => {
             individualUseageData.value = [];
+            emitFinishLoading();
         });
 });
 

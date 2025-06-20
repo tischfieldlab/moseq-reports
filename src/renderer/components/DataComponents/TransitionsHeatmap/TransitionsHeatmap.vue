@@ -68,6 +68,7 @@ import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import DataService, {Operation} from '@render/api';
 import RegisterDataComponent from '@render/components/Core';
 import { TransitionsHeatmapMode, TransitionsHeatmapSettings, TransitionsNormalization } from './TransitionsHeatmap.types';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 export interface TransData {
     group: string;
@@ -81,6 +82,7 @@ const props = defineProps<{
 }>();
 
 const {$wstate, dataview, layout, settings} = useWindowMixin<TransitionsHeatmapSettings>(props.id);
+const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
 const aggregateView = shallowRef<TransData[]>([]);
 const normalizedAggregateView = shallowRef<TransData[]>([]);
@@ -229,7 +231,9 @@ function ColumnNormalize(data: TransData[]): TransData[] {
 }
 
 watchEffect(async () => {
+    emitStartLoading();
     aggregateView.value = await DataService.fetchData<TransData[]>('transitions', dataset.value);
+    emitFinishLoading();
 });
 
 function normalize(data: TransData[]): TransData[] {
@@ -259,6 +263,7 @@ function subtract(a: TransData[], b: TransData[]): TransData[] {
 }
 
 watchEffect(() => {
+    emitStartLoading();
     const selected_group = $wstate.settings.selected_group;
     const relative_group = $wstate.settings.relative_group;
 
@@ -269,6 +274,7 @@ watchEffect(() => {
     } else {
         normalizedAggregateView.value = normalize(aggregateView.value);
     }
+    emitFinishLoading();
 });
 
 

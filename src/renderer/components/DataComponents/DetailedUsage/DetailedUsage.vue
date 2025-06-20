@@ -27,6 +27,7 @@ import { RenderMode } from "@store/datawindow.types";
 import { useWindowMixin }  from "@render/components/Core/Window/WindowMixin";
 import DataService, { Operation } from "@api";
 import { DetailedUsageSettings } from "./DetailedUsage.types";
+import { useLoadingMixin } from "@render/components/Core/LoadingMixin";
 
 
 RegisterDataComponent({
@@ -64,6 +65,7 @@ export default defineComponent({
 
         const individualUsageData = shallowRef([]);
         const { layout, dataview, settings, $wstate} = useWindowMixin<DetailedUsageSettings>(props.id);
+        const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
         const selectedSyllable = computed(() => dataview.value.selectedSyllable);
         const countMethod = computed(() => dataview.value.countMethod.toLowerCase());
         const dataset = computed((): Operation[] =>
@@ -133,12 +135,15 @@ export default defineComponent({
         watch(
             dataset,
             async () => {
+                emitStartLoading();
                 DataService.fetchData<any>("usage", dataset.value)
                     .then((data) => {
                         individualUsageData.value = data;
+                        emitFinishLoading();
                     })
                     .catch((error) => {
                         console.error("Error loading Detailed Usage data:", error);
+                        emitFinishLoading();
                     });
             },
             { immediate: true }

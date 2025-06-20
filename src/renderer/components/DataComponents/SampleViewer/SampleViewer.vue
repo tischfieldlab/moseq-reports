@@ -41,6 +41,7 @@ import RegisterDataComponent from '@render/components/Core';
 import { RenderMode } from '@store/datawindow.types';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import DataService, { Operation } from '@render/api';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 const props = defineProps<{
     id: string;
@@ -50,7 +51,7 @@ interface SampleViewerSettings {
     // Define any specific settings for the SampleViewer if needed
 }
 const {layout, dataview} = useWindowMixin<SampleViewerSettings>(props.id);
-
+const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
 
 const fields = shallowRef([
@@ -79,6 +80,7 @@ interface DataItem {
 }
 
 watchEffect(() => {
+    emitStartLoading();
     const operations: Operation[] = [
         {
             type: 'map',
@@ -94,6 +96,11 @@ watchEffect(() => {
         .then((data) => {
             data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop() as string; });
             items.value = data;
+            emitFinishLoading();
+        }).catch((error) => {
+            console.error('Error fetching sample data:', error);
+            items.value = [];
+            emitFinishLoading();
         });
 });
 </script>

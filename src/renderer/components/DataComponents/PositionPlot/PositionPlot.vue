@@ -22,6 +22,7 @@ import { CountMethod } from '@store/dataview.types';
 import { PositionPlotSettings, PositionPlotMode } from './PositionPlot.types';
 import DataService, { Operation } from '@api';
 import { HexBinPlotCanvas, HexBinPlotSVG, Observation } from '@render/components/Charts/HexBinPlot';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 RegisterDataComponent({
     friendly_name: 'Position Plot',
@@ -53,6 +54,7 @@ export default defineComponent({
     setup(props) {
         const positionData = shallowRef<Observation[]>([]);
         const { layout, dataview, settings, $wstate } = useWindowMixin<PositionPlotSettings>(props.id);
+        const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
         const renderMode = computed(() => {
             const mode = $wstate.render_mode;
@@ -90,6 +92,7 @@ export default defineComponent({
         });
 
         watchEffect(async () => {
+            emitStartLoading();
             const rID = dataview.value.selectedSyllableAs(CountMethod.Raw);
             const path = `scalars/${rID}`;
             DataService.fetchData<Observation[]>(path, operations.value)
@@ -99,6 +102,9 @@ export default defineComponent({
                 .catch(error => {
                     console.error("Error fetching Position Plot data:", error);
                     positionData.value = [];
+                })
+                .finally(() => {
+                    emitFinishLoading();
                 });
         });
 

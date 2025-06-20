@@ -4,6 +4,7 @@ import { area, line, symbol, symbolDiamond } from 'd3-shape';
 import { DataPoint, GroupStats, isDataPoint, isGroupStats, ToolTipPosition, WhiskerType } from './BoxPlot.types';
 import { DefinedArea, DefinedScaleBand, DefinedSymbol } from '../D3Scale';
 import { releaseProxy } from 'comlink';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 
 function default_tooltip_formatter(value: DataPoint | GroupStats): string {
@@ -57,6 +58,8 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
           /* normal Worker options*/
         }
     );
+
+    const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
     const points = shallowRef<DataPoint[]>([]);
     const groupedData = ref<GroupStats[]>([]);
@@ -134,6 +137,7 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
 
     const prepareData = () => {
         if (!props.data) return;
+        emitStartLoading();
         worker.prepareData({
             points: toRaw(props.data),
             height: props.height,
@@ -150,10 +154,14 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
             })
             .catch((error) => {
                 console.error("Error preparing data:", error);
+            })
+            .finally(() => {
+                emitFinishLoading();
             });
     };
 
     const updateSwarmPoints = async () => {
+        emitStartLoading();
         worker.swarm_points(
             points.value,
             props.groupLabels,
@@ -165,6 +173,9 @@ export function useBoxPlotBase(props: BoxPlotBaseProps) {
             })
             .catch((error) => {
                 console.error("Error updating swarm points:", error);
+            })
+            .finally(() => {
+                emitFinishLoading();
             });
     };
 

@@ -45,6 +45,7 @@ import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import DataService, { Operation } from '@api';
 import { RenderMode } from '@store/datawindow.types';
 import {ClusteredHeatmapSVG, ClusteredHeatmapCanvas, ColormapSettings, ColormapSettingsDefaults, ColumnOrderingSettings, ColumnOrderingSettingsDefaults, RowOrderingSettings, RowOrderingSettingsDefaults } from '@render/components/Charts/ClusteredHeatmap';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 
 export type UsageHeatmapSettings = ColormapSettings & ColumnOrderingSettings & RowOrderingSettings;
@@ -77,7 +78,8 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const {$wstate, dataview, settings, layout} = useWindowMixin<UsageHeatmapSettings>(props.id)
+        const {$wstate, dataview, settings, layout} = useWindowMixin<UsageHeatmapSettings>(props.id);
+        const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
         const aggregateView = shallowRef<any[]>([]);
 
         const render_mode = computed(() => {
@@ -171,12 +173,16 @@ export default defineComponent({
 
 
         watch(dataset, (newValue) => {
+            emitStartLoading();
             DataService.fetchData<any[]>("usage", newValue)
                 .then((data) => {
                     aggregateView.value = data;
                 })
                 .catch((error) => {
                     console.error('Error loading data:', error);
+                })
+                .finally(() => {
+                    emitFinishLoading();
                 });
         }, { immediate: true });
 

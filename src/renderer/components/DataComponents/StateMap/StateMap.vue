@@ -83,6 +83,7 @@ import fcose from 'cytoscape-fcose';
 import cise from 'cytoscape-cise';
 import svg from 'cytoscape-svg';
 import { ComponentPublicInstance } from 'vue';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 
 cytoscape.use(avsdf);
@@ -98,7 +99,8 @@ const props = defineProps<{
     id: string;
 }>();
 
-const {$wstate, dataview, layout, settings} = useWindowMixin<StateMapSettings>(props.id);
+const { $wstate, dataview, layout } = useWindowMixin<StateMapSettings>(props.id);
+const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
 const container = useTemplateRef('container');
 const legendHost = useTemplateRef('legendHost');
@@ -129,6 +131,7 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
+
     //this.debouncedLayout = debounce(generateLayout, 500);
 
     cy.value = cytoscape({
@@ -159,19 +162,19 @@ onMounted(() => {
 
     watchEffect(generateLayout);
     watchEffect(async () => {
+        emitStartLoading();
         const s = sourceData.value;
         if (s === undefined || !s.is_valid) {
             return;
         }
-        //this.emitStartLoading();
         const data = {
             usages: await DataService.fetchData<UsageData[]>('usage', s.usage, false),
             transitions: await DataService.fetchData<TransData[]>('transitions', s.transitions, false),
         };
         raw_data.value = data;
-        //this.emitFinishLoading();
+        emitFinishLoading();
     });
-    
+
 });
 
 

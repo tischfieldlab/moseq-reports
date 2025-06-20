@@ -56,6 +56,7 @@ import { RenderMode } from "@store/datawindow.types";
 import DataService from "@api";
 import { Operation } from "@render/api/DataLoader.types";
 import { Spinogram, SpinogramSettings } from "./Spinogram.types";
+import { useLoadingMixin } from "@render/components/Core/LoadingMixin";
 
 
 
@@ -87,6 +88,7 @@ export default defineComponent({
     },
     setup(props) {
         const { layout, dataview, settings } = useWindowMixin<SpinogramSettings>(props.id);
+        const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
         const items = shallowRef<Spinogram[]>([]);
         const example_num = ref(1);
 
@@ -151,16 +153,19 @@ export default defineComponent({
         });
 
         const fetchSpinogramData = async () => {
+            emitStartLoading();
             DataService.fetchData("spinograms", operations.value)
                 .catch((error) => {
                     console.error("Error fetching Spinogram data:", error);
                     items.value = [];
+                    emitFinishLoading();
                 })
                 .then((data: any) => {
                     items.value = data.map((itm) => ({
                         ...itm,
                         data: itm.data.map((stp) => ({ ...stp, xy: stp.x.map((tpx, jdx) => [tpx, stp.y[jdx]]) })),
                     }));
+                    emitFinishLoading();
                 });
         };
 

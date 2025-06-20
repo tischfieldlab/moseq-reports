@@ -5,6 +5,7 @@ import { GetScale } from '@render/components/Charts/Colors/D3ColorProvider';
 import gridLayout from '@render/components/Charts/D3Layout';
 import { releaseProxy } from 'comlink';
 import { HexBinPlotBaseProps, Observation } from './HexBinPlot.types';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 
 
@@ -13,6 +14,8 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
         new URL('./Worker', import.meta.url),
         {}
     );
+
+    const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
     const margin = ref({ top: 20, right: 20, bottom: 70, left: 20 });
     const binned = ref<Record<string, any[]>>({});
@@ -61,20 +64,24 @@ export function useHexBinPlotBase(props: HexBinPlotBaseProps) {
     );
 
     watchEffect(async () => {
-        try {
-            const result = await worker.binData(
-                toRaw(props.data),
-                props.useGroups ? props.groupLabels : null,
-                scale.value.x.range()[1],
-                props.resolution,
-            );
+        //emitStartLoading();
+        worker.binData(
+            toRaw(props.data),
+            props.useGroups ? props.groupLabels : null,
+            scale.value.x.range()[1],
+            props.resolution,
+        ).then((result) => {;
             binned.value = result.binned;
             zmax.value = result.zmax;
             domainX.value = result.domainX;
             domainY.value = result.domainY;
-        } catch (error) {
-            console.error('Error preparing data:', error);
-        }
+        })
+        .catch((error) => {
+            console.error('Error binning data:', error);
+        })
+        .finally(() => {
+            //emitFinishLoading();
+        });
     });
 
 

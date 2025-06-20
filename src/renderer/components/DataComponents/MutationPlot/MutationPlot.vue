@@ -57,6 +57,7 @@ import { shallowRef, computed, watchEffect } from 'vue';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import { MutationPlotSettings, PlotData } from './MutationPlot.types';
 import { SortOrderDirection } from '@render/components/Charts/common.types';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 
 
@@ -65,7 +66,8 @@ const props = defineProps<{
     id: string;
 }>();
 
-const {$wstate, dataview, layout, settings} = useWindowMixin<MutationPlotSettings>(props.id);
+const { $wstate, dataview, layout } = useWindowMixin<MutationPlotSettings>(props.id);
+const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
 
 const aggregateView = shallowRef<PlotData[]>([]);
@@ -184,8 +186,16 @@ const dataset = computed((): Operation[] => {
 });
 
 watchEffect(async () => {
-    await DataService.fetchData<PlotData[]>('usage', dataset.value)
-        .then((data) => aggregateView.value = calculateErrors(data));
+    emitStartLoading();
+    DataService.fetchData<PlotData[]>('usage', dataset.value)
+        .then((data) => {
+            aggregateView.value = calculateErrors(data);
+            emitFinishLoading();
+        }).catch((err) => {
+            // tslint:disable-next-line:no-console
+            console.error('Error fetching data for mutation plot', err);
+            emitFinishLoading();
+        });
 });
 
 function calculateErrors(data: PlotData[]) {

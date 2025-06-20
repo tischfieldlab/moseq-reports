@@ -64,12 +64,14 @@ import { ClusteredHeatmapCanvas, ClusteredHeatmapSVG, ColormapSettingsDefaults, 
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import { UsageHeatmapSettings } from './IndividualUsageHeatmap.types';
 import DataService, { Operation } from '@render/api';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 const props = defineProps<{
     id: string;
 }>();
 
 const {$wstate, dataview, layout, settings} = useWindowMixin<UsageHeatmapSettings>(props.id);
+const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
 interface IndividualUsageHeatmapData {
     uuid: string;
@@ -148,10 +150,15 @@ const dataset = computed((): Operation[] => {
 });
 
 watchEffect(async () => {
+    emitStartLoading();
     await DataService.fetchData<IndividualUsageHeatmapData[]>('usage', dataset.value)
         .then((data) => {
             data.forEach((itm) => { itm.uuid = itm.uuid.split('-').pop() as string; });
-            aggregateView.value = data
+            aggregateView.value = data;
+            emitFinishLoading();
+        }).catch((err) => {
+            console.error('Error fetching individual usage heatmap data:', err);
+            emitFinishLoading();
         });
 });
 

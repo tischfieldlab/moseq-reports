@@ -90,6 +90,7 @@ import { Position, Size } from "@store/datawindow.types";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import {useWindowsStore} from "@store/windows.store";
 import { ComponentPublicInstance } from "vue";
+import { nextTick } from "vue";
 
 function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
     return Math.min(Math.max(value, min), max);
@@ -170,10 +171,12 @@ export default defineComponent({
             }
         };
 
-        function onStartLoading() {
+        async function onStartLoading() {
+            await nextTick();
             component_loading.value++;
         }
-        function onFinishLoading() {
+        async function onFinishLoading() {
+            await nextTick();
             component_loading.value = clamp(component_loading.value - 1, 0);
         }
 

@@ -8,6 +8,7 @@ import { getDendrogramOrder, elbowH, elbowV, hydrateCluster } from '@render/comp
 import { DefinedScaleBand } from '../D3Scale';
 import { Cluster } from 'ml-hclust';
 import { SortOrderDirection } from '../common.types';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 
 
@@ -71,6 +72,8 @@ export interface ClusteredHeatmapBaseEmits {
     (e: 'row-order-changed', row_order: any[]): void
     (e: 'col-order-changed', col_order: any[]): void
     (e: 'heatmap-click', data: {e: Event, row: string, col: string, value: string}): void
+    (e: 'start-loading'): void;
+    (e: 'finish-loading'): void;
 }
 
 export interface LabelStats {
@@ -93,6 +96,8 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
           /* normal Worker options*/
         }
     );
+
+    const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
 
     const clusteredColumnOrder = shallowRef<string[]>([]);
     const columnHierarchy = shallowRef<HierarchyNode<Cluster>|undefined>(undefined);
@@ -308,6 +313,7 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
     });
 
     async function clusterColumns() {
+        emitStartLoading();
         if (props.data !== null && props.data.length > 0) {
             if (props.columnOrderType === OrderingType.HCluster) {
                 instance.hCluster(toRaw(props.data), props.columnKey, props.valueKey, {
@@ -336,8 +342,10 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
                 });
             }
         }
+        emitFinishLoading();
     }
     async function clusterRows() {
+        emitStartLoading();
         if (props.data !== null && props.data.length > 0) {
             if (props.rowOrderType === OrderingType.HCluster) {
                 instance.hCluster(toRaw(props.data), props.rowKey, props.valueKey, {
@@ -366,6 +374,7 @@ export function useClusteredHeatmapBase(props: ClusteredHeatmapBaseProps, emit: 
                 });
             }
         }
+        emitFinishLoading();
     }
     function shouldHideLabel(label) {
         return Number.parseInt(label, 10) < 0;

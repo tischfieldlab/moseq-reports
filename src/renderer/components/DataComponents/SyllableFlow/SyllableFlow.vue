@@ -30,6 +30,7 @@ import { Node, Link, NodeAlignment, ColoringMode } from '@render/components/Char
 import { RenderMode } from '@render/store/datawindow.types';
 import { SyllableFlowSettings, TransitionItem } from './SyllableFlow.types';
 import DataService, { Operation } from '@api';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
 
 
 RegisterDataComponent({
@@ -65,6 +66,22 @@ export default defineComponent({
     },
     setup(props) {
         const { $wstate, layout, dataview, settings } = useWindowMixin<SyllableFlowSettings>(props.id);
+        const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
+
+        if (!settings.value.plot_group) {
+            $wstate.updateComponentSettings({
+                settings: {
+                    plot_group: dataview.value.selectedGroups[0],
+                },
+            });
+        }
+        if (!settings.value.relative_diff_group) {
+            $wstate.updateComponentSettings({
+                settings: {
+                    relative_diff_group: dataview.value.selectedGroups[1],
+                },
+            });
+        }
 
         const SyllableData = shallowRef<TransitionItem[]>([]);
         const selectedSyllable = computed({
@@ -257,28 +274,15 @@ export default defineComponent({
             selectedSyllable.value = event.value.id;
         };
         watchEffect(async () => {
+            emitStartLoading();
             try {
                 const data = await DataService.fetchData('transitions', sourceData.value.transFilters);
                 SyllableData.value = data as TransitionItem[];
             } catch (error) {
                 console.error('Error fetching transition data:', error);
                 SyllableData.value = [];
-            }
-        });
-        onMounted(() => {
-            if (!settings.value.plot_group) {
-                $wstate.updateComponentSettings({
-                    settings: {
-                        plot_group: dataview.value.selectedGroups[0],
-                    },
-                });
-            }
-            if (!settings.value.relative_diff_group) {
-                $wstate.updateComponentSettings({
-                    settings: {
-                        relative_diff_group: dataview.value.selectedGroups[1],
-                    },
-                });
+            } finally {
+                emitFinishLoading();
             }
         });
 

@@ -13,11 +13,13 @@ export function useLoadingMixin() {
         //pauseTracking(); // Pause reactivity tracking to avoid unnecessary updates
         emit("start-loading");
         //enableTracking(); // Re-enable reactivity tracking
+        //console.log(instance?.proxy?.$options.name, "start-loading event emitted");
     }
     function emitFinishLoading(): void {
         //pauseTracking(); // Pause reactivity tracking to avoid unnecessary updates
         emit("finish-loading");
         //enableTracking(); // Re-enable reactivity tracking
+        //console.log(instance?.proxy?.$options.name, "finish-loading event emitted");
     }
 
     return {
