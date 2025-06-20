@@ -72,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, watch, defineComponent } from 'vue';
+import { ref, shallowRef, computed, watch, defineComponent } from 'vue';
 import { cloneDeep as clone } from 'lodash-es';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import RegisterDataComponent from '@render/components/Core';
@@ -131,7 +131,7 @@ export default defineComponent({
 
         const selectedDataset = ref(settings.value?.dataset || null);
         const operations = ref(clone(settings.value?.operations || []));
-        const intermediateResults = ref<any[]>([]);
+        const intermediateResults = shallowRef<any[]>([]);
         const operationVisibilities = ref<boolean[]>([]);
         const operationTypes = ['map', 'filter', 'aggregate', 'sort', 'pluck', 'keys', 'values'];
 

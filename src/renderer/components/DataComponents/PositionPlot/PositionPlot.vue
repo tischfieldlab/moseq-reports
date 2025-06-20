@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watchEffect } from 'vue';
+import { defineComponent, shallowRef, computed, watchEffect } from 'vue';
 import RegisterDataComponent from '@render/components/Core';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import { RenderMode } from '@store/datawindow.types';
@@ -51,7 +51,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const positionData = ref<Observation[]>([]);
+        const positionData = shallowRef<Observation[]>([]);
         const { layout, dataview, settings, $wstate } = useWindowMixin<PositionPlotSettings>(props.id);
 
         const renderMode = computed(() => {

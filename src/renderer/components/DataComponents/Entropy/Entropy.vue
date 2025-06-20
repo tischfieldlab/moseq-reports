@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch } from "vue";
+import { defineComponent, shallowRef, computed, watch } from "vue";
 import RegisterDataComponent from "@render/components/Core";
 import {  WhiskerType, BoxPlotSVG, BoxPlotCanvas } from "@render/components/Charts/BoxPlot";
 import { OrderingType } from "@render/components/Charts/ClusteredHeatmap";
@@ -64,7 +64,7 @@ export default defineComponent({
     },
     setup(props) {
 
-        const entropyData = ref([]);
+        const entropyData = shallowRef([]);
         const { layout, dataview, settings, $wstate} = useWindowMixin<EntropySettings>(props.id);
 
         const metricDisplayName = computed((): string => {

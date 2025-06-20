@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watchEffect, onMounted } from 'vue';
+import { defineComponent, shallowRef, computed, watchEffect, onMounted } from 'vue';
 import RegisterDataComponent from '@render/components/Core';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import Sankey from '@render/components/Charts/Sankey/Sankey.vue';
@@ -66,7 +66,7 @@ export default defineComponent({
     setup(props) {
         const { $wstate, layout, dataview, settings } = useWindowMixin<SyllableFlowSettings>(props.id);
 
-        const SyllableData = ref<TransitionItem[]>([]);
+        const SyllableData = shallowRef<TransitionItem[]>([]);
         const selectedSyllable = computed({
             get: () => dataview.value.selectedSyllable,
             set: (val: number) => {

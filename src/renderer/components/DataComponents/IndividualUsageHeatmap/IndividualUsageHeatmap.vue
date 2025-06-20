@@ -57,14 +57,13 @@ RegisterDataComponent({
 });
 </script>
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue';
+import { shallowRef, computed, watchEffect } from 'vue';
 import RegisterDataComponent from '@render/components/Core';
 import { RenderMode } from '@store/datawindow.types';
 import { ClusteredHeatmapCanvas, ClusteredHeatmapSVG, ColormapSettingsDefaults, ColumnOrderingSettingsDefaults, RowOrderingSettingsDefaults } from '@render/components/Charts/ClusteredHeatmap';
 import { useWindowMixin } from '@render/components/Core/Window/WindowMixin';
 import { UsageHeatmapSettings } from './IndividualUsageHeatmap.types';
 import DataService, { Operation } from '@render/api';
-import { shallowRef } from 'vue';
 
 const props = defineProps<{
     id: string;

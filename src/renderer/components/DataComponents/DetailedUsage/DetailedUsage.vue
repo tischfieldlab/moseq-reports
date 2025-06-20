@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch } from "vue";
+import { defineComponent, shallowRef, computed, watch } from "vue";
 import RegisterDataComponent from "@render/components/Core";
 import {  WhiskerType, BoxPlotSVG, BoxPlotCanvas } from "@render/components/Charts/BoxPlot";
 import { OrderingType } from "@render/components/Charts/ClusteredHeatmap";
@@ -62,7 +62,7 @@ export default defineComponent({
     },
     setup(props) {
 
-        const individualUsageData = ref([]);
+        const individualUsageData = shallowRef([]);
         const { layout, dataview, settings, $wstate} = useWindowMixin<DetailedUsageSettings>(props.id);
         const selectedSyllable = computed(() => dataview.value.selectedSyllable);
         const countMethod = computed(() => dataview.value.countMethod.toLowerCase());

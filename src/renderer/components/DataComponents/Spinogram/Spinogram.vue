@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch, onMounted, nextTick } from "vue";
+import { defineComponent, ref, shallowRef, computed, watch, onMounted, nextTick } from "vue";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import ColorScaleLegend from "@render/components/Charts/Colors/ColorScaleLegendSVG.vue";
 import { extent } from "d3-array";
@@ -78,20 +78,7 @@ export default defineComponent({
     name: "Spinogram",
     components: {
         ColorScaleLegend,
-    },/*
-    directives: {
-        axis: {
-            mounted(el: HTMLElement, binding: DirectiveBinding) {
-                const axis = binding.arg as string;
-                if (axis) {
-                    const axisMethod = { x: d3.axisBottom, y: d3.axisLeft }[axis];
-                    if (axisMethod) {
-                        d3.select(el).call(axisMethod(binding.value[axis]) as any);
-                    }
-                }
-            },
-        },
-    },*/
+    },
     props: {
         id: {
             type: String,
@@ -100,7 +87,7 @@ export default defineComponent({
     },
     setup(props) {
         const { layout, dataview, settings } = useWindowMixin<SpinogramSettings>(props.id);
-        const items = ref<Spinogram[]>([]);
+        const items = shallowRef<Spinogram[]>([]);
         const example_num = ref(1);
 
         const margin = {

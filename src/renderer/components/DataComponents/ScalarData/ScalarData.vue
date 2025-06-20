@@ -38,7 +38,7 @@ RegisterDataComponent({
 });
 </script>
 <script setup lang="ts">
-import { ref, computed, watchEffect } from 'vue';
+import { ref, shallowRef, computed, watchEffect } from 'vue';
 import RegisterDataComponent from '@render/components/Core';
 import {BoxPlotSVG, BoxPlotCanvas, WhiskerType, DataPoint, GroupStats} from '@render/components/Charts/BoxPlot';
 import { CountMethod } from '@store/dataview.types';
@@ -56,7 +56,7 @@ const {$wstate, layout, dataview, settings} = useWindowMixin<ScalarDataSettings>
 
 
 const availableMetrics = ref(_availableMetrics);
-const individualUseageData = ref<DataPoint[]>([]);
+const individualUseageData = shallowRef<DataPoint[]>([]);
 
 
 

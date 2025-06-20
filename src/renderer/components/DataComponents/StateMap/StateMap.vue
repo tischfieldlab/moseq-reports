@@ -105,7 +105,7 @@ const legendHost = useTemplateRef('legendHost');
 
 const cy = shallowRef<cytoscape.Core>();
 
-const raw_data = ref({
+const raw_data = shallowRef({
     transitions: [] as TransData[],
     usages: [] as UsageData[],
 });
