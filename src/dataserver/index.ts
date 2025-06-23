@@ -170,6 +170,11 @@ export class DataServer {
                 }
                 const fpath = `${session.filename}/${decodeURI(path)}`;
 
+                if (!await fileExists(fpath)) {
+                    res.status(404).json({ error: "File not found." });
+                    return;
+                }
+
                 let parsedOperations: Operation[];
                 if (!operations) {
                     parsedOperations = [];
