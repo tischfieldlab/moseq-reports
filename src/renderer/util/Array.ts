@@ -1,0 +1,46 @@
+export function transpose(data: number[][]): number[][] {
+    return data[0].map((col, i) => data.map((row) => row[i]));
+}
+
+export function groupby<TItem>(
+    data: TItem[],
+    fn: (item: TItem) => string,
+    keys: any[] = []
+): { [key: string]: TItem[] } {
+    return data.reduce(
+        (rv, item) => {
+            (rv[fn(item)] = rv[fn(item)] || []).push(item);
+            return rv;
+        },
+        keys.reduce((rv, item) => {
+            rv[item.toString()] = [];
+            return rv;
+        }, {})
+    );
+}
+
+export function sample<TItem>(arr: TItem[], size: number): TItem[] {
+    const shuffled = arr.slice(0);
+    let i = arr.length;
+    const min = i - size;
+    let temp: TItem;
+    let index: number;
+    while (i-- > min) {
+        index = Math.floor((i + 1) * Math.random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+    }
+    return shuffled.slice(min);
+}
+
+export function argsort<TItem>(arr: TItem[], compareFn: (a: TItem, b: TItem) => number): number[] {
+    return arr
+        .map((item, index) => [item, index] as [TItem, number])
+        .sort((a, b) => compareFn(a[0], b[0]))
+        .map((item) => item[1]);
+}
+
+export function apply_argsort<TItem>(arr: TItem[], indices: number[]): TItem[] {
+    return indices.map((index) => arr[index]);
+}

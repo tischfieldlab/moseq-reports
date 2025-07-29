@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-var electron_notarize = require('electron-notarize');
+import fs from 'fs';
+import path from 'path';
+import {notarize} from '@electron/notarize';
 
-module.exports = async function (params) {
+export default async function(params) {
     if (process.platform !== 'darwin') {
         console.log(`skipping notarizing becuase operating system ${process.platform} is not macOS`)
         return;
@@ -21,11 +21,12 @@ module.exports = async function (params) {
     console.log(`Notarizing ${appId} found at ${appPath}`);
 
     try {
-        await electron_notarize.notarize({
+        await notarize({
             appBundleId: appId,
             appPath: appPath,
             appleId: process.env.APPLE_ID,
             appleIdPassword: process.env.APPLE_ID_PSWD_MOSEQ_REPORTS,
+            teamId: process.env.APPLE_TEAM_ID,
         });
     } catch (error) {
         console.error(error);

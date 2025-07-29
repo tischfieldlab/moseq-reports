@@ -1,0 +1,242 @@
+<template>
+    <BaseWindow
+        ref="window"
+        :id="id"
+        :swatch_color="swatch_color"
+        :title="title"
+        :width="window_width"
+        :height="window_height"
+        :pos="window_position"
+        :swatch_title="swatch_title"
+        :isHidden="is_hidden"
+        @onClosed="onClosed"
+        @onMoved="onMoved"
+        @onResized="onResized"
+        @onWindowFocused="onWindowFocused"
+        @onShowHideToggle="onShowHideToggle"
+        :zIndex="z_index"
+        :aspectRatio="aspect_ratio"
+    >
+        <template v-slot:titlebarButtons>
+            <BButton
+                v-if="!is_hidden"
+                @click="onSnapshotClicked"
+                title="Take snapshot"
+                class="titlebar-button"
+                variant="link"
+            >
+                <i class="bi bi-camera-fill" aria-hidden="true"></i>
+            </BButton>
+
+            <BButton
+                v-else
+                :disabled="true"
+                title="Snapshot disabled while contents are hidden"
+                class="titlebar-button"
+                variant="link"
+            >
+                <i class="bi bi-camera-fill" aria-hidden="true"></i>
+            </BButton>
+            <BButton
+                @click="onSettingsClicked"
+                title="Adjust settings"
+                class="titlebar-button"
+                variant="link"
+            >
+                <i class="bi bi-gear-fill" aria-hidden="true"></i>
+            </BButton>
+        </template>
+
+        <BOverlay :show="is_loading" no-fade class="overlay-container">
+            <component ref="body" :id="id" :is="spec.component_type" @start-loading="onStartLoading" @finish-loading="onFinishLoading" />
+        </BOverlay>
+
+        <BModal
+            :title="settings_title"
+            v-model="show_settings_modal"
+            header-close-class = "light"
+            header-bg-variant="dark"
+            header-text-variant="light"
+            body-bg-variant="light"
+            body-text-variant="dark"
+            no-footer
+        >
+            <BTabs>
+                <BTab title="Layout">
+                    <LayoutSettings :id="id" />
+                </BTab>
+                <BTab title="Data">
+                    <DataSettings :id="id" />
+                </BTab>
+                <BTab title="Component">
+                    <component v-if="spec.settings_type" ref="modal_component" :id="id" :is="spec.settings_type" />
+                    <p v-else class="no-settings text-muted">No settings available for this component</p>
+                </BTab>
+                <BTab title="Snapshots" :disabled="is_hidden">
+                    <SnapshotSettings :id="id" />
+                </BTab>
+            </BTabs>
+        </BModal>
+    </BaseWindow>
+</template>
+
+<script lang="ts">
+import { ref, computed, defineComponent, onMounted, onUnmounted, useTemplateRef } from "vue";
+import BaseWindow from "@render/components/Core/Window/BaseWindow.vue";
+import  Snapshot from "../SnapshotHelper";
+import TitlebarButton from "@render/components/Core/Window/Titlebar/TitlebarButton.vue";
+import WindowManager from "@render/components/Core/Window/WindowManager";
+import { Position, Size } from "@store/datawindow.types";
+import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
+import {useWindowsStore} from "@store/windows.store";
+import { ComponentPublicInstance } from "vue";
+import { nextTick } from "vue";
+
+function clamp(value: number, min = Number.MIN_VALUE, max = Number.MAX_VALUE) {
+    return Math.min(Math.max(value, min), max);
+}
+
+export default defineComponent({
+    components: {
+        BaseWindow,
+        TitlebarButton,
+    },
+    props: {
+        id: {
+            type: String,
+            required: true,
+        },
+    },
+    setup(props) {
+        const windowsStore = useWindowsStore();
+        const {title, dataview, layout, spec, z_index, $wstate, aspect_ratio, is_hidden } = useWindowMixin(props.id);
+
+        const show_settings_modal = ref(false);
+        const component_loading = ref(0);
+        const bodyRef = useTemplateRef<ComponentPublicInstance>('body');
+
+        const settings_title = computed(() => `${title.value} Settings`);
+        const swatch_color = computed(() => dataview.value.color);
+        const is_loading = computed(() => component_loading.value > 0 || dataview.value.loading);
+        const swatch_title = computed(() => `Using ${dataview.value.name}`);
+        const window_width = computed(() => $wstate.width);
+        const window_height = computed(() => $wstate.height);
+        const window_position = computed(() => {
+            return {x: $wstate.pos_x, y: $wstate.pos_y};
+        });
+
+
+        const onResized = (event: any) => {
+            const size: Size = { width: event.width, height: event.height };
+            $wstate.updateComponentLayout({
+                width: size.width,
+                height: size.height,
+            });
+        };
+
+        const onSettingsClicked = () => {
+            show_settings_modal.value = true;
+        };
+
+        const onSnapshotClicked = (event:any) => {
+            snapshotContent(event);
+        };
+
+        const onMoved = (event: any) => {
+            const position: Position = { x: event.x, y: clamp(event.y, 0) };
+            $wstate.updateComponentLayout({
+                position_x: position.x,
+                position_y: position.y,
+            });
+        };
+
+        const onClosed = (event: any) => {
+            windowsStore.removeWindow(props.id);
+        };
+
+        const onWindowFocused = () => {
+            const maxZ = windowsStore.windowsMaxZIndex + 1;
+            $wstate.updateZIndex({ z_index: maxZ });
+        };
+
+        const onShowHideToggle = (event: any) => {
+            $wstate.toggleWindowShowHide({
+                isHidden: event.isHidden,
+            });
+        };
+
+        const snapshotContent = async (event: MouseEvent) => {
+            if (bodyRef.value) {
+                await Snapshot(bodyRef.value, title.value, $wstate.settings.snapshot);
+            }
+        };
+
+        async function onStartLoading() {
+            await nextTick();
+            component_loading.value++;
+        }
+        async function onFinishLoading() {
+            await nextTick();
+            component_loading.value = clamp(component_loading.value - 1, 0);
+        }
+
+        onMounted(() => {
+            if (bodyRef.value !== null) {
+                WindowManager.addWindow(props.id, bodyRef.value);
+            }
+        });
+
+        onUnmounted(() => {
+            WindowManager.removeWindow(props.id);
+        });
+
+        return {
+            show_settings_modal,
+            component_loading,
+            bodyRef,
+            title,
+            spec,
+            dataview,
+            settings_title,
+            swatch_color,
+            is_loading,
+            swatch_title,
+            z_index,
+            aspect_ratio,
+            window_width,
+            window_height,
+            window_position,
+            is_hidden,
+            onResized,
+            onSettingsClicked,
+            onSnapshotClicked,
+            onMoved,
+            onClosed,
+            onWindowFocused,
+            onShowHideToggle,
+            onStartLoading,
+            onFinishLoading,
+        };
+    }
+});
+</script>
+
+<style scoped>
+.titlebar-button {
+    padding: 0.01rem;
+    font-size: 1.2rem;
+    margin: 0 0.2rem;
+    color: #495057;
+}
+
+.titlebar-button:hover {
+    color: #0056b3;
+}
+.overlay-container {
+    width: inherit;
+    height: inherit;
+}
+.BModal .header-close-label {
+    color: white;
+}
+</style>

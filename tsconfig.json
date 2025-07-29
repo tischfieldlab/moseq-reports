@@ -1,44 +1,43 @@
 {
     "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
-        "strict": true,
-        "noImplicitThis": true,
-        "noImplicitAny": false,
-        "jsx": "preserve",
-        "importHelpers": true,
+        "target": "ESNext",
+        "module": "ESNext",
         "moduleResolution": "node",
-        "experimentalDecorators": true,
-        "resolveJsonModule": true,
+        "importHelpers": true,
+        "jsx": "preserve",
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "allowJs": true,
+        "resolveJsonModule": true,
         "sourceMap": true,
+        "allowJs": true,
         "baseUrl": ".",
-        "types": [
-            "webpack-env",
-            "mocha",
-            "chai"
-        ],
+        "strict": true,
         "paths": {
-            "@/*": ["src/*"],
+            "@render/*": ["src/renderer/*"],
+            "@store/*": ["src/renderer/store/*"],
+            "@api": ["src/renderer/api"],
+            "@main/*": ["src/electron/*"]
         },
-        "lib": [
-            "esnext",
-            "dom",
-            "dom.iterable",
-            "scripthost"
-        ]
+        
+        "typeRoots": [
+            "./src/renderer/@types"
+        ],
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "noImplicitAny": false,
+        "downlevelIteration": true,
     },
+    "references": [{ "path": "./tsconfig.node.json" }],
     "include": [
+        "components.d.ts",
+        "src/**/*.d.ts",
         "@types/**/*.ts",
         "src/**/*.ts",
         "src/**/*.tsx",
         "src/**/*.vue",
         "src/**/*.json",
-        "tests/**/*.ts",
+        "src/dataserver/**/*.ts" ,
+        "src/dataserver/*.ts",
+        "src/renderer/**/*.ts"
     ],
-    "exclude": [
-        "node_modules"
-    ]
+    "exclude": ["node_modules", "dist", "buildfiles"]
 }

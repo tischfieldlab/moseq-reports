@@ -1,0 +1,204 @@
+import { ref, computed, watch, onMounted, onUnmounted, toRaw, shallowRef } from 'vue';
+import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
+import { area, line, symbol, symbolDiamond } from 'd3-shape';
+import { DataPoint, GroupStats, isDataPoint, isGroupStats, ToolTipPosition, WhiskerType } from './BoxPlot.types';
+import { DefinedArea, DefinedScaleBand, DefinedSymbol } from '../D3Scale';
+import { releaseProxy } from 'comlink';
+import { useLoadingMixin } from '@render/components/Core/LoadingMixin';
+
+
+function default_tooltip_formatter(value: DataPoint | GroupStats): string {
+    if (value) {
+        if (isDataPoint(value)) {
+            return `ID: ${value.id}<br /> Value: ${value.value.toExponential(3)}`;
+        } else if (isGroupStats(value)) {
+            return `Group: ${value.group}<br /> Count: ${value.count}<br /> Median: ${value.q2.toExponential(3)}`;
+        } else {
+            return JSON.stringify(value, null, "\t");
+        }
+    }
+    return "";
+}
+
+export const BoxPlotBasePropsDefaults = {
+    whisker_type: WhiskerType.TUKEY,
+    show_boxplot: true,
+    show_points: true,
+    show_violinplot: false,
+    kde_scale: 0.01,
+    point_size: 2,
+    xAxisTitle: 'Group',
+    yAxisTitle: 'Value',
+    tooltipFormatter: default_tooltip_formatter,
+    noDataMessage: 'Sorry, no data available!',
+}
+
+export interface BoxPlotBaseProps {
+    data: DataPoint[]
+    width: number,
+    height: number,
+    whisker_type: string,
+    show_boxplot: boolean
+    show_points: boolean
+    show_violinplot: boolean
+    kde_scale: number
+    point_size: number
+    groupLabels: string[],
+    groupColors: string[],
+    xAxisTitle: string
+    yAxisTitle: string
+    tooltipFormatter: (value: DataPoint | GroupStats) => string,
+    noDataMessage?: string
+};
+
+export function useBoxPlotBase(props: BoxPlotBaseProps) {
+    const worker = new ComlinkWorker<typeof import("./Worker")>(
+        new URL("./Worker", import.meta.url),
+        {
+          /* normal Worker options*/
+        }
+    );
+
+    const { emitFinishLoading, emitStartLoading } = useLoadingMixin();
+
+    const points = shallowRef<DataPoint[]>([]);
+    const groupedData = ref<GroupStats[]>([]);
+    const margin = ref({ top: 20, right: 20, bottom: 50, left: 60 });
+    const xAxisLabelYPos = ref(45);
+    const rotate_labels = ref(false);
+    const label_stats = ref({ count: 0, total: 0, longest: 0 });
+    const domainY = ref([0, 0]);
+    const domainKde = ref([0, 0]);
+    const tooltipPosition = ref<ToolTipPosition>({ x: 0, y: 0 });
+    const hoverItem = ref<DataPoint|GroupStats|undefined>(undefined);
+
+    const has_data = computed(() => props.data?.length > 0);
+    const scale = computed(() => {
+        const orderedLabels = groupedData.value.map(gs => gs.group).sort((a, b) =>
+            props.groupLabels.indexOf(a) - props.groupLabels.indexOf(b)
+        );
+        const x = scaleBand(orderedLabels, [0, innerWidth.value]).padding(0.2) as DefinedScaleBand<string>;
+
+        return {
+            x,
+            y: scaleLinear(domainY.value, [innerHeight.value, 0]),
+            w: scaleLinear(domainKde.value, [0, x.bandwidth()]),
+            c: scaleOrdinal(props.groupLabels, props.groupColors),
+        };
+    });
+
+    const innerWidth = computed(() => {
+        const width = props.width - margin.value.left - margin.value.right;
+
+        rotate_labels.value = label_stats.value.longest > width / label_stats.value.count;
+
+        if (rotate_labels.value) {
+            const rotatedHeight = Math.cos(45 * (Math.PI / 180)) * label_stats.value.longest;
+            xAxisLabelYPos.value = rotatedHeight + 20;
+        } else {
+            xAxisLabelYPos.value = 45;
+        }
+        margin.value.bottom = xAxisLabelYPos.value + 20;
+
+        return width;
+    });
+
+    const innerHeight = computed(() => props.height - margin.value.top - margin.value.bottom);
+    const halfBandwith = computed(() => scale.value.x.bandwidth() / 2);
+    const quaterBandwith = computed(() => scale.value.x.bandwidth() / 4);
+    const origin = computed(() => ({ x: scale.value.x.range()[0], y: scale.value.y.range()[0] }));
+    const fences = computed(() => {
+        switch (props.whisker_type) {
+            case WhiskerType.MIN_MAX:
+                return {
+                    lower: (gs) => gs.min,
+                    upper: (gs) => gs.max,
+                };
+            case WhiskerType.TUKEY:
+                return {
+                    lower: (gs) => Math.max(gs.q1 - 1.5 * gs.iqr, gs.min),
+                    upper: (gs) => Math.min(gs.q3 + 1.5 * gs.iqr, gs.max),
+                };
+            default:
+                throw new Error(`Unsupported Whisker Type ${props.whisker_type}!`);
+        }
+    });
+
+    const violinArea = computed(() => area().x0(d => scale.value.w(d[1])).x1(d => scale.value.w(-d[1])).y(d => scale.value.y(d[0])) as DefinedArea<[number, number]>);
+    const violinLine = computed(() => line().x(d => scale.value.w(d[1])).y(d => scale.value.y(d[0])));
+    const diamond = computed(() => symbol(symbolDiamond, 2 * Math.sqrt(2 * (Math.PI * props.point_size ** 2))) as DefinedSymbol<any, any>);
+    const actuallyShowPoints = computed(() => props.show_points && points.value.length <= 10000);
+
+    const tooltip_text = computed(() =>
+        hoverItem.value
+            ? (props.tooltipFormatter || default_tooltip_formatter)(hoverItem.value)
+            : ''
+    );
+
+    const prepareData = () => {
+        if (!props.data) return;
+        emitStartLoading();
+        worker.prepareData({
+            points: toRaw(props.data),
+            height: props.height,
+            pointSize: props.point_size,
+            groupLabels: props.groupLabels,
+            swarmPoints: props.show_points,
+            kdeScale: props.kde_scale,
+        })
+            .then((result) => {
+                points.value = result.points;
+                groupedData.value = result.groupedData;
+                domainY.value = result.domainY;
+                domainKde.value = result.domainKde;
+            })
+            .catch((error) => {
+                console.error("Error preparing data:", error);
+            })
+            .finally(() => {
+                emitFinishLoading();
+            });
+    };
+
+    const updateSwarmPoints = async () => {
+        emitStartLoading();
+        worker.swarm_points(
+            points.value,
+            props.groupLabels,
+            { domain: scale.value.y.domain() as [number, number], range: scale.value.y.range() as [number, number] },
+            props.point_size,
+        )
+            .then((result) => {
+                points.value = result;
+            })
+            .catch((error) => {
+                console.error("Error updating swarm points:", error);
+            })
+            .finally(() => {
+                emitFinishLoading();
+            });
+    };
+
+    const is_outlier = (node) => {
+        const group = groupedData.value.find((v) => v.group === node.group);
+        return group ? node.value < fences.value.lower(group) || node.value > fences.value.upper(group) : false;
+    };
+
+    watch(() => props.data, prepareData, { immediate: true });
+    watch(() => props.point_size, updateSwarmPoints);
+
+    const handleHover = (event) => {
+        if (event.target) {
+            const target = event.target;
+            if (target.dataset.identifier) {
+                tooltipPosition.value = { x: event.clientX, y: event.clientY };
+                hoverItem.value = points.value.find(itm => itm.id.toString() === target.dataset.identifier);
+            }
+        }
+    };
+
+    onUnmounted(() => { worker[releaseProxy](); document.removeEventListener('mousemove', handleHover); });
+    onMounted(() => { document.addEventListener('mousemove', handleHover); });
+
+    return { points, groupedData, has_data, scale, fences, diamond, violinArea, violinLine, margin, origin, tooltip_text, tooltipPosition, hoverItem, actuallyShowPoints, is_outlier, halfBandwith, quaterBandwith, xAxisLabelYPos, innerHeight, innerWidth, rotate_labels };
+}

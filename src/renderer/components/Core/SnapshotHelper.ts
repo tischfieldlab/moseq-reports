@@ -1,0 +1,494 @@
+import { toPng, toSvg } from "html-to-image";
+import { svgAsDataUri, svgAsPngUri } from "save-svg-as-png";
+import { app_root } from "@render/index";
+import { dialog } from "@electron/remote";
+import fs from "fs";
+import mime from "mime-types";
+import { RenderMode } from "@store/datawindow.types";
+import { SaveCancelledError } from "@render/components/Core/IO/types";
+import { showSaveErrorToast, showSaveSuccessToast, showStartSavingToast } from "@render/components/Core/IO/Toasts";
+import WindowManager from "@render/components/Core/Window/WindowManager";
+import {ComponentPublicInstance } from "vue";
+import {useDataWindowStore} from '@store/datawindow.store'
+import { ComponentRegistration } from "@render/store/component_registry.store";
+import { nextTick } from "vue";
+
+
+export interface SnapshotOptions {
+    format: string;
+    quality: number;
+    scale: number;
+    backgroundColor: string;
+}
+
+export function defaultOptions(target: ComponentPublicInstance): SnapshotOptions {
+    const resolvedTarget = resolveTarget(target);
+    return {
+        format: resolvedTarget.type === "video" ? "video" : "png",
+        quality: 1,
+        scale: 4,
+        backgroundColor: "#FFFFFF00", // fully transparent white
+    };
+}
+
+export function defaultOptionsFromSpec(target: ComponentRegistration): SnapshotOptions {
+    return {
+        format: target.default_render_mode === RenderMode.VIDEO ? "video" : "png",
+        quality: 1,
+        scale: 4,
+        backgroundColor: "#FFFFFF00", // fully transparent white
+    };
+}
+
+export function ensureDefaults(target: ComponentPublicInstance) {
+    if (!('id' in target.$props)) {
+        throw new Error("No id found on target!");
+    }
+    const dataWindowStore = useDataWindowStore(target.$props.id as string);
+    if (dataWindowStore.settings.snapshot === undefined) {
+        dataWindowStore.updateComponentSettings({
+            settings: {
+                snapshot: { ...defaultOptions(target) },
+            },
+        });
+    }
+}
+
+export default async function Snapshot(target: ComponentPublicInstance, basename: string, options: SnapshotOptions) {
+    const loading_toast = showStartSavingToast("Saving Snapshot", 'Hang tight... We\'re getting your snapshot ready.');
+    await nextTick();
+    return targetToDataURI(target, options)
+        .then((data) => dataUriToFile(data as string))
+        .then((finfo) => {
+            const defaultSnapshotPath = getSuggestedFilename(target) || basename;
+            const dest = dialog.showSaveDialogSync({
+                title: "Save Snapshot",
+                defaultPath: `${defaultSnapshotPath}.${finfo.extension}`,
+                filters: filtersForFinfo(finfo),
+            });
+            if (dest === undefined) {
+                throw new SaveCancelledError();
+            }
+            return {
+                finfo,
+                dest,
+            };
+        })
+        .then((data) => {
+            return new Promise((resolve, reject) => {
+                fs.writeFile(data.dest, data.finfo.buffer, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(data.dest);
+                });
+            });
+        })
+        .then((dest) => {
+            loading_toast.hide();
+            showSaveSuccessToast(dest as string, "snapshot");
+        })
+        .catch((err) => {
+            loading_toast.hide();
+            if (err instanceof SaveCancelledError) {
+                return; // don't care the user cancelled of their own accord
+            }
+            showSaveErrorToast(err, "snapshot");
+        });
+}
+
+export async function SnapshotWorkspace() {
+    const opts = defaultOptions(app_root);
+    opts.backgroundColor = "#FFFFFFFF"; // opaque white background
+
+    const toSnapshot = WindowManager.getWindows((window) => {
+        if (!('id' in window.$props)) {
+            throw new Error("No id found on target!");
+        }
+        const dataWindowStore = useDataWindowStore(window.$props.id as string);
+        return !dataWindowStore.is_hidden;
+    });
+
+    if (toSnapshot.length <= 0) {
+        showSaveErrorToast("There are no items to be snapshot!", "workspace snapshot");
+        return;
+    }
+
+    const loading_toast = showStartSavingToast("Saving Workspace Snapshot", 'Hang tight... We\'re getting your snapshot ready.');
+
+    await nextTick();
+
+    Promise.all(
+        toSnapshot.map(async (item) => {
+            const wstate = useDataWindowStore((item.$props as any).id as string);
+            return {
+                dataURI: await targetToDataURI(item, opts),
+                pos_x: wstate.pos_x,
+                pos_y: wstate.pos_y + 30, // add offset of 30 to account for window headers
+                width: wstate.width,
+                height: wstate.height,
+                title: wstate.title,
+                z_index: wstate.z_index,
+            } as SubImage;
+        })
+    )
+        .then((images) => {
+            return composite_images(images, opts);
+        })
+        .then((composite) => {
+            const finfo = dataUriToFile(composite);
+            const dest = dialog.showSaveDialogSync({
+                title: "Save Snapshot",
+                defaultPath: "WorkspaceSnapshot.png",
+                filters: filtersForFinfo(finfo),
+            });
+            if (dest === undefined) {
+                throw new SaveCancelledError();
+            }
+            return {
+                finfo,
+                dest,
+            };
+        })
+        .then((data) => {
+            return new Promise((resolve, reject) => {
+                fs.writeFile(data.dest, data.finfo.buffer, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(data.dest);
+                });
+            });
+        })
+        .then((dest) => {
+            loading_toast.hide();
+            showSaveSuccessToast(dest as string, "workspace snapshot");
+        })
+        .catch((err) => {
+            loading_toast.hide();
+            if (err instanceof SaveCancelledError) {
+                return; // don't care the user cancelled of their own accord
+            }
+            showSaveErrorToast(err, "workspace snapshot");
+        });
+}
+
+export interface SubImage {
+    dataURI: string;
+    title: string;
+    pos_x: number;
+    pos_y: number;
+    width: number;
+    height: number;
+    z_index: number;
+}
+
+export function composite_images(images: SubImage[], opts: SnapshotOptions): Promise<string> {
+    const dims = images.reduce(
+        (accum, item) => {
+            accum.minX = Math.min(accum.minX, item.pos_x);
+            accum.maxX = Math.max(accum.maxX, item.pos_x + item.width);
+            accum.minY = Math.min(accum.minY, item.pos_y);
+            accum.maxY = Math.max(accum.maxY, item.pos_y + item.height);
+            return accum;
+        },
+        {
+            minX: Number.MAX_VALUE,
+            maxX: Number.MIN_VALUE,
+            minY: Number.MAX_VALUE,
+            maxY: Number.MIN_VALUE,
+        }
+    );
+
+    const canvas = document.createElement("canvas");
+    const pxl_scale = window.devicePixelRatio || 1;
+    canvas.style.width = `${dims.maxX * opts.scale}px`;
+    canvas.style.height = `${dims.maxY * opts.scale}px`;
+    canvas.width = dims.maxX * opts.scale * pxl_scale;
+    canvas.height = dims.maxY * opts.scale * pxl_scale;
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d");
+    if (ctx === null) {
+        return Promise.reject("got null canvas context!");
+    }
+    ctx.resetTransform();
+    ctx.scale(pxl_scale, pxl_scale);
+
+    const drawers = images
+        .sort((a, b) => a.z_index - b.z_index)
+        .map((item) => {
+            return new Promise<void>((resolve, reject) => {
+                const subInfo = dataUriToFile(item.dataURI);
+                if (subInfo.extension !== "png") {
+                    reject("non-image data");
+                    return;
+                }
+                const img = new Image();
+                img.onload = () => {
+                    if (ctx === null) {
+                        return reject("no context!");
+                    }
+                    const isNotScaled = img.width / opts.scale / item.width < 1;
+                    if (isNotScaled) {
+                        ctx.drawImage(
+                            img,
+                            item.pos_x * opts.scale,
+                            item.pos_y * opts.scale,
+                            img.width * opts.scale / pxl_scale,
+                            img.height * opts.scale / pxl_scale
+                        );
+                    } else {
+                        ctx.drawImage(img,
+                                      item.pos_x * opts.scale,
+                                      item.pos_y * opts.scale,
+                                      img.width / pxl_scale,
+                                      img.height / pxl_scale);
+                    }
+                    // draw the title if it exists
+                    if (item.title !== undefined) {
+                        ctx.save();
+                        ctx.font = `bold ${16 * opts.scale}px Verdana,Arial,sans-serif`;
+                        ctx.textBaseline = "bottom";
+                        ctx.fillText(item.title, item.pos_x * opts.scale, item.pos_y * opts.scale);
+                        ctx.restore();
+                    }
+                    resolve();
+                };
+                img.src = item.dataURI as string;
+            });
+        });
+    return Promise.allSettled(drawers).then(() => {
+        const data = canvas.toDataURL("image/png");
+        document.body.removeChild(canvas);
+        return data;
+    });
+}
+
+function getAllVues(root: ComponentPublicInstance) {
+    const items = [root];
+    walk(root.$.subTree, child => {
+        items.push(child);
+    });
+    return items;
+}
+
+function walk(vnode, cb) {
+    if (!vnode) return;
+
+    if (vnode.component) {
+        const proxy = vnode.component.proxy;
+        if (proxy) cb(vnode.component.proxy);
+        walk(vnode.component.subTree, cb);
+    } else if (vnode.shapeFlag & 16) {
+        const vnodes = vnode.children;
+        for (let i = 0; i < vnodes.length; i++) {
+            walk(vnodes[i], cb);
+        }
+    }
+  }
+
+function filtersForFinfo(finfo) {
+    const infos = [] as any[];
+    if (finfo.extension === "png") {
+        infos.push({ name: "Image Files", extensions: ["png"] });
+    }
+    if (finfo.extension === "svg") {
+        infos.push({ name: "Image Files", extensions: ["svg"] });
+    }
+    if (finfo.extension === "mp4") {
+        infos.push({ name: "Movie Files", extensions: ["mp4"] });
+    }
+    infos.push({ name: "All Files", extensions: ["*"] });
+    return infos;
+}
+
+export function resolveTarget(target: ComponentPublicInstance): {
+    type: "video" | "svg" | "html" | "callback";
+    target: HTMLElement | ((options: SnapshotOptions) => Promise<string>);
+} {
+    const eattr = "data-snapshot-target";
+    const explicit = (
+        target.$el.hasAttribute(eattr) ? target.$el : target.$el.querySelector(`[${eattr}]`)
+    ) as HTMLElement;
+    if (explicit !== null) {
+        const etag = explicit.tagName;
+        const callback = explicit.getAttribute(eattr);
+
+        if (callback !== null && callback !== "") {
+            return {
+                type: "callback",
+                target: target[callback],
+            };
+        } else if (etag === "svg") {
+            return {
+                type: "svg",
+                target: explicit,
+            };
+        } else if (etag === "video") {
+            return {
+                type: "video",
+                target: explicit,
+            };
+        } else {
+            return {
+                type: "html",
+                target: explicit,
+            };
+        }
+    }
+
+    const svg = findTag(target, "svg");
+    if (svg) {
+        return {
+            type: "svg",
+            target: svg,
+        };
+    }
+
+    const video = findTag(target, "video");
+    if (video) {
+        return {
+            type: "video",
+            target: video,
+        };
+    }
+
+    return {
+        type: "html",
+        target: target.$el as HTMLElement,
+    };
+}
+function findTag(target: ComponentPublicInstance, tag: string) {
+    if (target.$el.tagName === tag) {
+        return target.$el as HTMLElement;
+    } else {
+        return target.$el.getElementsByTagName(tag).item(0) as HTMLElement;
+    }
+}
+
+function dataUriToFile(dataUri: string) {
+    const matches = dataUri.match(/^data:([A-Za-z0-9-+\/]+);([A-Za-z0-9-]+),(.+)$/);
+    if (matches === null || matches.length !== 4) {
+        throw new Error("Invalid input string: " + dataUri);
+    }
+
+    return {
+        mimeType: matches[1],
+        encoding: matches[2],
+        extension: mime.extension(matches[1]),
+        buffer: Buffer.from(matches[3], "base64"),
+    };
+}
+
+function getSuggestedFilename(target: ComponentPublicInstance) {
+    const tgt = resolveTarget(target);
+    if (tgt.type === "video") {
+        const src = decodeURIComponent((tgt.target as HTMLVideoElement).src);
+        return src.replace(/[\#\?].*$/, "").replace(/\.[^/.]+$/, "");
+    }
+    return undefined;
+}
+
+export async function targetToDataURI(target: ComponentPublicInstance, options: SnapshotOptions) {
+    const tgt = resolveTarget(target);
+    let uri: Promise<string> | undefined;
+    if (tgt.type === "callback") {
+        const callback = tgt.target as (options: SnapshotOptions) => Promise<string>;
+        uri = callback(options);
+    } else if (tgt.type === "html") {
+        if (options.format === "png") {
+            uri = toPng(tgt.target as HTMLElement, {
+                quality: options.quality,
+                backgroundColor: options.backgroundColor,
+            });
+        } else if (options.format === "svg") {
+            uri = toSvg(tgt.target as HTMLElement, {
+                quality: options.quality,
+                backgroundColor: options.backgroundColor,
+            });
+        }
+    } else if (tgt.type === "svg") {
+        if (options.format === "png") {
+            uri = svgAsPngUri(tgt.target as HTMLElement, {
+                scale: options.scale,
+                encoderOptions: options.quality,
+                backgroundColor: options.backgroundColor,
+            });
+        } else if (options.format === "svg") {
+            uri = svgAsDataUri(tgt.target as HTMLElement, {
+                scale: options.scale,
+                encoderOptions: options.quality,
+                backgroundColor: options.backgroundColor,
+            });
+        }
+    } else if (tgt.type === "video") {
+        uri = videoToDataUri(tgt.target as HTMLVideoElement, options);
+    }
+    return uri;
+}
+
+async function videoToDataUri(el: HTMLVideoElement, options: SnapshotOptions) {
+    if (options.format === "video") {
+        return await fetch(el.src)
+            .then(async (response) => {
+                const blob = await response.blob();
+                const mimeType = mime.lookup(new URL(el.src).pathname);
+                return `data:${mimeType};base64,${encode(new Uint8Array(await blob.arrayBuffer()))}`;
+            });
+    } else {
+        const canvas = document.createElement("canvas");
+        const width = el.clientWidth;
+        const height = el.clientHeight;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        canvas.width = width;
+        canvas.height = height;
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext("2d");
+        if (ctx === null) {
+            throw new Error("got null canvas context!");
+        }
+        ctx.drawImage(el, 0, 0, width, height);
+        const data = canvas.toDataURL("image/png");
+        document.body.removeChild(canvas);
+        return data;
+    }
+}
+
+// public method for encoding an Uint8Array to base64
+function encode(input: Uint8Array<ArrayBuffer>): string {
+    const keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    let output = "";
+    let chr1;
+    let chr2;
+    let chr3;
+    let enc1;
+    let enc2;
+    let enc3;
+    let enc4;
+    let i = 0;
+
+    while (i < input.byteLength) {
+        chr1 = input[i++];
+        chr2 = i < input.byteLength ? input[i++] : Number.NaN; // Not sure if the index
+        chr3 = i < input.byteLength ? input[i++] : Number.NaN; // checks are needed here
+
+        // tslint:disable-next-line:no-bitwise
+        enc1 = chr1 >> 2;
+        // tslint:disable-next-line:no-bitwise
+        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+        // tslint:disable-next-line:no-bitwise
+        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+        // tslint:disable-next-line:no-bitwise
+        enc4 = chr3 & 63;
+
+        if (isNaN(chr2)) {
+            enc3 = enc4 = 64;
+        } else if (isNaN(chr3)) {
+            enc4 = 64;
+        }
+        output += keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
+    }
+    return output;
+}

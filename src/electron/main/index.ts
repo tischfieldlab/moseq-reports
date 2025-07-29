@@ -1,0 +1,208 @@
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { release } from "os";
+import { join } from "path";
+import { installExtension,  VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import * as remoteMain from "@electron/remote/main";
+import {
+  setupTitlebar,
+  attachTitlebarToWindow,
+} from "custom-electron-titlebar/main";
+import { DataServerProxy } from "../../dataserver/proxy";
+
+remoteMain.initialize();
+
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+//import { createRequire } from 'node:module'
+// Create __dirname equivalent
+//const require = createRequire(import.meta.url)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+setupTitlebar();
+
+const isDevelopment = process.env.NODE_ENV !== "production";
+
+let dataServer: DataServerProxy | null = null;
+
+// Disable GPU Acceleration for Windows 7
+if (release().startsWith("6.1")) app.disableHardwareAcceleration();
+
+// Set application name for Windows 10+ notifications
+if (process.platform === "win32") app.setAppUserModelId(app.getName());
+
+const instances: BrowserWindow[] = [];
+const instanceArgs = {} as {[id:string]: string[]};
+// Keep a global reference of the window object, if you don't, the window will
+// be closed automatically when the JavaScript object is garbage collected.
+// let win: BrowserWindow | null;
+
+
+// Bootstrap App
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+    app.quit();
+}
+
+process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
+process.env.THREADS_WORKER_INIT_TIMEOUT = "200000";
+
+export const ROOT_PATH = {
+  dist: join(__dirname, "../.."), 
+  public: join(__dirname, app.isPackaged ? "../.." : "../../../public"), 
+};
+
+
+const preload = join(__dirname, "../preload/index.mjs");
+const url = process.env["VITE_DEV_SERVER_URL"] || "localhost";
+const indexHtml = join(ROOT_PATH.dist, "index.html");
+
+async function createWindow(argv: string[]) {
+    const win = new BrowserWindow({
+        icon: join(ROOT_PATH.public, "img", "msq.ico"),
+        frame: false,
+        titleBarStyle: "hidden",
+        titleBarOverlay: true,
+        backgroundColor: "#FFFFFF",
+        webPreferences: {
+            preload,
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
+        width: 1280,
+        height: 720,
+    });
+
+    const identifier = win.webContents.id;
+    instanceArgs[identifier] = argv;
+    instances.push(win);
+
+    win.on('closed', () => {
+        delete instanceArgs[identifier];
+        instances.splice(instances.indexOf(win), 1);
+    });
+
+    remoteMain.enable(win.webContents);
+
+    if (app.isPackaged) {
+        win.loadFile(indexHtml);
+    } else {
+        win.loadURL(url);
+        win.webContents.openDevTools({ mode: "right" });
+    }
+    win.webContents.on("did-finish-load", () => {
+        win?.webContents.send("main-process-message", new Date().toLocaleString());
+    });
+
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        if (url.startsWith("https:")) shell.openExternal(url);
+        return { action: "deny" };
+    });
+
+    attachTitlebarToWindow(win);
+
+    return win;
+}
+
+app.whenReady()
+    .then(async () => {
+        // console.log(process.env.NODE_ENV)
+        if (isDevelopment && !process.env.IS_TEST) {
+        await installExtension(VUEJS_DEVTOOLS)
+            .then((name) => console.log(`Added Extension2: ${name.name}`)) // tslint:disable-line:no-console
+            .catch((err) => console.error(`Failed to install extension:`, err.toString())); // tslint:disable-line:no-console
+        }
+        try {
+            console.log("Initializing DataServer...");
+            console.log(url)
+            dataServer = DataServerProxy.getInstance();
+            await dataServer.start();
+            console.log(`DataServer started at ${dataServer.getAddress()}`);
+        } catch (error) {
+            console.error("Failed to start DataServer:", error);
+        }
+    })
+    .then(() => createWindow(process.argv));
+
+app.on("window-all-closed", async () => {
+    if (dataServer) {
+        await dataServer.shutdown();
+    }
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
+});
+
+
+app.on("second-instance", (event, argv, workingDirectory) => {
+    createWindow(argv);
+});
+
+app.on("activate", async () => {
+    if (BrowserWindow.getAllWindows().length) {
+        BrowserWindow.getAllWindows()[0].focus();
+    } else {
+        createWindow(process.argv);
+        if (dataServer && !dataServer.isServerRunning()) {
+            await dataServer.start();
+        }
+    }
+});
+
+ipcMain.on('app-ready', (event) => {
+    const args = instanceArgs[event.sender.id];
+    const filepath = args[args.length - 1];
+    console.log("App is ready, filepath:", filepath, args);
+    if (filepath.endsWith('.msq')) {
+        event.sender.send('ready-to-load-file', filepath);
+    }
+});
+
+
+ipcMain.handle("is-data-server-running", () => {
+    return dataServer ? dataServer.isServerRunning() : false;
+});
+
+ipcMain.handle("get-data-server-address", () => {
+    return dataServer ? dataServer.getAddress() : "Server not running.";
+});
+
+
+ipcMain.handle("start-data-server", async () => {
+    try {
+        if (dataServer && !dataServer.isServerRunning()) {
+            await dataServer.start();
+            return { success: true, address: dataServer.getAddress() };
+        } else {
+            return { success: true, message: "DataServer is already running." };
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error("Error starting DataServer:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unknown error occurred starting DataServer:", error);
+            return { success: false, error: "Unknown error occurred: " + error };
+        }
+    }
+});
+
+ipcMain.handle("shutdown-data-server", async () => {
+    try {
+        if (dataServer) {
+            await dataServer.shutdown();
+            return { success: true };
+        } else {
+            return { success: false, message: "DataServer is not running." };
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error("Error shutting down DataServer:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unknown error occurred shutting down DataServer:", error);
+            return { success: false, error: "Unknown error occurred: " + error };
+        }
+    }
+});
+

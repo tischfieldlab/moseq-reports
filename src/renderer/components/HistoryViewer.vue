@@ -1,0 +1,159 @@
+<template>
+    <div class="sidebar-container">
+        <h3>Notification History</h3>
+        <template v-if="items.length > 0">
+            <b-toast v-for="(itm, idx) in items" :key="idx" :show="true" :variant="itm.variant" :no-close-button="true">
+                <template #title>
+                    <timeago :datetime="itm.time" />
+                </template>
+
+                <template #default>
+                    <component :is="resolveMessage(itm.message)" v-if="isVNode(itm.message)" />
+                    <div style="align-self: stretch;" v-else>
+                        {{ itm.message }}
+                    </div>
+
+                    <BLink v-if="itm.details" href="#" @click.prevent="toggleDetails(idx)" class="details-link" variant="light">
+                        {{ itm.showDetails ? "Hide Details" : "Show Details" }}
+                    </BLink>
+                    <div v-if="itm.showDetails" class="details mt-2">
+                        <textarea class="form-control" readonly rows="3" v-model="itm.details"></textarea>
+                    </div>
+                </template>
+            </b-toast>
+        </template>
+        <div v-else>
+            <p class="no-items">There doesn't seem to be anything here.</p>
+        </div>
+    </div>
+</template>
+
+
+
+<script lang="ts">
+import { defineComponent, computed, ref } from "vue";
+import { useHistoryStore } from "@store/history.store";
+import { h } from 'vue';
+
+export default defineComponent({
+    setup() {
+        const historyStore = useHistoryStore();
+
+        historyStore.$onAction((action) => {
+            if (action.name === "addEntry") {
+                action.after(() => {
+                    items.value.push({
+                        ...historyStore.items[historyStore.items.length - 1],
+                        showDetails: false,
+                    });
+                });
+            } else if (action.name === "removeEntry") {
+                items.value.splice(action.args[0], 1);
+            }
+        });
+
+        const items = ref(
+            historyStore.items.map((item) => ({
+                ...item,
+                showDetails: false,
+            }))
+        );
+
+        const toggleDetails = (idx) => {
+            items.value[idx].showDetails = !items.value[idx].showDetails;
+        };
+        
+        const isVNode = (msg) => typeof msg === 'function';
+        
+        const resolveMessage = (msgFn) => {
+            try {
+                return { render: msgFn };
+            } catch (e) {
+                return { render: () => h('span', 'Error rendering message') };
+            }
+        };
+        
+        const removeNotification = (idx) => {
+            historyStore.removeEntry(idx); 
+        };
+
+        return {
+            items,
+            isVNode,
+            resolveMessage,
+            toggleDetails,
+            removeNotification,
+        };
+    },
+});
+</script>
+<style scoped>
+.toast {
+    margin: 6px;
+    word-wrap: break-word;
+}
+
+.toast :deep(.d-flex) {
+    display: block !important;
+}
+
+.toast-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -1px;
+}
+
+.toast-body {
+    margin-top: 6px;
+}
+
+:deep(.toast-body::after) {
+    display: block;
+    content: "";
+    clear: both;
+}
+
+
+.notification-item {
+    margin-left: 16px; 
+    margin-right: 16px; 
+}
+
+h3 {
+    text-align: center;
+    margin-top: 12px;
+}
+
+.no-items {
+    text-align: center;
+    font-size: 14px;
+    color: #a5a5a5;
+    margin: 24px auto; 
+    padding: 12px;
+}
+
+.details-link {
+    margin-left: 10px;
+    cursor: pointer;
+    float: right;
+    display: inline-block;
+}
+
+.details {
+    margin-top: 10px;
+}
+
+textarea {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    white-space: pre;
+    width: 100%;
+    box-sizing: border-box; 
+}
+
+.sidebar-container {
+    padding: 16px; 
+    overflow-x: hidden; 
+}
+</style>
