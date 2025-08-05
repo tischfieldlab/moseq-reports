@@ -15,6 +15,9 @@ import { tsvParse, csvParse } from "d3-dsv";
 import StreamZip from "node-stream-zip";
 import fs from "fs";
 import path, { resolve } from "path";
+import {JsonDecoderWithNaNSupport} from "./JsonDecoder";
+import { autoType } from "./util";
+
 
 export function readDataBundle(filename: string): Promise<any> {
     const normalizedFilename = path.normalize(filename);
@@ -192,6 +195,11 @@ export function jsonParseZipEntryContainingNaN(data: string) {
     });
 }
 
+export function jsonParseBuffer(data: Buffer) {
+    const decoder = new JsonDecoderWithNaNSupport();
+    return decoder.read(data) as any;
+}
+
 export function fileExists(path: string): Promise<boolean> {
     const match = path.match(/(.*\.msq)(.*)/);
     if (match) {
@@ -255,48 +263,16 @@ export function readFileContents(path: string) {
     }
 }
 
-export function getParser(filename) {
+export function getParser(filename): (data: Buffer) => any {
     const ext = filename.split(".").pop();
     switch (ext) {
         case "json":
-            return jsonParseZipEntryContainingNaN;
+            return jsonParseBuffer;
         case "tsv":
-            return (data) => tsvParse(data, autoType);
+            return (data) => tsvParse(data.toString(), autoType);
         case "csv":
-            return (data) => csvParse(data, autoType);
+            return (data) => csvParse(data.toString(), autoType);
         default:
             return (data) => data;
     }
 }
-
-function autoType(object) {
-    const pattern = /^([-+]\d{2})?\d{4}(-\d{2}(-\d{2})?)?(T\d{2}:\d{2}(:\d{2}(\.\d{3})?)?(Z|[-+]\d{2}:\d{2})?)?$/;
-    for (const key of Object.keys(object)) {
-        let value = object[key].trim();
-        let num;
-        let m;
-        if (!value) {
-            value = null;
-        } else if (value === "true") {
-            value = true;
-        } else if (value === "false") {
-            value = false;
-        } else if (value === "NaN") {
-            value = NaN;
-        } else if (!isNaN((num = +value))) {
-            value = num;
-        } else if (value.match(pattern)) {
-            m = value.match(pattern);
-            if (fixtz && !!m[4] && !m[7]) {
-                value = value.replace(/-/g, "/").replace(/T/, " ");
-            }
-            value = new Date(value);
-        } else {
-            continue;
-        }
-        object[key] = value;
-    }
-    return object;
-}
-// https://github.com/d3/d3-dsv/issues/45
-const fixtz = new Date("2019-01-01T00:00").getHours() || new Date("2019-07-01T00:00").getHours();
