@@ -2,8 +2,7 @@ name: Build Moseq-Reports
 
 on:
   push:
-    tags:
-      - 'buildAll-*'
+    branches: [master]
   pull_request:
     branches: [master, patch*, release*]
   workflow_dispatch:
