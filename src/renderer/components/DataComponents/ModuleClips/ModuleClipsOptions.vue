@@ -38,15 +38,38 @@
 import { computed, ref } from "vue";
 import { useWindowMixin } from "@render/components/Core/Window/WindowMixin";
 import { ModuleClipsSettings } from "./ModuleClips.types";
+import { useDatasetsStore } from "@render/store/datasets.store";
+
+const datasetsStore = useDatasetsStore();
 
 const props = defineProps<{ id: string }>();
 const { settings, $wstate } = useWindowMixin<ModuleClipsSettings>(props.id);
 
-const streamOptions = ref([
-    { text: "RGB", value: "rgb" },
-    { text: "Depth", value: "depth" },
-    { text: "Composed", value: "composed" },
-]);
+const streamOptions = computed(() => {
+    const run_args = (datasetsStore.manifest?.syllable_clips as any)?.args?.streams;
+    if (run_args && Array.isArray(run_args) && run_args.length > 0) {
+        const options = <{ text: string; value: string }[]>[];
+        if (run_args.includes("ir")) {
+            options.push({ text: "IR", value: "ir" });
+        }
+        if (run_args.includes("rgb")) {
+            options.push({ text: "RGB", value: "rgb" });
+        }
+        if (run_args.includes("depth")) {
+            options.push({ text: "Depth", value: "depth" });
+        }
+        if (run_args.includes("composed")) {
+            options.push({ text: "Composed", value: "composed" });
+        }
+        return options;
+    } else {
+        return [
+            { text: "RGB", value: "rgb" },
+            { text: "Depth", value: "depth" },
+            { text: "Composed", value: "composed" },
+        ];
+    }
+});
 
 const updateSetting = (key: string, value: any) => {
     $wstate.updateComponentSettings({
@@ -73,6 +96,10 @@ const playbackRate = computed({
     get: () => settings.value.playback_rate,
     set: (val: number) => updateSetting("playback_rate", val),
 });
+
+if (!streamOptions.value.find((v) => v.value == stream.value)) {
+    stream.value = streamOptions.value[0].value;
+}
 </script>
 
 <style scoped>

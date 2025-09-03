@@ -28,7 +28,7 @@ const exposedMethods = {
         if (!cache.has(cacheName)) {
             hit = false;
             const loader = readFileContents(path)
-                .then((buffer) => buffer.toString())
+                //.then((buffer) => buffer.toString())
                 .then((data) => getParser(path)(data));
             cache.set(cacheName, await loader);
         }

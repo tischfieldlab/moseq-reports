@@ -56,7 +56,7 @@ RegisterDataComponent({
         stream: "rgb",
         loop: true,
         playback_rate: 1.0,
-        only_subclip: true,
+        only_subclip: false,
     },
 });
 
