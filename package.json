@@ -45,7 +45,7 @@
     "@types/d3-sankey": "^0.12.4",
     "@types/date-fns": "^2.6.3",
     "@vitejs/plugin-vue": "^5.0.4",
-    "electron": "36.4.0",
+    "electron": "36.8.1",
     "electron-builder": "^26.0.16",
     "electron-devtools-installer": "^4.0.0",
     "eslint": "^9.26.0",
