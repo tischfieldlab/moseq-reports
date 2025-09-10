@@ -54,7 +54,7 @@
     "pre-commit": "^1.2.2",
     "sass-embedded": "^1.80.7",
     "typescript": "^5.4.2",
-    "vite": "^6.0.3",
+    "vite": "^6.3.6",
     "vite-plugin-comlink": "^5.1.0",
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-electron-renderer": "^0.14.5",
