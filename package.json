@@ -71,7 +71,7 @@
     "@electron/remote": "^2.1.2",
     "@popperjs/core": "^2.11.8",
     "@vue/devtools": "^7.6.8",
-    "axios": "^1.9.0",
+    "axios": "^1.12.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "bootstrap-vue-next": "0.30.1",
