@@ -91,7 +91,7 @@
     "d3-shape": "^3.2.0",
     "date-fns": "^4.1.0",
     "deep-equal": "^2.2.3",
-    "express": "5.1.0",
+    "express": "5.2.0",
     "file-type": "21.0.0",
     "html-to-image": "^1.11.13",
     "json-joy": "^17.44.0",
